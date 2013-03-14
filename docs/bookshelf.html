@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>bookshelf.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>bookshelf.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <pre><code>Bookshelf 0.1.0
+
+(c) 2013 Tim Griesser
+Bookshelf may be freely distributed under the MIT license.
+For details and documentation:
+http://bookshelfjs.org</code></pre>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>(<span class="keyword">function</span>() {
+
+  <span class="string">"use strict"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2>Initial Setup</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Bookshelf = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Keep a reference to our own local copy of Backbone, in case we want to use
+this specific copy of Backbone elsewhere in the application.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Backbone = Bookshelf.Backbone = require(<span class="string">'./vendor/backbone'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Local dependency references.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> _  = require(<span class="string">'underscore'</span>);
+  <span class="keyword">var</span> Q  = require(<span class="string">'q'</span>);
+  <span class="keyword">var</span> Knex = require(<span class="string">'../knex/knex'</span>);
+  <span class="keyword">var</span> inflection = require(<span class="string">'inflection'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Attach <code>Knex</code> &amp; <code>Knex.Transaction</code> for convenience.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.Knex = Knex;
+  Bookshelf.Transaction = Knex.Transaction;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Keep in sync with package.json.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.VERSION = <span class="string">'0.0.0'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>We&#39;re using <code>Backbone.Events</code> rather than <code>EventEmitter</code>,
+for API consistency and portability, but adding some
+methods to make the API feel a bit more like Node&#39;s.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Events = Bookshelf.Events = Backbone.Events;
+      Events.removeAllListeners = <span class="keyword">function</span>(event) { <span class="keyword">this</span>.off(event, <span class="literal">null</span>, <span class="literal">null</span>); };
+      Events.emit = <span class="keyword">function</span>() { <span class="keyword">this</span>.trigger.apply(<span class="keyword">this</span>, arguments); };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><code>Bookshelf</code> may be used as a top-level pub-sub bus.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_.extend(Bookshelf, Events);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Base functions which are mixed-in to the
+<code>Model</code>, <code>Collection</code>, and <code>EagerRelation</code> prototypes.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Base = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>If there are no arguments, return the current object&#39;s
+query builder (or create a new one). If there are arguments,
+call the query builder with the first argument, applying the
+rest.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>query: <span class="keyword">function</span>() {
+      <span class="keyword">this</span>.builder || (<span class="keyword">this</span>.builder = Bookshelf.Knex(_.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>)));
+      <span class="keyword">var</span> args = _.toArray(arguments);
+      <span class="keyword">if</span> (args.length === <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">this</span>.builder;
+      <span class="keyword">this</span>.builder[args[<span class="number">0</span>]].apply(<span class="keyword">this</span>.builder, args.slice(<span class="number">1</span>));
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Reset the query builder, called internally
+after a query completes.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>resetQuery: <span class="keyword">function</span>() {
+      <span class="keyword">delete</span> <span class="keyword">this</span>.builder;
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Eager loads relationships onto an already populated
+<code>Model</code> or <code>Collection</code> instance.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>load: <span class="keyword">function</span>(relations, options) {
+      <span class="keyword">var</span> target, data;
+      options = _.extend({}, options, {
+        shallow: <span class="literal">true</span>,
+        withRelated: relations
+      });
+      <span class="keyword">if</span> (<span class="keyword">this</span> <span class="keyword">instanceof</span> Collection) {
+        target = <span class="keyword">new</span> <span class="keyword">this</span>.model();
+        data = <span class="keyword">this</span>.toJSON(options);
+      } <span class="keyword">else</span> {
+        target = <span class="keyword">this</span>;
+        data = [<span class="keyword">this</span>.toJSON(options)];
+      }
+      <span class="keyword">var</span> model = <span class="keyword">this</span>;
+      <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(<span class="keyword">this</span>, target, data)
+        .processRelated(options)
+        .then(<span class="keyword">function</span>() {
+          <span class="keyword">return</span> model;
+        });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Creates and returns a new <code>Bookshelf.Sync</code> instance.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>sync: <span class="keyword">function</span>(model, options) {
+      <span class="keyword">return</span> <span class="keyword">new</span> Bookshelf.Sync(model, options);
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h2>Bookshelf.Model</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>A similar implementation to the <code>Backbone.Model</code>
+constructor, except that defaults are not set until the
+object is persisted, and the collection property is not used.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Model = Bookshelf.Model = <span class="keyword">function</span>(attributes, options) {
+    <span class="keyword">var</span> attrs = attributes || {};
+    options || (options = {});
+    <span class="keyword">this</span>.cid = _.uniqueId(<span class="string">'c'</span>);
+    <span class="keyword">this</span>.attributes = {};
+    <span class="keyword">this</span>.relations = {};
+    <span class="keyword">this</span>._configure(options);
+    <span class="keyword">if</span> (options &amp;&amp; options.parse) attrs = <span class="keyword">this</span>.parse(attrs, options) || {};
+    <span class="keyword">this</span>.set(attrs, options);
+    <span class="keyword">this</span>.changed = {};
+    <span class="keyword">this</span>.initialize.apply(<span class="keyword">this</span>, arguments);
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>List of attributes attached directly from the constructor&#39;s options object.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> modelProps = [
+    <span class="string">'tableName'</span>, <span class="string">'fillable'</span>, <span class="string">'hasTimestamps'</span>, <span class="string">'exists'</span>, <span class="string">'request'</span>, <span class="string">'response'</span>
+  ];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Extend <code>Bookshelf.Model.prototype</code> with all necessary methods and properties.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_.extend(Model.prototype, Backbone.Model.prototype, Events, Base, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>The database table associated with the model.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>tableName: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Array of attributes which can be set with
+mass-assignment (whitelisting).</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>fillable: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Array of attributes which cannot be set with
+mass-assignment (blacklisting).</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>guarded: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Indicates if the model should be timestamped.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>hasTimestamps: <span class="literal">false</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Ensures the options sent to the model are properly attached.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_configure: <span class="keyword">function</span>(options) {
+      <span class="keyword">if</span> (<span class="keyword">this</span>.options) options = _.extend({}, _.result(<span class="keyword">this</span>, <span class="string">'options'</span>), options);
+      _.extend(<span class="keyword">this</span>, _.pick(options, modelProps));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Sets an attribute on the <code>Model</code>. If the key is an object, 
+check for any mass-assignment guards defined on the model
+and filter as appropriate. If any filtered items are detected,
+fire an event on the model and on the <code>Bookshelf</code> object.
+Passes through to <code>set</code> on <code>Backbone.Model</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>set: <span class="keyword">function</span>(key, val, options) {
+      <span class="keyword">if</span> (key == <span class="literal">null</span>) <span class="keyword">return</span> <span class="keyword">this</span>;
+      <span class="keyword">var</span> attrs;
+      
+      <span class="keyword">if</span> (<span class="keyword">typeof</span> key === <span class="string">'object'</span>) {
+        attrs = key;
+        options = (val || {});
+        
+        <span class="keyword">var</span> fillable = <span class="keyword">this</span>.fillable;
+        <span class="keyword">var</span> guarded  = <span class="keyword">this</span>.guarded;
+        
+        <span class="keyword">if</span> (fillable || guarded) {
+          <span class="keyword">var</span> sanitized = {};
+          <span class="keyword">if</span> (fillable) sanitized = _.pick(attrs, fillable);
+          <span class="keyword">if</span> (guarded) sanitized = _.omit(sanitized, guarded);
+          <span class="keyword">var</span> filtered = _.omit(attrs, _.keys(sanitized));
+          <span class="keyword">if</span> (!_.isEmpty(filtered)) {
+            <span class="keyword">this</span>.trigger(<span class="string">'inaccessible'</span>, <span class="keyword">this</span>, filtered, options);
+            Bookshelf.trigger(<span class="string">'inaccessible'</span>, <span class="keyword">this</span>, filtered, options);
+          }
+          attrs = sanitized;
+        }
+      } <span class="keyword">else</span> {
+        (attrs = {})[key] = val;
+        options || (options = {});
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>A validation skip is required to continue using the existing <code>Backbone#set</code>
+method, as we want to chain here rather than returning a promise.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>options.validate = <span class="literal">false</span>;
+      <span class="keyword">return</span> Backbone.Model.prototype.set.call(<span class="keyword">this</span>, attrs, options);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>The <code>hasOne</code> relation specifies that this table has exactly one of
+another type of object, specified by a foreign key in the other table. The foreign key is assumed
+to be the singular of this object&#39;s <code>tableName</code> with an <code>_id</code> suffix, but a custom <code>foreignKey</code>
+attribute may also be specified.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>hasOne: <span class="keyword">function</span>(Target, foreignKey) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._relatesTo(Target, {
+        type: <span class="string">'hasOne'</span>,
+        foreignKey: foreignKey || inflection.singularize(_.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>)) + <span class="string">'_id'</span>
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>The <code>hasMany</code> relation specifies that this object has one or
+more rows in another table which match on this object&#39;s primary key. The foreign key is assumed
+to be the singular of this object&#39;s <code>tableName</code> with an <code>_id</code> suffix, but a custom <code>foreignKey</code>
+attribute may also be specified.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>hasMany: <span class="keyword">function</span>(Target, foreignKey) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._relatesTo(Target, {
+        type: <span class="string">'hasMany'</span>,
+        foreignKey: foreignKey || inflection.singularize(_.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>)) + <span class="string">'_id'</span>
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>A reverse <code>hasOne</code> relation, the <code>belongsTo</code>, where the specified key in this table
+matches the primary <code>idAttribute</code> of another table.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>belongsTo: <span class="keyword">function</span>(Target, otherKey) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._relatesTo(Target, {
+        type: <span class="string">'belongsTo'</span>,
+        foreignKey: Target.prototype.idAttribute,
+        otherKey: otherKey || inflection.singularize(_.result(Target.prototype, <span class="string">'tableName'</span>)) + <span class="string">'_id'</span>
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>A <code>belongsToMany</code> relation is when there are many-to-many relation
+between two models, with a joining table. The joinTableName may be replaced with another
+object, will serve as the joining model.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>belongsToMany: <span class="keyword">function</span>(Target, joinTableName, foreignKey, otherKey) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._relatesTo(Target, {
+        type: <span class="string">'belongsToMany'</span>,
+        otherKey: otherKey     || inflection.singularize(_.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>)) + <span class="string">'_id'</span>,
+        foreignKey: foreignKey || inflection.singularize(_.result(Target.prototype, <span class="string">'tableName'</span>)) + <span class="string">'_id'</span>,
+        joinTableName: joinTableName || [
+          _.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>), 
+          _.result(Target.prototype, <span class="string">'tableName'</span>)
+        ].sort().join(<span class="string">'_'</span>)
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Fetch a model based on the currently set attributes,
+returning a model to the callback, along with any options.
+Returns a deferred promise through the Bookshelf.sync.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>fetch: <span class="keyword">function</span>(options) {
+      <span class="keyword">return</span> <span class="keyword">this</span>.sync(<span class="keyword">this</span>, options).first();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Sets and saves the hash of model attributes,
+If the server returns an attributes hash that differs,
+the model&#39;s state will be <code>set</code> again.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>save: <span class="keyword">function</span>(key, val, options) {
+
+      <span class="keyword">var</span> defaults, id, attrs, success;
+      <span class="keyword">var</span> attributes = <span class="keyword">this</span>.attributes;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Handle both <code>&quot;key&quot;, value</code> and <code>{key: value}</code> -style arguments.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (key == <span class="literal">null</span> || <span class="keyword">typeof</span> key === <span class="string">"object"</span>) {
+        attrs = key;
+        options = val;
+      } <span class="keyword">else</span> {
+        options || (options = {});
+        (attrs = {})[key] = val;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Don&#39;t allow setting an id attribute on save, unless the
+<code>{existing: true}</code> flag is set on the options hash.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (attrs) id = attrs[<span class="keyword">this</span>.idAttribute];
+      <span class="keyword">if</span> (id &amp;&amp; id !== <span class="keyword">this</span>.id &amp;&amp; !options.existing) {
+        Q.reject(<span class="keyword">new</span> Error(<span class="string">'The model cannot be saved with an idAttribute'</span>));
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Handle the defaults at the <code>save</code> level rather than the
+object creation level.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>defaults = _.result(<span class="keyword">this</span>, <span class="string">'defaults'</span>);
+      <span class="keyword">if</span> (defaults) {
+        attrs = _.defaults({}, attrs, defaults);
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>If attributes exist, save acts as <code>set(attr).save(null, opts)</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (attrs) <span class="keyword">this</span>.set(attrs, options);
+
+      options = _.extend({validate: <span class="literal">true</span>}, options);
+
+      <span class="keyword">var</span> model = <span class="keyword">this</span>;
+
+      <span class="keyword">return</span> Q.fcall(_.bind(<span class="keyword">this</span>._validate, <span class="keyword">this</span>), attrs, options).then(<span class="keyword">function</span>() {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>If the model has timestamp columns,
+set them as attributes on the model</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (model.hasTimestamps) {
+          model.timestamp(options);
+        }
+
+        <span class="keyword">var</span> sync = model.sync(model, options);
+        <span class="keyword">return</span> sync[(model.isNew(options) ? <span class="string">'insert'</span> : <span class="string">'update'</span>)]();
+      
+      }).then(<span class="keyword">function</span>(resp) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>After a successful database save, the id is updated
+if the model was created, otherwise the success function is called</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>model.resetQuery();
+        <span class="keyword">if</span> (resp.insertId) model.set(model.idAttribute, resp.insertId);
+        <span class="keyword">if</span> (success) success(model, resp, options);
+        model.trigger(<span class="string">'fetched'</span>, model, resp, options);
+        <span class="keyword">return</span> resp;
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Destroy a model, calling a delete based on its <code>idAttribute</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>destroy: <span class="keyword">function</span>(options) {
+      options || (options = {});
+      <span class="keyword">var</span> model = <span class="keyword">this</span>;
+      <span class="keyword">return</span> <span class="keyword">this</span>.sync(<span class="string">'del'</span>, <span class="keyword">this</span>, options).then(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">return</span> model.trigger(<span class="string">'destroy'</span>, model, model.collection, options);
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Returns an object containing the model attributes,
+along with the <code>toJSON</code> value of any relations,
+unless <code>{shallow: true}</code> is passed in the <code>options</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>toJSON: <span class="keyword">function</span>(options) {
+      <span class="keyword">var</span> attrs = _.extend({}, <span class="keyword">this</span>.attributes);
+      <span class="keyword">if</span> (options &amp;&amp; options.shallow) <span class="keyword">return</span> attrs;
+      <span class="keyword">var</span> relations = <span class="keyword">this</span>.relations;
+      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> relations) {
+        attrs[key] = relations[key].toJSON();
+      }
+      <span class="keyword">return</span> attrs;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Sets the timestamps before saving the model.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>timestamp: <span class="keyword">function</span>(options) {
+      <span class="keyword">var</span> d = <span class="keyword">new</span> Date();
+      <span class="keyword">this</span>.set(<span class="string">'updated_at'</span>, d);
+      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options)) {
+        <span class="keyword">this</span>.set(<span class="string">'created_at'</span>, d);
+      }
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>Check the validity of a model.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>isValid: <span class="keyword">function</span>(options) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._validate(<span class="literal">null</span>, _.extend({}, options, {validate: <span class="literal">true</span>}));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>Creates a new relation, from the current object to the
+&#39;target&#39; object (collection or model), passing a hash of
+options which can include the <code>type</code> of relation.
+The <code>hasOne</code> and <code>belongsTo</code> relations may only &quot;target&quot; a <code>Model</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_relatesTo: <span class="keyword">function</span>(Target, options) {
+      <span class="keyword">var</span> target;
+      <span class="keyword">var</span> type = options.type;
+      <span class="keyword">var</span> multi = (type === <span class="string">'hasMany'</span> || type === <span class="string">'belongsToMany'</span>);
+      <span class="keyword">if</span> (!multi) {
+        <span class="keyword">if</span> (!Target.prototype <span class="keyword">instanceof</span> Model) {
+          <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'The `'</span>+type+<span class="string">'` related object must be a Bookshelf.Model'</span>);
+        }
+      } <span class="keyword">else</span> <span class="keyword">if</span> (Target.prototype <span class="keyword">instanceof</span> Model) {
+        Target = Bookshelf.Collection.extend({model: Target});
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>If we&#39;re handling an eager loaded related model,
+we need to keep a reference to the original constructor,
+to assemble the correct object once the eager matching is finished.
+Otherwise, we need to grab the <code>foreignKey</code> value for building the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (<span class="keyword">this</span>._isEager) {
+        <span class="keyword">if</span> (multi) {
+          options.modelCtor = Target.prototype.model;
+          options.collectionCtor = Target;
+        } <span class="keyword">else</span> {
+          options.modelCtor = Target;
+        }
+      } <span class="keyword">else</span> {
+        <span class="keyword">if</span> (type === <span class="string">'belongsTo'</span>) {
+          options.fkValue = <span class="keyword">this</span>.get(options.otherKey);
+        } <span class="keyword">else</span> {
+          options.fkValue = <span class="keyword">this</span>.id;
+        }
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Create a new instance of the <code>Model</code> or <code>Collection</code>, and set the
+<code>_relation</code> options as a property on the instance.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>target = <span class="keyword">new</span> Target();
+      target._relation = options;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>Extend the relation with relation-specific methods.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (type === <span class="string">'belongsToMany'</span>) {
+        _.extend(target, pivotHelpers);
+      }
+      
+      <span class="keyword">return</span> target;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>Run validation against the next complete set of model attributes,
+returning <code>true</code> if all is well. Otherwise, fire a general
+<code>&quot;error&quot;</code> event and call the error callback, if specified.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_validate: <span class="keyword">function</span>(attrs, options) {
+      <span class="keyword">if</span> (!options.validate || !<span class="keyword">this</span>.validate) <span class="keyword">return</span> Q.resolve(<span class="literal">true</span>);
+      attrs = _.extend({}, <span class="keyword">this</span>.attributes, attrs);
+      <span class="keyword">var</span> model = <span class="keyword">this</span>;
+      <span class="keyword">return</span> Q.fcall(_.bind(<span class="keyword">this</span>.validate, <span class="keyword">this</span>), attrs, options).then(<span class="keyword">function</span>(resp) {
+        <span class="keyword">if</span> (resp &amp;&amp; resp !== <span class="literal">true</span>) {
+          model.validationError = resp;
+          model.trigger(<span class="string">'invalid'</span>, model, error, options);
+          <span class="keyword">return</span> Q.reject(<span class="keyword">new</span> Error(resp));
+        }
+        <span class="keyword">return</span> Q.resolve(<span class="literal">true</span>);
+      });
+    }
+  });
+
+  <span class="keyword">var</span> Collection = Bookshelf.Collection = <span class="keyword">function</span>(models, options) {
+    <span class="keyword">if</span> (options) _.extend(<span class="keyword">this</span>, _.pick(options, collectionProps));
+    <span class="keyword">this</span>._reset();
+    <span class="keyword">this</span>.initialize.apply(<span class="keyword">this</span>, arguments);
+    <span class="keyword">this</span>.relations = {};
+    <span class="keyword">if</span> (models) <span class="keyword">this</span>.reset(models, _.extend({silent: <span class="literal">true</span>}, options));
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>List of attributes attached directly from the constructor&#39;s options object.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> collectionProps = [
+    <span class="string">'model'</span>, <span class="string">'comparator'</span>, <span class="string">'perPage'</span>, <span class="string">'forPage'</span>
+  ];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>Extend the Collection&#39;s prototype with the base methods</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, <span class="string">'model'</span>), Events, Base, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>Sets the <code>perPage</code> limit, to help with pagination.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>perPage: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>Used in combination with <code>perPage</code>, this is the the current 
+&quot;page&quot; we&#39;re querying for.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>forPage: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>Set the batch size for large query sets.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>batchSize: <span class="literal">null</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>Fetch the models for this collection, resetting the models for the query
+when they arrive.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>fetch: <span class="keyword">function</span>(options) {
+      options || (options = {});
+      <span class="keyword">return</span> <span class="keyword">this</span>.sync(<span class="keyword">this</span>, options).select();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>The <code>tableName</code> on the associated Model, used in relation building.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>tableName: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> _.result(<span class="keyword">this</span>.model.prototype, <span class="string">'tableName'</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>The <code>idAttribute</code> on the associated Model, used in relation building.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>idAttribute: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.model.prototype.idAttribute;
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>Prepare a model or hash of attributes to be added to this collection.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>_prepareModel: <span class="keyword">function</span>(attrs, options) {
+      <span class="keyword">if</span> (attrs <span class="keyword">instanceof</span> Model) <span class="keyword">return</span> attrs;
+      <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">this</span>.model(attrs, options);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>Gets the number of pages, based on the <code>perPage</code> and <code>forPage</code> 
+parameters on the collection.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>getPageCount: <span class="keyword">function</span>() {
+
+    },
+
+    first: <span class="keyword">function</span>(columns) {
+      <span class="keyword">return</span> <span class="keyword">this</span>.limit(<span class="number">1</span>).select(columns).then(<span class="function"><span class="keyword">function</span> <span class="params">(models)</span> {</span>
+        <span class="keyword">return</span> (models.length &gt; <span class="number">0</span> ? models[<span class="number">0</span>] : <span class="literal">null</span>);
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>Destroy all of the models on the collection</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>destroyAll: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+      <span class="keyword">if</span> (<span class="keyword">this</span>.length &gt; <span class="number">0</span>) {
+        <span class="keyword">var</span> idAttr = <span class="keyword">this</span>.model.idAttribute;
+        <span class="keyword">return</span> <span class="keyword">this</span>.query().whereIn(idAttr, <span class="keyword">this</span>.pick(idAttr)).del();
+      }
+      <span class="keyword">return</span> Q.resolve();
+    }
+
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <h2>Relations</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>Temporary helper object for handling the response of an <code>EagerRelation</code> load.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> RelatedModels = <span class="keyword">function</span>(models) {
+    <span class="keyword">this</span>.models = models;
+    <span class="keyword">this</span>.length = <span class="keyword">this</span>.models.length;
+  };
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, <span class="string">'find'</span>, <span class="string">'where'</span>, <span class="string">'filter'</span>, <span class="string">'findWhere'</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>An <code>EagerRelation</code> object temporarily stores the models from an eager load,
+and handles matching eager loaded objects with their parent(s).</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> EagerRelation = Bookshelf.EagerRelation = <span class="keyword">function</span>(parent, target, parentResponse) {
+    <span class="keyword">this</span>.parent = parent;
+    <span class="keyword">this</span>.target = target;
+    <span class="keyword">this</span>.parentResponse = parentResponse;
+  };
+
+  _.extend(EagerRelation.prototype, Base, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>Fetch the nested related items, and handle the responses.
+Returns a deferred object, with the cumulative handling of
+multiple (potentially nested) relations.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>fetch: <span class="keyword">function</span>(options) {
+      <span class="keyword">var</span> current = <span class="keyword">this</span>;
+      <span class="keyword">var</span> models  = <span class="keyword">this</span>.models = [];
+      <span class="keyword">var</span> opts    = <span class="keyword">this</span>._relation;
+
+      Bookshelf.addEagerConstraints(opts.type, <span class="keyword">this</span>, opts.parentResponse);
+      
+      <span class="keyword">return</span> <span class="keyword">this</span>.query().select(opts.columns).then(<span class="keyword">function</span>(resp) {
+      
+        current.resetQuery();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>Only find additional related items &amp; process if
+there is a response from the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (resp &amp;&amp; resp.length &gt; <span class="number">0</span>) {
+
+          <span class="keyword">var</span> filteredResp = skim(resp);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>We can just push the models onto the collection, rather than resetting.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = filteredResp.length; i &lt; l; i++) {
+            models.push(<span class="keyword">new</span> opts.modelCtor(filteredResp[i]));
+          }
+
+          <span class="keyword">if</span> (options.withRelated) {
+            <span class="keyword">var</span> model = <span class="keyword">new</span> opts.modelCtor();
+            <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(current, model, resp).processRelated(options);
+          }
+        }
+
+        <span class="keyword">return</span> models;
+      });
+    },
+
+    processRelated: <span class="keyword">function</span>(options) {
+      <span class="keyword">var</span> name;
+      <span class="keyword">var</span> target = <span class="keyword">this</span>.target;
+      <span class="keyword">var</span> handled = <span class="keyword">this</span>.handled = {};
+      <span class="keyword">var</span> withRelated = options.withRelated;
+      <span class="keyword">var</span> subRelated = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>Eager load each of the <code>withRelated</code> relation item, splitting on &#39;.&#39;
+which indicates a nested eager load.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = options.withRelated.length; i &lt; l; i++) {
+        <span class="keyword">var</span> related = options.withRelated[i].split(<span class="string">'.'</span>);
+        name = related[<span class="number">0</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>Add additional eager items to an array, to load at the next level in the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (related.length &gt; <span class="number">1</span>) {
+          subRelated[name] || (subRelated[name] = []);
+          subRelated[name].push(related.slice(<span class="number">1</span>).join(<span class="string">'.'</span>));
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>Only allow one of a certain nested type per-level.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (handled[name]) <span class="keyword">continue</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>Internal flag to determine whether to set the ctor(s) on the _relation hash.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>target._isEager = <span class="literal">true</span>;
+        <span class="keyword">var</span> relation = target[name]();
+        target._isEager = <span class="literal">null</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>Set the parent&#39;s response, for purposes of setting query constraints.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>relation._relation.parentResponse = <span class="keyword">this</span>.parentResponse;
+
+        <span class="keyword">if</span> (!relation) {
+          <span class="keyword">throw</span> <span class="keyword">new</span> Error(name + <span class="string">' is not defined on the model.'</span>);
+        }
+
+        handled[name] = relation;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>Fetch all eager loaded models.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> pendingDeferred = [];
+      <span class="keyword">var</span> pendingNames = <span class="keyword">this</span>.pendingNames = [];
+      
+      <span class="keyword">for</span> (name <span class="keyword">in</span> handled) {
+        pendingNames.push(name);
+        pendingDeferred.push(<span class="keyword">this</span>.fetch.call(handled[name], {
+          transacting: options.transacting,
+          withRelated: subRelated[name]
+        }));
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>Return a deferred handler for all of the nested object sync
+returning the original response when these syncs are complete.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">return</span> Q.all(pendingDeferred).spread(_.bind(<span class="keyword">this</span>.matchResponses, <span class="keyword">this</span>));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>Handles the matching against an eager loaded relation.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>matchResponses: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> parent = <span class="keyword">this</span>.parent;
+      <span class="keyword">var</span> handled = <span class="keyword">this</span>.handled;
+      <span class="keyword">var</span> args = _.toArray(arguments);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>Pair each of the query responses with the parent models.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = args.length; i &lt; l; i++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>Get the current relation this response matches up with, based
+on the pendingNames array.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> name = <span class="keyword">this</span>.pendingNames[i];
+        <span class="keyword">var</span> relation = handled[name];
+        <span class="keyword">var</span> type = relation._relation.type;
+        <span class="keyword">var</span> relatedModels = <span class="keyword">new</span> RelatedModels(relation.models);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p>If the parent is a collection, we need to loop over each of the
+models and attach the appropriate sub-models, since they are
+fetched eagerly. We will re-use the same models for each association level.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (parent <span class="keyword">instanceof</span> Collection) {
+          <span class="keyword">var</span> models = parent.models;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>Attach the appropriate related items onto the parent model.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">for</span> (<span class="keyword">var</span> i2 = <span class="number">0</span>, l2 = models.length; i2 &lt; l2; i2++) {
+            <span class="keyword">var</span> m = models[i2];
+            <span class="keyword">var</span> result = Bookshelf.eagerRelated(type, relation, relatedModels, m.id);
+            <span class="keyword">if</span> (result) m.relations[name] = result;
+          }
+        } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>If this is a hasOne or belongsTo, we only choose a single item from
+the relation.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (type === <span class="string">'hasOne'</span> || type === <span class="string">'belongsTo'</span>) {
+            parent.relations[name] = relation.models[<span class="number">0</span>];
+          } <span class="keyword">else</span> {
+            parent.relations[name] = <span class="keyword">new</span> relation._relation.collectionCtor(relation.models);
+          }
+        }
+      }
+
+      <span class="keyword">return</span> <span class="keyword">this</span>.parentResponse;
+    }
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>Adds the basic relation constraints onto the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.addConstraints = <span class="keyword">function</span>(type, target) {
+    <span class="keyword">if</span> (type !== <span class="string">'belongsToMany'</span>) {
+      <span class="keyword">return</span> constraints(target);
+    } <span class="keyword">else</span> {
+      <span class="keyword">return</span> belongsToMany(target);
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>Adds eager loading relationship constraints onto the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.addEagerConstraints = <span class="keyword">function</span>(type, target, resp) {
+    <span class="keyword">if</span> (type !== <span class="string">'belongsToMany'</span>) {
+      <span class="keyword">return</span> constraints(target, resp);
+    } <span class="keyword">else</span> {
+      <span class="keyword">return</span> belongsToMany(target, resp);
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>Handles the &quot;eager related&quot; relationship matching.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.eagerRelated = <span class="keyword">function</span>(type, target, eager, id) {
+    <span class="keyword">var</span> relation = target._relation;
+    <span class="keyword">var</span> where = {};
+    <span class="keyword">switch</span> (type) {
+      <span class="keyword">case</span> <span class="string">"hasOne"</span>:
+      <span class="keyword">case</span> <span class="string">"belongsTo"</span>:
+        where[relation.foreignKey] = id;
+        <span class="keyword">return</span> eager.findWhere(where);
+      <span class="keyword">case</span> <span class="string">"hasMany"</span>:
+        where[relation.foreignKey] = id;
+        <span class="keyword">return</span> <span class="keyword">new</span> relation.collectionCtor(eager.where(where));
+      <span class="keyword">case</span> <span class="string">"belongsToMany"</span>:
+        where[<span class="string">'pivot_'</span> + relation.otherKey] = id;
+        <span class="keyword">return</span> <span class="keyword">new</span> relation.collectionCtor(eager.where(where));
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>Standard constraints for regular or eager loaded relations.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> constraints = <span class="keyword">function</span>(target, resp) {
+    <span class="keyword">var</span> relation = target._relation;
+    <span class="keyword">if</span> (resp) {
+      target.query(<span class="string">'whereIn'</span>, relation.foreignKey, _.pluck(resp, _.result(target, <span class="string">'idAttribute'</span>)));
+    } <span class="keyword">else</span> {
+      target.query(<span class="string">'where'</span>, relation.foreignKey, <span class="string">'='</span>, relation.fkValue);
+    }
+    <span class="keyword">return</span> target;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <p>Helper function for adding the constraints needed on a eager load.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> belongsToMany = <span class="keyword">function</span>(target, resp) {
+    <span class="keyword">var</span> relation = target._relation;
+    <span class="keyword">var</span> columns = relation.columns || (relation.columns = []);
+    
+    <span class="keyword">var</span> joinTableName = relation.joinTableName;
+    <span class="keyword">var</span> otherKey = relation.otherKey;
+    <span class="keyword">var</span> foreignKey = relation.foreignKey;
+    <span class="keyword">var</span> pivotColumns = relation.pivotColumns;
+
+    <span class="keyword">var</span> idAttribute = _.result(target, <span class="string">'idAttribute'</span>);
+    <span class="keyword">var</span> tableName = _.result(target, <span class="string">'tableName'</span>);
+    <span class="keyword">var</span> builder = target.query();
+
+    <span class="keyword">if</span> (builder.columns.length === <span class="number">0</span> &amp;&amp; columns.length === <span class="number">0</span>) {
+      columns.push(tableName + <span class="string">'.*'</span>);
+    }
+
+    columns.push(
+      joinTableName + <span class="string">'.'</span> + otherKey + <span class="string">' as '</span> + <span class="string">'pivot_'</span> + otherKey,
+      joinTableName + <span class="string">'.'</span> + foreignKey + <span class="string">' as '</span> + <span class="string">'pivot_'</span> + foreignKey
+    );
+    
+    <span class="keyword">if</span> (pivotColumns) columns.push.apply(columns, pivotColumns);
+    
+    builder.join(joinTableName, tableName + <span class="string">'.'</span> + idAttribute, <span class="string">'='</span>, joinTableName + <span class="string">'.'</span> + foreignKey);
+    
+    <span class="keyword">if</span> (resp) {
+      builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, idAttribute));
+    } <span class="keyword">else</span> {
+      builder.where(joinTableName + <span class="string">'.'</span> + otherKey, <span class="string">'='</span>, relation.fkValue);
+    }
+    <span class="keyword">return</span> target;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <h2>Extending Methods</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Model.extend = Collection.extend = Bookshelf.Backbone.Model.extend;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <h2>Sync</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <p>Sync is the dispatcher for any queries to the database,
+taking the <code>model</code> or <code>collection</code> being queried, along with
+a hash of options that are used in the various query methods.
+If the <code>transacting</code> option is set, the query is assumed to be
+part of a transaction, and this information is passed along to Knex.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> Sync = Bookshelf.Sync = <span class="keyword">function</span>(model, options) {
+    options || (options = {});
+    <span class="keyword">this</span>.model = model;
+    <span class="keyword">this</span>.options = options;
+    <span class="keyword">this</span>.query = model.query();
+    <span class="keyword">var</span> relation = model._relation;
+    <span class="keyword">if</span> (relation &amp;&amp; relation.fkValue) {
+      Bookshelf.addConstraints(relation.type, model);
+    }
+    <span class="keyword">if</span> (options.transacting) <span class="keyword">this</span>.query.transacting(options.transacting);
+  };
+
+  _.extend(Sync.prototype, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <p>Select the first item from the database.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>first: <span class="keyword">function</span>() {
+      <span class="keyword">this</span>.query.where(_.extend({}, <span class="keyword">this</span>.model.attributes)).limit(<span class="number">1</span>);
+      <span class="keyword">return</span> <span class="keyword">this</span>.select();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <p>Runs a <code>select</code> query on the database, adding any necessary relational
+constraints, resetting the query when complete. If there are results and
+eager loaded relations, those are fetched and returned on the model before
+the promise is resolved. Any <code>success</code> or <code>error</code> handlers passed in the
+options will be called. An empty response will reject the deferred
+with an <code>emptyResponse</code> message, and call/trigger the appropriate handlers.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>select: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> model = <span class="keyword">this</span>.model;
+      <span class="keyword">var</span> options = <span class="keyword">this</span>.options;
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.select(options.columns).then(<span class="keyword">function</span>(resp) {
+        <span class="keyword">var</span> target, filteredResp;
+        model.resetQuery();
+        <span class="keyword">if</span> (resp &amp;&amp; resp.length &gt; <span class="number">0</span>) {
+          filteredResp = skim(resp);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <p>If this is a model fetch, then we set the parsed attributes
+on the model, otherwise, we reset the collection.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (model <span class="keyword">instanceof</span> Model) {
+            model.set(model.parse(filteredResp[<span class="number">0</span>], options), options);
+          } <span class="keyword">else</span> {
+            model.reset(filteredResp, {silent: <span class="literal">true</span>, parse: <span class="literal">true</span>});
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <p>If the <code>withRelated</code> property is specified on the options hash, we dive
+into the <code>EagerRelation</code>. If the current querying object is a collection, 
+we find the associated <code>model</code> to determine necessary eager relations.
+Once the <code>EagerRelation</code> is complete, we return the original response from the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (options.withRelated) {
+            target = (model <span class="keyword">instanceof</span> Collection ? <span class="keyword">new</span> model.model() : model);
+            <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(model, target, filteredResp)
+              .processRelated(options)
+              .then(<span class="keyword">function</span>() {
+                <span class="keyword">return</span> resp;
+              });
+          }
+          <span class="keyword">return</span> resp;
+        }
+        <span class="keyword">if</span> (options.error) options.error(model, <span class="string">'emptyResponse'</span>, options);
+        model.trigger(<span class="string">'error'</span>, model, <span class="string">'emptyResponse'</span>, options);
+        <span class="keyword">return</span> Q.reject(<span class="string">'emptyResponse'</span>);
+      }).then(<span class="keyword">function</span>(resp) {
+        <span class="keyword">if</span> (options.success) options.success(model, resp, options);
+        model.trigger(<span class="string">'fetched'</span>, model, resp, options);
+        <span class="keyword">return</span> resp;
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <p>Issues an <code>insert</code> command on the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>insert: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.insert(<span class="keyword">this</span>.model.toJSON({shallow: <span class="literal">true</span>}));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <p>Issues an <code>update</code> command on the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>update: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.update(<span class="keyword">this</span>.model.toJSON({shallow: <span class="literal">true</span>}));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <p>Issues a <code>delete</code> command on the query.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>del: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.del();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <p>Alias to <code>del</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="string">"delete"</span>: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.del();
+    }
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <h2>Helpers</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <p>Specific to many-to-many relationships, these methods are mixed
+into the <code>belongsToMany</code> relationships when they are created,
+providing helpers for attaching and detaching related models.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> pivotHelpers = {
+
+    _handler: <span class="function"><span class="keyword">function</span> <span class="params">(method, ids, transacting)</span> {</span>
+      <span class="keyword">if</span> (ids == <span class="keyword">void</span> <span class="number">0</span> &amp;&amp; method === <span class="string">'insert'</span>) <span class="keyword">return</span> Q.resolve();
+      <span class="keyword">if</span> (!_.isArray(ids)) ids = [ids];
+      <span class="keyword">var</span> pivot = <span class="keyword">this</span>._relation;
+      <span class="keyword">return</span> Q.allResolved(_.map(ids, <span class="function"><span class="keyword">function</span> <span class="params">(item)</span> {</span>
+        <span class="keyword">var</span> data = {};
+        data[pivot.otherKey] = pivot.fkValue;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <p>If the item is an object, it&#39;s either a model
+that we&#39;re looking to attach to this model, or
+a hash of attributes to set in the relation.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">if</span> (_.isObject(item)) {
+          <span class="keyword">if</span> (item <span class="keyword">instanceof</span> Model) {
+            data[pivot.foreignKey] = item.id;
+          } <span class="keyword">else</span> {
+            _.extend(data, item);
+          }
+        } <span class="keyword">else</span> <span class="keyword">if</span> (item) {
+          data[pivot.foreignKey] = item;
+        }
+        <span class="keyword">var</span> builder = Bookshelf.Knex(pivot.joinTableName);
+        <span class="keyword">if</span> (transacting) {
+          builder.transacting(transacting);
+        }
+        <span class="keyword">if</span> (method === <span class="string">'delete'</span>) <span class="keyword">return</span> builder.where(data).del();
+        <span class="keyword">return</span> builder.insert(data);
+      }));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <p>Attach one or more &quot;ids&quot; from a foreign
+table to the current. Creates &amp; saves a new model
+and attaches the model with a join table entry.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>attach: <span class="keyword">function</span>(ids, options) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._handler(<span class="string">'insert'</span>, ids, (options &amp;&amp; options.transacting));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-98">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-98">&#182;</a>
+              </div>
+              <p>Detach related object from their pivot tables.
+If a model or id is passed, it attempts to remove the
+pivot table based on that foreign key. If a hash is passed,
+it attempts to remove the item based on a where clause with
+these parameters. If no parameters are specified, we assume we will 
+detach all related associations.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>detach: <span class="keyword">function</span>(ids, options) {
+      <span class="keyword">return</span> <span class="keyword">this</span>._handler(<span class="string">'delete'</span>, ids, (options &amp;&amp; options.transacting));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <p>Selects any additional columns on the pivot table,
+taking a hash of columns which specifies the pivot
+column name, and the value the column should take on the
+output to the model attributes.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>withPivot: <span class="keyword">function</span>(columns) {
+      <span class="keyword">var</span> relation = <span class="keyword">this</span>._relation;
+      relation.pivotColumns || (relation.pivotColumns = []);
+      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> columns) {
+        <span class="keyword">var</span> value = columns[key];
+        relation.pivotColumns.push(relation.joinTableName + <span class="string">'.'</span> + key + <span class="string">' as '</span> + value);
+      }
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    }
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <p>Omit <code>parse</code> &amp; <code>toJSON</code>, from <code>Backbone</code> object conversions,
+as these have different meanings on the client and server.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> converterOmit = [<span class="string">'parse'</span>, <span class="string">'toJSON'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <p>Inherit standard Backbone.js Collections &amp; Models from the client,
+transforming a client <code>Backbone.Model</code> or <code>Backbone.Collection</code> to a
+<code>Bookshelf</code> compatible object, to reuse validations, defaults, methods, etc.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Model.convert = Collection.convert = <span class="keyword">function</span>(Base, Target) {
+    <span class="keyword">var</span> parent = <span class="keyword">this</span>;
+    <span class="keyword">return</span> parent.extend(_.omit(Target.prototype, converterOmit));
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <p>Returns the object&#39;s own properties.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre><span class="keyword">var</span> skim = <span class="keyword">function</span>(data) {
+    <span class="keyword">return</span> _.map(data, <span class="keyword">function</span>(obj) {
+      <span class="keyword">return</span> _.pick(obj, _.keys(obj));
+    });
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-103">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-103">&#182;</a>
+              </div>
+              <h2>Configuration</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-104">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-104">&#182;</a>
+              </div>
+              <p>Configure the <code>Bookshelf</code> settings (database adapter, etc.) once,
+so it is ready on first model initialization.</p>
+
+            </div>
+            
+            <div class="content"><div class="highlight"><pre>Bookshelf.Initialize = <span class="keyword">function</span>(options) {
+    <span class="keyword">return</span> Knex.Initialize(options);
+  };
+
+  module.exports = Bookshelf;
+
+}).call(<span class="keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

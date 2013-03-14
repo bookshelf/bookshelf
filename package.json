@@ -1,0 +1,26 @@
+{
+  "name": "BDO",
+  "version": "0.0.0",
+  "description": "Backbone Data Objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec -r should test/index.js"
+  },
+  "repository": "",
+  "keywords": [
+    "backbone.js",
+    "orm",
+    "mysql",
+    "schema",
+    "query"
+  ],
+  "dependencies": {
+    "knex": "*",
+    "underscore": "1.4.4",
+    "q": "0.8.x",
+    "inflection": "1.2.x"
+  },
+  "author": "Tim Griesser",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

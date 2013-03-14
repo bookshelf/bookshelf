@@ -1,0 +1,1714 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="viewport" content="width=device-width">
+  <link rel="canonical" href="http://bookshelfjs.org" />
+  <link rel="icon" href="docs/images/favicon.ico" />
+  <title>Bookshelf.js - A full featured Javascript ORM</title>
+  <style>
+    body {
+      font-size: 14px;
+      line-height: 22px;
+      font-family: Helvetica Neue, Helvetica, Arial;
+      background: #FEFFFC url(docs/images/background.png);
+    }
+    .interface {
+      font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, sans-serif !important;
+    }
+    div#sidebar {
+      background: #fff;
+      position: fixed;
+      z-index: 10;
+      top: 0; left: 0; bottom: 0;
+      width: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 15px 0 30px 30px;
+      border-right: 1px solid #bbb;
+      box-shadow: 0 0 20px #ccc; -webkit-box-shadow: 0 0 20px #ccc; -moz-box-shadow: 0 0 20px #ccc;
+    }
+      a.toc_title.main {
+        font-size: 12px;
+      }
+      a.toc_title, a.toc_title:visited {
+        display: block;
+        color: black;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+        a.toc_title:hover {
+          text-decoration: underline;
+        }
+        #sidebar .version {
+          font-size: 10px;
+          font-weight: normal;
+        }
+      ul.toc_section {
+        font-size: 11px;
+        line-height: 14px;
+        margin: 5px 0 0 0;
+        padding-left: 0px;
+        list-style-type: none;
+        font-family: Lucida Grande;
+      }
+        .toc_section li {
+          cursor: pointer;
+          margin: 0 0 3px 0;
+        }
+          .toc_section li a {
+            text-decoration: none;
+            color: black;
+          }
+            .toc_section li a:hover {
+              text-decoration: underline;
+            }
+    div.container {
+      position: relative;
+      width: 550px;
+      margin: 40px 0 50px 260px;
+    }
+    img#logo {
+      width: 450px;
+      height: 80px;
+    }
+    div.run {
+      position: absolute;
+      right: 15px;
+      width: 26px; height: 18px;
+      background: url('docs/images/arrows.png') no-repeat -26px 0;
+    }
+      div.run:active {
+        background-position: -51px 0;
+      }
+    p, div.container ul {
+      margin: 25px 0;
+      width: 550px;
+    }
+      p.warning {
+        font-size: 12px;
+        line-height: 18px;
+        font-style: italic;
+      }
+      div.container ul {
+        list-style: circle;
+        padding-left: 15px;
+        font-size: 13px;
+        line-height: 18px;
+      }
+        div.container ul li {
+          margin-bottom: 10px;
+        }
+        div.container ul.small {
+          font-size: 12px;
+        }
+    a, a:visited {
+      color: #444;
+    }
+    a:active, a:hover {
+      color: #000;
+    }
+    a.punch {
+      display: inline-block;
+      background: #4162a8;
+      border-top: 1px solid #38538c;
+      border-right: 1px solid #1f2d4d;
+      border-bottom: 1px solid #151e33;
+      border-left: 1px solid #1f2d4d;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+      -o-border-radius: 4px;
+      border-radius: 4px;
+      -webkit-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -moz-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -ms-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      -o-box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      box-shadow: inset 0 1px 10px 1px #5c8bee, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+      color: #fff;
+      font: bold 14px "helvetica neue", helvetica, arial, sans-serif;
+      line-height: 1;
+      margin-bottom: 15px;
+      padding: 8px 0 10px 0;
+      text-align: center;
+      text-shadow: 0px -1px 1px #1e2d4d;
+      text-decoration: none;
+      width: 225px;
+      -webkit-background-clip: padding-box; }
+      a.punch:hover {
+        -webkit-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -moz-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -ms-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        -o-box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        box-shadow: inset 0 0px 20px 1px #87adff, 0px 1px 0 #1d2c4d, 0 6px 0px #1f3053, 0 8px 4px 1px #111111;
+        cursor: pointer; }
+      a.punch:active {
+        -webkit-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -moz-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -ms-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        -o-box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        box-shadow: inset 0 1px 10px 1px #5c8bee, 0 1px 0 #1d2c4d, 0 2px 0 #1f3053, 0 4px 3px 0 #111111;
+        margin-top: 5px; margin-bottom: 10px }
+    a img {
+      border: 0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      padding-top: 20px;
+    }
+      h2 {
+        font-size: 22px;
+      }
+    b.header {
+      font-size: 18px;
+      line-height: 35px;
+    }
+    span.alias {
+      font-size: 14px;
+      font-style: italic;
+      margin-left: 20px;
+    }
+    table {
+      margin: 15px 0 0; padding: 0;
+    }
+      tr, td {
+        margin: 0; padding: 0;
+      }
+        td {
+          padding: 0px 15px 5px 0;
+        }
+        table .rule {
+          height: 1px;
+          background: #ccc;
+          margin: 5px 0;
+        }
+    code, pre, tt {
+      font-family: Monaco, Consolas, "Lucida Console", monospace;
+      font-size: 12px;
+      line-height: 18px;
+      font-style: normal;
+    }
+      tt {
+        padding: 0px 3px;
+        background: #fff;
+        border: 1px solid #ddd;
+        zoom: 1;
+      }
+      code {
+        margin-left: 20px;
+      }
+      pre {
+        font-size: 12px;
+        padding: 2px 0 2px 15px;
+        border: 4px solid #bbb; border-top: 0; border-bottom: 0;
+        margin: 0px 0 25px;
+      }
+      img.example_image {
+        margin: 0px auto;
+      }
+        img.example_retina {
+          margin: 20px;
+          box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+    @media only screen and (-webkit-max-device-pixel-ratio: 1) and (max-width: 600px),
+           only screen and (max--moz-device-pixel-ratio: 1) and (max-width: 600px) {
+      div#sidebar {
+        display: none;
+      }
+      img#logo {
+        max-width: 450px;
+        width: 100%;
+        height: auto;
+      }
+      div.container {
+        width: auto;
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+        p, div.container ul {
+          width: auto;
+        }
+    }
+    @media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (max-width: 640px),
+          only screen and (-o-min-device-pixel-ratio: 3/2) and (max-width: 640px),
+          only screen and (min-device-pixel-ratio: 1.5) and (max-width: 640px) {
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      div#sidebar {
+        -webkit-overflow-scrolling: initial;
+        position: relative;
+        width: 90%;
+        height: 120px;
+        left: 0;
+        top: -7px;
+        padding: 10px 0 10px 30px;
+        border: 0;
+      }
+      img#logo {
+        width: auto;
+        height: auto;
+      }
+      div.container {
+        margin: 0;
+        width: 100%;
+      }
+      p, div.container ul {
+        max-width: 98%;
+        overflow-x: scroll;
+      }
+      table {
+        position: relative;
+      }
+        tr:first-child td {
+          padding-bottom: 25px;
+        }
+        td.text {
+          padding: 0;
+          position: absolute;
+          left: 0;
+          top: 48px;
+        }
+        tr:last-child td.text {
+          top: 122px;
+        }
+      pre {
+        overflow: scroll;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar" class="interface">
+
+    <a class="toc_title main" href="#">
+      Bookshelf.js <span class="version">(0.1.0)</span>
+    </a>
+    <ul class="toc_section">
+      <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
+      <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">Annotated Source</a></li>
+    </ul>
+
+    <a class="toc_title" href="#introduction">
+      Introduction
+    </a>
+
+    <a class="toc_title" href="#Initialize">
+      Initialize
+    </a>
+
+    <a class="toc_title" href="#Model">
+      Model
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Model-extend">extend</a></li>
+      <li>– <a href="#Model-constructor">constructor / initialize</a></li>
+      <li>– <a href="#Model-tableName">tableName</a></li>
+      <li>– <a href="#Model-idAttribute">idAttribute</a></li>
+      <li>– <a href="#Model-id">id</a></li>
+      <li>– <a href="#Model-set">set</a></li>
+      <li>– <a href="#Model-get">get</a></li>
+      <li>– <a href="#Model-fetch">fetch</a></li>
+      <li>– <a href="#Model-save">save</a></li>
+      <li>– <a href="#Model-destroy">destroy</a></li>
+      <li>– <a href="#Model-fillable">fillable</a></li>
+      <li>– <a href="#Model-guarded">guarded</a></li>
+      <li>– <a href="#Model-toJSON">toJSON</a></li>
+      <li>– <a href="#Model-sync">sync</a></li>
+      <li>– <a href="#Model-query">query</a></li>
+      <li>– <a href="#Model-resetQuery">resetQuery</a></li>
+      <li>– <a href="#Model-hasTimestamps">hasTimestamps</a></li>
+      <li>– <a href="#Model-timestamps">timestamps</a></li>
+      <li>– <a href="#Model-changed">changed</a></li>
+      <li>– <a href="#Model-hasChanged">hasChanged</a></li>
+      <li>– <a href="#Model-defaults">defaults</a></li>
+      <li>– <a href="#Model-save">save</a></li>
+      <li>– <a href="#Model-validate">validate</a></li>
+      <li>– <a href="#Model-isNew">isNew</a></li>
+      <li><b><a href="#Model-relations">Relations:</a></b></li>
+      <li>– <a href="#Model-hasOne">hasOne</a></li>
+      <li>– <a href="#Model-hasMany">hasMany</a></li>
+      <li>– <a href="#Model-belongsTo">belongsTo</a></li>
+      <li>– <a href="#Model-belongsToMany">belongsToMany</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-withTimestamps">withTimestamps</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
+    </ul>
+
+    <a class="toc_title" href="#Collection">
+      Collection
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Collection-extend">extend</a></li>
+      <li>– <a href="#Collection-model">model</a></li>
+      <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
+      <li>– <a href="#Collection-models">models</a></li>
+      <li>– <a href="#Collection-toJSON">toJSON</a></li>
+      <li>– <a href="#Collection-sync">sync</a></li>
+      <li>– <a href="#Collection-fetch">fetch</a></li>
+      <li>– <a href="#Collection-create">create</a></li>
+      <li>– <a href="#Collection-Underscore-Methods"><b>Underscore Methods (28)</b></a></li>
+      <li>– <a href="#Collection-add">add</a></li>
+      <li>– <a href="#Collection-remove">remove</a></li>
+      <li>– <a href="#Collection-reset">reset</a></li>
+      <li>– <a href="#Collection-update">update</a></li>
+      <li>– <a href="#Collection-get">get</a></li>
+      <li>– <a href="#Collection-at">at</a></li>
+      <li>– <a href="#Collection-push">push</a></li>
+      <li>– <a href="#Collection-pop">pop</a></li>
+      <li>– <a href="#Collection-unshift">unshift</a></li>
+      <li>– <a href="#Collection-shift">shift</a></li>
+      <li>– <a href="#Collection-length">length</a></li>
+      <li>– <a href="#Collection-comparator">comparator</a></li>
+      <li>– <a href="#Collection-sort">sort</a></li>
+      <li>– <a href="#Collection-pluck">pluck</a></li>
+      <li>– <a href="#Collection-where">where</a></li>
+      <li>– <a href="#Collection-parse">parse</a></li>
+      <li>– <a href="#Collection-clone">clone</a></li>
+    </ul>
+
+    <a class="toc_title" href="#Sync">
+      Sync
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Sync-first">first</a></li>
+      <li>– <a href="#Sync-select">select</a></li>
+      <li>– <a href="#Sync-insert">insert</a></li>
+      <li>– <a href="#Sync-update">update</a></li>
+      <li>– <a href="#Sync-del">del / delete</a></li>
+    </ul>
+
+    <a class="toc_title" href="#Events">
+      Events
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#Event-methods"><b>Event methods</b></a></li>
+      <li>- <a href="#Events-catalog"><b>Catalog of Built-in Events</b></a></li>
+    </ul>
+
+    <a class="toc_title" href="#Utility">
+      Utility
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Utility-Bookshelf-Backbone">Bookshelf.Backbone</a></li>
+      <li>– <a href="#Utility-Bookshelf-Knex">Bookshelf.Knex</a></li>
+      <li>– <a href="#Utility-Bookshelf-Knex-Transaction">Bookshelf.Transaction</a></li>
+    </ul>
+
+    <a class="toc_title" href="#faq">
+      F.A.Q.
+    </a>
+    
+    <a class="toc_title" href="#changelog">
+      Change Log
+    </a>
+
+  </div>
+
+  <div class="container">
+
+    <h1>Bookshelf.js</h1>
+
+    <p>
+      <b>Bookshelf</b> is a <a href="http://documentup.com/kriskowal/q/">promise based</a> Active Record ORM, 
+      built on <a href="http://knexjs.org">Knex query builder</a>. <br> It extends the Model &amp; Collection 
+      foundations of Backbone.js, providing transaction support, eager/nested-eager relation loading, and 
+      support for one-to-one, one-to-many, and many-to-many relations.
+    </p>
+
+    <p>
+      The project is <a href="http://github.com/tgriesser/bookshelf/">hosted on GitHub</a>,
+      and the <a href="docs/bookshelf.html">annotated source code</a> is available,
+      as well as a full <a href="">test suite</a>.
+    </p>
+
+    <p>
+      Bookshelf is available for use under the <a href="http://github.com/documentcloud/backbone/blob/master/LICENSE">MIT software license</a>.
+    </p>
+
+    <p>
+      You can report bugs and discuss features on the
+      <a href="http://github.com/documentcloud/backbone/issues">GitHub issues page</a>,
+      add pages to the <a href="https://github.com/documentcloud/backbone/wiki">wiki</a>
+      or send tweets to <a href="http://twitter.com/tgriesser">@tgriesser</a>.
+    </p>
+
+    <p>
+      Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
+      <a href="http://underscorejs.org/">Underscore.js</a> <small>(1.4.x)</small>,
+      <a href="https://github.com/kriskowal/q">q.js</a> <small>(0.8.x)</small>
+      for promise flow control.</a> Bookshelf also packages a local copy of 
+      <a href="http://backbonejs.org">Backbone.js</a>, which tends to stay closer to the
+      latest edge branch than the latest version release.
+    </p>
+
+    <h2 id="introduction">Introduction</h2>
+
+    <p>
+      Built on the solid structure and conventions from <a href="http://backbonejs.org">Backbone.js</a>,
+      Bookshelf adds additional for handling these objects
+      on the server, persisting and querying them from a relational data store, and forming 
+      relations between these objects in an Active Record Pattern.
+    </p>
+
+    <h2 id="introduction">Bookshelf.Initialize</h2>
+
+    <p>
+      Required before using Bookshelf, the initialize performs the setup of the database,
+      <a href="http://knexjs.org/#Initialize">Initialize</a>.
+    </p>
+
+<pre>
+
+</pre>
+
+    <h2 id="Model">Bookshelf.Model</h2>
+
+    <p>
+      <b>Models</b> are the heart of any JavaScript application, containing
+      the interactive data as well as a large part of the logic surrounding it:
+      conversions, validations, computed properties, and access control. You
+      extend <b>Bookshelf.Model</b> with your domain-specific methods, and
+      <b>Model</b> provides a basic set of functionality for managing data objects.
+    </p>
+
+    <p id="Model-extend">
+      <b class="header">extend</b><code>Bookshelf.Model.extend(properties, [classProperties])</code>
+      <br />
+      To create a <b>Model</b> class of your own, you extend <b>Bookshelf.Model</b>
+      and provide instance <b>properties</b>, as well as optional
+      <b>classProperties</b> to be attached directly to the constructor function.
+    </p>
+
+    <p>
+      <b>extend</b> correctly sets up the prototype chain, so subclasses created
+      with <b>extend</b> can be further extended and subclassed as far as you like.
+    </p>
+
+<pre>
+var Customer = Bookshelf.Model.extend({
+
+  initialize: function() { ... },
+
+  account: function() { ... },
+
+  login: function() { ... }
+
+});
+</pre>
+
+    <p class="warning">
+        Brief aside on <tt>super</tt>: JavaScript does not provide
+        a simple way to call super &mdash; the function of the same name defined
+        higher on the prototype chain. If you override a core function like
+        <tt>set</tt>, or <tt>save</tt>, and you want to invoke the
+        parent object's implementation, you'll have to explicitly call it, along these lines:
+    </p>
+
+<pre>
+var Customer = Bookshelf.Model.extend({
+  set: function() {
+    ...
+    Bookshelf.Model.prototype.set.apply(this, arguments);
+    ...
+  }
+});
+</pre>
+
+    <p id="Model-constructor">
+      <b class="header">constructor / initialize</b><code>new Model([attributes], [options])</code>
+      <br />
+      When creating an instance of a model, you can pass in the initial values
+      of the <b>attributes</b>, which will be <a href="#Model-set">set</a> on the
+      model. If you define an <b>initialize</b> function, it will be invoked when
+      the model is created.
+    </p>
+
+<pre>
+new Book({
+  title: "One Thousand and One Nights",
+  author: "Scheherazade"
+});
+</pre>
+
+    <p>
+      In rare cases, if you're looking to get fancy,
+      you may want to override <b>constructor</b>, which allows
+      you to replace the actual constructor function for your model.
+    </p>
+
+<pre>
+var Book = Bookshelf.Model.extend({
+  
+  tableName: 'documents',
+  
+  constructor: function () {
+    Bookshelf.Model.apply(this, arguments);
+    this.on('beforeQuery', function (qb) {
+      qb.where('type', '=', 'book');
+    });
+  }
+
+});
+</pre>
+
+    <p id="Model-tableName">
+      <b class="header">tableName</b><code>model.tableName</code>
+      <br />
+      A required property for any database usage, The <b>tableName</b> property
+      refers to the database table name the model will query against.
+    </p>
+
+<pre>
+var Television = Bookshelf.Model.extend({
+  tableName: 'electronics'
+});
+</pre>
+
+    <p id="Model-idAttribute">
+      <b class="header">idAttribute</b><code>model.idAttribute</code>
+      <br />
+      A database row's unique identifier (typically a primary key) is stored under this attribute.
+    </p>
+
+    <p id="Model-id">
+      <b class="header">id</b><code>model.id</code>
+      <br />
+      A special property of models, the <b>id</b> is an arbitrary string
+      (integer id or UUID). If you set the <b>id</b> in the
+      attributes hash, it will be copied onto the model as a direct property.
+      Models can be retrieved by id from collections, and the id is used to generate
+      model URLs by default.
+    </p>
+
+    <p id="Model-set">
+      <b class="header">set</b><code>model.set(attributes, [options])</code>
+      <br />
+      Set a hash of attributes (one or many) on the model. If any of the attributes
+      change the model's state, a <tt>"change"</tt> event will be triggered.
+      Change events for specific attributes are also triggered, and you can 
+      bind to those as well, for example: <tt>change:title</tt>, and 
+      <tt>change:content</tt>. You may also pass individual keys and values.
+    </p>
+
+<pre>
+customer.set({first_name: "Joe", last_name: "Customer"});
+
+customer.set("telephone", "555-555-1212");
+</pre>
+
+    <p>
+      If a hash of attributes is used, the <a href="#Model-fillable">fillable</a> and 
+      <a href="#Model-guarded">guarded</a> properties will be used to silently filter 
+      any inaccessible mass-assignment properties.  An <tt>inaccessible</tt> event will 
+      be fired on both the model and the <tt>Bookshelf</tt> namespace if any non-permitted 
+      items are in the hash.
+    </p>
+
+    <p id="Model-get">
+      <b class="header">get</b><code>model.get(attribute)</code>
+      <br />
+      Get the current value of an attribute from the model. For example:
+      <tt>note.get("title")</tt>
+    </p>
+
+    <p id="Model-fetch">
+      <b class="header">fetch</b><code>model.fetch([options]).then(...</code>
+      <br />
+      Fetches a model from the server, using the Resets the model's state from the server by delegating to
+      <a href="#Sync">Backbone.sync</a>. Returns a
+      <a href="http://api.jquery.com/jQuery.ajax/#jqXHR">jqXHR</a>.
+      Useful if the model has never
+      been populated with data, or if you'd like to ensure that you have the
+      latest server state. A <tt>"change"</tt> event will be triggered if the
+      server's state differs from the current attributes. Accepts
+      <tt>success</tt> and <tt>error</tt> callbacks in the options hash, which
+      are passed <tt>(model, response, options)</tt>
+      and <tt>(model, xhr, options)</tt> as arguments, respectively.
+    </p>
+
+<pre>
+var book = new Book({'ISBN-13': '978-0140447934'});
+book.fetch().then(function(result) {
+  // outputs 'War and Peace'
+  console.log(result.title);
+});
+</pre>
+  
+    <p><b>Eager Loading:</b>
+      <br />
+      The <tt>withRelated</tt> parameter may be specified to fetch the resource, 
+      along with any specified <a href="#Model-relations">relations</a> named on the model.
+      The results of these relation queries will be loaded into a <tt>relations</tt> property on
+      the model, and will be serialized on a <a href="#Model-toJSON">toJSON</a> call.
+    </p>
+
+<pre>
+var book = new Book({'ISBN-13': '978-0140447934'});
+book.fetch({
+  withRelated: 'author'
+}).then(function(result) {
+  // outputs 'War and Peace'
+  console.log(result.title);
+});
+</pre>
+
+    <p id="Model-fillable">
+      <b class="header">fillable</b><code>model.fillable</code>
+      <br />
+      The <b>fillable</b> property is an optional array of attribute names that 
+      may be mass-assigned (whitelisting). When creating a new model, or using <tt>model.set(object)</tt>,
+      only the properties in this array will be fillable, unless <tt>{protect: false}</tt> 
+      is passed as an option. An <tt>inaccessible</tt> event will be fired
+      if any filtered attributes are present in a mass-assignment.
+    </p>
+
+    <p id="Model-guarded">
+      <b class="header">guarded</b><code>model.guarded</code>
+      <br />
+      The <b>guarded</b> property is the opposite of <b>fillable</b>, an optional array
+      of attributes that may not be mass-assigned (blacklisting). When creating a new model, 
+      or using <tt>model.set(object)</tt>, the properties in this array will be fillable, unless <br>
+      <tt>{protect: false}</tt> is passed as an option. An <tt>inaccessible</tt> event 
+      will be fired if any filtered attributes are present in a mass-assignment.
+    </p>
+
+    <p id="Model-attributes">
+      <b class="header">attributes</b><code>model.attributes</code>
+      <br />
+      The <b>attributes</b> property is the internal hash containing the model's
+      state &mdash; usually (but not necessarily) a form of the JSON object
+      representing the model data on the server. It's often a straightforward
+      serialization of a row from the database, but it could also be client-side
+      computed state.
+    </p>
+
+    <p>
+      Please use <a href="#Model-set">set</a> to update the <b>attributes</b>
+      instead of modifying them directly. If you'd like to retrieve and munge a
+      copy of the model's attributes, use <a href="#Model-toJSON">toJSON</a>
+      instead.
+    </p>
+
+    <p class="warning">
+      Due to the fact that <a href="#Events">Events</a> accepts space separated
+      lists of events, attribute names should not include spaces.
+    </p>
+
+    <p id="Model-changed">
+      <b class="header">changed</b><code>model.changed</code>
+      <br />
+      The <b>changed</b> property is the internal hash containing all the attributes
+      that have changed since the last <tt>"change"</tt> event was triggered.
+      Please do not update <b>changed</b> directly.  Its state is maintained internally
+      by <a href="#Model-set">set</a> and <a href="#Model-change">change</a>.
+      A copy of <b>changed</b> can be acquired from
+      <a href="#Model-changedAttributes">changedAttributes</a>.
+    </p>
+
+    <p id="Model-defaults">
+      <b class="header">defaults</b><code>model.defaults or model.defaults()</code>
+      <br />
+      The <b>defaults</b> hash (or function) can be used to specify the default
+      attributes for your model. When creating an instance of the model,
+      any unspecified attributes will be set to their default value.
+    </p>
+
+<pre>
+var Meal = Bookshelf.Model.extend({
+  defaults: {
+    "appetizer":  "caesar salad",
+    "entree":     "ravioli",
+    "dessert":    "cheesecake"
+  }
+});
+
+alert("Dessert will be " + (new Meal).get('dessert'));
+</pre>
+
+    <p class="warning">
+      Remember that in JavaScript, objects are passed by reference, so if you
+      include an object as a default value, it will be shared among all instances.
+      Instead, define <b>defaults</b> as a function.
+    </p>
+
+    <p id="Model-toJSON">
+      <b class="header">toJSON</b><code>model.toJSON(options)</code>
+      <br />
+      Return a copy of the model's <a href="#Model-attributes">attributes</a> for JSON stringification.
+      This can be used for persistence, serialization, or for augmentation before
+      being handed off to a view. The name of this method is a bit confusing, as
+      it doesn't actually return a JSON string &mdash; but I'm afraid that it's
+      the way that the <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript API for <b>JSON.stringify</b> works</a>.
+    </p>
+
+<pre>
+var artist = new Bookshelf.Model({
+  firstName: "Wassily",
+  lastName: "Kandinsky"
+});
+
+artist.set({birthday: "December 16, 1866"});
+
+console.log(JSON.stringify(artist));
+</pre>
+
+    <p id="Model-query">
+      <b class="header">query</b><code>model.query([method], [*parameters])</code>
+      <br />
+      The <tt>query</tt> method is used to tap into the underlying <a href="http://knexjs.org">Knex</a>
+      query builder instance for the current model. If called with no arguments, it will return the query
+      builder directly. Otherwise, it will call the specified <tt>method</tt> on the query builder, applying
+      any additional arguments from the <tt>model.query</tt> call.
+    </p>
+
+<pre>
+var racers = new Bookshelf.Model({
+  
+});
+</pre>
+
+    <p id="Model-resetQuery">
+      <b class="header">resetQuery</b><code>model.resetQuery()</code>
+      <br />
+      Called to reset the internal state of the current query builder instance. This method is
+      called internally each time a database actions is performed by <tt>Bookshelf.Sync</tt>.
+    </p>
+
+    <p id="Model-hasTimestamps">
+      <b class="header">hasTimestamps</b><code>model.hasTimestamps</code>
+      <br />
+      A boolean property on the model, determining whether the <tt>timestamp</tt> method will
+      be called on a <tt>model.save()</tt> call &mdash; the default value is false.
+    </p>
+
+    <p id="Model-timestamps">
+      <b class="header">timestamps</b><code>model.timestamp(options)</code>
+      <br />
+      Sets the timestamp attributes on the model, if <tt>hasTimestamps</tt> is set to true.
+      The default implementation is to check if the model <a href="Model-isNew">isNew</a> and
+      set the <tt>created_at</tt> and <tt>updated_at</tt> attributes to the current date if it is new,
+      and just the <tt>updated_at</tt> attribute if it isn't.
+    </p>
+
+    <p id="Model-validate">
+      <b class="header">validate</b><code>model.validate(attributes).then(...</code>
+      <br />
+      This method is left undefined, and you're encouraged to override it with
+      your custom validation logic, if you have any that can be performed
+      in JavaScript. <b>validate</b> is called before <tt>set</tt> and
+      <tt>save</tt>, and is passed the model attributes updated with the values
+      from <tt>set</tt> or <tt>save</tt>.
+      If the attributes are valid, don't return anything from <b>validate</b>;
+      if they are invalid, return an error of your choosing. It
+      can be as simple as a string error message to be displayed, or a complete
+      error object that describes the error programmatically. If <b>validate</b>
+      returns an error, <tt>set</tt> and <tt>save</tt> will not continue, and the
+      model attributes will not be modified.
+      Failed validations trigger an <tt>"error"</tt> event.
+    </p>
+
+<pre>
+var Chapter = Bookshelf.Model.extend({
+  validate: function(attrs) {
+    if (attrs.end < attrs.start) {
+      return "can't end before it starts";
+    }
+  }
+});
+
+var one = new Chapter({
+  title : "Chapter One: The Beginning"
+});
+
+one.on("error", function(model, error) {
+  alert(model.get("title") + " " + error);
+});
+
+one.set({
+  start: 15,
+  end:   10
+});
+</pre>
+
+    <p>
+      <tt>"error"</tt> events are useful for providing coarse-grained error
+      messages at the model or collection level, but if you have a specific view
+      that can better handle the error, you may override and suppress the event
+      by passing an <tt>error</tt> callback directly:
+    </p>
+
+<pre>
+account.set({access: "unlimited"}, {
+  error: function(model, error) {
+    alert(error);
+  }
+});
+</pre>
+
+    <p id="Model-parse">
+      <b class="header">parse</b><code>model.parse(response)</code>
+      <br />
+      <b>parse</b> is called whenever a model's data is returned by the
+      server, in <a href="#Model-fetch">fetch</a>, and <a href="#Model-save">save</a>.
+      The function is passed the raw <tt>response</tt> object, and should return
+      the attributes hash to be <a href="#Model-set">set</a> on the model. The
+      default implementation is a no-op, simply passing through the JSON response.
+      Override this if you need to work with a preexisting API, or better namespace
+      your responses.
+    </p>
+
+    <p id="Model-clone">
+      <b class="header">clone</b><code>model.clone()</code>
+      <br />
+      Returns a new instance of the model with identical attributes.
+    </p>
+
+    <p id="Model-isNew">
+      <b class="header">isNew</b><code>model.isNew()</code>
+      <br />
+      Has this model been saved to the server yet? If the model does not yet have
+      an <tt>id</tt>, it is considered to be new.
+    </p>
+
+    <p id="Model-hasChanged">
+      <b class="header">hasChanged</b><code>model.hasChanged([attribute])</code>
+      <br />
+      Has the model changed since the last <tt>"change"</tt> event? If an <b>attribute</b>
+      is passed, returns <tt>true</tt> if that specific attribute has changed.
+    </p>
+
+    <p class="warning">
+      Note that this method, and the following change-related ones,
+      are only useful during the course of a <tt>"change"</tt> event.
+    </p>
+
+<pre>
+book.on("change", function() {
+  if (book.hasChanged("title")) {
+    ...
+  }
+});
+</pre>
+
+    <p id="Model-changedAttributes">
+      <b class="header">changedAttributes</b><code>model.changedAttributes([attributes])</code>
+      <br />
+      Retrieve a hash of only the model's attributes that have changed. Optionally,
+      an external <b>attributes</b> hash can be passed in, returning
+      the attributes in that hash which differ from the model. This can be used
+      to figure out which portions of a view should be updated, or what calls
+      need to be made to sync the changes to the server.
+    </p>
+
+    <p id="Model-previous">
+      <b class="header">previous</b><code>model.previous(attribute)</code>
+      <br />
+      During a <tt>"change"</tt> event, this method can be used to get the
+      previous value of a changed attribute.
+    </p>
+
+<pre>
+var bill = new Backbone.Model({
+  name: "Bill Smith"
+});
+
+bill.on("change:name", function(model, name) {
+  alert("Changed name from " + bill.previous("name") + " to " + name);
+});
+
+bill.set({name : "Bill Jones"});
+</pre>
+
+    <p id="Model-previousAttributes">
+      <b class="header">previousAttributes</b><code>model.previousAttributes()</code>
+      <br />
+      Return a copy of the model's previous attributes. Useful for getting a
+      diff between versions of a model, or getting back to a valid state after
+      an error occurs.
+    </p>
+
+    <p id="Model-sync">
+      <b class="header">sync</b><code>model.sync(method, model, [options])</code>
+      <br />
+      Uses <a href="#Sync">Backbone.sync</a> to persist the state of a model to
+      the server.  Can be overridden for custom behavior.
+    </p>
+
+    <h3 id="Model-relations">Model Relations:</h3>
+
+    <p>
+      There are four types of relationships that may be defined between Models and 
+      Collections: <tt>hasOne</tt>, <tt>hasMany</tt>, <tt>belongsToOne</tt>, <tt>belongsToMany</tt>.
+      These relations are specified by created methods on the model, returning the type of relation.
+    </p>
+
+<pre>
+var Summary = new Bookshelf.Model({tableName: 'summaries'});
+
+var Author = new Bookshelf.Model({tableName: 'authors'});
+
+var Owner  = new Bookshelf.Model({tableName: 'owners'});
+
+var Book = Bookshelf.Model.extend({
+  summary: function() {
+    return this.hasOne(Summary);
+  },
+  owner: function() {
+    return this.belongsTo(Owner);
+  },
+  pages: function() {
+    return this.hasMany(Pages);
+  },
+  author: function() {
+    return this.belongsToMany(Author);
+  }
+});
+
+var summary = new Book({id: 1}).summary();
+summary.fetch(function() {
+  console.log(summary.toJSON());
+});
+
+var book = new Book({id: 2});
+book.fetch({
+  withRelated: ['summary', 'owner', 'pages', 'author']
+}).then(function() {
+  console.log(book.toJSON());
+});
+
+</pre>
+
+    <p id="Model-hasOne">
+      <b class="header">hasOne</b><code>model.hasOne(Model, foreignKey)</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-hasMany">
+      <b class="header">hasMany</b><code>model.hasMany(Target, foreignKey)</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-belongsTo">
+      <b class="header">belongsTo</b><code>model.belongsTo(Model, otherKey)</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-belongsToMany">
+      <b class="header">belongsToMany</b><code>model.belongsToMany(Target, table, foreignKey, otherKey)</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-attach">
+      <b class="header">attach</b><code>relation.attach(ids, [options])</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-detach">
+      <b class="header">detach</b><code>relation.detach(ids, [options])</code>
+      <br />
+      
+    </p>
+
+    <p id="Model-withPivot">
+      <b class="header">withPivot</b><code>relation.withPivot(columns)</code>
+      <br />
+      
+    </p>
+
+
+    <h2 id="Collection">Bookshelf.Collection</h2>
+
+    <p>
+      Collections are ordered sets of models. You can bind <tt>"change"</tt> events
+      to be notified when any model in the collection has been modified,
+      listen for <tt>"add"</tt> and <tt>"remove"</tt> events, <tt>fetch</tt>
+      the collection from the server, and use a full suite of
+      <a href="#Collection-Underscore-Methods">Underscore.js methods</a>.
+    </p>
+
+    <p>
+      Any event that is triggered on a model in a collection will also be
+      triggered on the collection directly, for convenience.
+      This allows you to listen for changes to specific attributes in any
+      model in a collection, for example:
+      <tt>Documents.on("change:selected", ...)</tt>
+    </p>
+
+    <p id="Collection-extend">
+      <b class="header">extend</b><code>Bookshelf.Collection.extend(properties, [classProperties])</code>
+      <br />
+      To create a <b>Collection</b> class of your own, extend <b>Bookshelf.Collection</b>,
+      providing instance <b>properties</b>, as well as optional <b>classProperties</b> to be attached
+      directly to the collection's constructor function.
+    </p>
+
+    <p id="Collection-model">
+      <b class="header">model</b><code>collection.model</code>
+      <br />
+      Override this property to specify the model class that the collection
+      contains. If defined, you can pass raw attributes objects (and arrays) to
+      <a href="#Collection-add">add</a>, <a href="#Collection-create">create</a>,
+      and <a href="#Collection-reset">reset</a>, and the attributes will be
+      converted into a model of the proper type.
+    </p>
+
+<pre>
+var Library = Bookshelf.Collection.extend({
+  model: Book
+});
+</pre>
+
+    <p id="Collection-constructor">
+      <b class="header">constructor / initialize</b><code>new Collection([models], [options])</code>
+      <br />
+      When creating a Collection, you may choose to pass in the initial array
+      of <b>models</b>.  The collection's <a href="#Collection-comparator">comparator</a>
+      may be included as an option. Passing <tt>false</tt> as the
+      comparator option will prevent sorting. If you define an
+      <b>initialize</b> function, it will be invoked when the collection is
+      created.
+    </p>
+
+<pre>
+var tabs = new TabSet([tab1, tab2, tab3]);
+</pre>
+
+    <p id="Collection-models">
+      <b class="header">models</b><code>collection.models</code>
+      <br />
+      Raw access to the JavaScript array of models inside of the collection. Usually you'll
+      want to use <tt>get</tt>, <tt>at</tt>, or the <b>Underscore methods</b>
+      to access model objects, but occasionally a direct reference to the array
+      is desired.
+    </p>
+
+    <p id="Collection-toJSON">
+      <b class="header">toJSON</b><code>collection.toJSON()</code>
+      <br />
+      Return an array containing the attributes hash of each model in the
+      collection. This can be used to serialize and persist the
+      collection as a whole. The name of this method is a bit confusing, because
+      it conforms to
+      <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript's JSON API</a>.
+    </p>
+
+<pre>
+var collection = new Bookshelf.Collection([
+  {name: "Tim", age: 5},
+  {name: "Ida", age: 26},
+  {name: "Rob", age: 55}
+]);
+
+alert(JSON.stringify(collection));
+</pre>
+
+    <p id="Collection-sync">
+      <b class="header">sync</b><code>collection.sync(method, collection, [options])</code>
+      <br />
+      Uses <a href="#Sync">Backbone.sync</a> to persist the state of a
+      collection to the server.  Can be overridden for custom behavior.
+    </p>
+
+    <p id="Collection-Underscore-Methods">
+      <b class="header">Underscore Methods (28)</b>
+      <br />
+      Backbone proxies to <b>Underscore.js</b> to provide 28 iteration functions
+      on <b>Bookshelf.Collection</b>. They aren't all documented here, but
+      you can take a look at the Underscore documentation for the full details&hellip;
+    </p>
+
+    <ul class="small">
+      <li><a href="http://underscorejs.org/#each">forEach (each)</a></li>
+      <li><a href="http://underscorejs.org/#map">map (collect)</a></li>
+      <li><a href="http://underscorejs.org/#reduce">reduce (foldl, inject)</a></li>
+      <li><a href="http://underscorejs.org/#reduceRight">reduceRight (foldr)</a></li>
+      <li><a href="http://underscorejs.org/#find">find (detect)</a></li>
+      <li><a href="http://underscorejs.org/#filter">filter (select)</a></li>
+      <li><a href="http://underscorejs.org/#reject">reject</a></li>
+      <li><a href="http://underscorejs.org/#all">every (all)</a></li>
+      <li><a href="http://underscorejs.org/#any">some (any)</a></li>
+      <li><a href="http://underscorejs.org/#include">include (contains)</a></li>
+      <li><a href="http://underscorejs.org/#invoke">invoke</a></li>
+      <li><a href="http://underscorejs.org/#max">max</a></li>
+      <li><a href="http://underscorejs.org/#min">min</a></li>
+      <li><a href="http://underscorejs.org/#sortBy">sortBy</a></li>
+      <li><a href="http://underscorejs.org/#groupBy">groupBy</a></li>
+      <li><a href="http://underscorejs.org/#sortedIndex">sortedIndex</a></li>
+      <li><a href="http://underscorejs.org/#shuffle">shuffle</a></li>
+      <li><a href="http://underscorejs.org/#toArray">toArray</a></li>
+      <li><a href="http://underscorejs.org/#size">size</a></li>
+      <li><a href="http://underscorejs.org/#first">first (head, take)</a></li>
+      <li><a href="http://underscorejs.org/#initial">initial</a></li>
+      <li><a href="http://underscorejs.org/#rest">rest (tail)</a></li>
+      <li><a href="http://underscorejs.org/#last">last</a></li>
+      <li><a href="http://underscorejs.org/#without">without</a></li>
+      <li><a href="http://underscorejs.org/#indexOf">indexOf</a></li>
+      <li><a href="http://underscorejs.org/#lastIndexOf">lastIndexOf</a></li>
+      <li><a href="http://underscorejs.org/#isEmpty">isEmpty</a></li>
+      <li><a href="http://underscorejs.org/#chain">chain</a></li>
+    </ul>
+
+<pre>
+Books.each(function(book) {
+  book.publish();
+});
+
+var titles = Books.map(function(book) {
+  return book.get("title");
+});
+
+var publishedBooks = Books.filter(function(book) {
+  return book.get("published") === true;
+});
+
+var alphabetical = Books.sortBy(function(book) {
+  return book.author.get("name").toLowerCase();
+});
+</pre>
+
+    <p id="Collection-add">
+      <b class="header">add</b><code>collection.add(models, [options])</code>
+      <br />
+      Add a model (or an array of models) to the collection. Fires an <tt>"add"</tt>
+      event, which you can pass <tt>{silent: true}</tt> to suppress. If a
+      <a href="#Collection-model">model</a> property is defined, you may also pass
+      raw attributes objects, and have them be vivified as instances of the model.
+      Pass <tt>{at: index}</tt> to splice the model into the collection at the
+      specified <tt>index</tt>. If you're adding models to the collection that are
+      <i>already</i> in the collection, they'll be ignored, unless you pass
+      <tt>{merge: true}</tt>, in which case their attributes will be merged
+      into the corresponding models, firing any appropriate <tt>"change"</tt> events.
+    </p>
+
+<pre>
+var ships = new Bookshelf.Collection;
+
+ships.on("add", function(ship) {
+  alert("Ahoy " + ship.get("name") + "!");
+});
+
+ships.add([
+  {name: "Flying Dutchman"},
+  {name: "Black Pearl"}
+]);
+</pre>
+
+    <p class="warning">
+      Note that adding the same model (a model with the same <tt>id</tt>) to
+      a collection more than once <br /> is a no-op.
+    </p>
+
+    <p id="Collection-remove">
+      <b class="header">remove</b><code>collection.remove(models, [options])</code>
+      <br />
+      Remove a model (or an array of models) from the collection. Fires a
+      <tt>"remove"</tt> event, which you can use <tt>silent</tt>
+      to suppress. If you're a callback listening to the <tt>"remove"</tt> event,
+      the index at which the model is being removed from the collection is available
+      as <tt>options.index</tt>.
+    </p>
+
+    <p id="Collection-reset">
+      <b class="header">reset</b><code>collection.reset([models], [options])</code>
+      <br />
+      Adding and removing models one at a time is all well and good, but sometimes
+      you have so many models to change that you'd rather just update the collection
+      in bulk. Use <b>reset</b> to replace a collection with a new list
+      of models (or attribute hashes), triggering a single <tt>"reset"</tt> event
+      at the end. Pass <tt>{silent: true}</tt> to suppress the <tt>"reset"</tt> event.
+      For convenience, within a <tt>"reset"</tt> event, the list of any previous
+      models is available as <tt>options.previousModels</tt>.
+    </p>
+
+    <p>
+      Calling <tt>collection.reset()</tt> without passing any models as arguments
+      will empty the entire collection.
+    </p>
+
+    <p id="Collection-update">
+      <b class="header">update</b><code>collection.update(models, [options])</code>
+      <br />
+      The <b>update</b> method tries to peform a "smart" update of the collection
+      with the passed list of models. If a model in the list isn't yet in the
+      collection it will be added; if the model is already in the collection
+      its attributes will be merged; and if the collection contains any models that
+      <i>aren't</i> present in the list, they'll be removed. All of the appropriate
+      <tt>"add"</tt>, <tt>"remove"</tt>, and <tt>"change"</tt> events are fired
+      as this happens. If you'd like to customize the behavior, you can disable
+      it with options: <tt>{add: false}</tt>, <tt>{remove: false}</tt>, or <tt>{merge: false}</tt>.
+    </p>
+
+<pre>
+var vanHalen = new Collection([eddie, alex, stone, roth]);
+
+vanHalen.update([eddie, alex, stone, hagar]);
+
+// Fires a "remove" event for roth, and an "add" event for "hagar".
+// Updates any of stone, alex, and eddie's attributes that may have
+// changed over the years.
+</pre>
+
+    <p id="Collection-get">
+      <b class="header">get</b><code>collection.get(id)</code>
+      <br />
+      Get a model from a collection, specified by an <a href="#Model-id">id</a>,
+      a <a href="#Model-cid">cid</a>, or by passing in a <b>model</b>.
+    </p>
+
+<pre>
+var book = Library.get(110);
+</pre>
+
+    <p id="Collection-at">
+      <b class="header">at</b><code>collection.at(index)</code>
+      <br />
+      Get a model from a collection, specified by index. Useful if your collection
+      is sorted, and if your collection isn't sorted, <b>at</b> will still
+      retrieve models in insertion order.
+    </p>
+
+    <p id="Collection-push">
+      <b class="header">push</b><code>collection.push(model, [options])</code>
+      <br />
+      Add a model at the end of a collection. Takes the same options as
+      <a href="#Collection-add">add</a>.
+    </p>
+
+    <p id="Collection-pop">
+      <b class="header">pop</b><code>collection.pop([options])</code>
+      <br />
+      Remove and return the last model from a collection. Takes the same options as
+      <a href="#Collection-remove">remove</a>.
+    </p>
+
+    <p id="Collection-unshift">
+      <b class="header">unshift</b><code>collection.unshift(model, [options])</code>
+      <br />
+      Add a model at the beginning of a collection. Takes the same options as
+      <a href="#Collection-add">add</a>.
+    </p>
+
+    <p id="Collection-shift">
+      <b class="header">shift</b><code>collection.shift([options])</code>
+      <br />
+      Remove and return the first model from a collection. Takes the same options as
+      <a href="#Collection-remove">remove</a>.
+    </p>
+
+    <p id="Collection-length">
+      <b class="header">length</b><code>collection.length</code>
+      <br />
+      Like an array, a Collection maintains a <tt>length</tt> property, counting
+      the number of models it contains.
+    </p>
+
+    <p id="Collection-comparator">
+      <b class="header">comparator</b><code>collection.comparator</code>
+      <br />
+      By default there is no <b>comparator</b> for a collection.
+      If you define a comparator, it will be used to maintain
+      the collection in sorted order. This means that as models are added,
+      they are inserted at the correct index in <tt>collection.models</tt>.
+      A comparator can be defined as a
+      <a href="http://underscorejs.org/#sortBy">sortBy</a>
+      (pass a function that takes a single argument),
+      as a
+      <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/sort">sort</a>
+      (pass a comparator function that expects two arguments),
+      or as a string indicating the attribute to sort by.
+    </p>
+
+    <p>
+      "sortBy" comparator functions take a model and return a numeric or string
+      value by which the model should be ordered relative to others.
+      "sort" comparator functions take two models, and return <tt>-1</tt> if
+      the first model should come before the second, <tt>0</tt> if they are of
+      the same rank and <tt>1</tt> if the first model should come after.
+    </p>
+
+    <p>
+      Note how even though all of the chapters in this example are added backwards,
+      they come out in the proper order:
+    </p>
+
+<pre>
+var Chapter  = Backbone.Model;
+var chapters = new Bookshelf.Collection;
+
+chapters.comparator = function(chapter) {
+  return chapter.get("page");
+};
+
+chapters.add(new Chapter({page: 9, title: "The End"}));
+chapters.add(new Chapter({page: 5, title: "The Middle"}));
+chapters.add(new Chapter({page: 1, title: "The Beginning"}));
+
+alert(chapters.pluck('title'));
+</pre>
+
+    <p class="warning">
+      Collections with a comparator will not automatically re-sort if you
+      later change model attributes, so you may wish to call
+      <tt>sort</tt> after changing model attributes that would affect the order.
+    </p>
+
+    <p id="Collection-sort">
+      <b class="header">sort</b><code>collection.sort([options])</code>
+      <br />
+      Force a collection to re-sort itself. You don't need to call this under
+      normal circumstances, as a collection with a <a href="#Collection-comparator">comparator</a>
+      will sort itself whenever a model is added. Calling <b>sort</b>
+      triggers a <tt>"sort"</tt> event on the collection, unless silenced by passing
+      <tt>{silent: true}</tt>
+    </p>
+
+    <p id="Collection-pluck">
+      <b class="header">pluck</b><code>collection.pluck(attribute)</code>
+      <br />
+      Pluck an attribute from each model in the collection. Equivalent to calling
+      <tt>map</tt>, and returning a single attribute from the iterator.
+    </p>
+
+<pre>
+var stooges = new Bookshelf.Collection([
+  {name: "Curly"},
+  {name: "Larry"},
+  {name: "Moe"}
+]);
+
+var names = stooges.pluck("name");
+
+alert(JSON.stringify(names));
+</pre>
+
+    <p id="Collection-where">
+      <b class="header">where</b><code>collection.where(attributes)</code>
+      <br />
+      Return an array of all the models in a collection that match the
+      passed <b>attributes</b>. Useful for simple cases of <tt>filter</tt>.
+    </p>
+
+<pre>
+var friends = new Bookshelf.Collection([
+  {name: "Athos",      job: "Musketeer"},
+  {name: "Porthos",    job: "Musketeer"},
+  {name: "Aramis",     job: "Musketeer"},
+  {name: "d'Artagnan", job: "Guard"},
+]);
+
+var musketeers = friends.where({job: "Musketeer"});
+
+alert(musketeers.length);
+</pre>
+
+    <p id="Collection-parse">
+      <b class="header">parse</b><code>collection.parse(response)</code>
+      <br />
+      <b>parse</b> is called by Backbone whenever a collection's models are
+      returned by the server, in <a href="#Collection-fetch">fetch</a>.
+      The function is passed the raw <tt>response</tt> object, and should return
+      the array of model attributes to be <a href="#Collection-add">added</a>
+      to the collection. The default implementation is a no-op, simply passing
+      through the JSON response. Override this if you need to work with a
+      preexisting API, or better namespace your responses.
+    </p>
+
+<pre>
+var Tweets = Bookshelf.Collection.extend({
+  // The Twitter Search API returns tweets under "results".
+  parse: function(response) {
+    return response.results;
+  }
+});
+</pre>
+
+    <p id="Collection-clone">
+      <b class="header">clone</b><code>collection.clone()</code>
+      <br />
+      Returns a new instance of the collection with an identical list of models.
+    </p>
+
+    <p id="Collection-fetch">
+      <b class="header">fetch</b><code>collection.fetch([options])</code>
+      <br />
+      Fetch the default set of models for this collection from the server,
+      resetting the collection when they arrive. The <b>options</b> hash takes
+      <tt>success</tt> and <tt>error</tt>
+      callbacks which will be passed <tt>(collection, response, options)</tt>
+      and <tt>(collection, xhr, options)</tt> as arguments, respectively.
+      When the model data returns from the server, the collection will be (efficiently)
+      <a href="#Collection-reset">reset</a>, unless you pass <tt>{update: true}</tt>,
+      in which case it will use <a href="#Collection-update">update</a> to (intelligently)
+      merge the fetched models.
+      Delegates to <a href="#Sync">Backbone.sync</a>
+      under the covers for custom persistence strategies and returns a
+      <a href="http://api.jquery.com/jQuery.ajax/#jqXHR">jqXHR</a>.
+      The server handler for <b>fetch</b> requests should return a JSON array of
+      models.
+    </p>
+
+    <p id="Collection-create">
+      <b class="header">create</b><code>collection.create(attributes, [options])</code>
+      <br />
+      Convenience to create a new instance of a model within a collection.
+      Equivalent to instantiating a model with a hash of attributes,
+      saving the model to the server, and adding the model to the set after being
+      successfully created. Returns
+      the model, or <tt>false</tt> if a validation error prevented the
+      model from being created. In order for this to work, you should set the
+      <a href="#Collection-model">model</a> property of the collection.
+      The <b>create</b> method can accept either an attributes hash or an
+      existing, unsaved model object.
+    </p>
+
+    <p>
+      Creating a model will cause an immediate <tt>"add"</tt> event to be
+      triggered on the collection, a <tt>"request"</tt> event as the new model is
+      sent to the server, as well as a <tt>"sync"</tt> event, once the
+      server has responded with the successful creation of the model. Pass <tt>{wait: true}</tt>
+      if you'd like to wait for the server before adding the new model to the collection.
+    </p>
+
+<pre>
+var Library = Bookshelf.Collection.extend({
+  model: Book
+});
+
+var NYPL = new Library;
+
+var othello = NYPL.create({
+  title: "Othello",
+  author: "William Shakespeare"
+});
+</pre>
+
+    <h2 id="Sync">Bookshelf.sync</h2>
+
+    <p>
+      Todo.
+    </p>
+
+  <h2 id="Utility">Utility</h2>
+
+    <p id="Bookshelf-Backbone">
+      <b class="header">Bookshelf.Backbone</b>
+      <br />
+      A reference to the copy of Backbone used to create the Bookshelf objects can be accessed
+      from Bookshelf.Backbone. This can be helpful if you want to use Models &amp; Collections
+      elsewhere on the server, and ensure they are compatible with the Bookshelf objects.
+    </p>
+
+    <p id="Bookshelf-Knex">
+      <b class="header">Bookshelf.Knex</b>
+      <br />
+      A reference to the <tt>Knex.js</tt> instance in use by bookshelf.
+    </p>
+
+    <p id="Bookshelf-Backbone">
+      <b class="header">Bookshelf.Transaction</b>
+      <br />
+      An alias to Knex.Transaction, for convenient transaction support.
+    </p>
+
+  <h2 id="Events">Bookshelf.Events</h2>
+
+    <p>
+      <b>Events</b> is a module that can be mixed in to any object, giving the
+      object the ability to bind and trigger custom named events. Events do not
+      have to be declared before they are bound, and may take passed arguments.
+      For example:
+    </p>
+
+<pre>
+var object = {};
+
+_.extend(object, Backbone.Events);
+
+object.on("alert", function(msg) {
+  alert("Triggered " + msg);
+});
+
+object.trigger("alert", "an event");
+</pre>
+
+    <p>
+      For example, to make a handy event dispatcher that can coordinate events
+      among different areas of your application: <tt>var dispatcher = _.clone(Backbone.Events)</tt>
+    </p>
+
+    <p id="Events-on">
+      <b class="header">on</b><code>object.on(event, callback, [context])</code><span class="alias">Alias: bind</span>
+      <br />
+      Bind a <b>callback</b> function to an object. The callback will be invoked
+      whenever the <b>event</b> is fired.
+      If you have a large number of different events on a page, the convention is to use colons to
+      namespace them: <tt>"poll:start"</tt>, or <tt>"change:selection"</tt>.
+      The event string may also be a space-delimited list of several events...
+    </p>
+
+<pre>
+book.on("change:title change:author", ...);
+</pre>
+
+    <p>
+      To supply a <b>context</b> value for <tt>this</tt> when the callback is invoked,
+      pass the optional third argument: <tt>model.on('change', this.render, this)</tt>
+    </p>
+
+    <p>
+      Callbacks bound to the special
+      <tt>"all"</tt> event will be triggered when any event occurs, and are passed
+      the name of the event as the first argument. For example, to proxy all events
+      from one object to another:
+    </p>
+
+<pre>
+proxy.on("all", function(eventName) {
+  object.trigger(eventName);
+});
+</pre>
+
+    <p>
+      All Backbone event methods also support an event map syntax, as an alternative
+      to positional arguments:
+    </p>
+
+<pre>
+book.on({
+  "change:title": titleView.update,
+  "change:author": authorPane.update,
+  "destroy": bookView.remove
+});
+</pre>
+
+    <p id="Events-off">
+      <b class="header">off</b><code>object.off([event], [callback], [context])</code><span class="alias">Alias: unbind</span>
+      <br />
+      Remove a previously-bound <b>callback</b> function from an object. If no
+      <b>context</b> is specified, all of the versions of the callback with
+      different contexts will be removed. If no
+      callback is specified, all callbacks for the <b>event</b> will be
+      removed. If no event is specified, callbacks for <i>all</i> events
+      will be removed.
+    </p>
+
+<pre>
+// Removes just the `onChange` callback.
+object.off("change", onChange);
+
+// Removes all "change" callbacks.
+object.off("change");
+
+// Removes the `onChange` callback for all events.
+object.off(null, onChange);
+
+// Removes all callbacks for `context` for all events.
+object.off(null, null, context);
+
+// Removes all callbacks on `object`.
+object.off();
+</pre>
+
+    <p>
+      Note that calling <tt>model.off()</tt>, for example, will indeed remove <i>all</i> events
+      on the model &mdash; including events that Backbone uses for internal bookkeeping.
+    </p>
+
+    <p id="Events-trigger">
+      <b class="header">trigger</b><code>object.trigger(event, [*args])</code>
+      <br />
+      Trigger callbacks for the given <b>event</b>, or space-delimited list of events.
+      Subsequent arguments to <b>trigger</b> will be passed along to the
+      event callbacks.
+    </p>
+
+    <p id="Events-once">
+      <b class="header">once</b><code>object.once(event, callback, [context])</code>
+      <br />
+      Just like <a href="#Events-on">on</a>, but causes the bound callback to only
+      fire once before being removed. Handy for saying "the next time that X happens, do this".
+    </p>
+
+    <p id="Events-listenTo">
+      <b class="header">listenTo</b><code>object.listenTo(other, event, callback)</code>
+      <br />
+      Tell an <b>object</b> to listen to a particular event on an <b>other</b> object.
+      The advantage of using this form, instead of <tt>other.on(event, callback)</tt>,
+      is that <b>listenTo</b> allows the <b>object</b> to keep track of the events,
+      and they can be removed all at once later on.
+    </p>
+
+<pre>
+view.listenTo(model, 'change', view.render);
+</pre>
+
+    <p id="Events-stopListening">
+      <b class="header">stopListening</b><code>object.stopListening([other], [event], [callback])</code>
+      <br />
+      Tell an <b>object</b> to stop listening to events. Either call
+      <b>stopListening</b> with no arguments to have the <b>object</b> remove
+      all of its <a href="#Events-listenTo">registered</a> callbacks ... or be more
+      precise by telling it to remove just the events it's listening to on a
+      specific object, or a specific event, or just a specific callback.
+    </p>
+
+<pre>
+view.stopListening();
+
+view.stopListening(model);
+</pre>
+
+    <p id="Events-catalog">
+      <b class="header">Catalog of Events</b>
+      <br />
+      Here's the complete list of built-in Backbone events, with arguments.
+      You're also free to trigger your own events on Models, Collections and
+      Views as you see fit. The <tt>Backbone</tt> object itself mixes in <tt>Events</tt>,
+      and can be used to emit any global events that your application needs.
+    </p>
+
+    <ul class="small">
+      <li><b>"inaccessible"</b> (model, data, options) &mdash; when an inaccessible attribute is in a mass assignment. </li>
+    </ul>
+
+    <p>Events from Backbone:</p>
+
+    <ul class="small">
+      <li><b>"add"</b> (model, collection, options) &mdash; when a model is added to a collection. </li>
+      <li><b>"remove"</b> (model, collection, options) &mdash; when a model is removed from a collection. </li>
+      <li><b>"reset"</b> (collection, options) &mdash; when the collection's entire contents have been replaced. </li>
+      <li><b>"sort"</b> (collection, options) &mdash; when the collection has been re-sorted. </li>
+      <li><b>"change"</b> (model, options) &mdash; when a model's attributes have changed. </li>
+      <li><b>"change:[attribute]"</b> (model, value, options) &mdash; when a specific attribute has been updated. </li>
+      <li><b>"destroy"</b> (model, collection, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+      <li><b>"request"</b> (model, xhr, options) &mdash; when a model (or collection) has started a request to the server. </li>
+      <li><b>"sync"</b> (model, resp, options) &mdash; when a model has been successfully synced with the server. </li>
+      <li><b>"error"</b> (model, collection) &mdash; when a model's validation fails, or a <a href="#Model-save">save</a> call fails on the server. </li>
+      <li><b>"route:[name]"</b> (router) &mdash; when one of a router's routes has matched. </li>
+      <li><b>"all"</b> &mdash; this special event fires for <i>any</i> triggered event, passing the event name as the first argument. </li>
+    </ul>
+
+
+    <h2 id="faq">F.A.Q.</h2>
+
+    <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.0</b> &mdash; <small><i>TBD</i></small><br />
+      Initial Bookshelf release.
+    </p>
+
+  </div>
+
+</body>
+</html>

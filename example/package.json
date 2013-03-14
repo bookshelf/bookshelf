@@ -1,0 +1,14 @@
+{
+  "name": "super-todo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    
+    "bcrypt": "0.5.x",
+    "express": "3.0.3",
+    "jade": "*"
+  }
+}
