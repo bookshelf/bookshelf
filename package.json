@@ -1,17 +1,13 @@
 {
-  "name": "BDO",
+  "name": "Bookshelf",
   "version": "0.0.0",
-  "description": "Backbone Data Objects",
+  "description": "Bookshelf.js",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec -r should test/index.js"
   },
   "repository": "",
   "keywords": [
-    "backbone.js",
-    "orm",
-    "mysql",
-    "schema",
     "query"
   ],
   "dependencies": {
