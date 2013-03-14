@@ -1,15 +1,18 @@
-//     Bookshelf 0.1.0
+// Bookshelf.js
+// ===========
 
-//     (c) 2013 Tim Griesser
-//     Bookshelf may be freely distributed under the MIT license.
-//     For details and documentation:
-//     http://bookshelfjs.org
+// > (c) 2013 Tim Griesser
+// > Bookshelf may be freely distributed under the MIT license.
+// > For details and documentation:
+// > http://bookshelfjs.org
+
+// Initial Setup
+// -------------
+
 (function() {
 
   "use strict";
 
-  // Initial Setup
-  // ---------------
   var Bookshelf = {};
 
   // Keep a reference to our own local copy of Backbone, in case we want to use
