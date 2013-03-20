@@ -11,7 +11,7 @@
     "query"
   ],
   "dependencies": {
-    "knex": "*",
+    "knex": ">= 0.0.0",
     "underscore": "1.4.4",
     "q": "0.8.x",
     "inflection": "1.2.x"

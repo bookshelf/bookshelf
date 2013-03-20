@@ -22,7 +22,7 @@
   // Local dependency references.
   var _  = require('underscore');
   var Q  = require('q');
-  var Knex = require('../knex/knex');
+  var Knex = require('knex');
   var inflection = require('inflection');
 
   // Attach `Knex` & `Knex.Transaction` for convenience.
@@ -115,7 +115,7 @@
 
   // List of attributes attached directly from the constructor's options object.
   var modelProps = [
-    'tableName', 'fillable', 'hasTimestamps', 'exists', 'request', 'response'
+    'tableName', 'fillable', 'hasTimestamps', 'exists'
   ];
 
   // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.

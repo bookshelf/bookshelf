@@ -158,7 +158,6 @@ describe('Bookshelf.Relation', function () {
     it('handles hasOne', function (done) {
       var siteMeta = new Site({id: 1}).meta();
       siteMeta.fetch().then(function () {
-        console.log(siteMeta.toJSON());
         done();
       }, done);
     });
@@ -166,7 +165,6 @@ describe('Bookshelf.Relation', function () {
     it('handles belongsToMany', function (done) {
       var posts = new Author({id: 1}).posts();
       posts.fetch().then(function () {
-        console.log(posts.toJSON());
         done();
       }, done);
     });
@@ -181,7 +179,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['admins']
       }).then(function () {
-        console.log(site.toJSON());
         done();
       }, done);
     });
@@ -191,7 +188,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['authors', 'blogs']
       }).then(function () {
-        console.log(site.toJSON());
         done();
       }, done);
     });
@@ -201,7 +197,6 @@ describe('Bookshelf.Relation', function () {
       blog.fetch({
         withRelated: ['site']
       }).then(function () {
-        console.log(blog.toJSON());
         done();
       }, done);
     });
@@ -211,7 +206,6 @@ describe('Bookshelf.Relation', function () {
       post.fetch({
         withRelated: ['tags']
       }).then(function () {
-        console.log(post.toJSON());
         done();
       }, done);
     });
@@ -225,7 +219,6 @@ describe('Bookshelf.Relation', function () {
       sites.fetch({
         withRelated: ['admins']
       }).then(function () {
-        console.log(sites.toJSON());
         done();
       }, done);
     });
@@ -235,7 +228,6 @@ describe('Bookshelf.Relation', function () {
       blogs.fetch({
         withRelated: ['site']
       }).then(function () {
-        console.log(blogs.toJSON());
         done();
       }, done);
     });
@@ -245,7 +237,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['blogs']
       }).then(function () {
-        console.log(site.toJSON());
         done();
       }, done);
     });
@@ -255,7 +246,6 @@ describe('Bookshelf.Relation', function () {
       posts.fetch({
         withRelated: ['tags']
       }).then(function () {
-        console.log(JSON.stringify(posts));
         done();
       }, done);
     });
@@ -269,7 +259,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['authors.ownPosts']
       }).then(function () {
-        console.log(JSON.stringify(site));
         done();
       }, done);
     });
@@ -279,7 +268,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
       }).then(function () {
-        console.log(JSON.stringify(site));
         done();
       }, done);
     });
@@ -289,7 +277,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['authors.posts']
       }).then(function () {
-        console.log(JSON.stringify(site));
         done();
       }, done);
     });
@@ -303,7 +290,6 @@ describe('Bookshelf.Relation', function () {
       site.fetch({
         withRelated: ['authors.ownPosts']
       }).then(function () {
-        console.log(JSON.stringify(site));
         done();
       }, done);
     });
@@ -315,9 +301,7 @@ describe('Bookshelf.Relation', function () {
     it('eager loads relations on a populated model', function (done) {
       var site = new Site({id: 1});
       site.fetch().then(function () {
-        console.log(site.toJSON());
         site.load(['blogs', 'authors.site']).then(function () {
-          console.log(JSON.stringify(site));
           done();
         }, done);
       }, done);
@@ -326,9 +310,7 @@ describe('Bookshelf.Relation', function () {
     it('eager loads attributes on a collection', function (done) {
       var sites = new Sites();
       sites.fetch().then(function () {
-        console.log(sites.toJSON());
         sites.load(['blogs', 'authors.site']).then(function () {
-          console.log(JSON.stringify(sites));
           done();
         }, done);
       }, done);
@@ -351,7 +333,6 @@ describe('Bookshelf.Relation', function () {
         }).then(function (resp) {
           return new Site({id: 1}).admins().fetch();
         }).then(function (resp) {
-          console.log(resp.length);
           return new Site({id: 1}).admins().detach();
         }).then(function () {
           return new Site({id: 1}).admins().fetch(); 
