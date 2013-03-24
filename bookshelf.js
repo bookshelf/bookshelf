@@ -1,23 +1,20 @@
-// Bookshelf.js
-// ===========
+//     Bookshelf.js 0.1.0
 
-// > (c) 2013 Tim Griesser
-// > Bookshelf may be freely distributed under the MIT license.
-// > For details and documentation:
-// > http://bookshelfjs.org
-
-// Initial Setup
-// -------------
+//     (c) 2013 Tim Griesser
+//     Bookshelf may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://bookshelfjs.org
 
 (function() {
 
-  "use strict";
+  // Initial Setup
+  // -------------
 
   var Bookshelf = {};
 
-  // Keep a reference to our own local copy of Backbone, in case we want to use
-  // this specific copy of Backbone elsewhere in the application.
-  var Backbone = Bookshelf.Backbone = require('./vendor/backbone');
+  // Keep a reference to our own copy of Backbone, in case we want to use
+  // this specific instance of Backbone elsewhere in the application.
+  var Backbone = Bookshelf.Backbone = require('backbone');
 
   // Local dependency references.
   var _  = require('underscore');
@@ -412,6 +409,8 @@
   // Extend the Collection's prototype with the base methods
   _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Base, {
 
+    model: Model,
+
     // Sets the `perPage` limit, to help with pagination.
     perPage: null,
 
@@ -669,17 +668,18 @@
 
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(target, resp) {
-    var relation = target._relation;
-    var columns = relation.columns || (relation.columns = []);
-    
-    var joinTableName = relation.joinTableName;
-    var otherKey = relation.otherKey;
-    var foreignKey = relation.foreignKey;
-    var pivotColumns = relation.pivotColumns;
+    var relation, columns, builder, idAttribute, tableName, otherKey, foreignKey, pivotColumns, joinTableName;
 
-    var idAttribute = _.result(target, 'idAttribute');
-    var tableName = _.result(target, 'tableName');
-    var builder = target.query();
+    relation      = target._relation;
+    columns       = relation.columns || (relation.columns = []);
+    builder       = target.query();
+    idAttribute   = _.result(target, 'idAttribute');
+
+    tableName     = _.result(target, 'tableName');
+    otherKey      = relation.otherKey;
+    foreignKey    = relation.foreignKey;
+    pivotColumns  = relation.pivotColumns;
+    joinTableName = relation.joinTableName;
 
     if (builder.columns.length === 0 && columns.length === 0) {
       columns.push(tableName + '.*');
