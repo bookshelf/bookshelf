@@ -469,11 +469,10 @@
     <h2 id="Model">Bookshelf.Model</h2>
 
     <p>
-      <b>Models</b> are the heart of any JavaScript application, containing
-      the interactive data as well as a large part of the logic surrounding it:
-      conversions, validations, computed properties, and access control. You
-      extend <b>Bookshelf.Model</b> with your domain-specific methods, and
-      <b>Model</b> provides a basic set of functionality for managing data objects.
+      <b>Models</b> are objects representing individual database entries,
+      as well as a large part of the logic surrounding it: conversions, 
+      validations, computed properties, and access control. You can <a href="#Model-extend">extend</a> 
+      <b>Bookshelf.Model</b> with your domain-specific methods.
     </p>
 
     <p id="Model-extend">
@@ -548,8 +547,8 @@ var Book = Bookshelf.Model.extend({
   
   constructor: function () {
     Bookshelf.Model.apply(this, arguments);
-    this.on('beforeQuery', function (qb) {
-      qb.where('type', '=', 'book');
+    this.on('beforeQuery', function (model) {
+      model.query('where', 'type', '=', 'book');
     });
   }
 

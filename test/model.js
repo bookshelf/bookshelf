@@ -56,11 +56,15 @@ describe('Bookshelf.Model', function () {
 
   });
 
-  it('should use the same get function as the Backbone library', function () {
-    var attached = ['get'];
-    _.each(attached, function (item) {
-      Bookshelf.Model.prototype[item].should.equal(Bookshelf.Backbone.Model.prototype[item]);
+  describe('get', function () {
+
+    it('should use the same get function as the Backbone library', function () {
+      var attached = ['get'];
+      _.each(attached, function (item) {
+        assert.deepEqual(Bookshelf.Model.prototype[item], Bookshelf.Backbone.Model.prototype[item]);
+      });
     });
+
   });
 
   describe('fillable, guarded', function () {
@@ -178,8 +182,6 @@ describe('Bookshelf.Model', function () {
           }
         });
       }).then(function () {
-        done(new Error('Err.'));
-      }, function () {
         done();
       });
     });
@@ -302,6 +304,33 @@ describe('Bookshelf.Model', function () {
 
   describe('resetQuery', function () {
 
+  });
+
+  describe('convert', function () {
+    var One = Shelf.Backbone.Model.extend({
+      customMethod: function (val) {
+        return val || 1;
+      }
+    });
+    var Two = One.extend({
+      secondMethod: function (val) {
+        return One.prototype.customMethod.call(this, val || 2);
+      }
+    });
+    var Three = Two.extend({
+      thirdCustomMethod: function () {
+        return this.secondMethod(3);
+      }
+    });
+    var Converted = Shelf.Model.convert(Three, {
+      test: function () {
+        assert.equal(this.thirdCustomMethod(Converted), 3);
+        assert.equal(this.secondMethod(), 2);
+        assert.equal(this.customMethod(), 1);
+      }
+    });
+    var c = new Converted();
+    c.test();
   });
 
 });

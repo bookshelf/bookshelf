@@ -7,10 +7,9 @@ describe('Bookshelf.js', function() {
 
   before(function (done) {
 
-    Shelf.Initialize({
+    Shelf.initialize({
       client: 'mysql',
       connection: {
-        // debug    : true,
         host     : 'localhost',
         user     : 'root',
         password : 'root',
@@ -20,7 +19,7 @@ describe('Bookshelf.js', function() {
       }
     });
 
-    // Shelf.Initialize({
+    // Shelf.initialize({
     //   client: 'sqlite3',
     //   connection: {
     //     debug    : true,
@@ -46,4 +45,5 @@ describe('Bookshelf.js', function() {
   require('./model');
   require('./collection');
   require('./relation');
+  require('./events');
 });

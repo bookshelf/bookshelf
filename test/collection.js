@@ -6,13 +6,7 @@ describe('Bookshelf.Collection', function () {
   });
 
   describe('model', function () {
-
-  });
-
-  describe('models', function () {
-
-    it('should be a raw accessor for the models');
-
+    
   });
 
   describe('toJSON', function () {

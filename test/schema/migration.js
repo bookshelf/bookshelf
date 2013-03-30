@@ -4,7 +4,11 @@ var Q     = require('q');
 
 var Schema = Shelf.Knex.Schema;
 
-var drops = ['sites', 'sitesmeta', 'admins', 'admins_sites', 'authors', 'authors_posts', 'blogs', 'posts', 'tags', 'posts_tags', 'comments'];
+var drops = [
+  'sites', 'sitesmeta', 'admins',
+  'admins_sites', 'authors', 'authors_posts',
+  'blogs', 'posts', 'tags', 'posts_tags', 'comments'
+];
 
 drops = _.map(drops, function (val) {
   return Schema.dropTableIfExists(val);

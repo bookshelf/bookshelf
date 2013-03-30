@@ -88,6 +88,11 @@
     // Creates and returns a new `Bookshelf.Sync` instance.
     sync: function(model, options) {
       return new Bookshelf.Sync(model, options);
+    },
+
+    // Returns the related item
+    related: function (item) {
+      return this.relations[item];
     }
   };
 
@@ -114,6 +119,9 @@
   var modelProps = [
     'tableName', 'fillable', 'hasTimestamps', 'exists'
   ];
+
+  // Internal flag used in "converting" from client side Backbone objects.
+  Model.__type = 'Model';
 
   // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.
   _.extend(Model.prototype, Backbone.Model.prototype, Events, Base, {
@@ -254,21 +262,21 @@
         Q.reject(new Error('The model cannot be saved with an idAttribute'));
       }
 
+      // If attributes exist, save acts as `set(attr).save(null, opts)`.
+      if (attrs) this.set(attrs, options);
+
       // Handle the defaults at the `save` level rather than the
       // object creation level.
       defaults = _.result(this, 'defaults');
       if (defaults) {
-        attrs = _.defaults({}, attrs, defaults);
+        attributes = _.defaults({}, attributes, defaults);
       }
-
-      // If attributes exist, save acts as `set(attr).save(null, opts)`.
-      if (attrs) this.set(attrs, options);
 
       options = _.extend({validate: true}, options);
 
       var model = this;
 
-      return Q.fcall(_.bind(this._validate, this), attrs, options).then(function() {
+      return Q.fcall(_.bind(this._validate, this), attributes, options).then(function() {
 
         // If the model has timestamp columns,
         // set them as attributes on the model
@@ -287,7 +295,8 @@
         if (resp.insertId) model.set(model.idAttribute, resp.insertId);
         if (success) success(model, resp, options);
         model.trigger('fetched', model, resp, options);
-        return resp;
+        
+        return model;
       });
     },
 
@@ -295,7 +304,7 @@
     destroy: function(options) {
       options || (options = {});
       var model = this;
-      return this.sync('del', this, options).then(function () {
+      return this.sync(this, options).del().then(function () {
         return model.trigger('destroy', model, model.collection, options);
       });
     },
@@ -406,6 +415,9 @@
     'model', 'comparator', 'perPage', 'forPage'
   ];
 
+  // Internal flag used in "converting" from client side Backbone objects.
+  Collection.__type = 'Collection';
+
   // Extend the Collection's prototype with the base methods
   _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Base, {
 
@@ -448,12 +460,6 @@
     // parameters on the collection.
     getPageCount: function() {
 
-    },
-
-    first: function(columns) {
-      return this.limit(1).select(columns).then(function (models) {
-        return (models.length > 0 ? models[0] : null);
-      });
     },
 
     // Destroy all of the models on the collection
@@ -509,7 +515,7 @@
 
           // We can just push the models onto the collection, rather than resetting.
           for (var i = 0, l = filteredResp.length; i < l; i++) {
-            models.push(new opts.modelCtor(filteredResp[i]));
+            models.push(new opts.modelCtor(filteredResp[i], {parse: true}));
           }
 
           if (options.withRelated) {
@@ -523,7 +529,7 @@
     },
 
     processRelated: function(options) {
-      var name;
+      var name, related, relation;
       var target = this.target;
       var handled = this.handled = {};
       var withRelated = options.withRelated;
@@ -532,7 +538,7 @@
       // Eager load each of the `withRelated` relation item, splitting on '.'
       // which indicates a nested eager load.
       for (var i = 0, l = options.withRelated.length; i < l; i++) {
-        var related = options.withRelated[i].split('.');
+        related = options.withRelated[i].split('.');
         name = related[0];
 
         // Add additional eager items to an array, to load at the next level in the query.
@@ -546,7 +552,7 @@
         
         // Internal flag to determine whether to set the ctor(s) on the _relation hash.
         target._isEager = true;
-        var relation = target[name]();
+        relation = target[name]();
         target._isEager = null;
 
         // Set the parent's response, for purposes of setting query constraints.
@@ -578,10 +584,10 @@
 
     // Handles the matching against an eager loaded relation.
     matchResponses: function() {
-      var parent = this.parent;
-      var handled = this.handled;
       var args = _.toArray(arguments);
-
+      var parent  = this.parent;
+      var handled = this.handled;
+      
       // Pair each of the query responses with the parent models.
       for (var i = 0, l = args.length; i < l; i++) {
         
@@ -648,10 +654,10 @@
         return eager.findWhere(where);
       case "hasMany":
         where[relation.foreignKey] = id;
-        return new relation.collectionCtor(eager.where(where));
+        return new relation.collectionCtor(eager.where(where), {parse: true});
       case "belongsToMany":
         where['pivot_' + relation.otherKey] = id;
-        return new relation.collectionCtor(eager.where(where));
+        return new relation.collectionCtor(eager.where(where), {parse: true});
     }
   };
 
@@ -668,14 +674,16 @@
 
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(target, resp) {
-    var relation, columns, builder, idAttribute, tableName, otherKey, foreignKey, pivotColumns, joinTableName;
+    var relation, columns, builder, idAttribute, tableName, 
+    otherKey, foreignKey, pivotColumns, joinTableName;
 
     relation      = target._relation;
     columns       = relation.columns || (relation.columns = []);
     builder       = target.query();
+    
+    tableName     = _.result(target, 'tableName');
     idAttribute   = _.result(target, 'idAttribute');
 
-    tableName     = _.result(target, 'tableName');
     otherKey      = relation.otherKey;
     foreignKey    = relation.foreignKey;
     pivotColumns  = relation.pivotColumns;
@@ -709,7 +717,7 @@
   // Sync
   // -------
 
-  // Sync is the dispatcher for any queries to the database,
+  // Sync is the dispatcher for any database queries,
   // taking the `model` or `collection` being queried, along with
   // a hash of options that are used in the various query methods.
   // If the `transacting` option is set, the query is assumed to be
@@ -743,9 +751,11 @@
     select: function() {
       var model = this.model;
       var options = this.options;
+      
       return this.query.select(options.columns).then(function(resp) {
         var target, filteredResp;
         model.resetQuery();
+        
         if (resp && resp.length > 0) {
           filteredResp = skim(resp);
 
@@ -769,15 +779,27 @@
                 return resp;
               });
           }
+          
           return resp;
         }
+        
         if (options.error) options.error(model, 'emptyResponse', options);
         model.trigger('error', model, 'emptyResponse', options);
-        return Q.reject('emptyResponse');
+        
+        if (model instanceof Model) {
+          model.clear();
+          return {};
+        } else {
+          model.reset([], {silent: true});
+          return [];
+        }
+        
       }).then(function(resp) {
-        if (options.success) options.success(model, resp, options);
-        model.trigger('fetched', model, resp, options);
-        return resp;
+        if (resp.length > 0) {
+          if (options.success) options.success(model, resp, options);
+          model.trigger('fetched', model, resp, options);
+        }
+        return model;
       });
     },
 
@@ -788,17 +810,17 @@
 
     // Issues an `update` command on the query.
     update: function() {
-      return this.query.update(this.model.toJSON({shallow: true}));
+      return this.query.where(this.model.idAttribute, this.model.id).update(this.model.toJSON({shallow: true}));
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      return this.query.del();
+      return this.query.where(this.model.idAttribute, this.model.id).del();
     },
 
     // Alias to `del`.
     "delete": function() {
-      return this.query.del();
+      return this.del();
     }
   });
 
@@ -871,16 +893,45 @@
     }
   };
 
-  // Omit `parse` & `toJSON`, from `Backbone` object conversions,
-  // as these have different meanings on the client and server.
-  var converterOmit = ['parse', 'toJSON'];
+  // Omit `parse`, `toJSON`, and `initialize` from `Backbone` object conversions,
+  // as these have very different meanings and uses on the client and server.
+  var converterOmit = ['parse', 'toJSON', 'initialize', 'constructor'];
 
   // Inherit standard Backbone.js Collections & Models from the client,
   // transforming a client `Backbone.Model` or `Backbone.Collection` to a
-  // `Bookshelf` compatible object, to reuse validations, defaults, methods, etc.
-  Model.convert = Collection.convert = function(Base, Target) {
+  // `Bookshelf` compatible object, to reuse validations, defaults, user methods, etc.
+  Model.convert = Collection.convert = function(Target, protoProps) {
     var parent = this;
-    return parent.extend(_.omit(Target.prototype, converterOmit));
+    var type   = this.__type;
+
+    // Don't allow convert to work with an object instance.
+    if (!Target.prototype) {
+      throw new Error('Bookshelf.convert can only work with a constructor object');
+    }
+
+    // Traverse the prototype chain, breaking once we hit the prototype of the
+    // Model or Collection we're converting. This way we can put the prototype chain
+    // back together starting from the base "extend" so inheritance works properly.
+    var current = Target.prototype;
+    var depth   = [];
+    var passed = false;
+
+    while (passed !== true) {
+      if (_.isEqual(current, Backbone[type].prototype)) {
+        passed = true;
+      } else {
+        depth.push(_.omit(_.pick(current, _.keys(current)), converterOmit));
+        current = current.__proto__;
+      }
+    }
+
+    // Setup the prototype chain.
+    var currentObj = this;
+    for (var i = depth.length; i > 0; i--) {
+      currentObj = currentObj.extend(depth[i-1]);
+    }
+    
+    return currentObj.extend(protoProps);
   };
 
   // Returns the object's own properties.
@@ -895,8 +946,8 @@
 
   // Configure the `Bookshelf` settings (database adapter, etc.) once,
   // so it is ready on first model initialization.
-  Bookshelf.Initialize = function(options) {
-    return Knex.Initialize(options);
+  Bookshelf.initialize = function(options) {
+    return Knex.initialize(options);
   };
 
   module.exports = Bookshelf;

@@ -134,39 +134,33 @@ describe('Bookshelf.Relation', function () {
   describe('Standard Relations - Models', function () {
 
     it('handles belongsTo', function (done) {
-      var blog = new Blog({id: 4});
-      blog.fetch().then(function (resp) {
-        var site = blog.site();
-        assert.deepEqual(blog.toJSON(), {id: 4, site_id: 2, name: 'Alternate Site Blog'});
-        site.fetch().then(function (resp) {
+      new Blog({id: 4}).fetch().then(function (model) {
+        assert.deepEqual(model.toJSON(), {id: 4, site_id: 2, name: 'Alternate Site Blog'});
+        model.site().fetch().then(function (site) {
           assert.deepEqual(site.toJSON(), {id: 2, name: 'bookshelfjs.org'});
           done();
-        }, done);
+        }).done();
       });
     });
 
     it('handles hasMany', function (done) {
-      var blog = new Blog({id: 1});
-      blog.fetch().then(function () {
-        var posts = blog.posts();
-        posts.fetch().then(function () {
-          done();
-        });
-      }, done);
+      new Blog({id: 1}).fetch().then(function (model) {
+        return model.posts().fetch();
+      }).then(function () {
+        done();
+      }).done();
     });
 
     it('handles hasOne', function (done) {
-      var siteMeta = new Site({id: 1}).meta();
-      siteMeta.fetch().then(function () {
+      new Site({id: 1}).meta().fetch().then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('handles belongsToMany', function (done) {
-      var posts = new Author({id: 1}).posts();
-      posts.fetch().then(function () {
+      new Author({id: 1}).posts().fetch().then(function () {
         done();
-      }, done);
+      }).done();
     });
 
   });
@@ -175,39 +169,35 @@ describe('Bookshelf.Relation', function () {
   describe('Eager Loading - Models', function () {
 
     it('eager loads "hasOne" relationships correctly', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
+      new Site({id: 1}).fetch({
         withRelated: ['admins']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "hasMany" relationships correctly', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
+      new Site({id: 1}).fetch({
         withRelated: ['authors', 'blogs']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "belongsTo" relationships correctly', function (done) {
-      var blog = new Blog({id: 1});
-      blog.fetch({
+      new Blog({id: 1}).fetch({
         withRelated: ['site']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "belongsToMany" models correctly', function (done) {
-      var post = new Post({id: 1});
-      post.fetch({
+      new Post({id: 1}).fetch({
         withRelated: ['tags']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
   });
@@ -215,39 +205,35 @@ describe('Bookshelf.Relation', function () {
   describe('Eager Loading - Collections', function () {
 
     it('eager loads "hasOne" models correctly', function (done) {
-      var sites = new Sites();
-      sites.fetch({
+      new Sites().fetch({
         withRelated: ['admins']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "belongsTo" models correctly', function (done) {
-      var blogs = new Blogs();
-      blogs.fetch({
+      new Blogs().fetch({
         withRelated: ['site']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "hasMany" models correctly', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
+      new Site({id: 1}).fetch({
         withRelated: ['blogs']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "belongsToMany" models correctly', function (done) {
-      var posts = new Posts().query('where', 'blog_id', '=', 1);
-      posts.fetch({
+      new Posts().query('where', 'blog_id', '=', 1).fetch({
         withRelated: ['tags']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
   });
@@ -255,30 +241,27 @@ describe('Bookshelf.Relation', function () {
   describe('Nested Eager Loading - Models', function () {
     
     it('eager loads "hasMany" -> "hasMany"', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
+      new Site({id: 1}).fetch({
         withRelated: ['authors.ownPosts']
       }).then(function () {
         done();
-      }, done);
-    });
-
-    it('does multi deep eager loads', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
-        withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
-      }).then(function () {
-        done();
-      }, done);
+      }).done();
     });
 
     it('eager loads "hasMany" -> "belongsToMany"', function (done) {
-      var site = new Site({id: 1});
-      site.fetch({
+      new Site({id: 1}).fetch({
         withRelated: ['authors.posts']
       }).then(function () {
         done();
-      }, done);
+      }).done();
+    });
+
+    it('does multi deep eager loads', function (done) {
+      new Site({id: 1}).fetch({
+        withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
+      }).then(function () {
+        done();
+      }).done();
     });
 
   });
@@ -291,7 +274,7 @@ describe('Bookshelf.Relation', function () {
         withRelated: ['authors.ownPosts']
       }).then(function () {
         done();
-      }, done);
+      }).done();
     });
 
   });
@@ -299,21 +282,19 @@ describe('Bookshelf.Relation', function () {
   describe('Model & Collection - load', function () {
 
     it('eager loads relations on a populated model', function (done) {
-      var site = new Site({id: 1});
-      site.fetch().then(function () {
-        site.load(['blogs', 'authors.site']).then(function () {
-          done();
-        }, done);
-      }, done);
+      new Site({id: 1}).fetch().then(function (m) {
+        return m.load(['blogs', 'authors.site']);
+      }).then(function (m) {
+        done();
+      }).done();
     });
 
     it('eager loads attributes on a collection', function (done) {
-      var sites = new Sites();
-      sites.fetch().then(function () {
-        sites.load(['blogs', 'authors.site']).then(function () {
-          done();
-        }, done);
-      }, done);
+      new Sites().fetch().then(function (c) {
+        return c.load(['blogs', 'authors.site']);
+      }).then(function (c) {
+        done();
+      }).done();
     });
   });
 
@@ -325,6 +306,7 @@ describe('Bookshelf.Relation', function () {
 
         var admin1 = new Admin({username: 'syncable', password: 'test'});
         var admin2 = new Admin({username: 'syncable', password: 'test'});
+        
         Q.all([admin1.save(), admin2.save()]).spread(function () {
           return Q.all([
             new Site({id: 1}).admins().attach([admin1, admin2]),
@@ -336,11 +318,10 @@ describe('Bookshelf.Relation', function () {
           return new Site({id: 1}).admins().detach();
         }).then(function () {
           return new Site({id: 1}).admins().fetch(); 
-        })
-        .fail(function () {
+        }).then(function () {
           done();
-        });
-
+        }).done();
+      
       });
 
     });
