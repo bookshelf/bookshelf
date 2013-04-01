@@ -19,5 +19,8 @@
   },
   "author": "Tim Griesser",
   "license": "MIT",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "sqlite3": "~2.1.7"
+  }
 }

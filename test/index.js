@@ -1,49 +1,34 @@
 
 var Q = require('q');
 var _ = require('underscore');
-var Shelf = require('../bookshelf');
+var Bookshelf = require('../bookshelf');
 
-describe('Bookshelf.js', function() {
+before(function (ok) {
 
-  before(function (done) {
-
-    Shelf.initialize({
-      client: 'mysql',
-      connection: {
-        host     : 'localhost',
-        user     : 'root',
-        password : 'root',
-        port     : 8889,
-        database : 'tgdb',
-        charset  : 'utf8'
-      }
-    });
-
-    // Shelf.initialize({
-    //   client: 'sqlite3',
-    //   connection: {
-    //     debug    : true,
-    //     filename  : './tgdb'
-    //   }
-    // });    
-
-    var promise = require('./schema/migration').then(function () {
-      return require('./schema/inserts');
-    }).then(function () {
-      done();
-    }, function (err) {
-      console.log(promise.stack);
-      console.log(arguments);
-      console.log(Knex.lastQuery);
-      done(err);
-    });
-  
-    return promise;
-
+  Bookshelf.Initialize({
+    client: 'mysql',
+    connection: {
+      host     : '127.0.0.1',
+      user     : 'root',
+      password : '',
+      database : 'myapp_test',
+      charset  : 'utf8'
+    }
   });
 
-  require('./model');
-  require('./collection');
-  require('./relation');
-  require('./events');
+  // Load all of the tables and
+  // data for the tests.
+  require('./data/migration')
+    .then(function () {
+      return require('./data/inserts');
+    })
+    .then(function () {
+      ok();
+    }).done();
+
 });
+
+require('./model');
+require('./collection');
+require('./relations');
+require('./events');

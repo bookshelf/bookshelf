@@ -39,26 +39,26 @@
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
 
-  // Base functions which are mixed-in to the
+  // Shared functions which are mixed-in to the
   // `Model`, `Collection`, and `EagerRelation` prototypes.
-  var Base = {
+  var Shared = {
 
     // If there are no arguments, return the current object's
     // query builder (or create a new one). If there are arguments,
     // call the query builder with the first argument, applying the
     // rest.
     query: function() {
-      this.builder || (this.builder = Bookshelf.Knex(_.result(this, 'tableName')));
+      this._builder || (this._builder = Bookshelf.Knex(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
-      if (args.length === 0) return this.builder;
-      this.builder[args[0]].apply(this.builder, args.slice(1));
+      if (args.length === 0) return this._builder;
+      this._builder[args[0]].apply(this._builder, args.slice(1));
       return this;
     },
 
     // Reset the query builder, called internally
     // after a query completes.
     resetQuery: function() {
-      delete this.builder;
+      delete this._builder;
       return this;
     },
 
@@ -66,6 +66,7 @@
     // `Model` or `Collection` instance.
     load: function(relations, options) {
       var target, data;
+      if (!_.isArray(relations)) relations = relations ? [relations] : [];
       options = _.extend({}, options, {
         shallow: true,
         withRelated: relations
@@ -91,17 +92,21 @@
     },
 
     // Returns the related item
-    related: function (item) {
+    related: function(item) {
       return this.relations[item];
     }
   };
 
   // Bookshelf.Model
-  // --------
+  // -------------------
 
-  // A similar implementation to the `Backbone.Model`
+  // A Bookshelf Model represents an individual row in the database table --
+  // It is a similar implementation to the `Backbone.Model`
   // constructor, except that defaults are not set until the
   // object is persisted, and the collection property is not used.
+
+  // Create a new model with the specified attributes. A client id (`cid`)
+  // is automatically generated and assigned for you.
   var Model = Bookshelf.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
@@ -110,21 +115,17 @@
     this.relations = {};
     this._configure(options);
     if (options && options.parse) attrs = this.parse(attrs, options) || {};
+    options.protect || (options.protect = false);
     this.set(attrs, options);
     this.changed = {};
     this.initialize.apply(this, arguments);
   };
 
   // List of attributes attached directly from the constructor's options object.
-  var modelProps = [
-    'tableName', 'fillable', 'hasTimestamps', 'exists'
-  ];
-
-  // Internal flag used in "converting" from client side Backbone objects.
-  Model.__type = 'Model';
+  var modelProps = ['tableName', 'fillable', 'guarded', 'hasTimestamps'];
 
   // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.
-  _.extend(Model.prototype, Backbone.Model.prototype, Events, Base, {
+  _.extend(Model.prototype, Backbone.Model.prototype, Events, Shared, {
 
     // The database table associated with the model.
     tableName: null,
@@ -139,6 +140,9 @@
 
     // Indicates if the model should be timestamped.
     hasTimestamps: false,
+
+    // Set "exists" to true to override the `idAttribute` check in `Model#isNew`
+    exists: null,
 
     // Ensures the options sent to the model are properly attached.
     _configure: function(options) {
@@ -162,9 +166,9 @@
         var fillable = this.fillable;
         var guarded  = this.guarded;
         
-        if (fillable || guarded) {
-          var sanitized = {};
-          if (fillable) sanitized = _.pick(attrs, fillable);
+        if ((fillable || guarded) && options.guard !== false) {
+          var sanitized = attrs;
+          if (fillable) sanitized = _.pick(sanitized, fillable);
           if (guarded) sanitized = _.omit(sanitized, guarded);
           var filtered = _.omit(attrs, _.keys(sanitized));
           if (!_.isEmpty(filtered)) {
@@ -235,6 +239,7 @@
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
+      options = _.extend(options || {}, {guard: false});
       return this.sync(this, options).first();
     },
 
@@ -242,14 +247,12 @@
     // If the server returns an attributes hash that differs,
     // the model's state will be `set` again.
     save: function(key, val, options) {
-
-      var defaults, id, attrs, success;
-      var attributes = this.attributes;
-
+      var id, attrs, success;
+      
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
         attrs = key;
-        options = val;
+        options = val || {};
       } else {
         options || (options = {});
         (attrs = {})[key] = val;
@@ -262,21 +265,20 @@
         Q.reject(new Error('The model cannot be saved with an idAttribute'));
       }
 
-      // If attributes exist, save acts as `set(attr).save(null, opts)`.
-      if (attrs) this.set(attrs, options);
-
       // Handle the defaults at the `save` level rather than the
       // object creation level.
-      defaults = _.result(this, 'defaults');
+      var defaults = _.result(this, 'defaults');
       if (defaults) {
-        attributes = _.defaults({}, attributes, defaults);
+        attrs = _.extend({}, defaults, this.attributes);
       }
 
       options = _.extend({validate: true}, options);
 
       var model = this;
 
-      return Q.fcall(_.bind(this._validate, this), attributes, options).then(function() {
+      return Q.fcall(_.bind(this._validate, this), attrs, options).then(function() {
+
+        model.set(attrs);
 
         // If the model has timestamp columns,
         // set them as attributes on the model
@@ -285,8 +287,10 @@
         }
 
         var sync = model.sync(model, options);
-        return sync[(model.isNew(options) ? 'insert' : 'update')]();
-      
+        var method = options.method || (model.isNew(options) ? 'insert' : 'update');
+
+        return sync[method]();
+
       }).then(function(resp) {
 
         // After a successful database save, the id is updated
@@ -304,12 +308,13 @@
     destroy: function(options) {
       options || (options = {});
       var model = this;
-      return this.sync(this, options).del().then(function () {
-        return model.trigger('destroy', model, model.collection, options);
+      return this.sync(this, options).del().then(function() {
+        model.trigger('destroy', model, model.collection, options);
+        Bookshelf.trigger('destroy', model, model.collection, options);
       });
     },
 
-    // Returns an object containing the model attributes,
+    // Returns an object containing a shallow copy of the model attributes,
     // along with the `toJSON` value of any relations,
     // unless `{shallow: true}` is passed in the `options`.
     toJSON: function(options) {
@@ -334,6 +339,15 @@
     // Check the validity of a model.
     isValid: function(options) {
       return this._validate(null, _.extend({}, options, {validate: true}));
+    },
+
+    // Create a new model with identical attributes to this one.
+    clone: function() {
+      var model = new this.constructor(this.attributes);
+      model.relations = _.map(this.relations, function (relation) {
+        return relation.clone();
+      });
+      return model;
     },
 
     // Creates a new relation, from the current object to the
@@ -402,11 +416,19 @@
     }
   });
 
+  // Bookshelf.Collection
+  // -------------------
+
+  // A Bookshelf Collection contains a number of database rows, represented by 
+  // models, so they can be easily sorted, serialized, and manipulated.
   var Collection = Bookshelf.Collection = function(models, options) {
     if (options) _.extend(this, _.pick(options, collectionProps));
+    var model = this.model;
+    if (!_.isEqual(model, Model) && !(model.prototype instanceof Model)) {
+      throw new Error('Only Bookshelf Model constructors are allowed as the Collection#model attribute.');
+    }
     this._reset();
     this.initialize.apply(this, arguments);
-    this.relations = {};
     if (models) this.reset(models, _.extend({silent: true}, options));
   };
 
@@ -415,28 +437,15 @@
     'model', 'comparator', 'perPage', 'forPage'
   ];
 
-  // Internal flag used in "converting" from client side Backbone objects.
-  Collection.__type = 'Collection';
-
   // Extend the Collection's prototype with the base methods
-  _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Base, {
+  _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Shared, {
 
     model: Model,
-
-    // Sets the `perPage` limit, to help with pagination.
-    perPage: null,
-
-    // Used in combination with `perPage`, this is the the current 
-    // "page" we're querying for.
-    forPage: null,
-
-    // Set the batch size for large query sets.
-    batchSize: null,
 
     // Fetch the models for this collection, resetting the models for the query
     // when they arrive.
     fetch: function(options) {
-      options || (options = {});
+      options = _.extend(options || {}, {guard: false});
       return this.sync(this, options).select();
     },
 
@@ -454,26 +463,11 @@
     _prepareModel: function(attrs, options) {
       if (attrs instanceof Model) return attrs;
       return new this.model(attrs, options);
-    },
-
-    // Gets the number of pages, based on the `perPage` and `forPage` 
-    // parameters on the collection.
-    getPageCount: function() {
-
-    },
-
-    // Destroy all of the models on the collection
-    destroyAll: function () {
-      if (this.length > 0) {
-        var idAttr = this.model.idAttribute;
-        return this.query().whereIn(idAttr, this.pick(idAttr)).del();
-      }
-      return Q.resolve();
     }
 
   });
 
-  // Relations
+  // Bookshelf.EagerRelation
   // ---------------
 
   // Temporary helper object for handling the response of an `EagerRelation` load.
@@ -491,12 +485,14 @@
     this.parentResponse = parentResponse;
   };
 
-  _.extend(EagerRelation.prototype, Base, {
+  _.extend(EagerRelation.prototype, Shared, {
 
     // Fetch the nested related items, and handle the responses.
     // Returns a deferred object, with the cumulative handling of
     // multiple (potentially nested) relations.
     fetch: function(options) {
+      options = _.extend(options || {}, {guard: false});
+      
       var current = this;
       var models  = this.models = [];
       var opts    = this._relation;
@@ -528,12 +524,15 @@
       });
     },
 
+    // This helper function is used internally to determine which relations
+    // are necessary for fetching based on the `model.load` or `withRelated` option.
     processRelated: function(options) {
       var name, related, relation;
       var target = this.target;
       var handled = this.handled = {};
       var withRelated = options.withRelated;
       var subRelated = {};
+      if (!_.isArray(withRelated)) withRelated = withRelated ? [withRelated] : [];
 
       // Eager load each of the `withRelated` relation item, splitting on '.'
       // which indicates a nested eager load.
@@ -608,7 +607,7 @@
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m = models[i2];
             var result = Bookshelf.eagerRelated(type, relation, relatedModels, m.id);
-            if (result) m.relations[name] = result;
+            m.relations[name] = result;
           }
         } else {
           // If this is a hasOne or belongsTo, we only choose a single item from
@@ -710,12 +709,11 @@
     return target;
   };
 
-  // Extending Methods
-  // ------------------
+  // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = Bookshelf.Backbone.Model.extend;
 
-  // Sync
-  // -------
+  // Bookshelf.Sync
+  // -------------------
 
   // Sync is the dispatcher for any database queries,
   // taking the `model` or `collection` being queried, along with
@@ -816,27 +814,22 @@
     // Issues a `delete` command on the query.
     del: function() {
       return this.query.where(this.model.idAttribute, this.model.id).del();
-    },
-
-    // Alias to `del`.
-    "delete": function() {
-      return this.del();
     }
   });
 
   // Helpers
-  // ------------
+  // -------------------
 
   // Specific to many-to-many relationships, these methods are mixed
   // into the `belongsToMany` relationships when they are created,
   // providing helpers for attaching and detaching related models.
   var pivotHelpers = {
 
-    _handler: function (method, ids, transacting) {
+    _handler: function(method, ids, transacting) {
       if (ids == void 0 && method === 'insert') return Q.resolve();
       if (!_.isArray(ids)) ids = [ids];
       var pivot = this._relation;
-      return Q.allResolved(_.map(ids, function (item) {
+      return Q.allResolved(_.map(ids, function(item) {
         var data = {};
         data[pivot.otherKey] = pivot.fkValue;
 
@@ -893,17 +886,12 @@
     }
   };
 
-  // Omit `parse`, `toJSON`, and `initialize` from `Backbone` object conversions,
-  // as these have very different meanings and uses on the client and server.
-  var converterOmit = ['parse', 'toJSON', 'initialize', 'constructor'];
-
   // Inherit standard Backbone.js Collections & Models from the client,
   // transforming a client `Backbone.Model` or `Backbone.Collection` to a
   // `Bookshelf` compatible object, to reuse validations, defaults, user methods, etc.
-  Model.convert = Collection.convert = function(Target, protoProps) {
+  Model.convert = Collection.convert = function(Target, protoProps, staticProps) {
     var parent = this;
-    var type   = this.__type;
-
+ 
     // Don't allow convert to work with an object instance.
     if (!Target.prototype) {
       throw new Error('Bookshelf.convert can only work with a constructor object');
@@ -912,16 +900,18 @@
     // Traverse the prototype chain, breaking once we hit the prototype of the
     // Model or Collection we're converting. This way we can put the prototype chain
     // back together starting from the base "extend" so inheritance works properly.
-    var current = Target.prototype;
+    var current = Target;
     var depth   = [];
     var passed = false;
 
     while (passed !== true) {
-      if (_.isEqual(current, Backbone[type].prototype)) {
+      if (_.isEqual(current.prototype, Backbone.Model.prototype) || _.isEqual(current.prototype, Backbone.Collection.prototype)) {
         passed = true;
+      } else if (!current.__super__) {
+        throw new Error("Only Backbone objects may be converted.");
       } else {
-        depth.push(_.omit(_.pick(current, _.keys(current)), converterOmit));
-        current = current.__proto__;
+        depth.push(_.pick(current.prototype, _.keys(current.prototype)));
+        current = current.__super__.constructor;
       }
     }
 
@@ -931,23 +921,23 @@
       currentObj = currentObj.extend(depth[i-1]);
     }
     
-    return currentObj.extend(protoProps);
+    return currentObj.extend(protoProps, staticProps);
   };
 
-  // Returns the object's own properties.
+  // Filters an array of objects, cleaning out any nested properties.
   var skim = function(data) {
     return _.map(data, function(obj) {
       return _.pick(obj, _.keys(obj));
     });
   };
 
-  // Configuration
-  // ------------
+  // Bookshelf.Initialize
+  // -------------------
 
   // Configure the `Bookshelf` settings (database adapter, etc.) once,
   // so it is ready on first model initialization.
-  Bookshelf.initialize = function(options) {
-    return Knex.initialize(options);
+  Bookshelf.Initialize = function(options) {
+    return Knex.Initialize(options);
   };
 
   module.exports = Bookshelf;

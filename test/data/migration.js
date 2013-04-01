@@ -10,52 +10,50 @@ var drops = [
   'blogs', 'posts', 'tags', 'posts_tags', 'comments'
 ];
 
-drops = _.map(drops, function (val) {
+module.exports = Q.all(_.map(drops, function(val) {
   return Schema.dropTableIfExists(val);
-});
-
-module.exports = Q.all(drops).then(function () {
+})).then(function() {
 
   var migrations = [];
 
-  var sites = Schema.createTable('sites', function (table) {
+  var sites = Schema.createTable('sites', function(table) {
     table.increments('id');
     table.string('name');
   });
 
-  var sitemeta = Schema.createTable('sitesmeta', function (table) {
+  var sitemeta = Schema.createTable('sitesmeta', function(table) {
     table.increments('id');
     table.integer('site_id');
     table.text('description');
   });
 
-  var admins = Schema.createTable('admins', function (table) {
+  var admins = Schema.createTable('admins', function(table) {
     table.increments('id');
     table.string('username');
     table.string('password');
     table.timestamps();
   });
 
-  var admins_sites = Schema.createTable('admins_sites', function (table) {
+  var admins_sites = Schema.createTable('admins_sites', function(table) {
     table.integer('admin_id');
     table.integer('site_id');
     table.string('item').defaultTo('test');
   });
 
-  var blogs = Schema.createTable('blogs', function (table) {
+  var blogs = Schema.createTable('blogs', function(table) {
     table.increments('id');
     table.integer('site_id');
     table.string('name');
   });
 
-  var authors = Schema.createTable('authors', function (table) {
+  var authors = Schema.createTable('authors', function(table) {
     table.increments('id');
     table.integer('site_id');
     table.string('first_name');
     table.string('last_name');
   });
 
-  var posts = Schema.createTable('posts', function (table) {
+  var posts = Schema.createTable('posts', function(table) {
     table.increments('id');
     table.integer('owner_id');
     table.integer('blog_id');
@@ -63,24 +61,24 @@ module.exports = Q.all(drops).then(function () {
     table.string('content');
   });
 
-  var authors_posts = Schema.createTable('authors_posts', function (table) {
+  var authors_posts = Schema.createTable('authors_posts', function(table) {
     table.increments('id');
     table.integer('author_id');
     table.integer('post_id');
   });
 
-  var tags = Schema.createTable('tags', function (table) {
+  var tags = Schema.createTable('tags', function(table) {
     table.increments('id');
     table.string('name');
   });
 
-  var posts_tags = Schema.createTable('posts_tags', function (table) {
+  var posts_tags = Schema.createTable('posts_tags', function(table) {
     table.increments('id');
     table.integer('post_id');
     table.integer('tag_id');
   });
 
-  var comments = Schema.createTable('comments', function (table) {
+  var comments = Schema.createTable('comments', function(table) {
     table.increments('id');
     table.integer('post_id');
     table.string('name');

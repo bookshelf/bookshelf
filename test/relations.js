@@ -2,7 +2,7 @@ var Shelf  = require('../bookshelf');
 var assert = require('assert');
 var Q      = require('q');
 
-describe('Bookshelf.Relation', function () {
+describe('Bookshelf Relations', function () {
 
   // ----------------------------------
   // Begin Relation Setup:
@@ -300,30 +300,26 @@ describe('Bookshelf.Relation', function () {
 
   describe('Pivot Tables', function () {
 
-    describe('attach', function () {
+    it('provides "attach" for creating or attaching records', function (done) {
 
-      it('provides "attach" for creating or attaching records', function (done) {
-
-        var admin1 = new Admin({username: 'syncable', password: 'test'});
-        var admin2 = new Admin({username: 'syncable', password: 'test'});
-        
-        Q.all([admin1.save(), admin2.save()]).spread(function () {
-          return Q.all([
-            new Site({id: 1}).admins().attach([admin1, admin2]),
-            new Site({id: 2}).admins().attach(admin2)
-          ]);
-        }).then(function (resp) {
-          return new Site({id: 1}).admins().fetch();
-        }).then(function (resp) {
-          return new Site({id: 1}).admins().detach();
-        }).then(function () {
-          return new Site({id: 1}).admins().fetch(); 
-        }).then(function () {
-          done();
-        }).done();
+      var admin1 = new Admin({username: 'syncable', password: 'test'});
+      var admin2 = new Admin({username: 'syncable', password: 'test'});
       
-      });
-
+      Q.all([admin1.save(), admin2.save()]).spread(function () {
+        return Q.all([
+          new Site({id: 1}).admins().attach([admin1, admin2]),
+          new Site({id: 2}).admins().attach(admin2)
+        ]);
+      }).then(function (resp) {
+        return new Site({id: 1}).admins().fetch();
+      }).then(function (resp) {
+        return new Site({id: 1}).admins().detach();
+      }).then(function () {
+        return new Site({id: 1}).admins().fetch(); 
+      }).then(function () {
+        done();
+      }).done();    
+    
     });
 
   });
