@@ -1,9 +1,9 @@
-describe('Bookshelf.Events', function () {
+describe('Bookshelf.Events', function() {
 
-  it('beforeQuery');
+  it('triggers "beforeQuery" on the model and Bookshelf before a query');
 
-  it('invalid');
+  it('triggers an "invalid" on the model and Bookshelf before a query');
 
-  it('error');
+  it('error an "error" on the model and Bookshelf when the ');
 
 });

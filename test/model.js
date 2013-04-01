@@ -1,33 +1,31 @@
+var Q = require('q');
+var _ = require('underscore');
+var equal     = require('assert').equal;
+var deepEqual = require('assert').deepEqual;
 
 var Bookshelf = require('../bookshelf');
-var Backbone = Bookshelf.Backbone;
-
-var _ = require('underscore');
-var Q = require('q');
-
-var assert    = require('assert');
-var equal     = assert.equal;
-var deepEqual = assert.deepEqual;
+var Backbone  = Bookshelf.Backbone;
+var Models    = require('./data/objects').Models;
 
 var stubSync = {
-  first: function() { return {}; },
+  first:  function() { return {}; },
   select: function() { return {}; },
   insert: function() { return {}; },
   update: function() { return {}; },
-  del: function() { return {}; }
+  del:    function() { return {}; }
 };
 
 describe('Bookshelf.Model', function() {
   
-  var base;
-  var Base = Bookshelf.Model.extend({
-    tableName: 'authors'
-  });
+  // var base;
+  // var Base = Bookshelf.Model.extend({
+  //   tableName: 'authors'
+  // });
 
-  beforeEach(function() {
-    if (base) base.off();
-    base = new Base();
-  });
+  // beforeEach(function() {
+  //   if (base) base.off();
+  //   base = new Base();
+  // });
 
   describe('extend/constructor/initialize', function() {
 
@@ -181,20 +179,22 @@ describe('Bookshelf.Model', function() {
 
   describe('query', function() {
 
+    var model = new Bookshelf.Model();
+
     it('returns the Knex builder when no arguments are passed', function() {
-      equal((base.query() instanceof Bookshelf.Knex.Builder), true);
+      equal((model.query() instanceof Bookshelf.Knex.Builder), true);
     });
 
     it('calls Knex builder method with the first argument, returning the model', function() {
-      var q = base.query('where', {id:1});
-      equal(q, (base));
+      var q = model.query('where', {id:1});
+      equal(q, (model));
     });
 
     it('passes along additional arguments to the Knex method in the first argument', function() {
-      var qb = base.query();
+      var qb = model.resetQuery().query();
       equal(qb.wheres.length, (0));
-      var q = base.query('where', {id:1});
-      equal(q, (base));
+      var q = model.query('where', {id:1});
+      equal(q, (model));
       equal(qb.wheres.length, (1));
     });
 
@@ -223,27 +223,51 @@ describe('Bookshelf.Model', function() {
       deepEqual(m.toJSON(), {'_id': 1, 'name': 'Joe'});
     });
 
-    it('includes the ', function() {
-
+    it('includes the relations loaded on the model, unless {shallow: true} is passed.', function() {
+      var m = new Bookshelf.Model({id: 1, name: 'Test'});
+      m.relations = {someList: new Bookshelf.Collection([{id:1}, {id:2}])};
+      var json = m.toJSON();
+      deepEqual(_.keys(json), ['id', 'name', 'someList']);
+      equal(json.someList.length, 2);
+      var shallow = m.toJSON({shallow:true});
+      deepEqual(_.keys(shallow), ['id', 'name']);
     });
-
   });
 
   describe('parse', function() {
 
-    it('parses the model attributes on fetch');
+    var ParsedSite = Models.Site.extend({
+      parse: function (attrs) {
+        attrs.name = 'Test: ' + attrs.name;
+        return attrs;
+      }
+    });
 
-    it('parses the model attributes on creation if {parse: true} is passed');
+    it('parses the model attributes on fetch', function(ok) {
+      new ParsedSite({id: 1}).fetch().then(function(model) {
+        equal(model.get('name').indexOf('Test: '), 0);
+        ok();
+      });
+    });
+
+    it('parses the model attributes on creation if {parse: true} is passed', function() {
+      var one = new ParsedSite({name: 'Site'});
+      equal(one.get('name'), 'Site');
+      var two = new ParsedSite({name: 'Site'}, {parse: true});
+      equal(two.get('name'), 'Test: Site');
+    });
 
   });
 
   describe('fetch', function() {
 
+    var Site = Models.Site;
+
     it('issues a first (get one) to Knex, returning a promise', function(ok) {
 
-      base.set({id: 1}).fetch().then(function() {
-        equal(base.get('first_name'), 'Tim');
-        equal(base.get('last_name'), 'Griesser');
+      new Site({id: 1}).fetch().then(function(model) {
+        equal(model.get('id'), 1);
+        equal(model.get('name'), 'knexjs.org');
         ok();
       }).done();
 
@@ -251,117 +275,112 @@ describe('Bookshelf.Model', function() {
 
     it('accepts succeess & error options, similar to standard Backbone', function(ok) {
       var count = 0;
-      base.set({id: 1}).fetch({
+      new Site().set({id: 1}).fetch({
         success: function() {
           count++;
         }
       }).then(function() {
-        return new Base({id: 10}).fetch({
+        return new Site({id: 10}).fetch({
           error: function() {
             count++;
           }
         });
       })
       .then(function() {
+        equal(count, 2);
         ok();
       });
     });
 
     it('triggers an "emptyResponse" error event when no records are found on set or save', function(ok) {
-      base.set({id: 10});
-      base.on('error', function(model, msg, options) { 
-        deepEqual(base, model);
+      var site = new Site().set({id: 10});
+      site.on('error', function(model, msg, options) { 
+        deepEqual(site, model);
         equal("emptyResponse", msg);
         ok();
       });
-      base.fetch();
-    });
-
-  });
-
-  describe('destroy', function() {
-
-    it('issues a delete to the Knex, returning a promise');
-
-  });
-
-  describe('isNew', function() {
-
-    it('uses the idAttribute to determine if the model isNew', function(){
-      var model = new Bookshelf.Model();
-      model.id = 1;
-      equal(model.isNew(), false);
-      delete model.id;
-      equal(model.isNew(), true);
-    });
-
-  });
-
-
-  describe('sync', function() {
-
-    it('creates a new instance of Bookshelf.Sync', function(){
-      var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof Bookshelf.Sync), true);
-    });
-
-  });
-
-  describe('validate / isValid', function() {
-    
-    var model;
-
-    beforeEach(function() {
-      model = new (Bookshelf.Model.extend({
-        item: 'test',
-        validate: function() {
-          return 'this is an error';
-        }
-      }))();
-    });
-
-    it('will fail if a non-true, non empty value is returned', function(ok) {
-      model.isValid().then(null, function() {
-        ok();
-      }).done();
-    });
-
-    it('will fail if a non-true, non empty value is returned', function(ok) {
-      model.save('tim', 'test').fail(function() {
-        assert(true);
-        ok();
-      });
-    });
-
-    it('keeps the context of the model', function(ok) {
-      model = new (Bookshelf.Model.extend({
-        item: 'test',
-        validate: function() {
-          this.item === 'test';
-          return true;
-        }
-      }))();
-      model.isValid().then(function() {
-        ok();
-      }).done();
-    });
-
-    it('accepts a deferrred object', function () {
-
+      site.fetch();
     });
 
   });
 
   describe('save', function() {
 
-    it('saves an new object');
+    var Site = Models.Site;
 
-    it('updates an existing object');
+    it('saves an new object', function(ok) {
+      new Site({name: 'Third Site'}).save().then(function() {
+        return new Bookshelf.Collection(null, {model: Site}).fetch();
+      })
+      .then(function(c) {
+        equal(c.last().id, 3);
+        equal(c.last().get('name'), 'Third Site');
+        equal(c.length, 3);
+        ok();
+      }).done();
+    });
 
-    it('allows passing a method to save, to call insert or update explicitly');
+    it('updates an existing object', function(ok) {
+      new Site({id: 3, name: 'Third Site Updated'}).save()
+      .then(function() {
+        return new Bookshelf.Collection(null, {model: Site}).fetch();
+      })
+      .then(function(c) {
+        equal(c.last().id, 3);
+        equal(c.last().get('name'), 'Third Site Updated');
+        equal(c.length, 3);
+        ok();
+      }).done();
+    });
+
+    it('allows passing a method to save, to call insert or update explicitly', function(ok) {
+      new Site({id: 4, name: 'Fourth site, explicity created'}).save(null, {method: 'insert'})
+      .then(function() {
+        return new Bookshelf.Collection(null, {model: Site}).fetch();
+      })
+      .then(function(c) {
+        equal(c.length, 4);
+        equal(c.last().id, 4);
+        equal(c.last().get('name'), 'Fourth site, explicity created');
+        ok();
+      }).done();
+    });
 
   });
-  
+
+  describe('destroy', function() {
+
+    var Site = Models.Site;
+
+    it('issues a delete to the Knex, returning a promise', function(ok) {
+      new Site({id:4}).destroy().then(function() {
+        return new Bookshelf.Collection(null, {model: Site}).fetch();
+      })
+      .then(function(c) {
+        equal(c.length, 3);
+        ok();
+      })
+      .done();
+    });
+
+    it('fails if no idAttribute or wheres are defined on the model.', function(ok) {
+      new Site().destroy().then(null, function(e) {
+        equal(e.toString(), 'A model cannot be destroyed without a "where" clause or an idAttribute.');
+        ok();
+      }).done();
+    });
+
+    it('triggers a destroy event on the model', function(ok) {
+      var m = new Site({id: 3});
+      m.on('destroy', function() {
+        m.off();
+        ok();
+      });
+      m.destroy();
+    });
+
+  });
+
   describe('resetQuery', function() {
 
     it('deletes the `_builder` property, resetting the model query builder', function() {
@@ -397,7 +416,7 @@ describe('Bookshelf.Model', function() {
       m1.save({item: 'test'}).done();
     });
 
-    it('allows passing hasTimestamps in the options hash', function (ok) {
+    it('allows passing hasTimestamps in the options hash', function(ok) {
       var m = new Bookshelf.Model(null, {hasTimestamps: true});
       m.sync = function() {
         equal(this.get('item'), 'test');
@@ -412,7 +431,7 @@ describe('Bookshelf.Model', function() {
 
   describe('timestamp', function() {
 
-    it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function () {
+    it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function() {
       var m  = new Bookshelf.Model();
       var m1 = new Bookshelf.Model({id: 1});
       m.timestamp();
@@ -449,5 +468,78 @@ describe('Bookshelf.Model', function() {
     });
   
   });
+
+
+  describe('validate / isValid', function() {
+    
+    var model;
+
+    beforeEach(function() {
+      model = new (Bookshelf.Model.extend({
+        item: 'test',
+        validate: function() {
+          return 'this is an error';
+        }
+      }))();
+    });
+
+    it('will fail if a non-true, non empty value is returned', function(ok) {
+      model.isValid().then(null, function() {
+        ok();
+      }).done();
+    });
+
+    it('will fail if a non-true, non empty value is returned', function(ok) {
+      model.save('tim', 'test').fail(function() {
+        ok();
+      });
+    });
+
+    it('keeps the context of the model', function(ok) {
+      model = new (Bookshelf.Model.extend({
+        item: 'test',
+        validate: function() {
+          equal(this.item, 'test');
+          return true;
+        }
+      }))();
+      model.isValid().then(function() {
+        ok();
+      }).done();
+    });
+
+    it('accepts a deferrred object', function() {
+      model = new (Bookshelf.Model.extend({
+        item: 'test',
+        validate: function () {
+          var dfd = Q.defer();
+          setTimeout(function () {
+            dfd.resolve('Passes isValid');
+          }, 100);
+          return dfd.promise;
+        }
+      }))();
+    });
+
+  });
+  
+  describe('isNew', function() {
+
+    it('uses the idAttribute to determine if the model isNew', function(){
+      var model = new Bookshelf.Model();
+      model.id = 1;
+      equal(model.isNew(), false);
+      delete model.id;
+      equal(model.isNew(), true);
+    });
+  });
+
+  describe('sync', function() {
+
+    it('creates a new instance of Bookshelf.Sync', function(){
+      var model = new Bookshelf.Model();
+      equal((model.sync(model) instanceof Bookshelf.Sync), true);
+    });
+  });  
 
 });

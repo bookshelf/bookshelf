@@ -4,9 +4,8 @@ var Backbone = Bookshelf.Backbone;
 var _ = require('underscore');
 var Q = require('q');
 
-var assert    = require('assert');
-var equal     = assert.equal;
-var deepEqual = assert.deepEqual;
+var equal     = require('assert').equal;
+var deepEqual = require('assert').deepEqual;
 
 describe('Bookshelf.Collection', function() {
 
@@ -107,7 +106,7 @@ describe('Bookshelf.Collection', function() {
 
   describe('idAttribute', function() {
 
-    it('returns the `tableName` attribute from the `Collection#model` prototype', function() {
+    it('returns the `idAttribute` attribute from the `Collection#model` prototype', function() {
       var collection = new (Bookshelf.Collection.extend({
         model: Bookshelf.Model.extend({
           idAttribute: 'test'
@@ -118,7 +117,19 @@ describe('Bookshelf.Collection', function() {
   });
 
   describe('fetch', function() {
-
+    
+    it ('fetches the models in a collection', function (ok) {
+      var Posts = Bookshelf.Collection.extend({
+        tableName: 'posts'
+      });
+      var posts = new Posts();
+      posts.fetch().then(function (collection) {
+        equal(posts.length, 5);
+        deepEqual(posts.at(0).keys(), ['id', 'owner_id', 'blog_id', 'name', 'content']);
+        deepEqual(collection, posts);
+        ok();
+      }).done();
+    });
   });
 
   describe('sync', function() {

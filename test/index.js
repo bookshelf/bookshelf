@@ -3,26 +3,27 @@ var Q = require('q');
 var _ = require('underscore');
 var Bookshelf = require('../bookshelf');
 
-before(function (ok) {
+before(function(ok) {
 
   Bookshelf.Initialize({
     client: 'mysql',
     connection: {
-      host     : '127.0.0.1',
-      user     : 'root',
-      password : '',
-      database : 'myapp_test',
-      charset  : 'utf8'
+      host : '127.0.0.1',
+      user : 'root',
+      password : 'root',
+      database : 'tgdb',
+      port : 8889,
+      charset : 'utf8'
     }
   });
 
   // Load all of the tables and
   // data for the tests.
   require('./data/migration')
-    .then(function () {
+    .then(function() {
       return require('./data/inserts');
     })
-    .then(function () {
+    .then(function() {
       ok();
     }).done();
 

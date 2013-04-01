@@ -814,7 +814,15 @@
 
     // Issues a `delete` command on the query.
     del: function() {
-      return this.query.where(this.model.idAttribute, this.model.id).del();
+      var wheres;
+      if (this.model.id != null) {
+        wheres = {};
+        wheres[this.model.idAttribute] = this.model.id;
+      }
+      if (!wheres && this.query.wheres.length === 0) {
+        return Q.reject('A model cannot be destroyed without a "where" clause or an idAttribute.');
+      }
+      return this.query.where(wheres).del();
     }
   });
 
@@ -828,7 +836,7 @@
 
     _handler: function(method, ids, transacting) {
       if (ids == void 0 && method === 'insert') return Q.resolve();
-      if (!_.isArray(ids)) ids = [ids];
+      if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pivot = this._relation;
       return Q.allResolved(_.map(ids, function(item) {
         var data = {};
@@ -877,11 +885,18 @@
     // column name, and the value the column should take on the
     // output to the model attributes.
     withPivot: function(columns) {
-      var relation = this._relation;
+      if (!_.isArray(columns)) columns = columns ? [columns] : [];
+      var joinString, relation = this._relation;
       relation.pivotColumns || (relation.pivotColumns = []);
-      for (var key in columns) {
-        var value = columns[key];
-        relation.pivotColumns.push(relation.joinTableName + '.' + key + ' as ' + value);
+      for (var i = 0, l = columns.length; i < l; i++) {
+        var column = columns[i];
+        if (_.isString(column)) {
+          relation.pivotColumns.push(relation.joinTableName + '.' + column + ' as pivot_' + column);
+        } else {
+          for (var key in column) {
+            relation.pivotColumns.push(relation.joinTableName + '.' + key + ' as ' + column[key]);
+          }
+        }
       }
       return this;
     }

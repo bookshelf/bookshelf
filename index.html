@@ -327,15 +327,14 @@
       <li>– <a href="#Model-isNew">isNew</a></li>
       <li>– <a href="#Model-sync">sync</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
-      <li>– <a href="#Model-related">related (itd)</a></li>
+      <li>– <a href="#Model-related">related</a></li>
       <li><b><a href="#Model-relation-types">Relation Types:</a></b></li>
       <li>– <a href="#Model-hasOne">hasOne (td)</a></li>
       <li>– <a href="#Model-hasMany">hasMany (td)</a></li>
       <li>– <a href="#Model-belongsTo">belongsTo (td)</a></li>
       <li>– <a href="#Model-belongsToMany">belongsToMany (td)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-attach">attach (td)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-detach">detach (td)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-withTimestamps">withTimestamps (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot (td)</a></li>
     </ul>
 
@@ -440,10 +439,9 @@
     <h2 id="introduction">Introduction</h2>
 
     <p>
-      Built on the solid structure and conventions from <a href="http://backbonejs.org">Backbone.js</a>,
       Bookshelf adds additional support for handling objects on the server, persisting and querying 
       them from a database, and forming relations between these objects in an Active Record Pattern.
-      With less than 1k lines of well documented code, Bookshelf is easy to understand, and extend. 
+      At &lt;1000 lines of well documented code, Bookshelf is easy to understand, and extend. 
       It also doesn't force you to use any specific validation scheme, and provides extremely flexible
       and efficient relation handling.
     </p>
@@ -1064,8 +1062,13 @@ new Book({id: 2}).fetch({
     <p id="Model-withPivot">
       <b class="header">withPivot</b><code>relation.withPivot(columns)</code>
       <br />
-      
+      The <tt>withPivot</tt> method is used exclusively on <a href="#Model-belongsToMany">belongsToMany</a>
+      relations, and allows for additional fields to be pulled from the joining table.
     </p>
+
+<pre>
+
+</pre>
 
 
     <h2 id="Collection">Bookshelf.Collection</h2>
@@ -1298,7 +1301,36 @@ collection
     <p id="Sync-first">
       <b class="header">first</b><code>sync.first([options]).then(function(model) {...</code>
       <br />
-      Used by models, the <tt>first</tt> method selects the first matching (limit 1) and returns the
+      Used by the model, the <tt>first</tt> method selects the first matching and returns a promise,
+      resolving with the model or collection originally passed in the the <a href="#Sync">Bookshelf.Sync</a>.
+    </p>
+
+    <p id="Sync-select">
+      <b class="header">select</b><code>sync.select([options]).then(function(model) {...</code>
+      <br />
+      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the
+      database query.
+
+    </p>
+
+    <p id="Sync-insert">
+      <b class="header">insert</b><code>sync.insert([options]).then(function(model) {...</code>
+      <br />
+      Used by models, the <tt>insert</tt> method selects the insert matching (limit 1) and returns the
+
+    </p>
+
+    <p id="Sync-update">
+      <b class="header">update</b><code>sync.update([options]).then(function(model) {...</code>
+      <br />
+      Used by models, the <tt>update</tt> method selects the update matching (limit 1) and returns the
+
+    </p>
+
+    <p id="Sync-del">
+      <b class="header">del</b><code>sync.del([options]).then(function(model) {...</code>
+      <br />
+      Used by models, the <tt>del</tt> method removes the model from the 
 
     </p>
 
