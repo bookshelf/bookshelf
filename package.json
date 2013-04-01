@@ -4,7 +4,7 @@
   "description": "Bookshelf.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -R spec -r should test/index.js"
+    "test": "mocha -R spec test/index.js"
   },
   "repository": "",
   "keywords": [
