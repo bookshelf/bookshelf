@@ -749,8 +749,9 @@
     select: function() {
       var model = this.model;
       var options = this.options;
-      
-      return this.query.select(options.columns).then(function(resp) {
+      var columns = options.columns;
+      if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
+      return this.query.select(columns).then(function(resp) {
         var target, filteredResp;
         model.resetQuery();
         

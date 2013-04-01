@@ -9,6 +9,14 @@ var assert    = require('assert');
 var equal     = assert.equal;
 var deepEqual = assert.deepEqual;
 
+var stubSync = {
+  first: function() { return {}; },
+  select: function() { return {}; },
+  insert: function() { return {}; },
+  update: function() { return {}; },
+  del: function() { return {}; }
+};
+
 describe('Bookshelf.Model', function() {
   
   var base;
@@ -277,12 +285,6 @@ describe('Bookshelf.Model', function() {
 
   });
 
-  describe('hasTimestamps', function() {
-
-    it('will set the created_at and updated_at columns if true');
-
-  });
-
   describe('isNew', function() {
 
     it('uses the idAttribute to determine if the model isNew', function(){
@@ -354,40 +356,73 @@ describe('Bookshelf.Model', function() {
 
     it('saves an new object');
 
-    // new Bookshelf.Model().set({
-    //   name: 'Rob',
-    //   guarded_name: 'A'
-    // }).save().then(function(model) {
-    //   model.get('name')
-    //   ok();
-    // }).done();
-
     it('updates an existing object');
-
-    // base.save({name: 'Joe'}).then(function() {
-    //   equal(base.get('name'), 'Joe');
-    //   ok();
-    // }).done();
 
     it('allows passing a method to save, to call insert or update explicitly');
 
   });
   
-  describe('defaults', function() {
+  describe('resetQuery', function() {
 
-    it('assigns defaults on save, rather than initialize', function(ok) {
-      var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
-      var item = new Item({id: 1});
-      deepEqual(item.toJSON(), {id: 1});
-      item.sync = function() {
-        deepEqual(this.toJSON(), {id: 1, item: 'test'});
-        ok();
-        return {update: function() { return {}; }};
-      };
-      item.save().done();
+    it('deletes the `_builder` property, resetting the model query builder', function() {
+      var m = new Bookshelf.Model().query('where', {id: 1});
+      equal(m.query().wheres.length, 1);
+      m.resetQuery();
+      equal(m.query().wheres.length, 0);
     });
-  
   });
+
+  describe('hasTimestamps', function() {
+
+    it('will set the created_at and updated_at columns if true', function(ok) {
+      var m = new (Bookshelf.Model.extend({hasTimestamps: true}))();
+      m.sync = function() {
+        equal(this.get('item'), 'test');
+        equal(_.isDate(this.get('created_at')), true);
+        equal(_.isDate(this.get('updated_at')), true);
+        ok();
+        return stubSync;
+      };
+      m.save({item: 'test'}).done();
+    });
+
+    it('only sets the updated_at for existing models', function(ok) {
+      var m1 = new (Bookshelf.Model.extend({hasTimestamps: true}))();
+      m1.sync = function() {
+        equal(this.get('item'), 'test');
+        equal(_.isDate(this.get('updated_at')), true);
+        ok();
+        return stubSync;
+      };
+      m1.save({item: 'test'}).done();
+    });
+
+    it('allows passing hasTimestamps in the options hash', function (ok) {
+      var m = new Bookshelf.Model(null, {hasTimestamps: true});
+      m.sync = function() {
+        equal(this.get('item'), 'test');
+        equal(_.isDate(this.get('created_at')), true);
+        equal(_.isDate(this.get('updated_at')), true);
+        ok();
+        return stubSync;
+      };
+      m.save({item: 'test'}).done();
+    });
+  });
+
+  describe('timestamp', function() {
+
+    it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function () {
+      var m  = new Bookshelf.Model();
+      var m1 = new Bookshelf.Model({id: 1});
+      m.timestamp();
+      m1.timestamp();
+      equal(_.isDate(m.get('created_at')), true);
+      equal(_.isDate(m.get('updated_at')), true);
+      equal(_.isEmpty(m1.get('created_at')), true);
+      equal(_.isDate(m1.get('updated_at')), true);
+    });
+  });  
 
   describe('resetQuery', function() {
 
@@ -397,7 +432,22 @@ describe('Bookshelf.Model', function() {
       m.resetQuery();
       equal(m.query().wheres.length, 0);
     });
+  });
 
+  describe('defaults', function() {
+
+    it('assigns defaults on save, rather than initialize', function(ok) {
+      var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
+      var item = new Item({id: 1});
+      deepEqual(item.toJSON(), {id: 1});
+      item.sync = function() {
+        deepEqual(this.toJSON(), {id: 1, item: 'test'});
+        ok();
+        return stubSync;
+      };
+      item.save().done();
+    });
+  
   });
 
 });
