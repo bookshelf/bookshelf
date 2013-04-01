@@ -285,7 +285,7 @@
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
-      <li>&raquo; <a href="http://tgriesser.com/bookshelf/docs/bookshelf.html">Annotated Source</a></li>
+      <li>&raquo; <a href="http://bookshelfjs.org/docs/bookshelf.html">Annotated Source</a></li>
     </ul>
 
     <a class="toc_title" href="#introduction">
@@ -362,11 +362,11 @@
       Sync
     </a>
     <ul class="toc_section">
-      <li>– <a href="#Sync-first">first (itd)</a></li>
-      <li>– <a href="#Sync-select">select (itd)</a></li>
-      <li>– <a href="#Sync-insert">insert (itd)</a></li>
-      <li>– <a href="#Sync-update">update (itd)</a></li>
-      <li>– <a href="#Sync-del">del / delete (itd)</a></li>
+      <li>– <a href="#Sync-first">first</a></li>
+      <li>– <a href="#Sync-select">select</a></li>
+      <li>– <a href="#Sync-insert">insert</a></li>
+      <li>– <a href="#Sync-update">update</a></li>
+      <li>– <a href="#Sync-del">del / delete</a></li>
     </ul>
 
     <a class="toc_title" href="#Events">
@@ -1308,30 +1308,36 @@ collection
     <p id="Sync-select">
       <b class="header">select</b><code>sync.select([options]).then(function(model) {...</code>
       <br />
-      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the
-      database query.
-
+      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the 
+      <a href="#Model-tableName">tableName</a> and <a href="#Model-idAttribute">idAttrribute</a>, along with 
+      any custom query constraints.
     </p>
 
     <p id="Sync-insert">
       <b class="header">insert</b><code>sync.insert([options]).then(function(model) {...</code>
       <br />
-      Used by models, the <tt>insert</tt> method selects the insert matching (limit 1) and returns the
-
+      Used by models, and relations, the <tt>insert</tt> method inserts a single model, based on the
+      <a href="#Model-tableName">tableName</a> and any <a href="#Model-relation-types">relation constraints</a>,
+      returning a promise which resolves with the inserted model.
     </p>
 
     <p id="Sync-update">
       <b class="header">update</b><code>sync.update([options]).then(function(model) {...</code>
       <br />
-      Used by models, the <tt>update</tt> method selects the update matching (limit 1) and returns the
-
+      Used by models, and relations, the <tt>update</tt> method inserts a single model, based on the
+      <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a> and any custom
+      <a href="#Model-query">query</a> or <a href="#Model-relation-types">relation</a> constraints,
+      returning a promise which resolves with the inserted model.
     </p>
 
     <p id="Sync-del">
       <b class="header">del</b><code>sync.del([options]).then(function(model) {...</code>
       <br />
-      Used by models, the <tt>del</tt> method removes the model from the 
-
+      Used by models, collections, and relations, the <tt>del</tt> method removes one or more models,
+      based on the <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a> 
+      and any custom <a href="#Model-query">query</a> or <a href="#Model-relation-types">relation</a> constraints,
+      returning a promise which resolves with no arguments. If no <a href="#Model-idAtribute">idAtribute</a> or
+      custom constraints have been defined, the promise will fail.
     </p>
 
   <h2 id="Utility">Utility</h2>
