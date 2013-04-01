@@ -319,24 +319,24 @@
       <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>      
       <li>– <a href="#Model-query">query</a></li>
       <li>– <a href="#Model-resetQuery">resetQuery</a></li>
-      <li>– <a href="#Model-hasTimestamps">hasTimestamps (itd)</a></li>
-      <li>– <a href="#Model-timestamp">timestamp (itd)</a></li>
-      <li>– <a href="#Model-defaults">defaults (itd)</a></li>
+      <li>– <a href="#Model-hasTimestamps">hasTimestamps</a></li>
+      <li>– <a href="#Model-timestamp">timestamp</a></li>
+      <li>– <a href="#Model-defaults">defaults</a></li>
       <li>– <a href="#Model-validate">validate (itd)</a></li>
       <li>– <a href="#Model-isValid">isValid (itd)</a></li>
       <li>– <a href="#Model-isNew">isNew</a></li>
       <li>– <a href="#Model-sync">sync</a></li>
-      <li>– <a href="#Model-relations">relations (itd)</a></li>
+      <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related (itd)</a></li>
       <li><b><a href="#Model-relation-types">Relation Types:</a></b></li>
-      <li>– <a href="#Model-hasOne">hasOne (itd)</a></li>
-      <li>– <a href="#Model-hasMany">hasMany (itd)</a></li>
-      <li>– <a href="#Model-belongsTo">belongsTo (itd)</a></li>
-      <li>– <a href="#Model-belongsToMany">belongsToMany (itd)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-attach">attach (itd)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-detach">detach (itd)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-withTimestamps">withTimestamps (itd)</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot (itd)</a></li>
+      <li>– <a href="#Model-hasOne">hasOne (td)</a></li>
+      <li>– <a href="#Model-hasMany">hasMany (td)</a></li>
+      <li>– <a href="#Model-belongsTo">belongsTo (td)</a></li>
+      <li>– <a href="#Model-belongsToMany">belongsToMany (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-attach">attach (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-detach">detach (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-withTimestamps">withTimestamps (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot (td)</a></li>
     </ul>
 
     <a class="toc_title" href="#Collection">
@@ -354,9 +354,9 @@
       <li>– <a href="#Collection-create">create (itd)</a></li>
       <li>– <a href="#Collection-query">query</a></li>
       <li>– <a href="#Collection-resetQuery">resetQuery</a></li>
-      <li>– <a href="#Collection-sync">sync (itd)</a></li>
-      <li>– <a href="#Collection-Underscore-Methods"><b>Underscore Methods (28)</b></a></li>
+      <li>– <a href="#Collection-sync">sync</a></li>
       <li>– <a href="#Collection-Backbone-Methods"><b>Backbone Methods (19)</b></a></li>
+      <li>– <a href="#Collection-Underscore-Methods"><b>Underscore Methods (28)</b></a></li>
     </ul>
 
     <a class="toc_title" href="#Sync">
@@ -725,9 +725,8 @@ new Posts().fetch().then(function(collection) {
     </p>
 
 <pre>
-// insert into `posts` 
 new Post({name: 'New Article'}).save().then(function (model) {
-
+  
 });
 </pre>
 
@@ -776,16 +775,16 @@ new Post({name: 'New Article'}).save().then(function (model) {
       <b class="header">defaults</b><code>model.defaults or model.defaults()</code>
       <br />
       The <b>defaults</b> hash (or function) can be used to specify the default
-      attributes for your model. When creating an instance of the model,
-      any unspecified attributes will be set to their default value.
+      attributes for your model. Unlike with Backbone's model defaults, Bookshelf defaults
+      are applied when an object is persisted rather than during creation.
     </p>
 
 <pre>
 var Meal = Bookshelf.Model.extend({
   defaults: {
-    "appetizer":  "caesar salad",
-    "entree":     "ravioli",
-    "dessert":    "cheesecake"
+    appetizer:  "caesar salad",
+    entree:     "ravioli",
+    dessert:    "cheesecake"
   }
 });
 
@@ -1217,6 +1216,36 @@ collection
       Creates and returns a new <a href="#Sync">Bookshelf.Sync</a> instance. Can be overridden for custom behavior.
     </p>
 
+    <p id="Collection-Backbone-Methods">
+      <b class="header">Backbone Methods (19)</b>
+      <br />
+      Bookshelf also proxies to <b>Backbone.js</b> for any of the core Collection methods
+      that don't need modification for the ORM. The Backbone documentation 
+      applies equally for Bookself, and can be used to read more on these methods.
+    </p>
+
+    <ul>
+      <li><a href="http://backbonejs.org/#Collection-add">add</a></li>
+      <li><a href="http://backbonejs.org/#Collection-remove">remove</a></li>
+      <li><a href="http://backbonejs.org/#Collection-reset">reset</a></li>
+      <li><a href="http://backbonejs.org/#Collection-set">set</a></li>
+      <li><a href="http://backbonejs.org/#Collection-get">get</a></li>
+      <li><a href="http://backbonejs.org/#Collection-at">at</a></li>
+      <li><a href="http://backbonejs.org/#Collection-push">push</a></li>
+      <li><a href="http://backbonejs.org/#Collection-pop">pop</a></li>
+      <li><a href="http://backbonejs.org/#Collection-unshift">unshift</a></li>
+      <li><a href="http://backbonejs.org/#Collection-shift">shift</a></li>
+      <li><a href="http://backbonejs.org/#Collection-slice">slice</a></li>
+      <li><a href="http://backbonejs.org/#Collection-length">length</a></li>
+      <li><a href="http://backbonejs.org/#Collection-comparator">comparator</a></li>
+      <li><a href="http://backbonejs.org/#Collection-sort">sort</a></li>
+      <li><a href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
+      <li><a href="http://backbonejs.org/#Collection-where">where</a></li>
+      <li><a href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
+      <li><a href="http://backbonejs.org/#Collection-parse">parse</a></li>
+      <li><a href="http://backbonejs.org/#Collection-clone">clone</a></li>
+    </ul>
+
     <p id="Collection-Underscore-Methods">
       <b class="header">Underscore Methods (28)</b>
       <br />
@@ -1256,40 +1285,21 @@ collection
       <li><a href="http://underscorejs.org/#chain">chain</a></li>
     </ul>
 
-    <p id="Collection-Backbone-Methods">
-      <b class="header">Backbone Methods (19)</b>
-      <br />
-      Bookshelf also proxies to <b>Backbone.js</b> for any of the core Collection methods
-      that don't need modification for the ORM. The Backbone documentation 
-      applies equally for Bookself, and can be used to read more on these methods.
-    </p>
-
-    <ul>
-      <li><a href="http://backbonejs.org/#Collection-add">add</a></li>
-      <li><a href="http://backbonejs.org/#Collection-remove">remove</a></li>
-      <li><a href="http://backbonejs.org/#Collection-reset">reset</a></li>
-      <li><a href="http://backbonejs.org/#Collection-set">set</a></li>
-      <li><a href="http://backbonejs.org/#Collection-get">get</a></li>
-      <li><a href="http://backbonejs.org/#Collection-at">at</a></li>
-      <li><a href="http://backbonejs.org/#Collection-push">push</a></li>
-      <li><a href="http://backbonejs.org/#Collection-pop">pop</a></li>
-      <li><a href="http://backbonejs.org/#Collection-unshift">unshift</a></li>
-      <li><a href="http://backbonejs.org/#Collection-shift">shift</a></li>
-      <li><a href="http://backbonejs.org/#Collection-slice">slice</a></li>
-      <li><a href="http://backbonejs.org/#Collection-length">length</a></li>
-      <li><a href="http://backbonejs.org/#Collection-comparator">comparator</a></li>
-      <li><a href="http://backbonejs.org/#Collection-sort">sort</a></li>
-      <li><a href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
-      <li><a href="http://backbonejs.org/#Collection-where">where</a></li>
-      <li><a href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
-      <li><a href="http://backbonejs.org/#Collection-parse">parse</a></li>
-      <li><a href="http://backbonejs.org/#Collection-clone">clone</a></li>
-    </ul>
-
-    <h2 id="Sync">Bookshelf.Sync</h2>
+  <h2 id="Sync">Bookshelf.Sync</h2>
 
     <p>
-      Todo.
+      The <b>Bookshelf.Sync</b> object handles all database communication, for the models and collections.
+      Unlike Backbone's <tt>sync</tt> mehtod, Bookshelf.Sync is a constructor taking two arguments,
+      the <tt>model</tt> and the <tt>options</tt> for the sync method being performed. It comes with five
+      built in methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>, 
+      <a href="#Sync-select">select</a>
+    </p>
+
+    <p id="Sync-first">
+      <b class="header">first</b><code>sync.first([options]).then(function(model) {...</code>
+      <br />
+      Used by models, the <tt>first</tt> method selects the first matching (limit 1) and returns the
+
     </p>
 
   <h2 id="Utility">Utility</h2>
