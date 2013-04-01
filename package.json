@@ -21,6 +21,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "sqlite3": "~2.1.7"
+    "mocha": "1.7.x",
+    "mysql": "~2.0.0-alpha5"
   }
 }
