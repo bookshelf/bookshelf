@@ -413,7 +413,7 @@
     <p>
       The project is <a href="http://github.com/tgriesser/bookshelf/">hosted on GitHub</a>,
       and the <a href="docs/bookshelf.html">annotated source code</a> is available,
-      as well as a full <a href="">test suite</a>.
+      as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
     <p>
@@ -441,9 +441,11 @@
 
     <p>
       Built on the solid structure and conventions from <a href="http://backbonejs.org">Backbone.js</a>,
-      Bookshelf adds additional support for handling objects on the server, 
-      persisting and querying them from a database, and forming 
-      relations between these objects in an Active Record Pattern.
+      Bookshelf adds additional support for handling objects on the server, persisting and querying 
+      them from a database, and forming relations between these objects in an Active Record Pattern.
+      With less than 1k lines of well documented code, Bookshelf is easy to understand, and extend. 
+      It also doesn't force you to use any specific validation scheme, and provides extremely flexible
+      and efficient relation handling.
     </p>
 
     <h2 id="Initialize">Bookshelf.Initialize</h2>
@@ -459,9 +461,9 @@ Bookshelf.Initialize({
   connection: {
     host     : 'localhost',
     user     : 'root',
-    password : 'root',
+    password : '',
     port     : 8889,
-    database : 'tgdb',
+    database : 'your_db',
     charset  : 'utf8'
   }
 });
@@ -1511,6 +1513,6 @@ view.stopListening(model);
     </p>
 
   </div>
-
+  <script src="docs/public/scripts/ga.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
