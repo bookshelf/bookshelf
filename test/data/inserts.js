@@ -20,10 +20,14 @@ var sitesmeta = Knex('sitesmeta').insert([{
 
 var admins = Knex('admins').insert([{
   username: 'test1',
-  password: 'testpwd1'
+  password: 'testpwd1',
+  created_at: new Date(),
+  updated_at: new Date()
 }, {
   username: 'test2',
-  password: 'testpwd2'
+  password: 'testpwd2',
+  created_at: new Date(),
+  updated_at: new Date()
 }]);
 
 var admins_sites = Knex('admins_sites').insert([{

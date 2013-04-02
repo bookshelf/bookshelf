@@ -405,13 +405,15 @@
       if (!options.validate || !this.validate) return Q.resolve(true);
       attrs = _.extend({}, this.attributes, attrs);
       var model = this;
-      return Q.fcall(_.bind(this.validate, this), attrs, options).then(function(resp) {
-        if (resp && resp !== true) {
-          model.validationError = resp;
-          model.trigger('invalid', model, error, options);
-          return Q.reject(new Error(resp));
-        }
-        return Q.resolve(true);
+      return Q.fcall(_.bind(this.validate, this), attrs, options)
+        .then(function(resp) {
+          if (resp && resp !== true) {
+            model.validationError = resp;
+            model.trigger('invalid', model, error, options);
+            Bookshelf.trigger('invalid', model, error, options);
+            return Q.reject(new Error(resp));
+          }
+          return Q.resolve(true);
       });
     }
   });
@@ -500,7 +502,7 @@
       Bookshelf.addEagerConstraints(opts.type, this, opts.parentResponse);
       
       return this.query().select(opts.columns).then(function(resp) {
-      
+
         current.resetQuery();
 
         // Only find additional related items & process if
@@ -655,7 +657,7 @@
         where[relation.foreignKey] = id;
         return new relation.collectionCtor(eager.where(where), {parse: true});
       case "belongsToMany":
-        where['pivot_' + relation.otherKey] = id;
+        where['_pivot_' + relation.otherKey] = id;
         return new relation.collectionCtor(eager.where(where), {parse: true});
     }
   };
@@ -693,8 +695,8 @@
     }
 
     columns.push(
-      joinTableName + '.' + otherKey + ' as ' + 'pivot_' + otherKey,
-      joinTableName + '.' + foreignKey + ' as ' + 'pivot_' + foreignKey
+      joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
+      joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
     );
     
     if (pivotColumns) columns.push.apply(columns, pivotColumns);

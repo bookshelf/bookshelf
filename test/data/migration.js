@@ -58,7 +58,7 @@ module.exports = Q.all(_.map(drops, function(val) {
     table.integer('owner_id');
     table.integer('blog_id');
     table.string('name');
-    table.string('content');
+    table.text('content');
   });
 
   var authors_posts = Schema.createTable('authors_posts', function(table) {

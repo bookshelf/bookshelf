@@ -134,6 +134,10 @@ describe('Bookshelf.Collection', function() {
 
   describe('sync', function() {
 
+    it('creates a new instance of Bookshelf.Sync', function(){
+      var model = new Bookshelf.Model();
+      equal((model.sync(model) instanceof Bookshelf.Sync), true);
+    });
   });
 
   describe('create', function() {

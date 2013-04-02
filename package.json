@@ -22,6 +22,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "mocha": "1.7.x",
-    "mysql": "~2.0.0-alpha5"
+    "mysql": "~2.0.0-alpha5",
+    "pg": "~0.15.1"
   }
 }

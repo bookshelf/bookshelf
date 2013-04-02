@@ -24,7 +24,6 @@ before(function(ok) {
     .then(function() {
       ok();
     }).done();
-
 });
 
 require('./model');
