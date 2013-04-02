@@ -5,7 +5,7 @@ var Bookshelf = require('../bookshelf');
 before(function(ok) {
 
   Bookshelf.Initialize({
-    client: 'postgres',
+    client: 'mysql',
     connection: {
       host     : '127.0.0.1',
       user     : 'root',
