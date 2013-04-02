@@ -329,13 +329,13 @@
       <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related</a></li>
       <li><b><a href="#Model-relation-types">Relation Types:</a></b></li>
-      <li>– <a href="#Model-hasOne">hasOne (d)</a></li>
-      <li>– <a href="#Model-hasMany">hasMany (d)</a></li>
-      <li>– <a href="#Model-belongsTo">belongsTo (d)</a></li>
-      <li>– <a href="#Model-belongsToMany">belongsToMany (d)</a></li>
+      <li>– <a href="#Model-hasOne">hasOne</a></li>
+      <li>– <a href="#Model-hasMany">hasMany</a></li>
+      <li>– <a href="#Model-belongsTo">belongsTo</a></li>
+      <li>– <a href="#Model-belongsToMany">belongsToMany</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot (td)</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
     </ul>
 
     <a class="toc_title" href="#Collection">
@@ -347,7 +347,7 @@
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
-      <li>– <a href="#Collection-toJSON">toJSON (t)</a></li>
+      <li>– <a href="#Collection-toJSON">toJSON</a></li>
       <li>– <a href="#Collection-fetch">fetch (t)</a></li>
       <li>– <a href="#Collection-load">load</a></li>
       <li>– <a href="#Collection-create">create (itd)</a></li>
@@ -698,17 +698,18 @@ new Posts().fetch().then(function(collection) {
   collection.at(0)
   .load(['author', 'content', 'comments.tags'])
   .then(function(model) {
-    console.log(model.toJSON());
-    // {
-    //    title: 'post title',
-    //    author: {...},
-    //    content: {...},
-    //    comments: [
-    //      {tags: [...]}, {tags: [...]}
-    //    ]
-    // }
+    JSON.stringify(model);
   });
 });
+
+{
+  title: 'post title',
+  author: {...},
+  content: {...},
+  comments: [
+    {tags: [...]}, {tags: [...]}
+  ]
+}
 </pre>
 
     <p id="Model-save">
@@ -723,7 +724,7 @@ new Posts().fetch().then(function(collection) {
     </p>
 
 <pre>
-new Post({name: 'New Article'}).save().then(function (model) {
+new Post({name: 'New Article'}).save().then(function(model) {
   
 });
 </pre>
@@ -751,7 +752,7 @@ new Post({name: 'New Article'}).save().then(function (model) {
       The <b>guarded</b> property is the opposite of <a href="#Model-fillable">fillable</a>, 
       an optional array of attributes that may not be mass-assigned (blacklisting). When 
       creating a new model, or using <tt>model.set(object)</tt>, the properties in this 
-      array will be fillable, unless <br> <tt>{guard: false}</tt> is passed as an option. 
+      array will be fillable, unless <br /> <tt>{guard: false}</tt> is passed as an option. 
       An <tt>inaccessible</tt> event will be fired if any filtered attributes are present 
       in a mass-assignment.
     </p>
@@ -902,9 +903,8 @@ model
       <br />
       This method is left undefined, and you're encouraged to override it with
       your custom validation logic, if you have any that can be performed
-      in JavaScript. <b>validate</b> is called before <tt>set</tt> and
-      <tt>save</tt>, and is passed the model attributes updated with the values
-      from <tt>set</tt> or <tt>save</tt>.
+      in JavaScript. <b>validate</b> is called before <tt>save</tt> and is passed 
+      the model attributes updated with the values from <tt>set</tt> or <tt>save</tt>.
       If the attributes are valid, don't return anything from <b>validate</b>;
       if they are invalid, return an error of your choosing. It
       can be as simple as a string error message to be displayed, or a complete
@@ -936,6 +936,11 @@ one.set({
   end:   10
 });
 </pre>
+
+    <p>
+      For asynchronous validations, you may return a deferred and the value resolved by 
+      the method will be used as the validation.
+    </p>
 
     <p id="Model-isValid">
       <b class="header">isValid</b><code>model.isValid().then(function(model) {...</code>
@@ -984,9 +989,10 @@ one.set({
 
     <p>
       There are four types of relationships that may be defined between Models and 
-      Collections: <tt>hasOne</tt>, <tt>hasMany</tt>, <tt>belongsToOne</tt>, 
-      <tt>belongsToMany</tt>. The relations are specified by created named methods 
-      on the model, which return the appropriate relation type.
+      Collections: <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>, 
+      <a href="#Model-belongsTo">belongsTo</a>, <a href="#Model-belongsToMany">belongsToMany</a>. 
+      The relations are specified by created named methods on the model, which return the 
+      appropriate relation type.
     </p>
 
 <pre>
@@ -1014,35 +1020,130 @@ var Book = Bookshelf.Model.extend({
 new Book({id: 1}).summary().fetch(function(book) {
   console.log(book.toJSON());
 });
+</pre>
+    
+    <p>
+      Relations may also be loaded eagerly, by specifying a <tt>withRelated</tt> option
+      during the fetch call.
+    </p>
 
+<pre>
 new Book({id: 2}).fetch({
   withRelated: ['summary', 'owner', 'pages', 'author']
 }).then(function(book) {
   console.log(book.toJSON());
 });
+</pre>
+
+    <p>
+      You may also want to eagerly load related models on a model or collection after it has already been fetched.
+      For this, you may use the <a href="#Model-load">load</a> method to specify which relations should be eagerly 
+      loaded on the model or collection.
+    </p>
+
+<pre>
+var accounts = new Accounts();
+accounts.fetch()
+  .then(function(collection) {
+    return collection.at(0).load('account_info');
+  })
+  .then(function(model) {
+    res.json({
+      accounts: accounts.toJSON({shallow: true}), 
+      current_account: model
+    });
+  })
+  .done();
+</pre>
+
+
+    <p>
+      Nested eager loads may be performed, by separating the nested relations with <tt>'.'</tt>.
+    </p>
+
+<pre>
+new Story({id: 2}).fetch({
+  withRelated: ['comments.tags', 'comments.author', 'author']
+}).then(function(model) {
+  JSON.stringify(model);
+});
+
+// performs 5 queries in total, outputting:
+{
+  id: 2, 
+  title: '', 
+  author: {...},
+  comments: [
+    {tags: [{...}, {...}], author: {...}}, 
+    {tags: [...], author: {...}}, 
+    {tags: [...], author: {...}}
+  ]
+}
 
 </pre>
 
     <p id="Model-hasOne">
-      <b class="header">hasOne</b><code>model.hasOne(Model, foreignKey)</code>
+      <b class="header">hasOne</b><code>model.hasOne(Model, [foreignKey])</code>
       <br />
-      
+      A one-to-one relation is a very basic relation, where the model has exactly 
+      one of another <b>Model</b>, referenced by a <b>foreignKey</b> in the target <b>Model</b>.
+      By default, the foreign key is assumed to be the singular form of the current model,
+      followed by <tt>_id</tt>.
+    </p>
+
+<pre>
+var Record = Bookshelf.Model.extend({
+  tableName: 'health_records'
+});
+
+var Patient = Bookshelf.Model.extend({
+  record: function() {
+    return this.hasOne(Record);
+  }
+});
+
+// select * from `health_records` where `patient_id` = 1;
+new Patient({id: 1}).record().fetch(function(model) {
+  ...
+});
+</pre>
+
+    <p>
+      If the foreign key is different than the one assumed by the query builder, you may specify
+      it in the second argument of the query.
     </p>
 
     <p id="Model-hasMany">
-      <b class="header">hasMany</b><code>model.hasMany(Target, foreignKey)</code>
+      <b class="header">hasMany</b><code>model.hasMany(Target, [foreignKey])</code>
       <br />
       
     </p>
 
     <p id="Model-belongsTo">
-      <b class="header">belongsTo</b><code>model.belongsTo(Model, otherKey)</code>
+      <b class="header">belongsTo</b><code>model.belongsTo(Model, [otherKey])</code>
       <br />
-      
+      The <tt>belongsTo</tt> defines an inverse one-to-one relation, where the current model is a member
+      of another <b>Model</b>, referenced by the <b>otherKey</b> in the target <b>Model</b>.
+      By default, the other key is assumed to be the singular form of the target <b>Model</b> with a
+      <tt>_id</tt> suffix.
     </p>
 
+<pre>
+var Author = Bookshelf.Model.extend({
+  
+});
+
+// select * from `author` where 
+new Book({id: 1}).author().fetch(function() {
+  
+});
+
+
+</pre>
+
+
     <p id="Model-belongsToMany">
-      <b class="header">belongsToMany</b><code>model.belongsToMany(Target, table, foreignKey, otherKey)</code>
+      <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [fKey], [otherKey])</code>
       <br />
       
     </p>
@@ -1067,9 +1168,37 @@ new Book({id: 2}).fetch({
     </p>
 
 <pre>
-
+var Tag = Bookshelf.Model.extend({
+  comments: function() {
+    return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
+  }
+});
 </pre>
 
+  <p>
+    By default, the pivot attributes are defined with the <tt>pivot_</tt> prefix. If you would
+    like to specify how they are named on the related models, pass an object with the key/value pairs
+    to <tt>withPivot</tt>.
+  </p>
+
+<pre>
+var Tag = Bookshelf.Model.extend({
+  comments: function() {
+    return this.belongsToMany(Comment).withPivot({
+      created_at: 'comment_created_at', 
+      order: 'order'
+    });
+  }
+});
+
+new Tag({id: 1}).comments().fetch().then(function(model) {
+  JSON.stringify(model);
+  // {id: 1, name: 'tag name', comments: [
+  //   {id: 1, comment_created_at: ..., order: ...},
+  //   {id: 2, comment_created_at: ..., order: ...}
+  // ];
+});
+</pre>
 
     <h2 id="Collection">Bookshelf.Collection</h2>
 
@@ -1181,9 +1310,17 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       <b class="header">load</b><code>collection.load(relations, options).then(function(collection) {...</code>
       <br />
       The <b>load</b> method can be used to eager load attributes onto a Collection, in a similar way
-      that the <tt>withRelated</tt> property works on <a href="#Collection-fetch">fetch</a>. Dots 
-      may be used to specify deep eager loading.
+      that the <tt>withRelated</tt> property works on <a href="#Collection-fetch">fetch</a>. Nested eager 
+      loads can be specified by separating the nested relations with <tt>'.'</tt>.
     </p>
+
+<pre>
+new Story({id: 2}).fetch({
+  withRelated: ['comments.tags', 'comments.author', 'author']
+}).then(function(model) {
+  JSON.stringify(model);
+});    
+</pre>
 
     <p id="Collection-query">
       <b class="header">query</b><code>collection.query([method], [*parameters])</code>
@@ -1547,7 +1684,7 @@ view.stopListening(model);
     </p>
 
     <p>
-      <b class="header">Can I use Bookshelf outside of Node.js</b><br>
+      <b class="header">Can I use Bookshelf outside of Node.js</b><br />
       While it primarily targets Node.js, all dependencies are browser compatible, and
       it could be adapted to work with other javascript environments supporting a <tt>sqlite3</tt> 
       database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>.

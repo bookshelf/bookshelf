@@ -34,7 +34,8 @@ var Sites = Shelf.Collection.extend({
 });
 
 var Admin = Shelf.Model.extend({
-  tableName: 'admins'
+  tableName: 'admins',
+  hasTimestamps: true
 });
 
 // All admins for a site.
