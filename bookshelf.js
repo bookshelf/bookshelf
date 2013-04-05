@@ -322,7 +322,7 @@
       if (options && options.shallow) return attrs;
       var relations = this.relations;
       for (var key in relations) {
-        attrs[key] = relations[key].toJSON();
+        attrs[key] = relations[key];
       }
       return attrs;
     },
@@ -617,7 +617,7 @@
           if (type === 'hasOne' || type === 'belongsTo') {
             parent.relations[name] = relation.models[0];
           } else {
-            parent.relations[name] = new relation._relation.collectionCtor(relation.models);
+            parent.relations[name] = new relation._relation.collectionCtor(relation.models, {parse: true});
           }
         }
       }
