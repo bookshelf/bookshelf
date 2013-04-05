@@ -195,7 +195,7 @@
     hasOne: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasOne',
-        foreignKey: foreignKey || inflection.singularize(_.result(this, 'tableName')) + '_id'
+        foreignKey: foreignKey || inflection.singularize(_.result(Target, 'idAttribute')) + '_id'
       });
     },
 
@@ -606,9 +606,11 @@
           var models = parent.models;
           
           // Attach the appropriate related items onto the parent model.
+          // TODO: optimize this section.
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
-            var m = models[i2];
-            var result = Bookshelf.eagerRelated(type, relation, relatedModels, m.id);
+            var m  = models[i2];
+            var id = (type === 'belongsTo' ? m.get(relation._relation.otherKey) : m.id);
+            var result = Bookshelf.eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
         } else {
@@ -666,7 +668,7 @@
   var constraints = function(target, resp) {
     var relation = target._relation;
     if (resp) {
-      target.query('whereIn', relation.foreignKey, _.pluck(resp, _.result(target, 'idAttribute')));
+      target.query('whereIn', relation.foreignKey, _.pluck(resp, relation.otherKey));
     } else {
       target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
