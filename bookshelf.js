@@ -195,7 +195,7 @@
     hasOne: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasOne',
-        foreignKey: foreignKey || inflection.singularize(_.result(Target, 'idAttribute')) + '_id'
+        foreignKey: foreignKey || inflection.singularize(_.result(this, 'tableName')) + '_id'
       });
     },
 
