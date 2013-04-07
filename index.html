@@ -1290,20 +1290,8 @@ var tabs = new TabSet([tab1, tab2, tab3]);
     <p id="Collection-fetch">
       <b class="header">fetch</b><code>collection.fetch([options])</code>
       <br />
-      Fetch the default set of models for this collection from the server,
-      resetting the collection when they arrive. The <b>options</b> hash takes
-      <tt>success</tt> and <tt>error</tt>
-      callbacks which will be passed <tt>(collection, response, options)</tt>
-      and <tt>(collection, xhr, options)</tt> as arguments, respectively.
-      When the model data returns from the server, the collection will be (efficiently)
-      <a href="#Collection-reset">reset</a>, unless you pass <tt>{update: true}</tt>,
-      in which case it will use <a href="#Collection-update">update</a> to (intelligently)
-      merge the fetched models.
-      Delegates to <a href="#Sync">Backbone.sync</a>
-      under the covers for custom persistence strategies and returns a
-      <a href="http://api.jquery.com/jQuery.ajax/#jqXHR">jqXHR</a>.
-      The server handler for <b>fetch</b> requests should return a JSON array of
-      models.
+      Fetch the default set of models for this collection from the database,
+      resetting the collection when they arrive.
     </p>
 
     <p id="Collection-load">
