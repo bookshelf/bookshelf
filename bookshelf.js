@@ -141,9 +141,6 @@
     // Indicates if the model should be timestamped.
     hasTimestamps: false,
 
-    // Set "exists" to true to override the `idAttribute` check in `Model#isNew`
-    exists: null,
-
     // Ensures the options sent to the model are properly attached.
     _configure: function(options) {
       if (this.options) options = _.extend({}, _.result(this, 'options'), options);
@@ -322,7 +319,7 @@
       if (options && options.shallow) return attrs;
       var relations = this.relations;
       for (var key in relations) {
-        attrs[key] = relations[key].toJSON();
+        attrs[key] = relations[key];
       }
       return attrs;
     },
@@ -606,9 +603,11 @@
           var models = parent.models;
           
           // Attach the appropriate related items onto the parent model.
+          // TODO: optimize this section.
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
-            var m = models[i2];
-            var result = Bookshelf.eagerRelated(type, relation, relatedModels, m.id);
+            var m  = models[i2];
+            var id = (type === 'belongsTo' ? m.get(relation._relation.otherKey) : m.id);
+            var result = Bookshelf.eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
         } else {
@@ -617,7 +616,7 @@
           if (type === 'hasOne' || type === 'belongsTo') {
             parent.relations[name] = relation.models[0];
           } else {
-            parent.relations[name] = new relation._relation.collectionCtor(relation.models);
+            parent.relations[name] = new relation._relation.collectionCtor(relation.models, {parse: true});
           }
         }
       }
@@ -652,6 +651,7 @@
       case "hasOne":
       case "belongsTo":
         where[relation.foreignKey] = id;
+        // TODO: Should this return an empty model otherwise?
         return eager.findWhere(where);
       case "hasMany":
         where[relation.foreignKey] = id;
@@ -666,7 +666,7 @@
   var constraints = function(target, resp) {
     var relation = target._relation;
     if (resp) {
-      target.query('whereIn', relation.foreignKey, _.pluck(resp, _.result(target, 'idAttribute')));
+      target.query('whereIn', relation.foreignKey, _.pluck(resp, relation.otherKey));
     } else {
       target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
