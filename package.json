@@ -2,7 +2,7 @@
   "name": "bookshelf",
   "version": "0.0.0",
   "description": "Bookshelf.js",
-  "main": "index.js",
+  "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -R spec test/index.js"
   },

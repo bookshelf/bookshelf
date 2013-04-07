@@ -141,9 +141,6 @@
     // Indicates if the model should be timestamped.
     hasTimestamps: false,
 
-    // Set "exists" to true to override the `idAttribute` check in `Model#isNew`
-    exists: null,
-
     // Ensures the options sent to the model are properly attached.
     _configure: function(options) {
       if (this.options) options = _.extend({}, _.result(this, 'options'), options);
@@ -654,6 +651,7 @@
       case "hasOne":
       case "belongsTo":
         where[relation.foreignKey] = id;
+        // TODO: Should this return an empty model otherwise?
         return eager.findWhere(where);
       case "hasMany":
         where[relation.foreignKey] = id;
