@@ -836,7 +836,7 @@
   // providing helpers for attaching and detaching related models.
   var pivotHelpers = {
 
-    _handler: function(method, ids, transacting) {
+    _handler: function(method, ids, options) {
       if (ids == void 0 && method === 'insert') return Q.resolve();
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pivot = this._relation;
@@ -857,8 +857,8 @@
           data[pivot.foreignKey] = item;
         }
         var builder = Bookshelf.Knex(pivot.joinTableName);
-        if (transacting) {
-          builder.transacting(transacting);
+        if (options && options.transacting) {
+          builder.transacting(options.transacting);
         }
         if (method === 'delete') return builder.where(data).del();
         return builder.insert(data);
@@ -869,7 +869,7 @@
     // table to the current. Creates & saves a new model
     // and attaches the model with a join table entry.
     attach: function(ids, options) {
-      return this._handler('insert', ids, (options && options.transacting));
+      return this._handler('insert', ids, options);
     },
 
     // Detach related object from their pivot tables.
@@ -879,7 +879,7 @@
     // these parameters. If no parameters are specified, we assume we will 
     // detach all related associations.
     detach: function(ids, options) {
-      return this._handler('delete', ids, (options && options.transacting));
+      return this._handler('delete', ids, options);
     },
 
     // Selects any additional columns on the pivot table,
