@@ -404,10 +404,10 @@
       var model = this;
       return Q.fcall(_.bind(this.validate, this), attrs, options)
         .then(function(resp) {
-          if (resp && resp !== true) {
+          if (resp) {
             model.validationError = resp;
-            model.trigger('invalid', model, error, options);
-            Bookshelf.trigger('invalid', model, error, options);
+            model.trigger('invalid', model, resp, options);
+            Bookshelf.trigger('invalid', model, resp, options);
             return Q.reject(new Error(resp));
           }
           return Q.resolve(true);
