@@ -806,12 +806,12 @@
 
     // Issues an `insert` command on the query.
     insert: function() {
-      return this.query.insert(this.model.toJSON({shallow: true}));
+      return this.query.insert(this.model.attributes);
     },
 
     // Issues an `update` command on the query.
     update: function() {
-      return this.query.where(this.model.idAttribute, this.model.id).update(this.model.toJSON({shallow: true}));
+      return this.query.where(this.model.idAttribute, this.model.id).update(this.model.attributes);
     },
 
     // Issues a `delete` command on the query.
