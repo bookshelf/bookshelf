@@ -500,7 +500,6 @@ describe('Bookshelf.Model', function() {
         item: 'test',
         validate: function() {
           equal(this.item, 'test');
-          return true;
         }
       }))();
       model.isValid().then(function() {
