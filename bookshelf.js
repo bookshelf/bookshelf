@@ -380,6 +380,7 @@
         } else {
           options.modelCtor = Target;
         }
+        options.parentIdAttr = _.result(this, 'idAttribute');
       } else {
         if (type === 'belongsTo') {
           options.fkValue = this.get(options.otherKey);
@@ -576,8 +577,8 @@
       for (name in handled) {
         pendingNames.push(name);
         pendingDeferred.push(this.fetch.call(handled[name], {
-          transacting: options.transacting,
-          withRelated: subRelated[name]
+          transacting:  options.transacting,
+          withRelated:  subRelated[name]
         }));
       }
 
@@ -672,7 +673,7 @@
   var constraints = function(target, resp) {
     var relation = target._relation;
     if (resp) {
-      target.query('whereIn', relation.foreignKey, _.pluck(resp, relation.otherKey));
+      target.query('whereIn', relation.foreignKey, _.pluck(resp, relation.parentIdAttr));
     } else {
       target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
