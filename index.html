@@ -843,7 +843,10 @@ new Patient({id: 1}).record().fetch(function(model) {
     <p id="Model-hasMany">
       <b class="header">hasMany</b><code>model.hasMany(Target, [foreignKey])</code>
       <br />
-      
+      Typically the most common relationship type, a <tt>hasMany</tt> is when the <b>model</b>
+      has a "one-to-many" relationship with the <b>Target</b> model or collection. The
+      <b>model</b> is referenced by a <b>foreignKey</b>, which defaults to the
+      <a href="#Model-tableName">tableName</a> of the current model.
     </p>
 
     <p id="Model-belongsTo">
@@ -864,15 +867,45 @@ var Author = Bookshelf.Model.extend({
 new Book({id: 1}).author().fetch(function() {
   
 });
-
-
 </pre>
 
 
     <p id="Model-belongsToMany">
       <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [fKey], [otherKey])</code>
       <br />
-      
+      The <tt>belongsToMany</tt> method defines a many-to-many relation, where the current <b>Model</b>
+      is joined to one ore more of a <b>Target</b> model through another <b>table</b>. The default name for
+      the joining table is the two table names, joined by an underscore, ordered alphabetically. For example, a
+      <tt>users</tt> table and an <tt>accounts</tt> table would have a joining table of <tt>accounts_users</tt>.
+
+<pre>
+var Account = Bookshelf.Model.extend({
+  tableName: 'accounts'
+});
+
+var User = Bookshelf.Model.extend({
+  
+  tableName: 'users',
+  
+  allAccounts: function () {
+    return this.belongsToMany(User);
+  },
+  
+  adminAccounts: function() {
+    return this.belongsToMany(User).query('where', 'access', '=', 'admin');
+  },
+  
+  viewAccounts: function() {
+    return this.belongsToMany(User).query('where', 'access', '=', 'readonly');
+  }
+
+});
+</pre>
+
+    <p>
+      The default key names in the joining table are the singular version of the table name, followed by <tt>_id</tt>.
+      So in the above case, the columns in the joining table would be <tt>account_id</tt>, <tt>user_id</tt>, and
+      <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts.
     </p>
 
     <p id="Model-attach">
@@ -1031,6 +1064,15 @@ artist.set({birthday: "December 16, 1866"});
 
 console.log(JSON.stringify(artist));
 </pre>
+
+    <p id="Model-format">
+      <b class="header">format</b><code>model.format(attributes, [options])</code>
+      <br />
+      The <b>format</b> method is used to modify the current state of the model before
+      it is persisted to the database. The <b>attributes</b> passed are a shallow clone
+      of the model, and are only used for inserting/updating - the current values of the 
+      model are left intact.
+    </p>    
 
     <p id="Model-parse">
       <b class="header">parse</b><code>model.parse(response, [options])</code>
@@ -1416,11 +1458,13 @@ collection
   <h2 id="Sync">Bookshelf.Sync</h2>
 
     <p>
-      The <b>Bookshelf.Sync</b> object handles all database communication, for the models and collections.
-      Unlike Backbone's <tt>sync</tt> mehtod, Bookshelf.Sync is a constructor taking two arguments,
-      the <tt>model</tt> and the <tt>options</tt> for the sync method being performed. It comes with five
-      built in methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>, 
-      <a href="#Sync-select">select</a>
+      The <b>Bookshelf.Sync</b> object handles all database communication for models and collections.
+      Unlike Backbone's <tt>sync</tt> method, <b>Bookshelf.Sync</b> is a constructor taking two arguments:
+      the current <tt>model</tt> (or collection) and any <tt>options</tt> needed for 
+      the sync method being performed. It comes with five built in 
+      methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>, 
+      <a href="#Sync-insert">insert</a>, <a href="#Sync-update">update</a>, and 
+      <a href="#Sync-del">del</a> (delete).
     </p>
 
     <p id="Sync-first">

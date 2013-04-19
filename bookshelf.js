@@ -311,6 +311,12 @@
       });
     },
 
+    // **format** converts a model into the values that should be saved into
+    // the database table. The default implementation is just to pass the response along.
+    format: function(attrs, options) {
+      return attrs;
+    },
+
     // Returns an object containing a shallow copy of the model attributes,
     // along with the `toJSON` value of any relations,
     // unless `{shallow: true}` is passed in the `options`.
@@ -806,12 +812,13 @@
 
     // Issues an `insert` command on the query.
     insert: function() {
-      return this.query.insert(this.model.attributes);
+      return this.query.insert(this.model.format(_.extend({}, this.model.attributes)));
     },
 
     // Issues an `update` command on the query.
     update: function() {
-      return this.query.where(this.model.idAttribute, this.model.id).update(this.model.attributes);
+      return this.query.where(this.model.idAttribute, this.model.id)
+        .update(this.model.format(_.extend({}, this.model.attributes)));
     },
 
     // Issues a `delete` command on the query.
@@ -936,7 +943,10 @@
     // Setup the prototype chain.
     var currentObj = this;
     for (var i = depth.length; i > 0; i--) {
-      currentObj = currentObj.extend(depth[i-1]);
+      
+      // Omit parse and toJSON, as these have fundamentally different meanings
+      // on the client and server.
+      currentObj = currentObj.extend(_.omit(depth[i-1], 'parse', 'toJSON'));
     }
     
     return currentObj.extend(protoProps, staticProps);
