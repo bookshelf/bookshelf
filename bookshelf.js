@@ -122,21 +122,13 @@
   };
 
   // List of attributes attached directly from the constructor's options object.
-  var modelProps = ['tableName', 'fillable', 'guarded', 'hasTimestamps'];
+  var modelProps = ['tableName', 'hasTimestamps'];
 
   // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.
   _.extend(Model.prototype, Backbone.Model.prototype, Events, Shared, {
 
     // The database table associated with the model.
     tableName: null,
-
-    // Array of attributes which can be set with
-    // mass-assignment (whitelisting).
-    fillable: null,
-
-    // Array of attributes which cannot be set with
-    // mass-assignment (blacklisting).
-    guarded: null,
 
     // Indicates if the model should be timestamped.
     hasTimestamps: false,
@@ -147,42 +139,14 @@
       _.extend(this, _.pick(options, modelProps));
     },
 
-    // Sets an attribute on the `Model`. If the key is an object, 
-    // check for any mass-assignment guards defined on the model
-    // and filter as appropriate. If any filtered items are detected,
-    // fire an event on the model and on the `Bookshelf` object.
-    // Passes through to `set` on `Backbone.Model`.
+    // A validation skip is required to continue using the existing `Backbone#set`
+    // method, as we want to chain here rather than returning a promise.
     set: function(key, val, options) {
-      if (key == null) return this;
-      var attrs;
-      
-      if (typeof key === 'object') {
-        attrs = key;
-        options = (val || {});
-        
-        var fillable = this.fillable;
-        var guarded  = this.guarded;
-        
-        if ((fillable || guarded) && options.guard !== false) {
-          var sanitized = attrs;
-          if (fillable) sanitized = _.pick(sanitized, fillable);
-          if (guarded) sanitized = _.omit(sanitized, guarded);
-          var filtered = _.omit(attrs, _.keys(sanitized));
-          if (!_.isEmpty(filtered)) {
-            this.trigger('inaccessible', this, filtered, options);
-            Bookshelf.trigger('inaccessible', this, filtered, options);
-          }
-          attrs = sanitized;
-        }
-      } else {
-        (attrs = {})[key] = val;
-        options || (options = {});
-      }
-
-      // A validation skip is required to continue using the existing `Backbone#set`
-      // method, as we want to chain here rather than returning a promise.
-      options.validate = false;
-      return Backbone.Model.prototype.set.call(this, attrs, options);
+      var validate = this._validate;
+      this._validate = function() { return true; };
+      Backbone.Model.prototype.set.call(this, key, val, options);
+      this._validate = validate;
+      return this;
     },
 
     // The `hasOne` relation specifies that this table has exactly one of
@@ -236,7 +200,6 @@
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
-      options = _.extend(options || {}, {guard: false});
       return this.sync(this, options).first();
     },
 
@@ -451,7 +414,6 @@
     // Fetch the models for this collection, resetting the models for the query
     // when they arrive.
     fetch: function(options) {
-      options = _.extend(options || {}, {guard: false});
       return this.sync(this, options).select();
     },
 
@@ -497,7 +459,6 @@
     // Returns a deferred object, with the cumulative handling of
     // multiple (potentially nested) relations.
     fetch: function(options) {
-      options = _.extend(options || {}, {guard: false});
       
       var current = this;
       var models  = this.models = [];
@@ -931,7 +892,8 @@
     var passed = false;
 
     while (passed !== true) {
-      if (_.isEqual(current.prototype, Backbone.Model.prototype) || _.isEqual(current.prototype, Backbone.Collection.prototype)) {
+      if (_.isEqual(current.prototype, Backbone.Model.prototype) || 
+        _.isEqual(current.prototype, Backbone.Collection.prototype)) {
         passed = true;
       } else if (!current.__super__) {
         throw new Error("Only Backbone objects may be converted.");

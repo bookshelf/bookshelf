@@ -320,8 +320,6 @@
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>      
       <li>– <a href="#Model-save">save</a></li>
       <li>– <a href="#Model-destroy">destroy</a></li>
-      <li>– <a href="#Model-fillable">fillable</a></li>
-      <li>– <a href="#Model-guarded">guarded</a></li>
       <li>– <a href="#Model-toJSON">toJSON</a></li>
       <li>– <a href="#Model-parse">parse</a></li>
       <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>      
@@ -534,9 +532,7 @@ var Customer = Bookshelf.Model.extend({
       When creating an instance of a model, you can pass in the initial values
       of the <b>attributes</b>, which will be <a href="#Model-set">set</a> on the
       model. If you define an <b>initialize</b> function, it will be invoked when
-      the model is created. Any <a href="#Model-fillable">fillable</a> or <a href="#Model-guarded">guarded</a> 
-      properties will not be assigned on creation of a new model, unless <tt>{guard: false}</tt> is
-      passed in the options.
+      the model is created.
     </p>
 
 <pre>
@@ -568,7 +564,7 @@ var Books = Bookshelf.Model.extend({
 </pre>
 
     <p>
-      Several properties: <tt>tableName</tt>, <tt>fillable</tt>, and <tt>guarded</tt>, <tt>hasTimestamps</tt> 
+      The<tt>tableName</tt> and <tt>hasTimestamps</tt> properties
       will be directly attached if passed in the <b>options</b> during model creation.
     </p>
 
@@ -622,14 +618,6 @@ customer.set({first_name: "Joe", last_name: "Customer"});
 
 customer.set("telephone", "555-555-1212");
 </pre>
-
-    <p>
-      If a hash of attributes is used, the <a href="#Model-fillable">fillable</a> and 
-      <a href="#Model-guarded">guarded</a> properties will be used to silently filter 
-      any inaccessible mass-assignment properties unless <tt>{guard: false}</tt> is passed. 
-      An <tt>inaccessible</tt> event will be fired on both the model and the <tt>Bookshelf</tt> 
-      namespace if any non-permitted items are in the hash.
-    </p>
 
     <p id="Model-get">
       <b class="header">get</b><code>model.get(attribute)</code>
@@ -982,27 +970,6 @@ new Post({name: 'New Article'}).save().then(function(model) {
       <br />
       The Model's <b>destroy</b> method performs a <tt>delete</tt> on the model, using the model's
       <a href="#Model-idAttribute">idAttribute</a> to constrain the query.
-    </p>
-
-    <p id="Model-fillable">
-      <b class="header">fillable</b><code>model.fillable</code>
-      <br />
-      The <b>fillable</b> property is an optional array of attribute names that 
-      may be mass-assigned (whitelisting). When creating a new model, or using <tt>model.set(object)</tt>,
-      only the properties in this array will be fillable, unless <tt>{guard: false}</tt> 
-      is passed as an option. An <tt>inaccessible</tt> event will be fired
-      if any filtered attributes are present in a mass-assignment.
-    </p>
-
-    <p id="Model-guarded">
-      <b class="header">guarded</b><code>model.guarded</code>
-      <br />
-      The <b>guarded</b> property is the opposite of <a href="#Model-fillable">fillable</a>, 
-      an optional array of attributes that may not be mass-assigned (blacklisting). When 
-      creating a new model, or using <tt>model.set(object)</tt>, the properties in this 
-      array will be fillable, unless <br /> <tt>{guard: false}</tt> is passed as an option. 
-      An <tt>inaccessible</tt> event will be fired if any filtered attributes are present 
-      in a mass-assignment.
     </p>
 
     <p id="Model-attributes">
@@ -1687,10 +1654,6 @@ view.stopListening(model);
       Views as you see fit. The <tt>Backbone</tt> object itself mixes in <tt>Events</tt>,
       and can be used to emit any global events that your application needs.
     </p>
-
-    <ul class="small">
-      <li><b>"inaccessible"</b> (model, data, options) &mdash; when an inaccessible attribute is in a mass assignment. </li>
-    </ul>
 
     <p>Events from Backbone:</p>
 

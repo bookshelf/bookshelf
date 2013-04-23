@@ -53,16 +53,6 @@ describe('Bookshelf.Model', function() {
       equal(SubUser.classMethod2(), 'test2');
     });
 
-    it('Prevents invalid attributes on new object creation, unless {guard: false} is passed', function() {
-      var Test = Bookshelf.Model.extend({guarded: ['password']});
-      var x = new Test({name: 'test', password: '123'});
-      equal(x.get('name'), 'test');
-      equal(x.get('password'), void 0);
-      var y = new Test({name: 'test', password: '123'}, {guard: false});
-      equal(y.get('name'), 'test');
-      equal(y.get('password'), '123');
-    });
-
     it('accepts a custom `constructor` property', function() {
       var User = Bookshelf.Model.extend({
         constructor: function() {
@@ -136,45 +126,10 @@ describe('Bookshelf.Model', function() {
 
   });
 
-  describe('set, fillable, guarded', function() {
-    var model;
-    beforeEach(function(){
-      var Model = Bookshelf.Model.extend({
-        fillable: ['name', 'role'],
-        guarded:  ['role']
-      });
-      model = new Model();
-    });
-    afterEach(function() { model.off(); });
+  describe('set', function() {
 
-    it('is an array, with the list of whitelisted attributes', function() {
-      equal(_.isArray(model.fillable), true);
-    });
-
-    it('should only allow the mass assignment of the specified items', function() {
-      model.set({name: 'Tim', role: 'admin'});
-      deepEqual(model.toJSON(), {name: 'Tim'});
-    });
-
-    it('should override fillable with guarded', function() {
-      model.set({name: 'Tim', role: 'user'});
-      equal(model.has('role'), false);
-    });
-
-    it('assign guarded or protected items without mass assignment', function() {
-      model.set({name: 'Tim', 'role': 'admin'});
-      model.set('role', 'admin');
-      equal(model.get('role'), 'admin');
-    });
-
-    it('should trigger an inaccessible event on a guarded mass-assignment', function() {
-      var output = [];
-      model.on('inaccessible', function() { output = arguments; });
-      model.set({name: 'Tim', role: 'admin'});
-      equal(output[0], (model));
-      deepEqual(output[1], {role: 'admin'});
-    });
-
+    it('should never run validation');
+  
   });
 
   describe('query', function() {
