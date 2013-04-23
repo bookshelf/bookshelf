@@ -320,8 +320,9 @@
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>      
       <li>– <a href="#Model-save">save</a></li>
       <li>– <a href="#Model-destroy">destroy</a></li>
-      <li>– <a href="#Model-toJSON">toJSON</a></li>
+      <li>– <a href="#Model-format">format</a></li>
       <li>– <a href="#Model-parse">parse</a></li>
+      <li>– <a href="#Model-toJSON">toJSON</a></li>
       <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>      
       <li>– <a href="#Model-query">query</a></li>
       <li>– <a href="#Model-resetQuery">resetQuery</a></li>
@@ -1011,27 +1012,6 @@ alert("Dessert will be " + (new Meal).get('dessert'));
       Instead, define <b>defaults</b> as a function.
     </p>
 
-    <p id="Model-toJSON">
-      <b class="header">toJSON</b><code>model.toJSON([options])</code>
-      <br />
-      Return a copy of the model's <a href="#Model-attributes">attributes</a> for JSON stringification.
-      If the model has any <a href="#Model-relations">relations</a> defined, this will also call
-      <tt>toJSON</tt> on each of the related objects, and include them on the object unless <tt>{shallow: true}</tt>
-      is passed as an option. For more information on the use of <tt>toJSON</tt>, check out the 
-      <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript API for <b>JSON.stringify</b></a>.
-    </p>
-
-<pre>
-var artist = new Bookshelf.Model({
-  firstName: "Wassily",
-  lastName: "Kandinsky"
-});
-
-artist.set({birthday: "December 16, 1866"});
-
-console.log(JSON.stringify(artist));
-</pre>
-
     <p id="Model-format">
       <b class="header">format</b><code>model.format(attributes, [options])</code>
       <br />
@@ -1053,6 +1033,27 @@ console.log(JSON.stringify(artist));
       on a text field containing <tt>JSON</tt>, or explicitly typecasting a boolean
       in a <tt>sqlite3</tt> database response.
     </p>
+
+    <p id="Model-toJSON">
+      <b class="header">toJSON</b><code>model.toJSON([options])</code>
+      <br />
+      Return a copy of the model's <a href="#Model-attributes">attributes</a> for JSON stringification.
+      If the model has any <a href="#Model-relations">relations</a> defined, this will also call
+      <tt>toJSON</tt> on each of the related objects, and include them on the object unless <tt>{shallow: true}</tt>
+      is passed as an option. For more information on the use of <tt>toJSON</tt>, check out the 
+      <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript API for <b>JSON.stringify</b></a>.
+    </p>
+
+<pre>
+var artist = new Bookshelf.Model({
+  firstName: "Wassily",
+  lastName: "Kandinsky"
+});
+
+artist.set({birthday: "December 16, 1866"});
+
+console.log(JSON.stringify(artist));
+</pre>
 
     <p id="Model-Underscore-Methods">
       <b class="header">Underscore Methods (6)</b>
@@ -1379,7 +1380,7 @@ collection
       <li><a href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
       <li><a href="http://backbonejs.org/#Collection-where">where</a></li>
       <li><a href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
-      <li><a href="http://backbonejs.org/#Collection-parse">parse</a></li>
+      <li><a href="http://backbonejs.org/#Collection-parse">parse *</a></li>
       <li><a href="http://backbonejs.org/#Collection-clone">clone</a></li>
     </ul>
 
