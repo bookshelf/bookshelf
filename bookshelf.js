@@ -683,9 +683,8 @@
     // Runs a `select` query on the database, adding any necessary relational
     // constraints, resetting the query when complete. If there are results and
     // eager loaded relations, those are fetched and returned on the model before
-    // the promise is resolved. Any `success` or `error` handlers passed in the
-    // options will be called. An empty response will reject the deferred
-    // with an `emptyResponse` message, and call/trigger the appropriate handlers.
+    // the promise is resolved. Any `success` handler passed in the
+    // options will be called.
     select: function() {
       var model = this.model;
       var options = this.options;
@@ -722,9 +721,8 @@
           return resp;
         }
         
-        if (options.error) options.error(model, 'emptyResponse', options);
-        model.trigger('error', model, 'emptyResponse', options);
-        
+        // TODO: any handling for empty responses?
+
         if (model instanceof Model) {
           model.clear();
           return {};

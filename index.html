@@ -329,8 +329,6 @@
       <li>– <a href="#Model-hasTimestamps">hasTimestamps</a></li>
       <li>– <a href="#Model-timestamp">timestamp</a></li>
       <li>– <a href="#Model-defaults">defaults</a></li>
-      <li>– <a href="#Model-validate">validate (t)</a></li>
-      <li>– <a href="#Model-isValid">isValid (t)</a></li>
       <li>– <a href="#Model-isNew">isNew</a></li>
       <li>– <a href="#Model-sync">sync</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
@@ -468,10 +466,10 @@ Bookshelf.Initialize({
     <h2 id="Model">Bookshelf.Model</h2>
 
     <p>
-      <b>Models</b> are objects representing individual database entries,
-      as well as a large part of the logic surrounding it: conversions, 
-      validations, computed properties, and access control. You can <a href="#Model-extend">extend</a> 
-      <b>Bookshelf.Model</b> with your domain-specific methods.
+      <b>Models</b> are simple objects representing individual database rows, specifying the
+      <a href="#Model-tableName">tableName</a> and any <a href="#Model-relation-types">relations</a>
+      to other models. They can be <a href="#Model-extend">extended</a> with any domain-specific methods,
+      which can handle components such as validations, computed properties, and access control.
     </p>
 
     <p id="Model-extend">
@@ -953,10 +951,9 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
       <br />
       The Model's <b>save</b> method is used to perform an <tt>insert</tt> or <tt>update</tt>
       query with the model, dependent on whether the model <a href="#Model-isNew">isNew</a>.
-      Before saving, any <a href="#Model-validate">validations</a> are run, unless 
-      <tt>{validate: false}</tt> is passed in the options. If you wish to use <tt>update</tt>
-      rather than <tt>insert</tt> or vice versa, the <tt>{method: ...}</tt> option may be specified
-      to explicitly state which <a href="#Sync">sync</a> method to use in the save call.
+      If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the 
+      <tt>{method: ...}</tt> option may be specified to explicitly state which 
+      <a href="#Sync">sync</a> method to use in the save call.
     </p>
 
 <pre>
@@ -1120,56 +1117,6 @@ model
       set the <tt>created_at</tt> and <tt>updated_at</tt> attributes to the current date if it is new,
       and just the <tt>updated_at</tt> attribute if it isn't. You may override this method if you
       wish to use different column names or types for the timestamps.
-    </p>
-
-    <p id="Model-validate">
-      <b class="header">validate</b><code>model.validate(attributes)</code>
-      <br />
-      This method is left undefined, and you're encouraged to override it with
-      your custom validation logic, if you have any that can be performed
-      in JavaScript. <b>validate</b> is called before <tt>save</tt> and is passed 
-      the model attributes updated with the values from <tt>set</tt> or <tt>save</tt>.
-      If the attributes are valid, don't return anything from <b>validate</b>;
-      if they are invalid, return an error of your choosing. It
-      can be as simple as a string error message to be displayed, or a complete
-      error object that describes the error programmatically. If <b>validate</b>
-      returns an error, <tt>set</tt> and <tt>save</tt> will not continue, and the
-      model attributes will not be modified.
-      Failed validations trigger an <tt>"error"</tt> event.
-    </p>
-
-<pre>
-var Chapter = Bookshelf.Model.extend({
-  validate: function(attrs) {
-    if (attrs.end < attrs.start) {
-      return "can't end before it starts";
-    }
-  }
-});
-
-var one = new Chapter({
-  title : "Chapter One: The Beginning"
-});
-
-one.on("error", function(model, error) {
-  alert(model.get("title") + " " + error);
-});
-
-one.set({
-  start: 15,
-  end:   10
-});
-</pre>
-
-    <p>
-      For asynchronous validations, you may return a deferred and the value resolved by 
-      the method will be used as the validation.
-    </p>
-
-    <p id="Model-isValid">
-      <b class="header">isValid</b><code>model.isValid().then(function(model) {...</code>
-      <br />
-      Runs a <a href="#Model-validate">validate</a> method on the model, returning a promise.
     </p>
 
     <p id="Model-clone">
@@ -1667,7 +1614,6 @@ view.stopListening(model);
       <li><b>"destroy"</b> (model, collection, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
       <li><b>"request"</b> (model, xhr, options) &mdash; when a model (or collection) has started a request to the server. </li>
       <li><b>"sync"</b> (model, resp, options) &mdash; when a model has been successfully synced with the server. </li>
-      <li><b>"error"</b> (model, collection) &mdash; when a model's validation fails, or a <a href="#Model-save">save</a> call fails on the server. </li>
       <li><b>"route:[name]"</b> (router) &mdash; when one of a router's routes has matched. </li>
       <li><b>"all"</b> &mdash; this special event fires for <i>any</i> triggered event, passing the event name as the first argument. </li>
     </ul>
