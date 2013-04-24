@@ -126,12 +126,6 @@ describe('Bookshelf.Model', function() {
 
   });
 
-  describe('set', function() {
-
-    it('should never run validation');
-  
-  });
-
   describe('query', function() {
 
     var model = new Bookshelf.Model();
@@ -228,33 +222,18 @@ describe('Bookshelf.Model', function() {
 
     });
 
-    it('accepts succeess & error options, similar to standard Backbone', function(ok) {
-      var count = 0;
+    it('accepts `success` in the options, similar to Backbone', function(ok) {
+      var count = 1;
       new Site().set({id: 1}).fetch({
         success: function() {
           count++;
         }
-      }).then(function() {
-        return new Site({id: 10}).fetch({
-          error: function() {
-            count++;
-          }
-        });
       })
       .then(function() {
         equal(count, 2);
         ok();
-      });
-    });
-
-    it('triggers an "emptyResponse" error event when no records are found on set or save', function(ok) {
-      var site = new Site().set({id: 10});
-      site.on('error', function(model, msg, options) { 
-        deepEqual(site, model);
-        equal("emptyResponse", msg);
-        ok();
-      });
-      site.fetch();
+      })
+      .done();
     });
 
   });
