@@ -387,6 +387,9 @@
       return this.sync(this, options).select();
     },
 
+    // TODO: Create method on the model.
+    create: function() {},    
+
     // The `tableName` on the associated Model, used in relation building.
     tableName: function() {
       return _.result(this.model.prototype, 'tableName');
