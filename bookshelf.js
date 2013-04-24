@@ -125,7 +125,9 @@
   var modelProps = ['tableName', 'hasTimestamps'];
 
   // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.
-  _.extend(Model.prototype, Backbone.Model.prototype, Events, Shared, {
+  // Since Bookshelf won't handle validation, the 'isValid' method is taken out of the Backbone
+  // prototype.
+  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, 'isValid'), Events, Shared, {
 
     // The database table associated with the model.
     tableName: null,
@@ -137,16 +139,6 @@
     _configure: function(options) {
       if (this.options) options = _.extend({}, _.result(this, 'options'), options);
       _.extend(this, _.pick(options, modelProps));
-    },
-
-    // A validation skip is required to continue using the existing `Backbone#set`
-    // method, as we want to chain here rather than returning a promise.
-    set: function(key, val, options) {
-      var validate = this._validate;
-      this._validate = function() { return true; };
-      Backbone.Model.prototype.set.call(this, key, val, options);
-      this._validate = validate;
-      return this;
     },
 
     // The `hasOne` relation specifies that this table has exactly one of
@@ -232,26 +224,20 @@
         attrs = _.extend({}, defaults, this.attributes);
       }
 
-      options = _.extend({validate: true}, options);
-
       var model = this;
 
-      return Q.fcall(_.bind(this._validate, this), attrs, options).then(function() {
+      model.set(attrs);
 
-        model.set(attrs);
+      // If the model has timestamp columns,
+      // set them as attributes on the model
+      if (model.hasTimestamps) {
+        model.timestamp(options);
+      }
 
-        // If the model has timestamp columns,
-        // set them as attributes on the model
-        if (model.hasTimestamps) {
-          model.timestamp(options);
-        }
+      var sync = model.sync(model, options);
+      var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
-        var sync = model.sync(model, options);
-        var method = options.method || (model.isNew(options) ? 'insert' : 'update');
-
-        return sync[method]();
-
-      }).then(function(resp) {
+      return sync[method]().then(function(resp) {
 
         // After a successful database save, the id is updated
         // if the model was created, otherwise the success function is called
@@ -262,6 +248,7 @@
         
         return model;
       });
+
     },
 
     // Destroy a model, calling a delete based on its `idAttribute`.
@@ -300,11 +287,6 @@
       if (this.isNew(options)) {
         this.set('created_at', d);
       }
-    },
-
-    // Check the validity of a model.
-    isValid: function(options) {
-      return this._validate(null, _.extend({}, options, {validate: true}));
     },
 
     // Create a new model with identical attributes to this one.
@@ -365,24 +347,12 @@
       return target;
     },
 
-    // Run validation against the next complete set of model attributes,
-    // returning `true` if all is well. Otherwise, fire a general
-    // `"error"` event and call the error callback, if specified.
-    _validate: function(attrs, options) {
-      if (!options.validate || !this.validate) return Q.resolve(true);
-      attrs = _.extend({}, this.attributes, attrs);
-      var model = this;
-      return Q.fcall(_.bind(this.validate, this), attrs, options)
-        .then(function(resp) {
-          if (resp) {
-            model.validationError = resp;
-            model.trigger('invalid', model, resp, options);
-            Bookshelf.trigger('invalid', model, resp, options);
-            return Q.reject(new Error(resp));
-          }
-          return Q.resolve(true);
-      });
+    // Validation can be complicated, and is better left to be 
+    // handled on its own and not mixed in with database logic.
+    _validate: function() { 
+      return true; 
     }
+
   });
 
   // Bookshelf.Collection
@@ -903,13 +873,13 @@
       }
     }
 
-    // Setup the prototype chain.
+    // Setup the correct prototype chain.
     var currentObj = this;
     for (var i = depth.length; i > 0; i--) {
       
       // Omit parse and toJSON, as these have fundamentally different meanings
       // on the client and server.
-      currentObj = currentObj.extend(_.omit(depth[i-1], 'parse', 'toJSON'));
+      currentObj = currentObj.extend(_.omit(depth[i - 1], 'parse', 'toJSON'));
     }
     
     return currentObj.extend(protoProps, staticProps);

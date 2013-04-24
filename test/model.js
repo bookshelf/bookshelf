@@ -8,11 +8,11 @@ var Backbone  = Bookshelf.Backbone;
 var Models    = require('./data/objects').Models;
 
 var stubSync = {
-  first:  function() { return {}; },
-  select: function() { return {}; },
-  insert: function() { return {}; },
-  update: function() { return {}; },
-  del:    function() { return {}; }
+  first:  function() { return Q.resolve({}); },
+  select: function() { return Q.resolve({}); },
+  insert: function() { return Q.resolve({}); },
+  update: function() { return Q.resolve({}); },
+  del:    function() { return Q.resolve({}); }
 };
 
 describe('Bookshelf.Model', function() {
@@ -422,59 +422,6 @@ describe('Bookshelf.Model', function() {
       item.save().done();
     });
   
-  });
-
-
-  describe('validate / isValid', function() {
-    
-    var model;
-
-    beforeEach(function() {
-      model = new (Bookshelf.Model.extend({
-        item: 'test',
-        validate: function() {
-          return 'this is an error';
-        }
-      }))();
-    });
-
-    it('will fail if a non-true, non empty value is returned', function(ok) {
-      model.isValid().then(null, function() {
-        ok();
-      }).done();
-    });
-
-    it('will fail if a non-true, non empty value is returned', function(ok) {
-      model.save('tim', 'test').fail(function() {
-        ok();
-      });
-    });
-
-    it('keeps the context of the model', function(ok) {
-      model = new (Bookshelf.Model.extend({
-        item: 'test',
-        validate: function() {
-          equal(this.item, 'test');
-        }
-      }))();
-      model.isValid().then(function() {
-        ok();
-      }).done();
-    });
-
-    it('accepts a deferrred object', function() {
-      model = new (Bookshelf.Model.extend({
-        item: 'test',
-        validate: function () {
-          var dfd = Q.defer();
-          setTimeout(function () {
-            dfd.resolve('Passes isValid');
-          }, 100);
-          return dfd.promise;
-        }
-      }))();
-    });
-
   });
   
   describe('isNew', function() {
