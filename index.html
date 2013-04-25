@@ -436,11 +436,18 @@
     <h2 id="introduction">Introduction</h2>
 
     <p>
-      Bookshelf adds additional support for handling objects on the server, persisting and querying 
-      them from a database, and forming relations between these objects in an Active Record Pattern.
-      At &lt;1000 lines of well documented code, Bookshelf is easy to understand, and extend. 
-      It also doesn't force you to use any specific validation scheme, and provides extremely flexible
-      and efficient relation handling.
+      Bookshelf extends the excellent foundation of Backbone.js Models and Collections, using similar
+      patterns, naming conventions, and philosophies to build a lightweight, easy to navigate ORM.
+      If you know how to use Backbone, you probably already know how to use Bookshelf.
+    </p>
+
+    <p>
+      The goal of Bookshelf is to build a simple library that handles common tasks when querying relational
+      databases on the server (or in other environments with databases), and forming relations 
+      between these objects, using ideas from both the Active Record and DataMapper patterns. 
+      At ~900 lines of well documented code,  Bookshelf is easy to understand, and extend. 
+      It doesn't force you to use any specific validation scheme, and provides extremely flexible and 
+      efficient relation handling, and first class transaction support.
     </p>
 
     <h2 id="Initialize">Bookshelf.Initialize</h2>
@@ -1129,8 +1136,17 @@ model
     <p id="Model-isNew">
       <b class="header">isNew</b><code>model.isNew()</code>
       <br />
-      Checks the <a href="#Model-id">id</a> to determine whether the model is considered "new".
+      Checks for the existence of an <a href="#Model-id">id</a> to determine whether the model 
+      is considered "new".
     </p>
+
+<pre>
+var modelA = new Bookshelf.Model();
+modelA.isNew(); // true
+
+var modelB = new Bookshelf.Model({id: 1});
+modelB.isNew(); // false
+</pre>
 
     <p id="Model-sync">
       <b class="header">sync</b><code>model.sync(method, model, [options])</code>

@@ -29,4 +29,3 @@ before(function(ok) {
 require('./model');
 require('./collection');
 require('./relations');
-require('./events');
