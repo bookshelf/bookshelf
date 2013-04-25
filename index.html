@@ -436,18 +436,18 @@
     <h2 id="introduction">Introduction</h2>
 
     <p>
-      Bookshelf extends the excellent foundation of Backbone.js Models and Collections, using similar
-      patterns, naming conventions, and philosophies to build a lightweight, easy to navigate ORM.
-      If you know how to use Backbone, you probably already know how to use Bookshelf.
+      The goal of Bookshelf is to build a simple library that handles common tasks when querying relational
+      databases on the server (or in other environments with databases), and forming relations 
+      between these objects, using ideas from both Active Record and DataMapper patterns. 
+      At ~900 lines of well documented code,  Bookshelf is easy to understand, and extend. 
+      It doesn't force you to use any specific validation scheme, and provides extremely flexible and 
+      efficient relation/nested-relation loading, and first class transaction support.
     </p>
 
     <p>
-      The goal of Bookshelf is to build a simple library that handles common tasks when querying relational
-      databases on the server (or in other environments with databases), and forming relations 
-      between these objects, using ideas from both the Active Record and DataMapper patterns. 
-      At ~900 lines of well documented code,  Bookshelf is easy to understand, and extend. 
-      It doesn't force you to use any specific validation scheme, and provides extremely flexible and 
-      efficient relation handling, and first class transaction support.
+      Bookshelf extends the excellent foundation of Backbone.js Models and Collections, using similar
+      patterns, naming conventions, and philosophies to build a lightweight, easy to navigate ORM.
+      If you know how to use Backbone, you probably already know how to use Bookshelf.
     </p>
 
     <h2 id="Initialize">Bookshelf.Initialize</h2>
@@ -1452,7 +1452,7 @@ collection
 
     <p>
       Unlike in Backbone, <tt>Events</tt> are not a prominent feature of Bookshelf. Models are 
-      typically short lived, and so binding to events is less useful.
+      typically short lived, so binding to events isn't quite as useful.
     </p>
 
     <p id="Events-catalog">
@@ -1493,7 +1493,7 @@ collection
       <b class="header">Bookshelf.Backbone</b>
       <br />
       A reference to the copy of Backbone used to create the Bookshelf objects can be accessed
-      from Bookshelf.Backbone. This can be helpful if you want to use Models &amp; Collections
+      from <tt>Bookshelf.Backbone</tt>. This can be helpful if you want to use Models &amp; Collections
       elsewhere on the server, and ensure they are compatible with the Bookshelf objects.
     </p>
 
@@ -1506,14 +1506,10 @@ collection
     <p id="Utility-Transaction">
       <b class="header">Bookshelf.Transaction</b>
       <br />
-      An alias to Knex.Transaction, for convenient transaction support.
+      An alias to <tt>Knex.Transaction</tt>, for convenient transaction support.
     </p>
 
     <h2 id="faq">F.A.Q.</h2>
-
-    <p>
-      <b class="header">How do I extend Backbone.js Models or Collections</b>
-    </p>
 
     <p>
       <b class="header">Can I use Bookshelf outside of Node.js</b><br />
