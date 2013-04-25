@@ -344,10 +344,11 @@
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
+      <li>– <a href="#Collection-parse">parse</a></li>
       <li>– <a href="#Collection-toJSON">toJSON</a></li>
-      <li>– <a href="#Collection-fetch">fetch (t)</a></li>
+      <li>– <a href="#Collection-fetch">fetch</a></li>
       <li>– <a href="#Collection-load">load</a></li>
-      <li>– <a href="#Collection-create">create (itd)</a></li>
+      <li>– <a href="#Collection-create">create (todo)</a></li>
       <li>– <a href="#Collection-query">query</a></li>
       <li>– <a href="#Collection-resetQuery">resetQuery</a></li>
       <li>– <a href="#Collection-sync">sync</a></li>
@@ -370,7 +371,6 @@
       Events
     </a>
     <ul class="toc_section">
-      <li>- <a href="#Event-methods"><b>Event methods</b></a></li>
       <li>- <a href="#Events-catalog"><b>Catalog of Built-in Events</b></a></li>
     </ul>
 
@@ -709,11 +709,11 @@ new Posts().fetch().then(function(collection) {
     </p>
 
 <pre>
-var Summary = new (Bookshelf.Model.extend({tableName: 'summaries'}));
+var Summary = Bookshelf.Model.extend({tableName: 'summaries'});
 
-var Author = new (Bookshelf.Model.extend({tableName: 'authors'}));
+var Author = Bookshelf.Model.extend({tableName: 'authors'});
 
-var Owner  = new (Bookshelf.Model.extend({tableName: 'owners'}));
+var Owner  = Bookshelf.Model.extend({tableName: 'owners'});
 
 var Book = Bookshelf.Model.extend({
   summary: function() {
@@ -1022,7 +1022,7 @@ alert("Dessert will be " + (new Meal).get('dessert'));
       <br />
       The <b>parse</b> method is called whenever a model's data is returned in a 
       <a href="#Model-fetch">fetch</a> call. The function is passed 
-      the raw <tt>response</tt> object, and should return the attributes hash 
+      the raw database <tt>response</tt> object, and should return the attributes hash 
       to be <a href="#Model-set">set</a> on the model. The default implementation 
       is a no-op, simply passing through the JSON response. Override this if 
       you need to format the database responses - for example calling <tt>JSON.parse</tt>
@@ -1232,6 +1232,16 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       is desired.
     </p>
 
+    <p id="Model-parse">
+      <b class="header">parse</b><code>model.parse(response, [options])</code>
+      <br />
+      The <b>parse</b> method is called whenever a collection's data is returned in a 
+      <a href="#Collection-fetch">fetch</a> call. The function is passed 
+      the raw database <tt>response</tt> array, and should return an array
+      to be <a href="#Collection-set">set</a> on the collection. The default implementation 
+      is a no-op, simply passing through the JSON response.
+    </p>
+
     <p id="Collection-toJSON">
       <b class="header">toJSON</b><code>collection.toJSON([options])</code>
       <br />
@@ -1326,7 +1336,6 @@ collection
       <li><a href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
       <li><a href="http://backbonejs.org/#Collection-where">where</a></li>
       <li><a href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
-      <li><a href="http://backbonejs.org/#Collection-parse">parse *</a></li>
       <li><a href="http://backbonejs.org/#Collection-clone">clone</a></li>
     </ul>
 
@@ -1423,6 +1432,45 @@ collection
       custom constraints have been defined, the promise will fail.
     </p>
 
+  <h2 id="Events">Bookshelf.Events</h2>
+
+    <p>
+      Unlike in Backbone, <tt>Events</tt> are not a prominent feature of Bookshelf. Models are 
+      typically short lived, and so binding to events is less useful.
+    </p>
+
+    <p id="Events-catalog">
+      <b class="header">Catalog of Events</b>
+      <br />
+      Here's the complete list of recognized Bookshelf events, with arguments.
+      Other events from <tt>Backbone</tt> might be triggered, but aren't officially supported unless they
+      are noted in this list. You're also free to trigger your own events on Models and Collections and
+      The <tt>Bookshelf</tt> object itself mixes in <tt>Events</tt>, and can be used to emit any 
+      global events that your application needs.
+    </p>
+
+    <p><b>Model:</b></p>
+
+    <ul class="small">
+      <li><b>"beforeSave"</b> (model, method, options) &mdash; last line before a model is persisted. </li>
+      <li><b>"save"</b> (model, collection, options) &mdash; when a model is removed from a collection. </li>
+      <li><b>"destroy"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+      <li><b>"change"</b> (model, options) &mdash; when a model's attributes have changed. </li>
+      <li><b>"change:[attribute]"</b> (model, value, options) &mdash; when a specific attribute has been updated. </li>
+    </ul>
+
+    <p><b>Collection:</b></p>
+
+    <ul class="small">
+      <li><b>"reset"</b> (collection, options) &mdash; when the collection's entire contents have been replaced. </li>
+    </ul>
+
+    <p><b>General:</b></p>
+
+     <ul class="small">
+      <li><b>"all"</b> &mdash; this special event fires for <i>any</i> triggered event, passing the event name as the first argument. </li>
+    </ul>
+
   <h2 id="Utility">Utility</h2>
 
     <p id="Utility-Backbone">
@@ -1444,179 +1492,6 @@ collection
       <br />
       An alias to Knex.Transaction, for convenient transaction support.
     </p>
-
-  <h2 id="Events">Bookshelf.Events</h2>
-
-    <p>
-      <b>Events</b> is a module that can be mixed in to any object, giving the
-      object the ability to bind and trigger custom named events. Events do not
-      have to be declared before they are bound, and may take passed arguments.
-      For example:
-    </p>
-
-<pre>
-var object = {};
-
-_.extend(object, Bookshelf.Events);
-
-object.on("alert", function(msg) {
-  alert("Triggered " + msg);
-});
-
-object.trigger("alert", "an event");
-</pre>
-
-    <p>
-      For example, to make a handy event dispatcher that can coordinate events
-      among different areas of your application: <tt>var dispatcher = _.clone(Bookshelf.Events)</tt>
-    </p>
-
-    <p id="Events-on">
-      <b class="header">on</b><code>object.on(event, callback, [context])</code><span class="alias">Alias: bind</span>
-      <br />
-      Bind a <b>callback</b> function to an object. The callback will be invoked
-      whenever the <b>event</b> is fired.
-      If you have a large number of different events on a page, the convention is to use colons to
-      namespace them: <tt>"poll:start"</tt>, or <tt>"change:selection"</tt>.
-      The event string may also be a space-delimited list of several events...
-    </p>
-
-<pre>
-book.on("change:title change:author", ...);
-</pre>
-
-    <p>
-      To supply a <b>context</b> value for <tt>this</tt> when the callback is invoked,
-      pass the optional third argument: <tt>model.on('change', this.render, this)</tt>
-    </p>
-
-    <p>
-      Callbacks bound to the special
-      <tt>"all"</tt> event will be triggered when any event occurs, and are passed
-      the name of the event as the first argument. For example, to proxy all events
-      from one object to another:
-    </p>
-
-<pre>
-proxy.on("all", function(eventName) {
-  object.trigger(eventName);
-});
-</pre>
-
-    <p>
-      All Backbone event methods also support an event map syntax, as an alternative
-      to positional arguments:
-    </p>
-
-<pre>
-book.on({
-  "change:title": titleView.update,
-  "change:author": authorPane.update,
-  "destroy": bookView.remove
-});
-</pre>
-
-    <p id="Events-off">
-      <b class="header">off</b><code>object.off([event], [callback], [context])</code><span class="alias">Alias: unbind</span>
-      <br />
-      Remove a previously-bound <b>callback</b> function from an object. If no
-      <b>context</b> is specified, all of the versions of the callback with
-      different contexts will be removed. If no
-      callback is specified, all callbacks for the <b>event</b> will be
-      removed. If no event is specified, callbacks for <i>all</i> events
-      will be removed.
-    </p>
-
-<pre>
-// Removes just the `onChange` callback.
-object.off("change", onChange);
-
-// Removes all "change" callbacks.
-object.off("change");
-
-// Removes the `onChange` callback for all events.
-object.off(null, onChange);
-
-// Removes all callbacks for `context` for all events.
-object.off(null, null, context);
-
-// Removes all callbacks on `object`.
-object.off();
-</pre>
-
-    <p>
-      Note that calling <tt>model.off()</tt>, for example, will indeed remove <i>all</i> events
-      on the model &mdash; including events that Backbone uses for internal bookkeeping.
-    </p>
-
-    <p id="Events-trigger">
-      <b class="header">trigger</b><code>object.trigger(event, [*args])</code>
-      <br />
-      Trigger callbacks for the given <b>event</b>, or space-delimited list of events.
-      Subsequent arguments to <b>trigger</b> will be passed along to the
-      event callbacks.
-    </p>
-
-    <p id="Events-once">
-      <b class="header">once</b><code>object.once(event, callback, [context])</code>
-      <br />
-      Just like <a href="#Events-on">on</a>, but causes the bound callback to only
-      fire once before being removed. Handy for saying "the next time that X happens, do this".
-    </p>
-
-    <p id="Events-listenTo">
-      <b class="header">listenTo</b><code>object.listenTo(other, event, callback)</code>
-      <br />
-      Tell an <b>object</b> to listen to a particular event on an <b>other</b> object.
-      The advantage of using this form, instead of <tt>other.on(event, callback)</tt>,
-      is that <b>listenTo</b> allows the <b>object</b> to keep track of the events,
-      and they can be removed all at once later on.
-    </p>
-
-<pre>
-view.listenTo(model, 'change', view.render);
-</pre>
-
-    <p id="Events-stopListening">
-      <b class="header">stopListening</b><code>object.stopListening([other], [event], [callback])</code>
-      <br />
-      Tell an <b>object</b> to stop listening to events. Either call
-      <b>stopListening</b> with no arguments to have the <b>object</b> remove
-      all of its <a href="#Events-listenTo">registered</a> callbacks ... or be more
-      precise by telling it to remove just the events it's listening to on a
-      specific object, or a specific event, or just a specific callback.
-    </p>
-
-<pre>
-view.stopListening();
-
-view.stopListening(model);
-</pre>
-
-    <p id="Events-catalog">
-      <b class="header">Catalog of Events</b>
-      <br />
-      Here's the complete list of built-in Backbone events, with arguments.
-      You're also free to trigger your own events on Models, Collections and
-      Views as you see fit. The <tt>Backbone</tt> object itself mixes in <tt>Events</tt>,
-      and can be used to emit any global events that your application needs.
-    </p>
-
-    <p>Events from Backbone:</p>
-
-    <ul class="small">
-      <li><b>"add"</b> (model, collection, options) &mdash; when a model is added to a collection. </li>
-      <li><b>"remove"</b> (model, collection, options) &mdash; when a model is removed from a collection. </li>
-      <li><b>"reset"</b> (collection, options) &mdash; when the collection's entire contents have been replaced. </li>
-      <li><b>"sort"</b> (collection, options) &mdash; when the collection has been re-sorted. </li>
-      <li><b>"change"</b> (model, options) &mdash; when a model's attributes have changed. </li>
-      <li><b>"change:[attribute]"</b> (model, value, options) &mdash; when a specific attribute has been updated. </li>
-      <li><b>"destroy"</b> (model, collection, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
-      <li><b>"request"</b> (model, xhr, options) &mdash; when a model (or collection) has started a request to the server. </li>
-      <li><b>"sync"</b> (model, resp, options) &mdash; when a model has been successfully synced with the server. </li>
-      <li><b>"route:[name]"</b> (router) &mdash; when one of a router's routes has matched. </li>
-      <li><b>"all"</b> &mdash; this special event fires for <i>any</i> triggered event, passing the event name as the first argument. </li>
-    </ul>
 
     <h2 id="faq">F.A.Q.</h2>
 

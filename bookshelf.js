@@ -121,13 +121,14 @@
     this.initialize.apply(this, arguments);
   };
 
+  // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
+  // handling validations, or tracking changes, we can drop all of these related features.
+  var modelOmitted = ['isValid', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes'];
+
   // List of attributes attached directly from the constructor's options object.
   var modelProps = ['tableName', 'hasTimestamps'];
 
-  // Extend `Bookshelf.Model.prototype` with all necessary methods and properties.
-  // Since Bookshelf won't handle validation, the 'isValid' method is taken out of the Backbone
-  // prototype.
-  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, 'isValid'), Events, Shared, {
+  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, Shared, {
 
     // The database table associated with the model.
     tableName: null,
@@ -200,7 +201,7 @@
     // the model's state will be `set` again.
     save: function(key, val, options) {
       var id, attrs, success;
-      
+
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
         attrs = key;
@@ -224,9 +225,8 @@
         attrs = _.extend({}, defaults, this.attributes);
       }
 
-      var model = this;
-
-      model.set(attrs);
+      // Set the model, and maintain a reference to use below.
+      var model = this.set(attrs);
 
       // If the model has timestamp columns,
       // set them as attributes on the model
@@ -237,6 +237,10 @@
       var sync = model.sync(model, options);
       var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
+      // Trigger a "beforeSave" event on the model, so we can bind listeners to do any
+      // validation, mutating, logging, etc.
+      this.trigger('beforeSave', model, method, options);
+
       return sync[method]().then(function(resp) {
 
         // After a successful database save, the id is updated
@@ -244,20 +248,19 @@
         model.resetQuery();
         if (resp.insertId) model.set(model.idAttribute, resp.insertId);
         if (success) success(model, resp, options);
-        model.trigger('fetched', model, resp, options);
-        
+        model.trigger('save', model, resp, options);
+
         return model;
       });
-
     },
 
     // Destroy a model, calling a delete based on its `idAttribute`.
     destroy: function(options) {
       options || (options = {});
       var model = this;
-      return this.sync(this, options).del().then(function() {
-        model.trigger('destroy', model, model.collection, options);
-        Bookshelf.trigger('destroy', model, model.collection, options);
+      return this.sync(this, options).del().then(function(resp) {
+        model.trigger('destroy', model, resp, options);
+        return resp;
       });
     },
 
@@ -289,10 +292,11 @@
       }
     },
 
-    // Create a new model with identical attributes to this one.
+    // Create a new model with identical attributes to this one,
+    // including any appropriate relations for the model.
     clone: function() {
       var model = new this.constructor(this.attributes);
-      model.relations = _.map(this.relations, function (relation) {
+      model.relations = _.map(this.relations, function(relation) {
         return relation.clone();
       });
       return model;
@@ -372,9 +376,7 @@
   };
 
   // List of attributes attached directly from the constructor's options object.
-  var collectionProps = [
-    'model', 'comparator', 'perPage', 'forPage'
-  ];
+  var collectionProps = ['model', 'comparator'];
 
   // Extend the Collection's prototype with the base methods
   _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Shared, {
@@ -387,8 +389,13 @@
       return this.sync(this, options).select();
     },
 
-    // TODO: Create method on the model.
-    create: function() {},    
+    // Efficiently persists any models in the current collection, only saving models that have
+    // been changed, batch inserting or updating where appropriate, and retuning 
+    // a promise resolving with the `collection`.
+    save: function() {},
+
+    // TODO: Create method on the model?
+    create: function(models) {},
 
     // The `tableName` on the associated Model, used in relation building.
     tableName: function() {
@@ -508,6 +515,8 @@
       var pendingDeferred = [];
       var pendingNames = this.pendingNames = [];
       
+      // TODO: look at refactoring the `.call` on the fetch
+      // below, it's a bit confusing when debugging.
       for (name in handled) {
         pendingNames.push(name);
         pendingDeferred.push(this.fetch.call(handled[name], {
