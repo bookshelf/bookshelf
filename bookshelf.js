@@ -20,7 +20,7 @@
   var _  = require('underscore');
   var Q  = require('q');
   var Knex = require('knex');
-  var inflection = require('inflection');
+  var Inflection = require('inflection');
 
   // Attach `Knex` & `Knex.Transaction` for convenience.
   Bookshelf.Knex = Knex;
@@ -149,7 +149,7 @@
     hasOne: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasOne',
-        foreignKey: foreignKey || inflection.singularize(_.result(this, 'tableName')) + '_id'
+        foreignKey: foreignKey || Inflection.singularize(_.result(this, 'tableName')) + '_id'
       });
     },
 
@@ -160,7 +160,7 @@
     hasMany: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasMany',
-        foreignKey: foreignKey || inflection.singularize(_.result(this, 'tableName')) + '_id'
+        foreignKey: foreignKey || Inflection.singularize(_.result(this, 'tableName')) + '_id'
       });
     },
 
@@ -170,7 +170,7 @@
       return this._relatesTo(Target, {
         type: 'belongsTo',
         foreignKey: Target.prototype.idAttribute,
-        otherKey: otherKey || inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id'
+        otherKey: otherKey || Inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id'
       });
     },
 
@@ -180,8 +180,8 @@
     belongsToMany: function(Target, joinTableName, foreignKey, otherKey) {
       return this._relatesTo(Target, {
         type: 'belongsToMany',
-        otherKey: otherKey     || inflection.singularize(_.result(this, 'tableName')) + '_id',
-        foreignKey: foreignKey || inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id',
+        otherKey: otherKey     || Inflection.singularize(_.result(this, 'tableName')) + '_id',
+        foreignKey: foreignKey || Inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id',
         joinTableName: joinTableName || [
           _.result(this, 'tableName'), 
           _.result(Target.prototype, 'tableName')

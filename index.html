@@ -401,7 +401,7 @@
     </p>
 
     <p>
-      <b>Bookshelf</b> is a <a href="http://documentup.com/kriskowal/q/">promise based</a> Active Record ORM for Node.js, 
+      <b>Bookshelf</b> is a <a href="http://documentup.com/kriskowal/q/">promise based</a> ORM for Node.js,
       built on <a href="http://knexjs.org">Knex query builder</a>. It extends the Model &amp; Collection 
       foundations of Backbone.js, providing transaction support, eager/nested-eager relation loading, and 
       support for one-to-one, one-to-many, and many-to-many relations.
@@ -437,18 +437,19 @@
     <h2 id="introduction">Introduction</h2>
 
     <p>
-      The goal of Bookshelf is to build a simple library that handles common tasks when querying relational
-      databases on the server (or in other environments with databases), and forming relations 
-      between these objects, using ideas from both Active Record and DataMapper patterns. 
-      At ~900 lines of well documented code,  Bookshelf is easy to understand, and extend. 
-      It doesn't force you to use any specific validation scheme, and provides extremely flexible and 
-      efficient relation/nested-relation loading, and first class transaction support.
+      Bookshelf aims to provide a simple library for common tasks when querying relational
+      databases in javascript, and forming relations between these objects, using ideas from 
+      DataMapper and Active Record. At ~900 lines of <a href="docs/bookshelf.html">well documented code</a>, 
+      Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific
+      validation scheme, and provides flexible and efficient relation/nested-relation loading, and
+      first class transaction support.
     </p>
 
     <p>
-      Bookshelf extends the excellent foundation of Backbone.js Models and Collections, using similar
-      patterns, naming conventions, and philosophies to build a lightweight, easy to navigate ORM.
-      If you know how to use Backbone, you probably already know how to use Bookshelf.
+      Bookshelf extends the excellent foundation provided by Backbone.js Models and Collections, 
+      using similar patterns, naming conventions, and philosophies to build a lightweight, 
+      easy to navigate ORM. If you know how to use Backbone, you probably already know how 
+      to use Bookshelf.
     </p>
 
     <h2 id="Initialize">Bookshelf.Initialize</h2>
@@ -1519,7 +1520,7 @@ collection
     <p id="Utility-Knex">
       <b class="header">Bookshelf.Knex</b>
       <br />
-      A reference to the <tt>Knex.js</tt> instance in use by bookshelf.
+      A reference to the <tt>Knex.js</tt> instance being used by Bookshelf.
     </p>
 
     <p id="Utility-Transaction">
