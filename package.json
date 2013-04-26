@@ -8,7 +8,12 @@
   },
   "repository": "",
   "keywords": [
-    "query"
+    "orm",
+    "query",
+    "mysql",
+    "postgres",
+    "datamapper",
+    "active record"
   ],
   "dependencies": {
     "backbone": "1.0.x",
@@ -17,12 +22,13 @@
     "q": "0.8.x",
     "inflection": "1.2.x"
   },
-  "author": "Tim Griesser",
-  "license": "MIT",
-  "readmeFilename": "README.md",
   "devDependencies": {
     "mocha": "1.7.x",
-    "mysql": "~2.0.0-alpha5",
-    "pg": "~0.15.1"
-  }
+    "mysql": "~2.0.0-alpha7",
+    "pg": "~0.15.1",
+    "sqlite3": "~2.1.7"
+  },
+  "author": "Tim Griesser",
+  "license": "MIT",
+  "readmeFilename": "README.md"
 }
