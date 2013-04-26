@@ -248,7 +248,7 @@
         model.resetQuery();
         if (resp.insertId) model.set(model.idAttribute, resp.insertId);
         if (success) success(model, resp, options);
-        model.trigger('save', model, resp, options);
+        model.trigger((method === 'insert' ? 'create' : 'update'), model, resp, options);
 
         return model;
       });
@@ -258,6 +258,7 @@
     destroy: function(options) {
       options || (options = {});
       var model = this;
+      this.trigger('beforeDestroy', model, options);
       return this.sync(this, options).del().then(function(resp) {
         model.trigger('destroy', model, resp, options);
         return resp;
@@ -392,10 +393,23 @@
     // Efficiently persists any models in the current collection, only saving models that have
     // been changed, batch inserting or updating where appropriate, and retuning 
     // a promise resolving with the `collection`.
-    save: function() {},
+    save: function(options) {
+      // TODO
+    },
 
-    // TODO: Create method on the model?
-    create: function(models) {},
+    // Shortcut for creating a new model, saving, and adding to the collection.
+    // Returns a promise which will resolve with the model added to the collection.
+    create: function(model, options) {
+      options || (options = {});
+      model = this._prepareModel(model, options);
+      var collection = this;
+      return model.save(null, options).then(function(resp) {
+        collection.add(model, options);
+        if (options.success) options.success(model, resp, options);
+        this.add(model, options);
+        return model;
+      });
+    },
 
     // The `tableName` on the associated Model, used in relation building.
     tableName: function() {

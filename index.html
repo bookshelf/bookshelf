@@ -344,11 +344,12 @@
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
-      <li>– <a href="#Collection-parse">parse</a></li>
-      <li>– <a href="#Collection-toJSON">toJSON</a></li>
       <li>– <a href="#Collection-fetch">fetch</a></li>
       <li>– <a href="#Collection-load">load</a></li>
-      <li>– <a href="#Collection-create">create (todo)</a></li>
+      <li>– <a href="#Collection-create">create</a></li>
+      <li>– <a href="#Collection-save">save (todo)</a></li>
+      <li>– <a href="#Collection-parse">parse</a></li>
+      <li>– <a href="#Collection-toJSON">toJSON</a></li>
       <li>– <a href="#Collection-query">query</a></li>
       <li>– <a href="#Collection-resetQuery">resetQuery</a></li>
       <li>– <a href="#Collection-sync">sync</a></li>
@@ -1292,6 +1293,22 @@ new Story({id: 2}).fetch({
 });    
 </pre>
 
+    <p id="Collection-create">
+      <b class="header">create</b><code>collection.create(relations, options).then(function(collection) {...</code>
+      <br />
+      Convenience to create a new instance of a model within a collection. Equivalent to instantiating a 
+      model with a hash of attributes, saving the model to the database, and adding the model to the collection
+      after being successfully created. Returns a promise, resolving with the new model.
+    </p>
+
+    <p id="Collection-save">
+      <b class="header">save</b><code>collection.save(options).then(function(collection) {...</code>
+      <br />
+      The <b>save</b> method intelligently saves any models on the collection, inserting new models and updating
+      existing models where appopriate. It will check the attribute list on each model and batch queries where possible,
+      and only save existing models that have been changed since they were last sync'ed qith the database.
+    </p>
+
     <p id="Collection-query">
       <b class="header">query</b><code>collection.query([method], [*parameters])</code>
       <br />
@@ -1468,9 +1485,11 @@ collection
     <p><b>Model:</b></p>
 
     <ul class="small">
-      <li><b>"beforeSave"</b> (model, method, options) &mdash; last line before a model is persisted. </li>
-      <li><b>"save"</b> (model, collection, options) &mdash; when a model is removed from a collection. </li>
+      <li><b>"create"</b> (model, resp, options) &mdash; when a model is removed from a collection. </li>
+      <li><b>"update"</b> (model, resp, options) &mdash; when a model is removed from a collection. </li>
       <li><b>"destroy"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+      <li><b>"beforeSave"</b> (model, method, options) &mdash; last line before a model is persisted. </li>
+      <li><b>"beforeDestroy"</b> (model, method, options) &mdash; last line before a model is destroyed. </li>
       <li><b>"change"</b> (model, options) &mdash; when a model's attributes have changed. </li>
       <li><b>"change:[attribute]"</b> (model, value, options) &mdash; when a specific attribute has been updated. </li>
     </ul>
