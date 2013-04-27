@@ -859,48 +859,6 @@
     }
   };
 
-  // Inherit standard Backbone.js Collections & Models from the client,
-  // transforming a client `Backbone.Model` or `Backbone.Collection` to a
-  // `Bookshelf` compatible object, to reuse validations, defaults, user methods, etc.
-  Model.convert = Collection.convert = function(Target, protoProps, staticProps) {
-    var parent = this;
- 
-    // Don't allow convert to work with an object instance.
-    if (!Target.prototype) {
-      throw new Error('Bookshelf.convert can only work with a constructor object');
-    }
-
-    // Traverse the prototype chain, breaking once we hit the prototype of the
-    // Model or Collection we're converting. This way we can put the prototype chain
-    // back together starting from the base "extend" so inheritance works properly.
-    var current = Target;
-    var depth   = [];
-    var passed = false;
-
-    while (passed !== true) {
-      if (_.isEqual(current.prototype, Backbone.Model.prototype) || 
-        _.isEqual(current.prototype, Backbone.Collection.prototype)) {
-        passed = true;
-      } else if (!current.__super__) {
-        throw new Error("Only Backbone objects may be converted.");
-      } else {
-        depth.push(_.pick(current.prototype, _.keys(current.prototype)));
-        current = current.__super__.constructor;
-      }
-    }
-
-    // Setup the correct prototype chain.
-    var currentObj = this;
-    for (var i = depth.length; i > 0; i--) {
-      
-      // Omit parse and toJSON, as these have fundamentally different meanings
-      // on the client and server.
-      currentObj = currentObj.extend(_.omit(depth[i - 1], 'parse', 'toJSON'));
-    }
-    
-    return currentObj.extend(protoProps, staticProps);
-  };
-
   // Filters an array of objects, cleaning out any nested properties.
   var skim = function(data) {
     return _.map(data, function(obj) {

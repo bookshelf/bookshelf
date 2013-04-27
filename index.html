@@ -301,7 +301,6 @@
     </a>
     <ul class="toc_section">
       <li>– <a href="#Model-extend">extend</a></li>
-      <li>– <a href="#Model-convert">convert</a></li>
       <li>– <a href="#Model-constructor">constructor / initialize</a></li>
       <li>– <a href="#Model-tableName">tableName</a></li>
       <li>– <a href="#Model-idAttribute">idAttribute</a></li>
@@ -340,7 +339,6 @@
     </a>
     <ul class="toc_section">
       <li>– <a href="#Collection-extend">extend</a></li>
-      <li>– <a href="#Collection-convert">convert</a></li>
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
@@ -523,15 +521,6 @@ var Customer = Bookshelf.Model.extend({
   }
 });
 </pre>
-
-    <p id="Model-convert">
-      <b class="header">convert</b><code>Bookshelf.Model.convert(Target, [properties], [classProperties])</code>
-      <br />
-      Used to convert an existing <b>Backbone.Model</b> from the client (or server), to a Bookshelf 
-      compatible class for re-use of any validations, defaults, and custom methods.
-      Optional instance <b>properties</b>, as well as optional <b>classProperties</b> may be provided
-      to be attached directly to the collection's constructor function.
-    </p>
 
     <p id="Model-constructor">
       <b class="header">constructor / initialize</b><code>new Model([attributes], [options])</code>
@@ -1198,15 +1187,6 @@ modelB.isNew(); // false
       To create a <b>Collection</b> class of your own, extend <b>Bookshelf.Collection</b>,
       providing instance <b>properties</b>, as well as optional <b>classProperties</b> to be attached
       directly to the collection's constructor function.
-    </p>
-
-    <p id="Collection-convert">
-      <b class="header">convert</b><code>Bookshelf.Collection.convert(Target, [protoProps], [classProps])</code>
-      <br />
-      Used to convert an existing <b>Backbone.Collection</b> from the client (or server), to a Bookshelf
-      compatible class for re-use of any validations, defaults, and custom methods.
-      Optional instance <b>properties</b>, as well as optional <b>classProperties</b> may be provided
-      to be attached directly to the collection's constructor function.
     </p>
 
     <p id="Collection-model">
