@@ -672,7 +672,7 @@
   // without needing the "new" keyword... to make object creation cleaner
   // and more chainable.
   Model.forge = Collection.forge = function() {
-    function Ctor() {}
+    var Ctor = function() {};
     Ctor.prototype = this.prototype;
     var inst = new Ctor();
     var obj  = this.apply(inst, arguments);
