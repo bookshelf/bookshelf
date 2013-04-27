@@ -631,19 +631,17 @@
 
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(target, resp) {
-    var relation, columns, builder, idAttribute, tableName, 
-    otherKey, foreignKey, pivotColumns, joinTableName;
-
-    relation      = target._relation;
-    columns       = relation.columns || (relation.columns = []);
-    builder       = target.query();
+    var 
+    relation      = target._relation,
+    columns       = relation.columns || (relation.columns = []),
+    builder       = target.query(),
     
-    tableName     = _.result(target, 'tableName');
-    idAttribute   = _.result(target, 'idAttribute');
+    tableName     = _.result(target, 'tableName'),
+    idAttribute   = _.result(target, 'idAttribute'),
 
-    otherKey      = relation.otherKey;
-    foreignKey    = relation.foreignKey;
-    pivotColumns  = relation.pivotColumns;
+    otherKey      = relation.otherKey,
+    foreignKey    = relation.foreignKey,
+    pivotColumns  = relation.pivotColumns,
     joinTableName = relation.joinTableName;
 
     if (builder.columns.length === 0 && columns.length === 0) {
