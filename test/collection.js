@@ -44,39 +44,6 @@ describe('Bookshelf.Collection', function() {
     });
   });
 
-  describe('convert', function() {
-
-    it('properly handles the inheritance chain', function() {
-      var One = Backbone.Collection.extend({
-        customMethod: function(val) { return val || 1; }
-      });
-      var Two = One.extend({
-        secondMethod: function(val) { return One.prototype.customMethod.call(this, val || 2); }
-      });
-      var Three = Two.extend({
-        thirdCustomMethod: function() { return this.secondMethod(3); }
-      });
-      var Converted = Bookshelf.Collection.convert(Three, {
-        test: function() {
-          equal(this.thirdCustomMethod(Converted), 3);
-          equal(this.secondMethod(), 2);
-          equal(this.customMethod(), 1);
-        }
-      });
-      new Converted().test();
-    });
-    
-    it('breaks on invalid object conversions', function() {
-      var Invalid = function() {};
-          Invalid.prototype = {testMethod: function() {}};
-      try {
-        Bookshelf.Collection.convert(Invalid, {newMethod: function() {}});
-      } catch (e) {
-        equal(e.toString(), 'Error: Only Backbone objects may be converted.');
-      }
-    });
-  });
-
   describe('model', function() {
     
     it('does not permit polymorphic models', function(ok) {
