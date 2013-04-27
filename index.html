@@ -301,6 +301,7 @@
     </a>
     <ul class="toc_section">
       <li>– <a href="#Model-extend">extend</a></li>
+      <li>– <a href="#Model-forge">forge</a></li>
       <li>– <a href="#Model-constructor">constructor / initialize</a></li>
       <li>– <a href="#Model-tableName">tableName</a></li>
       <li>– <a href="#Model-idAttribute">idAttribute</a></li>
@@ -339,6 +340,7 @@
     </a>
     <ul class="toc_section">
       <li>– <a href="#Collection-extend">extend</a></li>
+      <li>– <a href="#Collection-forge">forge</a></li>
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
@@ -521,6 +523,23 @@ var Customer = Bookshelf.Model.extend({
   }
 });
 </pre>
+
+    <p id="Model-forge">
+      <b class="header">forge</b><code>Bookshelf.Model.forge(/* args */)</code>
+      <br />
+      A simple helper function to instantiate a new <tt>Model</tt> without needing <tt>new</tt>.
+    </p>
+
+<pre>
+var Customer = Bookshelf.Model.extend({
+  tableName: 'customers'
+});
+
+Customer.forge({item: 'value'}).save().then(function() {
+  // ...
+});
+</pre>  
+
 
     <p id="Model-constructor">
       <b class="header">constructor / initialize</b><code>new Model([attributes], [options])</code>
@@ -1189,6 +1208,25 @@ modelB.isNew(); // false
       directly to the collection's constructor function.
     </p>
 
+    <p id="Collection-forge">
+      <b class="header">forge</b><code>Bookshelf.Collection.forge(/* args */)</code>
+      <br />
+      A simple helper function to instantiate a new <tt>Collection</tt> without needing <tt>new</tt>.
+    </p>
+
+<pre>
+var Accounts = Bookshelf.Model.extend({
+  model: Account
+});
+
+Accounts.forge([
+  {name: 'Person1'}, 
+  {name: 'Person2'}
+]).save().then(function() {
+  // ...
+});
+</pre>  
+
     <p id="Collection-model">
       <b class="header">model</b><code>collection.model</code>
       <br />
@@ -1201,7 +1239,7 @@ modelB.isNew(); // false
     </p>
 
 <pre>
-var Library = Bookshelf.Collection.extend({
+var Trilogy = Bookshelf.Collection.extend({
   model: Book
 });
 </pre>

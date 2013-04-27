@@ -670,6 +670,17 @@
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = Bookshelf.Backbone.Model.extend;
 
+  // The `forge` function properly instantiates a new Model or Collection
+  // without needing the "new" keyword... to make object creation cleaner
+  // and more chainable.
+  Model.forge = Collection.forge = function() {
+    function Ctor() {}
+    Ctor.prototype = this.prototype;
+    var inst = new Ctor();
+    var obj  = this.apply(inst, _.rest(arguments));
+    return (Object(obj) === obj ? obj : inst);
+  };
+
   // Bookshelf.Sync
   // -------------------
 

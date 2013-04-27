@@ -17,16 +17,6 @@ var stubSync = {
 
 describe('Bookshelf.Model', function() {
   
-  // var base;
-  // var Base = Bookshelf.Model.extend({
-  //   tableName: 'authors'
-  // });
-
-  // beforeEach(function() {
-  //   if (base) base.off();
-  //   base = new Base();
-  // });
-
   describe('extend/constructor/initialize', function() {
 
     var User = Bookshelf.Model.extend({
@@ -61,6 +51,18 @@ describe('Bookshelf.Model', function() {
         }
       });
       equal(new User().item, 'test');
+    });
+
+  });
+
+  describe('forge', function() {
+
+    it('should create a new model instance', function() {
+      var User = Bookshelf.Model.extend({
+        tableName: 'users'
+      });
+      var user = User.forge();
+      equal(user.tableName, 'users');
     });
 
   });

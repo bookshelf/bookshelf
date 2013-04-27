@@ -44,6 +44,21 @@ describe('Bookshelf.Collection', function() {
     });
   });
 
+  describe('forge', function() {
+
+    it('should create a new collection instance', function() {
+      var User = Bookshelf.Model.extend({
+        tableName: 'users'
+      });
+      var Users = Bookshelf.Collection.extend({
+        model: User
+      });
+      var users = Users.forge();
+      equal(users.tableName(), 'users');
+    });
+
+  });
+
   describe('model', function() {
     
     it('does not permit polymorphic models', function(ok) {
