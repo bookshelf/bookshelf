@@ -675,7 +675,7 @@
     function Ctor() {}
     Ctor.prototype = this.prototype;
     var inst = new Ctor();
-    var obj  = this.apply(inst, _.rest(arguments));
+    var obj  = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   };
 
