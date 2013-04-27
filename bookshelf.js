@@ -101,7 +101,7 @@
   // -------------------
 
   // A Bookshelf Model represents an individual row in the database table --
-  // It is a similar implementation to the `Backbone.Model`
+  // It has a similar implementation to the `Backbone.Model`
   // constructor, except that defaults are not set until the
   // object is persisted, and the collection property is not used.
 
@@ -211,21 +211,13 @@
         (attrs = {})[key] = val;
       }
 
-      // Don't allow setting an id attribute on save, unless the
-      // `{existing: true}` flag is set on the options hash.
-      if (attrs) id = attrs[this.idAttribute];
-      if (id && id !== this.id && !options.existing) {
-        Q.reject(new Error('The model cannot be saved with an idAttribute'));
-      }
-
-      // Handle the defaults at the `save` level rather than the
-      // object creation level.
+      // Merge any defaults here rather than during object creation.
       var defaults = _.result(this, 'defaults');
       if (defaults) {
         attrs = _.extend({}, defaults, this.attributes);
       }
 
-      // Set the model, and maintain a reference to use below.
+      // Set the attributes on the model, and maintain a reference to use below.
       var model = this.set(attrs);
 
       // If the model has timestamp columns,
