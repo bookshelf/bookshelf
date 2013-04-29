@@ -747,8 +747,8 @@ var Book = Bookshelf.Model.extend({
   }
 });
 
-new Book({id: 1}).summary().fetch(function(book) {
-  console.log(book.toJSON());
+new Book({id: 1}).summary().fetch().then(function(summary) {
+  console.log(summary.toJSON());
 });
 </pre>
     
