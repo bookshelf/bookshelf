@@ -214,7 +214,7 @@
       // Merge any defaults here rather than during object creation.
       var defaults = _.result(this, 'defaults');
       if (defaults) {
-        attrs = _.extend({}, defaults, attrs);
+        attrs = _.extend({}, defaults, this.attributes, attrs);
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
