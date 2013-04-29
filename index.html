@@ -379,9 +379,9 @@
       Utility
     </a>
     <ul class="toc_section">
-      <li>– <a href="#Utility-Backbone">Bookshelf.Backbone</a></li>
-      <li>– <a href="#Utility-Knex">Bookshelf.Knex</a></li>
-      <li>– <a href="#Utility-Transaction">Bookshelf.Transaction</a></li>
+      <li>– <a href="#Bookshelf-Backbone">Bookshelf.Backbone</a></li>
+      <li>– <a href="#Bookshelf-Knex">Bookshelf.Knex</a></li>
+      <li>– <a href="#Bookshelf-Transaction">Bookshelf.Transaction</a></li>
     </ul>
 
     <a class="toc_title" href="#faq">
@@ -403,7 +403,7 @@
     <p>
       <b>Bookshelf</b> is a <a href="http://documentup.com/kriskowal/q/">promise based</a> ORM for Node.js,
       built on <a href="http://knexjs.org">Knex query builder</a>. It extends the Model &amp; Collection 
-      foundations of Backbone.js, providing transaction support, eager/nested-eager relation loading, and 
+      foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>, eager/nested-eager relation loading, and 
       support for one-to-one, one-to-many, and many-to-many relations.
     </p>
 
@@ -970,7 +970,9 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
       query with the model, dependent on whether the model <a href="#Model-isNew">isNew</a>.
       If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the 
       <tt>{method: ...}</tt> option may be specified to explicitly state which 
-      <a href="#Sync">sync</a> method to use in the save call.
+      <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
+      <tt>{patch: true}</tt> may be specified to only save the items in the <b>params</b> rather than
+      the full model.
     </p>
 
 <pre>
@@ -1325,7 +1327,7 @@ new Story({id: 2}).fetch({
       <br />
       The <b>save</b> method intelligently saves any models on the collection, inserting new models and updating
       existing models where appopriate. It will check the attribute list on each model and batch queries where possible,
-      and only save existing models that have been changed since they were last sync'ed qith the database.
+      and only save existing models that have been changed since they were last sync'ed with the database.
     </p>
 
     <p id="Collection-query">
@@ -1527,7 +1529,7 @@ collection
 
   <h2 id="Utility">Utility</h2>
 
-    <p id="Utility-Backbone">
+    <p id="Bookshelf-Backbone">
       <b class="header">Bookshelf.Backbone</b>
       <br />
       A reference to the copy of Backbone used to create the Bookshelf objects can be accessed
@@ -1535,21 +1537,70 @@ collection
       elsewhere on the server, and ensure they are compatible with the Bookshelf objects.
     </p>
 
-    <p id="Utility-Knex">
+    <p id="Bookshelf-Knex">
       <b class="header">Bookshelf.Knex</b>
       <br />
       A reference to the <tt>Knex.js</tt> instance being used by Bookshelf.
     </p>
 
-    <p id="Utility-Transaction">
+    <p id="Bookshelf-Transaction">
       <b class="header">Bookshelf.Transaction</b>
       <br />
-      An alias to <tt>Knex.Transaction</tt>, for convenient transaction support.
+      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, for convenient 
+      transaction support. The transaction object must be passed along in the options of any relevant
+      <tt>Bookshelf.Sync</tt> calls, to ensure all queries are on the same connection. 
+      The entire transaction block is a promise that will resolve when the transaction is 
+      committed, or fail if the transaction is rolled back.
     </p>
+
+<pre>
+Bookshelf.Transaction(function(t) {
+  
+  new Bookshelf({name: 'Old Books'}).save({
+    transacting: t
+  }).then(function(model) {
+
+    return Q.all(_.map([
+      {title: 'Canterbury Tales'},
+      {title: 'Moby Dick'},
+      {title: 'Hamlet'}
+    ], function(info) {
+      
+      // Some validation could take place here.
+      return new Book(info)
+        .save('shelf_id', model.id, {transacting: t});
+
+    }));
+  
+  })
+  .then(function(rows) {
+    t.commit(rows.length + ' new books saved!');
+  }, t.rollback);
+
+}).then(function(msg) {
+
+  // 3 new books saved!
+  console.log(msg);
+
+}, function() {
+
+  console.log('Error saving the books.');
+
+});
+</pre>
 
     <h2 id="faq">F.A.Q.</h2>
 
-    <p>
+    <p id="faq-debug">
+      <b class="header">How do I debug.</b><br />
+      If you pass <tt>{debug: true}</tt> as one of the options in your initialize settings, you can see
+      all of the query calls being made. Sometimes you need to dive a bit further into
+      the various calls and see what all is going on behind the scenes. I'd recommend 
+      <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug
+      code with <tt>debugger</tt> statements like you would in the browser.
+    </p>
+
+    <p id="faq-nonode">
       <b class="header">Can I use Bookshelf outside of Node.js</b><br />
       While it primarily targets Node.js, all dependencies are browser compatible, and
       it could be adapted to work with other javascript environments supporting a <tt>sqlite3</tt> 
