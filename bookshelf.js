@@ -213,12 +213,13 @@
 
       // Merge any defaults here rather than during object creation.
       var defaults = _.result(this, 'defaults');
+      var vals = attrs;
       if (defaults) {
-        attrs = _.extend({}, defaults, this.attributes, attrs);
+        vals = _.extend({}, defaults, this.attributes, vals);
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
-      var model = this.set(attrs);
+      var model = this.set(vals);
 
       // If the model has timestamp columns,
       // set them as attributes on the model
@@ -233,7 +234,7 @@
       // validation, mutating, logging, etc.
       this.trigger('beforeSave', model, method, options);
 
-      return sync[method]().then(function(resp) {
+      return sync[method](attrs, options).then(function(resp) {
 
         // After a successful database save, the id is updated
         // if the model was created, otherwise the success function is called
@@ -773,7 +774,8 @@
     },
 
     // Issues an `update` command on the query.
-    update: function() {
+    update: function(attrs, options) {
+      attrs = (attrs && options.patch ? attrs : this.model.attributes);
       return this.query.where(this.model.idAttribute, this.model.id)
         .update(this.model.format(_.extend({}, this.model.attributes)));
     },
