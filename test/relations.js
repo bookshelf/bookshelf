@@ -17,10 +17,10 @@ var Comment  = Models.Comment;
 var Tag      = Models.Tag;
 
 // Collections
-var Sites = Collections.Sites;
-var Admins = Collections.Admins;
-var Blogs = Collections.Blogs;
-var Posts = Collections.Posts;
+var Sites    = Collections.Sites;
+var Admins   = Collections.Admins;
+var Blogs    = Collections.Blogs;
+var Posts    = Collections.Posts;
 var Comments = Collections.Comment;
 
 describe('Bookshelf Relations', function() {

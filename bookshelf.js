@@ -204,11 +204,18 @@
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
-        attrs = key;
+        attrs = key || {};
         options = val || {};
       } else {
         options || (options = {});
         (attrs = {})[key] = val;
+      }
+
+      // If the model has timestamp columns,
+      // set them as attributes on the model, even
+      // if the method is set to "patch".
+      if (this.hasTimestamps) {
+        _.extend(attrs, this.timestamp(options));
       }
 
       // Merge any defaults here rather than during object creation.
@@ -217,17 +224,10 @@
       if (defaults) {
         vals = _.extend({}, defaults, this.attributes, vals);
       }
-
+      
       // Set the attributes on the model, and maintain a reference to use below.
-      var model = this.set(vals);
-
-      // If the model has timestamp columns,
-      // set them as attributes on the model
-      if (model.hasTimestamps) {
-        model.timestamp(options);
-      }
-
-      var sync = model.sync(model, options);
+      var model  = this.set(vals);
+      var sync   = model.sync(model, options);
       var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
       // Trigger a "beforeSave" event on the model, so we can bind listeners to do any
@@ -280,10 +280,10 @@
     // Sets the timestamps before saving the model.
     timestamp: function(options) {
       var d = new Date();
-      this.set('updated_at', d);
-      if (this.isNew(options)) {
-        this.set('created_at', d);
-      }
+      var vals = {};
+      vals.updated_at = d;
+      if (this.isNew(options)) vals.created_at = d;
+      return vals;
     },
 
     // Create a new model with identical attributes to this one,
@@ -381,13 +381,6 @@
     // when they arrive.
     fetch: function(options) {
       return this.sync(this, options).select();
-    },
-
-    // Efficiently persists any models in the current collection, only saving models that have
-    // been changed, batch inserting or updating where appropriate, and retuning 
-    // a promise resolving with the `collection`.
-    save: function(options) {
-      // TODO
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.

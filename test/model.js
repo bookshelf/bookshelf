@@ -337,12 +337,12 @@ describe('Bookshelf.Model', function() {
     it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function() {
       var m  = new Bookshelf.Model();
       var m1 = new Bookshelf.Model({id: 1});
-      m.timestamp();
-      m1.timestamp();
-      equal(_.isDate(m.get('created_at')), true);
-      equal(_.isDate(m.get('updated_at')), true);
-      equal(_.isEmpty(m1.get('created_at')), true);
-      equal(_.isDate(m1.get('updated_at')), true);
+      var ts  = m.timestamp();
+      var ts2 = m1.timestamp();
+      equal(_.isDate(ts.created_at), true);
+      equal(_.isDate(ts.updated_at), true);
+      equal(_.isEmpty(ts2.created_at), true);
+      equal(_.isDate(ts2.updated_at), true);
     });
   });  
 

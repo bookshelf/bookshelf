@@ -347,7 +347,6 @@
       <li>– <a href="#Collection-fetch">fetch</a></li>
       <li>– <a href="#Collection-load">load</a></li>
       <li>– <a href="#Collection-create">create</a></li>
-      <li>– <a href="#Collection-save">save (todo)</a></li>
       <li>– <a href="#Collection-parse">parse</a></li>
       <li>– <a href="#Collection-toJSON">toJSON</a></li>
       <li>– <a href="#Collection-query">query</a></li>
@@ -1320,14 +1319,6 @@ new Story({id: 2}).fetch({
       Convenience to create a new instance of a model within a collection. Equivalent to instantiating a 
       model with a hash of attributes, saving the model to the database, and adding the model to the collection
       after being successfully created. Returns a promise, resolving with the new model.
-    </p>
-
-    <p id="Collection-save">
-      <b class="header">save</b><code>collection.save(options).then(function(collection) {...</code>
-      <br />
-      The <b>save</b> method intelligently saves any models on the collection, inserting new models and updating
-      existing models where appopriate. It will check the attribute list on each model and batch queries where possible,
-      and only save existing models that have been changed since they were last sync'ed with the database.
     </p>
 
     <p id="Collection-query">
