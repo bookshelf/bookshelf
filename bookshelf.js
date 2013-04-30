@@ -732,16 +732,18 @@
           
           return resp;
         }
-        
-        // TODO: any handling for empty responses?
+
+        // If `{require: true}` is set as an option, the fetch is considered
+        // a failure if the model comes up blank.
+        if (options.require) return Q.reject('EmptyResponse');
 
         if (model instanceof Model) {
           model.clear();
           return {};
-        } else {
-          model.reset([], {silent: true});
-          return [];
         }
+
+        model.reset([], {silent: true});
+        return [];
         
       }).then(function(resp) {
         if (resp.length > 0) {
