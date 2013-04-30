@@ -832,7 +832,7 @@ var Patient = Bookshelf.Model.extend({
 });
 
 // select * from `health_records` where `patient_id` = 1;
-new Patient({id: 1}).record().fetch(function(model) {
+new Patient({id: 1}).record().fetch().then(function(model) {
   ...
 });
 </pre>
@@ -861,12 +861,14 @@ new Patient({id: 1}).record().fetch(function(model) {
     </p>
 
 <pre>
-var Author = Bookshelf.Model.extend({
-  
+var Book = Bookshelf.Model.extend({
+  author: function() {
+    return this.belongsTo(Author);
+  }
 });
 
 // select * from `author` where 
-new Book({id: 1}).author().fetch(function() {
+new Book({id: 1}).author().fetch().then(function() {
   
 });
 </pre>

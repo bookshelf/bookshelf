@@ -444,7 +444,7 @@
       var models  = this.models = [];
       var opts    = this._relation;
 
-      Bookshelf.addEagerConstraints(opts.type, this, opts.parentResponse);
+      Bookshelf.addConstraints(opts.type, this, opts.parentResponse);
       
       return this.query().select(opts.columns).then(function(resp) {
 
@@ -575,17 +575,8 @@
     }
   });
 
-  // Adds the basic relation constraints onto the query.
-  Bookshelf.addConstraints = function(type, target) {
-    if (type !== 'belongsToMany') {
-      return constraints(target);
-    } else {
-      return belongsToMany(target);
-    }
-  };
-
-  // Adds eager loading relationship constraints onto the query.
-  Bookshelf.addEagerConstraints = function(type, target, resp) {
+  // Adds the relation constraints onto the query.
+  Bookshelf.addConstraints = function(type, target, resp) {
     if (type !== 'belongsToMany') {
       return constraints(target, resp);
     } else {
