@@ -114,7 +114,7 @@
     this.attributes = {};
     this.relations = {};
     this._configure(options);
-    if (options && options.parse) attrs = this.parse(attrs, options) || {};
+    if (options.parse) attrs = this.parse(attrs, options) || {};
     options.protect || (options.protect = false);
     this.set(attrs, options);
     this.changed = {};
@@ -392,7 +392,6 @@
       return model.save(null, options).then(function(resp) {
         collection.add(model, options);
         if (options.success) options.success(model, resp, options);
-        this.add(model, options);
         return model;
       });
     },
@@ -660,7 +659,7 @@
     var Ctor = function() {};
     Ctor.prototype = this.prototype;
     var inst = new Ctor();
-    var obj  = this.apply(inst, arguments);
+    var obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   };
 
@@ -792,7 +791,7 @@
       if (ids == void 0 && method === 'insert') return Q.resolve();
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pivot = this._relation;
-      return Q.allResolved(_.map(ids, function(item) {
+      return Q.all(_.map(ids, function(item) {
         var data = {};
         data[pivot.otherKey] = pivot.fkValue;
 
@@ -868,8 +867,28 @@
 
   // Configure the `Bookshelf` settings (database adapter, etc.) once,
   // so it is ready on first model initialization.
-  Bookshelf.Initialize = function(options) {
-    return Knex.Initialize(options);
+  Bookshelf.Initialize = function(name, options) {
+    if (_.isObject(name)) {
+      options = name;
+      name = 'default';
+    }
+    if (_.has(Bookshelf.Instances, name)) {
+      throw new Error('A ' + name + ' instance of Bookshelf already exists');
+    }
+    return Knex.Initialize(name, options);
+  };
+
+  // Named instances of Bookshelf, presumably with different `Knex`
+  // options, to initialize different databases. 
+  // The main instance being named "default"...
+  Bookshelf.Instances = {};
+
+  // Returns a named instance of Bookshelf...
+  Bookshelf.getInstance = function(name) {
+    if (!Bookshelf.Instances[name]) {
+      throw new Error('There is no ' + name + ' instance of Bookshelf.');
+    }
+    return Bookshelf.Instances[name];
   };
 
   module.exports = Bookshelf;
