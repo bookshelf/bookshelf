@@ -9,7 +9,6 @@
 
   // Initial Setup
   // -------------
-
   var Bookshelf = {};
 
   // Keep a reference to our own copy of Backbone, in case we want to use
@@ -22,10 +21,6 @@
   var Knex = require('knex');
   var Inflection = require('inflection');
 
-  // Attach `Knex` & `Knex.Transaction` for convenience.
-  Bookshelf.Knex = Knex;
-  Bookshelf.Transaction = Knex.Transaction;
-
   // Keep in sync with package.json.
   Bookshelf.VERSION = '0.0.0';
 
@@ -33,8 +28,8 @@
   // for API consistency and portability, but adding some
   // methods to make the API feel a bit more like Node's.
   var Events = Bookshelf.Events = Backbone.Events;
-      Events.removeAllListeners = function(event) { this.off(event, null, null); };
       Events.emit = function() { this.trigger.apply(this, arguments); };
+      Events.removeAllListeners = function(event) { this.off(event, null, null); };
 
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
@@ -43,12 +38,17 @@
   // `Model`, `Collection`, and `EagerRelation` prototypes.
   var Shared = {
 
+    // Returns an instance of the query builder.
+    builder: function(table) {
+      return Bookshelf.Knex(table);
+    },
+
     // If there are no arguments, return the current object's
     // query builder (or create a new one). If there are arguments,
     // call the query builder with the first argument, applying the
     // rest.
     query: function() {
-      this._builder || (this._builder = Bookshelf.Knex(_.result(this, 'tableName')));
+      this._builder || (this._builder = this.builder(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
       if (args.length === 0) return this._builder;
       this._builder[args[0]].apply(this._builder, args.slice(1));
@@ -122,7 +122,8 @@
   };
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
-  // handling validations, or tracking changes, we can drop all of these related features.
+  // handling validations, or tracking changes in the same way as Backbone, we can drop all of
+  // these related features.
   var modelOmitted = ['isValid', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes'];
 
   // List of attributes attached directly from the constructor's options object.
@@ -417,13 +418,6 @@
   // Bookshelf.EagerRelation
   // ---------------
 
-  // Temporary helper object for handling the response of an `EagerRelation` load.
-  var RelatedModels = function(models) {
-    this.models = models;
-    this.length = this.models.length;
-  };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
-
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s).
   var EagerRelation = Bookshelf.EagerRelation = function(parent, target, parentResponse) {
@@ -574,6 +568,13 @@
     }
   });
 
+  // Temporary helper object for handling the response of an `EagerRelation` load.
+  var RelatedModels = function(models) {
+    this.models = models;
+    this.length = this.models.length;
+  };
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
+
   // Adds the relation constraints onto the query.
   Bookshelf.addConstraints = function(type, target, resp) {
     if (type !== 'belongsToMany') {
@@ -670,7 +671,7 @@
   // taking the `model` or `collection` being queried, along with
   // a hash of options that are used in the various query methods.
   // If the `transacting` option is set, the query is assumed to be
-  // part of a transaction, and this information is passed along to Knex.
+  // part of a transaction, and this information is passed along to `Knex`.
   var Sync = Bookshelf.Sync = function(model, options) {
     options || (options = {});
     this.model = model;
@@ -791,6 +792,7 @@
       if (ids == void 0 && method === 'insert') return Q.resolve();
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pivot = this._relation;
+      var context = this;
       return Q.all(_.map(ids, function(item) {
         var data = {};
         data[pivot.otherKey] = pivot.fkValue;
@@ -807,7 +809,7 @@
         } else if (item) {
           data[pivot.foreignKey] = item;
         }
-        var builder = Bookshelf.Knex(pivot.joinTableName);
+        var builder = context.builder(pivot.joinTableName);
         if (options && options.transacting) {
           builder.transacting(options.transacting);
         }
@@ -862,34 +864,58 @@
     });
   };
 
+  // References to the default `Knex` and `Knex.Transaction`, overwritten
+  // when a new database connection is created in `Initialize` below.
+  Bookshelf.Knex = Knex;
+  Bookshelf.Transaction = Knex.Transaction;
+
   // Bookshelf.Initialize
   // -------------------
 
   // Configure the `Bookshelf` settings (database adapter, etc.) once,
-  // so it is ready on first model initialization.
+  // so it is ready on first model initialization. Optionally, provide
+  // a `name` so a named instance of 
   Bookshelf.Initialize = function(name, options) {
+    var Target;
     if (_.isObject(name)) {
       options = name;
       name = 'default';
     }
-    if (_.has(Bookshelf.Instances, name)) {
+    if (Bookshelf.Instances[name]) {
       throw new Error('A ' + name + ' instance of Bookshelf already exists');
     }
-    return Knex.Initialize(name, options);
+
+    // If an object with this name already exists in `Knex.Instances`, we will
+    // use that copy of `Knex` without trying to re-initialize.
+    var Builder = (Knex[name] || Knex.Initialize(name, options));
+
+    if (name === 'default') {
+      Target = Bookshelf.Instances['default'] = Bookshelf;
+    } else {
+      Target = Bookshelf.Instances[name] = {};
+      
+      // Create a new `Bookshelf` instance for this database.
+      _.extend(Target, _.omit(Bookshelf, 'Instances', 'Initialize', 'Knex', 'Transaction'), {
+        Knex: Builder,
+        Transaction: Builder.Transaction
+      });
+
+      // Attach a new builder function that references the correct connection.
+      _.each(['Model', 'Collection', 'EagerRelation'], function(item) {
+        Target[item].prototype.builder = function(table) {
+          return Target(table);
+        };
+      });
+    }
+
+    // Return the initialized instance.
+    return Target;
   };
 
   // Named instances of Bookshelf, presumably with different `Knex`
   // options, to initialize different databases. 
   // The main instance being named "default"...
   Bookshelf.Instances = {};
-
-  // Returns a named instance of Bookshelf...
-  Bookshelf.getInstance = function(name) {
-    if (!Bookshelf.Instances[name]) {
-      throw new Error('There is no ' + name + ' instance of Bookshelf.');
-    }
-    return Bookshelf.Instances[name];
-  };
 
   module.exports = Bookshelf;
 
