@@ -915,13 +915,17 @@ var User = Bookshelf.Model.extend({
     <p id="Model-attach">
       <b class="header">attach</b><code>relation.attach(ids, [options])</code>
       <br />
-      
+      Attaches one or more <b>ids</b> from a foreign table to the current table, in a 
+      <a href="#Model-belongsToMany">belongsToMany</a> relationship.
+      Creates &amp; saves a new model and attaches the model with the related model.
     </p>
 
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
       <br />
-      
+      Detach one or more related object from their pivot tables. If a model or id is passed, 
+      it attempts to remove the pivot table based on that foreign key. If no parameters 
+      are specified, we assume we will detach all related associations.
     </p>
 
     <p id="Model-withPivot">
