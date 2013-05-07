@@ -972,7 +972,7 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
       If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the 
       <tt>{method: ...}</tt> option may be specified to explicitly state which 
       <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
-      <tt>{patch: true}</tt> may be specified to only save the items in the <b>params</b> rather than
+      <tt>{partial: true}</tt> may be specified to only save the items in the <b>params</b> rather than
       the full model.
     </p>
 
@@ -1549,37 +1549,34 @@ collection
 <pre>
 Bookshelf.Transaction(function(t) {
   
-  new Bookshelf({name: 'Old Books'}).save({
-    transacting: t
-  }).then(function(model) {
+  new Library({name: 'Old Books'})
+    .save({transacting: t})
+    .then(function(model) {
 
-    return Q.all(_.map([
-      {title: 'Canterbury Tales'},
-      {title: 'Moby Dick'},
-      {title: 'Hamlet'}
-    ], function(info) {
-      
-      // Some validation could take place here.
-      return new Book(info)
-        .save('shelf_id', model.id, {transacting: t});
+      return Q.all(_.map([
+        {title: 'Canterbury Tales'},
+        {title: 'Moby Dick'},
+        {title: 'Hamlet'}
+      ], function(info) {
+        
+        // Some validation could take place here.
+        return new Book(info).save('shelf_id', model.id, {transacting: t});
+      }));  
+    })
+    .then(function(rows) {
+      t.commit(model.get('name') + 'Library created, ' + rows.length + ' new books saved!');
+    }, t.rollback);
 
-    }));
-  
-  })
-  .then(function(rows) {
-    t.commit(rows.length + ' new books saved!');
-  }, t.rollback);
+  }).then(function(msg) {
 
-}).then(function(msg) {
+    // "Old Books" Library created, 3 new books saved!
+    console.log(msg);
 
-  // 3 new books saved!
-  console.log(msg);
+  }, function() {
 
-}, function() {
+    console.log('Error saving the books.');
 
-  console.log('Error saving the books.');
-
-});
+  });
 </pre>
 
     <h2 id="faq">F.A.Q.</h2>

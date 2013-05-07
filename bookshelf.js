@@ -40,7 +40,7 @@
 
     // Returns an instance of the query builder.
     builder: function(table) {
-      return Bookshelf.Knex(table);
+      return Knex(table);
     },
 
     // If there are no arguments, return the current object's
@@ -81,9 +81,7 @@
       var model = this;
       return new EagerRelation(this, target, data)
         .processRelated(options)
-        .then(function() {
-          return model;
-        });
+        .thenResolve(model);
     },
 
     // Creates and returns a new `Bookshelf.Sync` instance.
@@ -95,6 +93,7 @@
     related: function(item) {
       return this.relations[item];
     }
+
   };
 
   // Bookshelf.Model
@@ -201,7 +200,7 @@
     // If the server returns an attributes hash that differs,
     // the model's state will be `set` again.
     save: function(key, val, options) {
-      var id, attrs, success;
+      var id, attrs;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
@@ -214,7 +213,7 @@
 
       // If the model has timestamp columns,
       // set them as attributes on the model, even
-      // if the method is set to "patch".
+      // if the "partial" option is specified.
       if (this.hasTimestamps) {
         _.extend(attrs, this.timestamp(options));
       }
@@ -237,11 +236,9 @@
 
       return sync[method](attrs, options).then(function(resp) {
 
-        // After a successful database save, the id is updated
-        // if the model was created, otherwise the success function is called
+        // After a successful database save, the id is updated if the model was created
         model.resetQuery();
         if (resp.insertId) model.set(model.idAttribute, resp.insertId);
-        if (success) success(model, resp, options);
         model.trigger((method === 'insert' ? 'create' : 'update'), model, resp, options);
 
         return model;
@@ -310,7 +307,10 @@
           throw new Error('The `'+type+'` related object must be a Bookshelf.Model');
         }
       } else if (Target.prototype instanceof Model) {
-        Target = Bookshelf.Collection.extend({model: Target});
+        Target = Bookshelf.Collection.extend({
+          model: Target,
+          builder: Target.prototype.builder
+        });
       }
 
       // If we're handling an eager loaded related model,
@@ -392,7 +392,6 @@
       var collection = this;
       return model.save(null, options).then(function(resp) {
         collection.add(model, options);
-        if (options.success) options.success(model, resp, options);
         return model;
       });
     },
@@ -447,6 +446,7 @@
         // there is a response from the query.
         if (resp && resp.length > 0) {
 
+          // This can be removed once the dependency of Knex is bumped.
           var filteredResp = skim(resp);
 
           // We can just push the models onto the collection, rather than resetting.
@@ -492,7 +492,7 @@
         // Internal flag to determine whether to set the ctor(s) on the _relation hash.
         target._isEager = true;
         relation = target[name]();
-        target._isEager = null;
+        delete target['_isEager'];
 
         // Set the parent's response, for purposes of setting query constraints.
         relation._relation.parentResponse = this.parentResponse;
@@ -513,8 +513,8 @@
       for (name in handled) {
         pendingNames.push(name);
         pendingDeferred.push(this.fetch.call(handled[name], {
-          transacting:  options.transacting,
-          withRelated:  subRelated[name]
+          transacting: options.transacting,
+          withRelated: subRelated[name]
         }));
       }
 
@@ -557,7 +557,7 @@
           // If this is a hasOne or belongsTo, we only choose a single item from
           // the relation.
           if (type === 'hasOne' || type === 'belongsTo') {
-            parent.relations[name] = relation.models[0];
+            parent.relations[name] = relation.models[0] || new relation._relation.modelCtor();
           } else {
             parent.relations[name] = new relation._relation.collectionCtor(relation.models, {parse: true});
           }
@@ -651,7 +651,7 @@
   };
 
   // Set up inheritance for the model and collection.
-  Model.extend = Collection.extend = Bookshelf.Backbone.Model.extend;
+  Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
 
   // The `forge` function properly instantiates a new Model or Collection
   // without needing the "new" keyword... to make object creation cleaner
@@ -725,9 +725,7 @@
             target = (model instanceof Collection ? new model.model() : model);
             return new EagerRelation(model, target, filteredResp)
               .processRelated(options)
-              .then(function() {
-                return resp;
-              });
+              .thenResolve(resp);
           }
           
           return resp;
@@ -747,7 +745,6 @@
         
       }).then(function(resp) {
         if (resp.length > 0) {
-          if (options.success) options.success(model, resp, options);
           model.trigger('fetched', model, resp, options);
         }
         return model;
@@ -756,13 +753,16 @@
 
     // Issues an `insert` command on the query.
     insert: function() {
-      return this.query.insert(this.model.format(_.extend({}, this.model.attributes)));
+      return this.query
+        .idAttribute(_.result(this.model, 'idAttribute'))
+        .insert(this.model.format(_.extend({}, this.model.attributes)));
     },
 
     // Issues an `update` command on the query.
     update: function(attrs, options) {
-      attrs = (attrs && options.patch ? attrs : this.model.attributes);
-      return this.query.where(this.model.idAttribute, this.model.id)
+      attrs = (attrs && options.partial ? attrs : this.model.attributes);
+      return this.query
+        .where(this.model.idAttribute, this.model.id)
         .update(this.model.format(_.extend({}, this.model.attributes)));
     },
 
@@ -802,7 +802,7 @@
         // a hash of attributes to set in the relation.
         if (_.isObject(item)) {
           if (item instanceof Model) {
-            data[pivot.foreignKey] = item.id;
+            data[pivot.foreignKey] = pivot.fkValue;
           } else {
             _.extend(data, item);
           }
@@ -873,8 +873,7 @@
   // -------------------
 
   // Configure the `Bookshelf` settings (database adapter, etc.) once,
-  // so it is ready on first model initialization. Optionally, provide
-  // a `name` so a named instance of 
+  // so it is ready on first model initialization.
   Bookshelf.Initialize = function(name, options) {
     var Target;
     if (_.isObject(name)) {
@@ -894,19 +893,24 @@
     } else {
       Target = Bookshelf.Instances[name] = {};
       
-      // Create a new `Bookshelf` instance for this database.
-      _.extend(Target, _.omit(Bookshelf, 'Instances', 'Initialize', 'Knex', 'Transaction'), {
+      // Create a new `Bookshelf` instance for this database connection.
+      _.extend(Target, _.omit(Bookshelf, 'Instances', 'Initialize', 'Knex', 'Transaction', 'VERSION'), {
         Knex: Builder,
         Transaction: Builder.Transaction
       });
 
       // Attach a new builder function that references the correct connection.
       _.each(['Model', 'Collection', 'EagerRelation'], function(item) {
-        Target[item].prototype.builder = function(table) {
-          return Target(table);
-        };
+        Target[item] = Bookshelf[item].extend({
+          builder: function(table) {
+            return Builder(table);
+          }
+        });
       });
     }
+
+    // Set the instanceName, so we know what Bookshelf we're using.
+    Target.instanceName = name;
 
     // Return the initialized instance.
     return Target;
@@ -916,6 +920,10 @@
   // options, to initialize different databases. 
   // The main instance being named "default"...
   Bookshelf.Instances = {};
+
+  // The default Bookshelf `instanceName`... incase we're using Bookshelf
+  // after `Knex` has been initialized, for consistency.
+  Bookshelf.instanceName = 'default';
 
   module.exports = Bookshelf;
 

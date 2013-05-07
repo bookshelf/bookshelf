@@ -1,22 +1,22 @@
-var Q = require('q');
 var _ = require('underscore');
+var Q = require('q');
+
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
-var Bookshelf = require('../bookshelf');
-var Backbone  = Bookshelf.Backbone;
-var Models    = require('./data/objects').Models;
+module.exports = function(Bookshelf, handler) {
 
-var stubSync = {
-  first:  function() { return Q.resolve({}); },
-  select: function() { return Q.resolve({}); },
-  insert: function() { return Q.resolve({}); },
-  update: function() { return Q.resolve({}); },
-  del:    function() { return Q.resolve({}); }
-};
+  var Backbone = Bookshelf.Backbone;
+  var Models    = require('../shared/objects')(Bookshelf).Models;
 
-describe('Bookshelf.Model', function() {
-  
+  var stubSync = {
+    first:  function() { return Q.resolve({}); },
+    select: function() { return Q.resolve({}); },
+    insert: function() { return Q.resolve({}); },
+    update: function() { return Q.resolve({}); },
+    del:    function() { return Q.resolve({}); }
+  };
+
   describe('extend/constructor/initialize', function() {
 
     var User = Bookshelf.Model.extend({
@@ -162,10 +162,12 @@ describe('Bookshelf.Model', function() {
     });
 
     it('parses the model attributes on fetch', function(ok) {
-      new ParsedSite({id: 1}).fetch().then(function(model) {
-        equal(model.get('name').indexOf('Test: '), 0);
-        ok();
-      });
+      new ParsedSite({id: 1})
+        .fetch()
+        .then(function(model) {
+          equal(model.get('name').indexOf('Test: '), 0);
+          ok();
+        });
     });
 
     it('parses the model attributes on creation if {parse: true} is passed', function() {
@@ -189,20 +191,6 @@ describe('Bookshelf.Model', function() {
         ok();
       }).done();
 
-    });
-
-    it('accepts `success` in the options, similar to Backbone', function(ok) {
-      var count = 1;
-      new Site().set({id: 1}).fetch({
-        success: function() {
-          count++;
-        }
-      })
-      .then(function() {
-        equal(count, 2);
-        ok();
-      })
-      .done();
     });
 
   });
@@ -391,4 +379,4 @@ describe('Bookshelf.Model', function() {
     });
   });  
 
-});
+};

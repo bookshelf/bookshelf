@@ -1,13 +1,12 @@
-var Bookshelf = require('../bookshelf');
-var Backbone = Bookshelf.Backbone;
-
 var _ = require('underscore');
 var Q = require('q');
 
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
-describe('Bookshelf.Collection', function() {
+module.exports = function(Bookshelf, handler) {
+
+  var Backbone = Bookshelf.Backbone;
 
   describe('extend/constructor/initialize', function() {
 
@@ -101,17 +100,12 @@ describe('Bookshelf.Collection', function() {
   describe('fetch', function() {
     
     it ('fetches the models in a collection', function (ok) {
-      var Posts = Bookshelf.Collection.extend({
-        tableName: 'posts'
-      });
-      var posts = new Posts();
-      posts.fetch().then(function (collection) {
-        equal(posts.length, 5);
-        deepEqual(posts.at(0).keys(), ['id', 'owner_id', 'blog_id', 'name', 'content']);
-        deepEqual(collection, posts);
-        ok();
-      }).done();
+      Bookshelf.Collection.extend({tableName: 'posts'})
+        .forge()
+        .fetch()
+        .then(handler(ok), ok);
     });
+  
   });
 
   describe('sync', function() {
@@ -130,4 +124,4 @@ describe('Bookshelf.Collection', function() {
 
   });
 
-});
+};

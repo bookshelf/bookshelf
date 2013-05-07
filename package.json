@@ -1,14 +1,11 @@
 {
   "name": "bookshelf",
-  "author": {
-    "name": "Tim Griesser",
-    "url": "http://tgriesser.com"
-  },
+  "author": "Tim Griesser",
   "version": "0.0.0",
   "description": "A promise based ORM in the style of Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
-    "test": "mocha -R spec test/index.js"
+    "test": "mocha -b -R spec test/index.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": "https://github.com/tgriesser/bookshelf",
@@ -32,9 +29,9 @@
     "mocha": "1.7.x",
     "mysql": "~2.0.0-alpha7",
     "pg": "~0.15.1",
-    "sqlite3": "~2.1.7"
+    "sqlite3": "~2.1.7",
+    "objectdump": "~0.3.0"
   },
-  "author": "Tim Griesser",
   "license": "MIT",
   "readmeFilename": "README.md"
 }
