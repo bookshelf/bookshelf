@@ -412,6 +412,8 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
+    <img src="https://secure.travis-ci.org/tgriesser/bookshelf.png" alt="Travis Badge">
+
     <p>
       Bookshelf is available for use under the <a href="http://github.com/tgriesser/bookshelf/blob/master/LICENSE">MIT software license</a>.
     </p>
@@ -469,6 +471,30 @@ Bookshelf.Initialize({
     charset  : 'utf8'
   }
 });
+</pre>
+
+  <p>
+    It is also possible to use <b>Bookshelf</b> with multiple database connection instances if you'd like, 
+    by creating named instances with <tt>Bookshelf.Initialize</tt>. To do this, pass the name of the
+    connection as the first parameter into <b>Bookshelf</b> and it will return that instance, which may
+    also be referenced by name under <tt>Bookshelf.Instances</tt>.
+  </p>
+
+<pre>
+var SqliteDB = Bookshelf.Initialize('sqlitedb', {
+  client: 'sqlite',
+  connection: {
+    database : './testdb'
+  }
+});
+
+var MySql2 = Bookshelf.Initialize('mysql2', {
+  client: 'mysql',
+  connection: { ... }
+});
+
+// Bookshelf.Instances['mysql2'] === MySql2;
+// Bookshelf.Instances['sqlitedb'] === SqliteDB;
 </pre>
 
     <h2 id="Model">Bookshelf.Model</h2>
@@ -1543,11 +1569,11 @@ collection
     <p id="Bookshelf-Transaction">
       <b class="header">Bookshelf.Transaction</b>
       <br />
-      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, for convenient 
-      transaction support. The transaction object must be passed along in the options of any relevant
-      <tt>Bookshelf.Sync</tt> calls, to ensure all queries are on the same connection. 
-      The entire transaction block is a promise that will resolve when the transaction is 
-      committed, or fail if the transaction is rolled back.
+      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, the transaction 
+      object must be passed along in the options of any relevant <tt>Bookshelf.Sync</tt> calls, 
+      to ensure all queries are on the same connection. The entire transaction block is 
+      a promise that will resolve when the transaction is committed, or fail if the 
+      transaction is rolled back.
     </p>
 
 <pre>
