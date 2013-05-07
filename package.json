@@ -1,7 +1,7 @@
 {
   "name": "bookshelf",
   "author": "Tim Griesser",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A promise based ORM in the style of Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "backbone": "1.0.x",
-    "knex": ">=0.0.0",
+    "knex": ">=0.0.2",
     "underscore": "1.4.4",
     "q": "0.9.x",
     "inflection": "1.2.x"
