@@ -7,5 +7,5 @@ node_js:
   - 0.6
 
 before_script:
+  - psql -c 'create database bookshelf_test;' -U postgres
   - mysql -e 'create database bookshelf_test;'
-  - psql -c 'create database knex_test;' -U postgres
