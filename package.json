@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "backbone": "1.0.x",
-    "knex": ">=0.0.2",
+    "knex": ">=0.0.3",
     "underscore": "1.4.4",
     "q": "0.9.x",
     "inflection": "1.2.x"

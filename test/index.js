@@ -2,13 +2,12 @@ var Q         = require('q');
 var _         = require('underscore');
 
 var Bookshelf = require('../bookshelf');
-var Knex = Bookshelf.Knex;
 var conn = require(process.env.BOOKSHELF_TEST || './shared/config');
 
 // The output goes here.
 exports.output = {};
 
-var MySql = Bookshelf.Initialize('mysql', {
+Bookshelf.Initialize({
   client: 'mysql',
   connection: conn.mysql
 });
@@ -25,7 +24,7 @@ var Sqlite3 = Bookshelf.Initialize('sqlite', {
 
 describe('Bookshelf', function() {
 
-  require('./regular')(MySql, 'mysql');
+  require('./regular')(Bookshelf, 'mysql');
   require('./regular')(Postgres, 'postgres');
   require('./regular')(Sqlite3, 'sqlite3');
 

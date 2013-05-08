@@ -884,7 +884,7 @@
     var Target;
     if (_.isObject(name)) {
       options = name;
-      name = 'default';
+      name = 'main';
     }
     if (Bookshelf.Instances[name]) {
       throw new Error('A ' + name + ' instance of Bookshelf already exists');
@@ -894,8 +894,8 @@
     // use that copy of `Knex` without trying to re-initialize.
     var Builder = (Knex[name] || Knex.Initialize(name, options));
 
-    if (name === 'default') {
-      Target = Bookshelf.Instances['default'] = Bookshelf;
+    if (name === 'main') {
+      Target = Bookshelf.Instances['main'] = Bookshelf;
     } else {
       Target = Bookshelf.Instances[name] = {};
       
@@ -924,12 +924,12 @@
 
   // Named instances of Bookshelf, presumably with different `Knex`
   // options, to initialize different databases. 
-  // The main instance being named "default"...
+  // The main instance being named "main"...
   Bookshelf.Instances = {};
 
-  // The default Bookshelf `instanceName`... incase we're using Bookshelf
+  // The main Bookshelf `instanceName`... incase we're using Bookshelf
   // after `Knex` has been initialized, for consistency.
-  Bookshelf.instanceName = 'default';
+  Bookshelf.instanceName = 'main';
 
   module.exports = Bookshelf;
 
