@@ -4,7 +4,6 @@
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
-
 (function() {
 
   // Initial Setup
