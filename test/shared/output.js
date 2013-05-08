@@ -1177,8 +1177,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           ownPosts: [{
             id: 4,
             owner_id: 3,
@@ -1240,8 +1240,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           ownPosts: [{
             id: 4,
             owner_id: 3,
@@ -1303,8 +1303,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           ownPosts: [{
             id: 4,
             owner_id: 3,
@@ -1472,8 +1472,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           site: {
             id: 2,
             name: 'bookshelfjs.org'
@@ -1535,8 +1535,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           site: {
             id: 2,
             name: 'bookshelfjs.org'
@@ -1598,8 +1598,8 @@ module.exports = {
         authors: [{
           id: 3,
           site_id: 2,
-          first_name: 'Edgar',
-          last_name: 'Winter',
+          first_name: 'Charlie',
+          last_name: 'Brown',
           site: {
             id: 2,
             name: 'bookshelfjs.org'

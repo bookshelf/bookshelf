@@ -149,7 +149,7 @@
     hasOne: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasOne',
-        foreignKey: foreignKey || Inflection.singularize(_.result(this, 'tableName')) + '_id'
+        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
       });
     },
 
@@ -160,7 +160,7 @@
     hasMany: function(Target, foreignKey) {
       return this._relatesTo(Target, {
         type: 'hasMany',
-        foreignKey: foreignKey || Inflection.singularize(_.result(this, 'tableName')) + '_id'
+        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
       });
     },
 
@@ -170,7 +170,7 @@
       return this._relatesTo(Target, {
         type: 'belongsTo',
         foreignKey: Target.prototype.idAttribute,
-        otherKey: otherKey || Inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id'
+        otherKey: otherKey || singularMemo(_.result(Target.prototype, 'tableName')) + '_id'
       });
     },
 
@@ -180,8 +180,8 @@
     belongsToMany: function(Target, joinTableName, foreignKey, otherKey) {
       return this._relatesTo(Target, {
         type: 'belongsToMany',
-        otherKey: otherKey     || Inflection.singularize(_.result(this, 'tableName')) + '_id',
-        foreignKey: foreignKey || Inflection.singularize(_.result(Target.prototype, 'tableName')) + '_id',
+        otherKey: otherKey     || singularMemo(_.result(this, 'tableName')) + '_id',
+        foreignKey: foreignKey || singularMemo(_.result(Target.prototype, 'tableName')) + '_id',
         joinTableName: joinTableName || [
           _.result(this, 'tableName'), 
           _.result(Target.prototype, 'tableName')
@@ -446,12 +446,9 @@
         // there is a response from the query.
         if (resp && resp.length > 0) {
 
-          // This can be removed once the dependency of Knex is bumped.
-          var filteredResp = skim(resp);
-
           // We can just push the models onto the collection, rather than resetting.
-          for (var i = 0, l = filteredResp.length; i < l; i++) {
-            models.push(new opts.modelCtor(filteredResp[i], {parse: true}));
+          for (var i = 0, l = resp.length; i < l; i++) {
+            models.push(new opts.modelCtor(resp[i], {parse: true}));
           }
 
           if (options.withRelated) {
@@ -592,8 +589,7 @@
       case "hasOne":
       case "belongsTo":
         where[relation.foreignKey] = id;
-        // TODO: Should this return an empty model otherwise?
-        return eager.findWhere(where);
+        return eager.findWhere(where) || new relation.modelCtor();
       case "hasMany":
         where[relation.foreignKey] = id;
         return new relation.collectionCtor(eager.where(where), {parse: true});
@@ -703,18 +699,17 @@
       var columns = options.columns;
       if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
       return this.query.select(columns).then(function(resp) {
-        var target, filteredResp;
+        var target;
         model.resetQuery();
         
         if (resp && resp.length > 0) {
-          filteredResp = skim(resp);
-
+          
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
-            model.set(model.parse(filteredResp[0], options), options);
+            model.set(model.parse(resp[0], options), options);
           } else {
-            model.reset(filteredResp, {silent: true, parse: true});
+            model.reset(resp, {silent: true, parse: true});
           }
           
           // If the `withRelated` property is specified on the options hash, we dive
@@ -723,7 +718,7 @@
           // Once the `EagerRelation` is complete, we return the original response from the query.
           if (options.withRelated) {
             target = (model instanceof Collection ? new model.model() : model);
-            return new EagerRelation(model, target, filteredResp)
+            return new EagerRelation(model, target, resp)
               .processRelated(options)
               .thenResolve(resp);
           }
@@ -857,12 +852,17 @@
     }
   };
 
-  // Filters an array of objects, cleaning out any nested properties.
-  var skim = function(data) {
-    return _.map(data, function(obj) {
-      return _.pick(obj, _.keys(obj));
-    });
-  };
+  // Simple memoization of the singularize call.
+  var singularMemo = (function(value) {
+    var cache = {};
+    return function (arg) {
+      if (arg in cache) {
+        return cache[arg];
+      } else {
+        return cache[arg] = Inflection.singularize(arg);
+      }
+    };
+  }());
 
   // References to the default `Knex` and `Knex.Transaction`, overwritten
   // when a new database connection is created in `Initialize` below.
