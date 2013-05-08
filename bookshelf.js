@@ -25,8 +25,8 @@
   Bookshelf.VERSION = '0.0.0';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
-  // for API consistency and portability, but adding some
-  // methods to make the API feel a bit more like Node's.
+  // for API consistency and portability, but adding
+  // functions to make the API feel a bit more like Node's.
   var Events = Bookshelf.Events = Backbone.Events;
       Events.emit = function() { this.trigger.apply(this, arguments); };
       Events.removeAllListeners = function(event) { this.off(event, null, null); };
@@ -427,40 +427,6 @@
 
   _.extend(EagerRelation.prototype, Shared, {
 
-    // Fetch the nested related items, and handle the responses.
-    // Returns a deferred object, with the cumulative handling of
-    // multiple (potentially nested) relations.
-    fetch: function(options) {
-      
-      var current = this;
-      var models  = this.models = [];
-      var opts    = this._relation;
-
-      Bookshelf.addConstraints(opts.type, this, opts.parentResponse);
-      
-      return this.query().select(opts.columns).then(function(resp) {
-
-        current.resetQuery();
-
-        // Only find additional related items & process if
-        // there is a response from the query.
-        if (resp && resp.length > 0) {
-
-          // We can just push the models onto the collection, rather than resetting.
-          for (var i = 0, l = resp.length; i < l; i++) {
-            models.push(new opts.modelCtor(resp[i], {parse: true}));
-          }
-
-          if (options.withRelated) {
-            var model = new opts.modelCtor();
-            return new EagerRelation(current, model, resp).processRelated(options);
-          }
-        }
-
-        return models;
-      });
-    },
-
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
     processRelated: function(options) {
@@ -501,15 +467,14 @@
         handled[name] = relation;
       }
 
-      // Fetch all eager loaded models.
+      // Fetch all eager loaded models, loading them onto
+      // an array of pending deferred objects, so we easily
+      // re-organize the responses once all of the queries complete.
       var pendingDeferred = [];
       var pendingNames = this.pendingNames = [];
-      
-      // TODO: look at refactoring the `.call` on the fetch
-      // below, it's a bit confusing when debugging.
       for (name in handled) {
         pendingNames.push(name);
-        pendingDeferred.push(this.fetch.call(handled[name], {
+        pendingDeferred.push(eagerFetch.call(handled[name], {
           transacting: options.transacting,
           withRelated: subRelated[name]
         }));
@@ -543,11 +508,10 @@
           var models = parent.models;
           
           // Attach the appropriate related items onto the parent model.
-          // TODO: optimize this section.
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m  = models[i2];
             var id = (type === 'belongsTo' ? m.get(relation._relation.otherKey) : m.id);
-            var result = Bookshelf.eagerRelated(type, relation, relatedModels, id);
+            var result = eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
         } else {
@@ -573,7 +537,7 @@
   _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
 
   // Adds the relation constraints onto the query.
-  Bookshelf.addConstraints = function(type, target, resp) {
+  var addConstraints = function(type, target, resp) {
     if (type !== 'belongsToMany') {
       return constraints(target, resp);
     } else {
@@ -582,7 +546,7 @@
   };
 
   // Handles the "eager related" relationship matching.
-  Bookshelf.eagerRelated = function(type, target, eager, id) {
+  var eagerRelated = function(type, target, eager, id) {
     var relation = target._relation;
     var where = {};
     switch (type) {
@@ -646,6 +610,40 @@
     return target;
   };
 
+  // Fetch the nested related items, and handle the responses.
+  // Returns a deferred object, with the cumulative handling of
+  // multiple (potentially nested) relations.
+  var eagerFetch = function(options) {
+
+    var current = this;
+    var models  = this.models = [];
+    var opts    = this._relation;
+
+    addConstraints(opts.type, this, opts.parentResponse);
+    
+    return this.query().select(opts.columns).then(function(resp) {
+
+      current.resetQuery();
+
+      // Only find additional related items & process if
+      // there is a response from the query.
+      if (resp && resp.length > 0) {
+
+        // We can just push the models onto the collection, rather than resetting.
+        for (var i = 0, l = resp.length; i < l; i++) {
+          models.push(new opts.modelCtor(resp[i], {parse: true}));
+        }
+
+        if (options.withRelated) {
+          var model = new opts.modelCtor();
+          return new EagerRelation(current, model, resp).processRelated(options);
+        }
+      }
+
+      return models;
+    });
+  };
+
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
 
@@ -675,7 +673,7 @@
     this.query = model.query();
     var relation = model._relation;
     if (relation && relation.fkValue) {
-      Bookshelf.addConstraints(relation.type, model);
+      addConstraints(relation.type, model);
     }
     if (options.transacting) this.query.transacting(options.transacting);
   };
