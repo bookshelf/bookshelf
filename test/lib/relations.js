@@ -71,7 +71,6 @@ module.exports = function(Bookshelf, handler) {
 
     });
 
-
     describe('Eager Loading - Models', function() {
 
       it('eager loads "hasOne" relationships correctly', function(ok) {
@@ -196,6 +195,7 @@ module.exports = function(Bookshelf, handler) {
           .then(function(resp) {
             return Q.all([
               new Site({id: 1}).admins().fetch().then(function(c) {
+                equal(c.at(0).has('pivot_item'), true);
                 equal(c.length, 2);
               }),
               new Site({id: 2}).admins().fetch().then(function(c) {

@@ -198,8 +198,8 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        author_id: 1,
-        post_id: 1
+        _pivot_author_id: 1,
+        _pivot_post_id: 1
       }],
       postgres: [{
         id: 1,
@@ -207,8 +207,8 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        author_id: 1,
-        post_id: 1
+        _pivot_author_id: 1,
+        _pivot_post_id: 1
       }],
       sqlite3: [{
         id: 1,
@@ -216,8 +216,8 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        author_id: 1,
-        post_id: 1
+        _pivot_author_id: 1,
+        _pivot_post_id: 1
       }]
     },
     'relations.5': {

@@ -1004,7 +1004,7 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
       If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the 
       <tt>{method: ...}</tt> option may be specified to explicitly state which 
       <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
-      <tt>{partial: true}</tt> may be specified to only save the items in the <b>params</b> rather than
+      <tt>{patch: true}</tt> may be specified to only save the items in the <b>params</b> rather than
       the full model.
     </p>
 

@@ -12,7 +12,7 @@
   var Bookshelf = {};
 
   // Keep a reference to our own copy of Backbone, in case we want to use
-  // this specific instance of Backbone elsewhere in the application.
+  // this specific instance elsewhere in the application.
   var Backbone = Bookshelf.Backbone = require('backbone');
 
   // Local dependency references.
@@ -21,18 +21,20 @@
   var Knex = require('knex');
   var Inflection = require('inflection');
 
-  // Keep in sync with package.json.
+  // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.0.0';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
-  // for API consistency and portability, but adding
-  // functions to make the API feel a bit more like Node's.
+  // for consistency and portability, adding a few
+  // functions to make the API feel a bit more like Node.
   var Events = Bookshelf.Events = Backbone.Events;
       Events.emit = function() { this.trigger.apply(this, arguments); };
       Events.removeAllListeners = function(event) { this.off(event, null, null); };
 
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
+
+  var push = Array.prototype.push;
 
   // Shared functions which are mixed-in to the
   // `Model`, `Collection`, and `EagerRelation` prototypes.
@@ -44,9 +46,8 @@
     },
 
     // If there are no arguments, return the current object's
-    // query builder (or create a new one). If there are arguments,
-    // call the query builder with the first argument, applying the
-    // rest.
+    // query builder (or create and return a new one). If there are arguments,
+    // call the query builder with the first argument, applying the rest.
     query: function() {
       this._builder || (this._builder = this.builder(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
@@ -56,7 +57,7 @@
     },
 
     // Reset the query builder, called internally
-    // after a query completes.
+    // each time a query is run.
     resetQuery: function() {
       delete this._builder;
       return this;
@@ -92,6 +93,19 @@
     // Returns the related item
     related: function(item) {
       return this.relations[item];
+    },
+
+    // Helper for attaching query constraints on related 
+    // `models` or `collections` as necessary.
+    _addConstraints: function(resp) {
+      var relation = this._relation;
+      if (relation && relation.fkValue || resp) {
+        if (relation.type !== 'belongsToMany') {
+          constraints.call(this, resp);
+        } else {
+          belongsToMany.call(this, resp);
+        }
+      }
     }
 
   };
@@ -121,16 +135,16 @@
   };
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
-  // handling validations, or tracking changes in the same way as Backbone, we can drop all of
-  // these related features.
+  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop all of
+  // these related keys.
   var modelOmitted = ['isValid', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes'];
 
-  // List of attributes attached directly from the constructor's options object.
+  // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
 
   _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, Shared, {
 
-    // The database table associated with the model.
+    // The database `tableName` associated with the model.
     tableName: null,
 
     // Indicates if the model should be timestamped.
@@ -238,7 +252,7 @@
 
         // After a successful database save, the id is updated if the model was created
         model.resetQuery();
-        if (resp.insertId) model.set(model.idAttribute, resp.insertId);
+        if (method === 'insert' && resp) model.set(model.idAttribute, resp[0]);
         model.trigger((method === 'insert' ? 'create' : 'update'), model, resp, options);
 
         return model;
@@ -285,7 +299,7 @@
     },
 
     // Create a new model with identical attributes to this one,
-    // including any appropriate relations for the model.
+    // including any relations on the current model.
     clone: function() {
       var model = new this.constructor(this.attributes);
       model.relations = _.map(this.relations, function(relation) {
@@ -314,9 +328,9 @@
       }
 
       // If we're handling an eager loaded related model,
-      // we need to keep a reference to the original constructor,
-      // to assemble the correct object once the eager matching is finished.
-      // Otherwise, we need to grab the `foreignKey` value for building the query.
+      // keep a reference to the original constructor to assemble 
+      // the correct object once the eager matching is finished.
+      // Otherwise, just grab the `foreignKey` value for building the query.
       if (this._isEager) {
         if (multi) {
           options.modelCtor = Target.prototype.model;
@@ -346,8 +360,8 @@
       return target;
     },
 
-    // Validation can be complicated, and is better left to be 
-    // handled on its own and not mixed in with database logic.
+    // Validation can be complicated, and is better handled
+    // on its own and not mixed in with database logic.
     _validate: function() { 
       return true; 
     }
@@ -536,15 +550,6 @@
   };
   _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
 
-  // Adds the relation constraints onto the query.
-  var addConstraints = function(type, target, resp) {
-    if (type !== 'belongsToMany') {
-      return constraints(target, resp);
-    } else {
-      return belongsToMany(target, resp);
-    }
-  };
-
   // Handles the "eager related" relationship matching.
   var eagerRelated = function(type, target, eager, id) {
     var relation = target._relation;
@@ -564,25 +569,24 @@
   };
 
   // Standard constraints for regular or eager loaded relations.
-  var constraints = function(target, resp) {
-    var relation = target._relation;
+  var constraints = function(resp) {
+    var relation = this._relation;
     if (resp) {
-      target.query('whereIn', relation.foreignKey, _.pluck(resp, relation.parentIdAttr));
+      this.query('whereIn', relation.foreignKey, _.pluck(resp, relation.parentIdAttr));
     } else {
-      target.query('where', relation.foreignKey, '=', relation.fkValue);
+      this.query('where', relation.foreignKey, '=', relation.fkValue);
     }
-    return target;
   };
 
   // Helper function for adding the constraints needed on a eager load.
-  var belongsToMany = function(target, resp) {
+  var belongsToMany = function(resp) {
     var 
-    relation      = target._relation,
+    relation      = this._relation,
     columns       = relation.columns || (relation.columns = []),
-    builder       = target.query(),
+    builder       = this.query(),
     
-    tableName     = _.result(target, 'tableName'),
-    idAttribute   = _.result(target, 'idAttribute'),
+    tableName     = _.result(this, 'tableName'),
+    idAttribute   = _.result(this, 'idAttribute'),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -598,7 +602,7 @@
       joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
     );
     
-    if (pivotColumns) columns.push.apply(columns, pivotColumns);
+    if (pivotColumns) push.apply(columns, pivotColumns);
     
     builder.join(joinTableName, tableName + '.' + idAttribute, '=', joinTableName + '.' + foreignKey);
     
@@ -607,23 +611,21 @@
     } else {
       builder.where(joinTableName + '.' + otherKey, '=', relation.fkValue);
     }
-    return target;
   };
 
-  // Fetch the nested related items, and handle the responses.
-  // Returns a deferred object, with the cumulative handling of
-  // multiple (potentially nested) relations.
+  // Called from `EagerRelation.processRelated` with the context 
+  // of an eager-loading model or collection, this function
+  // fetches the nested related items, and returns a deferred object, 
+  // with the cumulative handling of multiple (potentially nested) relations.
   var eagerFetch = function(options) {
 
-    var current = this;
-    var models  = this.models = [];
-    var opts    = this._relation;
+    var current  = this;
+    var models   = this.models = [];
+    var relation = this._relation;
 
-    addConstraints(opts.type, this, opts.parentResponse);
-    
-    return this.query().select(opts.columns).then(function(resp) {
+    this._addConstraints(relation.parentResponse);
 
-      current.resetQuery();
+    return this.query().select(relation.columns).then(function(resp) {
 
       // Only find additional related items & process if
       // there is a response from the query.
@@ -631,16 +633,19 @@
 
         // We can just push the models onto the collection, rather than resetting.
         for (var i = 0, l = resp.length; i < l; i++) {
-          models.push(new opts.modelCtor(resp[i], {parse: true}));
+          models.push(new relation.modelCtor(resp[i], {parse: true}));
         }
 
         if (options.withRelated) {
-          var model = new opts.modelCtor();
+          var model = new relation.modelCtor();
           return new EagerRelation(current, model, resp).processRelated(options);
         }
       }
 
       return models;
+    
+    }).fin(function() {
+      current.resetQuery();
     });
   };
 
@@ -671,10 +676,7 @@
     this.model = model;
     this.options = options;
     this.query = model.query();
-    var relation = model._relation;
-    if (relation && relation.fkValue) {
-      addConstraints(relation.type, model);
-    }
+    model._addConstraints();
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
@@ -696,9 +698,13 @@
       var options = this.options;
       var columns = options.columns;
       if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
+      
+      if (model._relation && model._relation.columns) {
+        columns = model._relation.columns;
+      }
+
       return this.query.select(columns).then(function(resp) {
         var target;
-        model.resetQuery();
         
         if (resp && resp.length > 0) {
           
@@ -741,6 +747,8 @@
           model.trigger('fetched', model, resp, options);
         }
         return model;
+      }).fin(function() {
+        model.resetQuery();
       });
     },
 
@@ -753,7 +761,7 @@
 
     // Issues an `update` command on the query.
     update: function(attrs, options) {
-      attrs = (attrs && options.partial ? attrs : this.model.attributes);
+      attrs = (attrs && options.patch ? attrs : this.model.attributes);
       return this.query
         .where(this.model.idAttribute, this.model.id)
         .update(this.model.format(_.extend({}, this.model.attributes)));
@@ -795,7 +803,7 @@
         // a hash of attributes to set in the relation.
         if (_.isObject(item)) {
           if (item instanceof Model) {
-            data[pivot.foreignKey] = pivot.fkValue;
+            data[pivot.foreignKey] = item.id;
           } else {
             _.extend(data, item);
           }

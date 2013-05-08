@@ -25,7 +25,7 @@ module.exports = function(Shelf) {
       return this.hasOne(SiteMeta);
     },
     admins: function() {
-      return this.belongsToMany(Admin).withPivot({item: 'pivot_item'});
+      return this.belongsToMany(Admin).withPivot('item');
     }
   });
 
