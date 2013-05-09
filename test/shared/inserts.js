@@ -1,4 +1,4 @@
-var Q     = require('q');
+var When  = require('when');
 var _     = require('underscore');
 var Knex  = require('knex');
 
@@ -6,7 +6,7 @@ module.exports = function(Bookshelf) {
 
   Knex = Bookshelf.Knex;
 
-  return Q.all([
+  return When.all([
 
     Knex('sites').insert([{
       name: 'knexjs.org'

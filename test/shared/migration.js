@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Q = require('q');
+var When = require('when');
 
 var drops = [
   'sites', 'sitesmeta', 'admins',
@@ -11,12 +11,12 @@ module.exports = function(Bookshelf) {
 
   var Schema = Bookshelf.Knex.Schema;
 
-  return Q.all(_.map(drops, function(val) {
+  return When.all(_.map(drops, function(val) {
     return Schema.dropTableIfExists(val);
   }))
   .then(function() {
 
-    return Q.all([
+    return When.all([
       Schema.createTable('sites', function(table) {
         table.increments('id');
         table.string('name');

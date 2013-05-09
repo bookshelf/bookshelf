@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Q = require('q');
+var When = require('when');
 
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
@@ -10,11 +10,11 @@ module.exports = function(Bookshelf, handler) {
   var Models    = require('../shared/objects')(Bookshelf).Models;
 
   var stubSync = {
-    first:  function() { return Q.resolve({}); },
-    select: function() { return Q.resolve({}); },
-    insert: function() { return Q.resolve({}); },
-    update: function() { return Q.resolve({}); },
-    del:    function() { return Q.resolve({}); }
+    first:  function() { return When.resolve({}); },
+    select: function() { return When.resolve({}); },
+    insert: function() { return When.resolve({}); },
+    update: function() { return When.resolve({}); },
+    del:    function() { return When.resolve({}); }
   };
 
   describe('extend/constructor/initialize', function() {
@@ -189,7 +189,7 @@ module.exports = function(Bookshelf, handler) {
         equal(model.get('id'), 1);
         equal(model.get('name'), 'knexjs.org');
         ok();
-      }).done();
+      });
 
     });
 
@@ -208,7 +208,7 @@ module.exports = function(Bookshelf, handler) {
         equal(c.last().get('name'), 'Third Site');
         equal(c.length, 3);
         ok();
-      }).done();
+      });
     });
 
     it('updates an existing object', function(ok) {
@@ -221,7 +221,7 @@ module.exports = function(Bookshelf, handler) {
         equal(c.last().get('name'), 'Third Site Updated');
         equal(c.length, 3);
         ok();
-      }).done();
+      });
     });
 
     it('allows passing a method to save, to call insert or update explicitly', function(ok) {
@@ -234,7 +234,7 @@ module.exports = function(Bookshelf, handler) {
         equal(c.last().id, 4);
         equal(c.last().get('name'), 'Fourth site, explicity created');
         ok();
-      }).done();
+      });
     });
 
   });
@@ -251,14 +251,15 @@ module.exports = function(Bookshelf, handler) {
         equal(c.length, 3);
         ok();
       })
-      .done();
+      ;
     });
 
     it('fails if no idAttribute or wheres are defined on the model.', function(ok) {
       new Site().destroy().then(null, function(e) {
-        equal(e.toString(), 'A model cannot be destroyed without a "where" clause or an idAttribute.');
+        console.log(e);
+        equal(e.toString(), 'Error: A model cannot be destroyed without a "where" clause or an idAttribute.');
         ok();
-      }).done();
+      });
     });
 
     it('triggers a destroy event on the model', function(ok) {
@@ -293,7 +294,7 @@ module.exports = function(Bookshelf, handler) {
         ok();
         return stubSync;
       };
-      m.save({item: 'test'}).done();
+      m.save({item: 'test'});
     });
 
     it('only sets the updated_at for existing models', function(ok) {
@@ -304,7 +305,7 @@ module.exports = function(Bookshelf, handler) {
         ok();
         return stubSync;
       };
-      m1.save({item: 'test'}).done();
+      m1.save({item: 'test'});
     });
 
     it('allows passing hasTimestamps in the options hash', function(ok) {
@@ -316,7 +317,7 @@ module.exports = function(Bookshelf, handler) {
         ok();
         return stubSync;
       };
-      m.save({item: 'test'}).done();
+      m.save({item: 'test'});
     });
   });
 
@@ -355,7 +356,7 @@ module.exports = function(Bookshelf, handler) {
         ok();
         return stubSync;
       };
-      item.save().done();
+      item.save();
     });
   
   });

@@ -1,4 +1,3 @@
-var Q = require('q');
 var _ = require('underscore');
 var objectdump = require('objectdump');
 var dev = parseInt(process.env.BOOKSHELF_DEV, 10);
@@ -18,7 +17,7 @@ module.exports = function(Bookshelf, type) {
         })
         .then(function() {
           ok();
-        }).done();
+        });
     });
 
     describe('Bookshelf.Model - ' + type, function() {

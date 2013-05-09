@@ -1,4 +1,4 @@
-var Q         = require('q');
+var When      = require('when');
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
@@ -168,13 +168,13 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads relations on a populated model', function(ok) {
         new Site({id: 1}).fetch().then(function(m) {
           return m.load(['blogs', 'authors.site']);
-        }).then(handler(ok), ok).done();
+        }).then(handler(ok), ok);
       });
 
       it('eager loads attributes on a collection', function(ok) {
         new Sites().fetch().then(function(c) {
           return c.load(['blogs', 'authors.site']);
-        }).then(handler(ok), ok).done();
+        }).then(handler(ok), ok);
       });
     });
 
@@ -185,15 +185,15 @@ module.exports = function(Bookshelf, handler) {
         var admin1 = new Admin({username: 'syncable', password: 'test'});
         var admin2 = new Admin({username: 'syncable', password: 'test'});
         
-        Q.all([admin1.save(), admin2.save()])
+        When.all([admin1.save(), admin2.save()])
           .then(function() {
-            return Q.all([
+            return When.all([
               new Site({id: 1}).admins().attach([admin1, admin2]),
               new Site({id: 2}).admins().attach(admin2)
             ]);
           })
           .then(function(resp) {
-            return Q.all([
+            return When.all([
               new Site({id: 1}).admins().fetch().then(function(c) {
                 equal(c.at(0).has('pivot_item'), true);
                 equal(c.length, 2);
@@ -204,7 +204,7 @@ module.exports = function(Bookshelf, handler) {
             ]);
           })
           .then(function(resp) {
-            return Q.all([
+            return When.all([
               new Site({id: 1}).admins().detach().then(function(c) {
                 equal(c.length, 0);
               }),
@@ -214,9 +214,7 @@ module.exports = function(Bookshelf, handler) {
             ]).then(function() {
               ok();
             });
-          })
-          .done();
-      
+          });
       });
 
     });

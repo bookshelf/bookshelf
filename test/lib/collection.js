@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Q = require('q');
 
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;

@@ -20,10 +20,10 @@
   ],
   "dependencies": {
     "backbone": "1.0.x",
-    "knex": ">=0.0.3",
+    "knex": ">=0.0.5",
     "underscore": "1.4.4",
-    "q": "0.9.x",
-    "inflection": "1.2.x"
+    "inflection": "1.2.x",
+    "when": "~2.0.1"
   },
   "devDependencies": {
     "mocha": "1.7.x",

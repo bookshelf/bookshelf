@@ -16,7 +16,7 @@
 
   // Local dependency references.
   var _  = require('underscore');
-  var Q  = require('q');
+  var When = require('when');
   var Knex = require('knex');
   var Inflection = require('inflection');
 
@@ -81,7 +81,7 @@
       var model = this;
       return new EagerRelation(this, target, data)
         .processRelated(options)
-        .thenResolve(model);
+        .yield(model);
     },
 
     // Creates and returns a new `Bookshelf.Sync` instance.
@@ -495,7 +495,7 @@
 
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs are complete.
-      return Q.all(pendingDeferred).spread(_.bind(this.matchResponses, this));
+      return When.all(pendingDeferred).spread(_.bind(this.matchResponses, this));
     },
 
     // Handles the matching against an eager loaded relation.
@@ -643,7 +643,7 @@
 
       return models;
     
-    }).fin(function() {
+    }).ensure(function() {
       current.resetQuery();
     });
   };
@@ -723,7 +723,7 @@
             target = (model instanceof Collection ? new model.model() : model);
             return new EagerRelation(model, target, resp)
               .processRelated(options)
-              .thenResolve(resp);
+              .yield(resp);
           }
           
           return resp;
@@ -731,7 +731,7 @@
 
         // If `{require: true}` is set as an option, the fetch is considered
         // a failure if the model comes up blank.
-        if (options.require) return Q.reject('EmptyResponse');
+        if (options.require) return When.reject(new Error('EmptyResponse'));
 
         if (model instanceof Model) {
           model.clear();
@@ -746,7 +746,7 @@
           model.trigger('fetched', model, resp, options);
         }
         return model;
-      }).fin(function() {
+      }).ensure(function() {
         model.resetQuery();
       });
     },
@@ -774,7 +774,7 @@
         wheres[this.model.idAttribute] = this.model.id;
       }
       if (!wheres && this.query.wheres.length === 0) {
-        return Q.reject('A model cannot be destroyed without a "where" clause or an idAttribute.');
+        return When.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
       return this.query.where(wheres).del();
     }
@@ -789,11 +789,11 @@
   var pivotHelpers = {
 
     _handler: function(method, ids, options) {
-      if (ids == void 0 && method === 'insert') return Q.resolve();
+      if (ids == void 0 && method === 'insert') return When.resolve();
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pivot = this._relation;
       var context = this;
-      return Q.all(_.map(ids, function(item) {
+      return When.all(_.map(ids, function(item) {
         var data = {};
         data[pivot.otherKey] = pivot.fkValue;
 
