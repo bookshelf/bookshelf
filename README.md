@@ -11,7 +11,7 @@
           \/                                    \/
 ```
 
-Bookshelf is a node.js ORM with support for Postgres, mySql, and sqlite3. 
+Bookshelf is a node.js ORM with support for postgreSQL, mySQL, and SQLite3.
 It is built on the foundation of <a href="http://knexjs.org">Knex Query Builder</a>, 
 and is strongly influenced by the Model and Collection foundations of Backbone.js.
 It features Transaction support, one-to-one, one-to-many, and many-to-many relations.
