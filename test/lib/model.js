@@ -256,7 +256,6 @@ module.exports = function(Bookshelf, handler) {
 
     it('fails if no idAttribute or wheres are defined on the model.', function(ok) {
       new Site().destroy().then(null, function(e) {
-        console.log(e);
         equal(e.toString(), 'Error: A model cannot be destroyed without a "where" clause or an idAttribute.');
         ok();
       });
