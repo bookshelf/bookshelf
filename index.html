@@ -295,6 +295,9 @@
     <a class="toc_title" href="#Initialize">
       Initialize
     </a>
+    <ul class="toc_section">
+      <li>– <a href="#Init-multi-instance">multi-instance</a></li>
+    </ul>
 
     <a class="toc_title" href="#Model">
       Model
@@ -371,6 +374,9 @@
       Events
     </a>
     <ul class="toc_section">
+      <li>– <a href="#Events-Backbone-Methods"><b>Backbone Methods (5)</b></a></li>
+      <li>– <a href="#Events-emit">emit</a></li>
+      <li>– <a href="#Events-removeAllListeners">removeAllListeners</a></li>
       <li>- <a href="#Events-catalog"><b>Catalog of Built-in Events</b></a></li>
     </ul>
 
@@ -412,9 +418,14 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <a href="https://travis-ci.org/tgriesser/bookshelf">
-      <img src="https://secure.travis-ci.org/tgriesser/bookshelf.png" alt="Travis Badge" />
-    </a>
+    <h3>Latest Release: 0.1.0</h3>
+
+    <p>
+      Current Develop &mdash;
+      <a href="https://travis-ci.org/tgriesser/bookshelf">
+        <img src="https://travis-ci.org/tgriesser/bookshelf.png?branch=master" alt="Travis Badge">
+      </a>
+    </p>
 
     <p>
       Bookshelf is available for use under the <a href="http://github.com/tgriesser/bookshelf/blob/master/LICENSE">MIT software license</a>.
@@ -455,6 +466,23 @@
       to use Bookshelf.
     </p>
 
+    <h2 id="installation">Installation</h2>
+
+    <p>
+      All dependencies are specified in package.json file but include underscore.js, when.js, and knex.js library. 
+      You'll then need to install either mysql, pg, or sqlite3 from npm. It is advisable to install your own copy 
+      of Knex as well if you wish to build any custom queries outside of the ORM.
+    </p>
+
+<pre>
+$ npm install knex --save
+
+# Then add one of the following:
+$ npm install mysql
+$ npm install pg
+$ npm install sqlite3
+</pre>
+
     <h2 id="Initialize">Bookshelf.Initialize</h2>
 
     <p>
@@ -475,7 +503,7 @@ Bookshelf.Initialize({
 });
 </pre>
 
-  <p>
+  <p id="Init-multi-instance">
     It is also possible to use <b>Bookshelf</b> with multiple database connection instances if you'd like, 
     by creating named instances with <tt>Bookshelf.Initialize</tt>. To do this, pass the name of the
     connection as the first parameter into <b>Bookshelf</b> and it will return that instance, which may
@@ -673,7 +701,9 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
-      or <tt>null</tt> if the model isn't fetched.
+      or <tt>null</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
+      is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
+      event will be fired when a record is successfully retrieved.
     </p>
 
 <pre>
@@ -686,8 +716,7 @@ new Book({'ISBN-13': '9780440180296'})
   });
 </pre>
 
-    <p><b>Eager Loading:</b>
-      <br />
+    <p>
       The <tt>withRelated</tt> parameter may be specified to fetch the resource, 
       along with any specified <a href="#Model-relations">relations</a> named on the model. 
       A single property, or an array of properties can be specified as a value for the <tt>withRelated</tt>
@@ -1010,15 +1039,27 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
 
 <pre>
 new Post({name: 'New Article'}).save().then(function(model) {
-  
+  // ...
 });
 </pre>
+    
+    <p>
+      Several events fired on the model when saving: a <tt>"creating"</tt>, or <tt>"updating"</tt>
+      event if the model is being inserted or updated, and a <tt>"saving"</tt> event in either case. To prevent
+      saving the model (with validation, etc.), throwing an error inside one of these event listeners will stop
+      saving the model and reject the promise. A <tt>"created"</tt>, or <tt>"updated"</tt> event is fired after the
+      model is saved, as well as a <tt>"saved"</tt> event either way.
+    </p>
 
     <p id="Model-destroy">
       <b class="header">destroy</b><code>model.destroy</code>
       <br />
       The Model's <b>destroy</b> method performs a <tt>delete</tt> on the model, using the model's
       <a href="#Model-idAttribute">idAttribute</a> to constrain the query.
+      A <tt>"destroying"</tt> event is triggered on the model before being destroyed. To prevent
+      destroying the model (with validation, etc.), throwing an error inside one of these event listeners will stop
+      destroying the model and reject the promise. A <tt>"destroyed"</tt> event is fired after the model's removal
+      is completed.
     </p>
 
     <p id="Model-attributes">
@@ -1220,19 +1261,8 @@ modelB.isNew(); // false
     <h2 id="Collection">Bookshelf.Collection</h2>
 
     <p>
-      Collections are ordered sets of models. You can bind <tt>"change"</tt> events
-      to be notified when any model in the collection has been modified,
-      listen for <tt>"add"</tt> and <tt>"remove"</tt> events, <tt>fetch</tt>
-      the collection from the server, and use a full suite of
-      <a href="#Collection-Underscore-Methods">Underscore.js methods</a>.
-    </p>
-
-    <p>
-      Any event that is triggered on a model in a collection will also be
-      triggered on the collection directly, for convenience.
-      This allows you to listen for changes to specific attributes in any
-      model in a collection, for example:
-      <tt>Documents.on("change:selected", ...)</tt>
+      Collections are ordered sets of models returned from the database,
+      which may be used with a full suite of <a href="#Collection-Underscore-Methods">Underscore.js methods</a>.
     </p>
 
     <p id="Collection-extend">
@@ -1328,7 +1358,9 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       <b class="header">fetch</b><code>collection.fetch([options])</code>
       <br />
       Fetch the default set of models for this collection from the database,
-      resetting the collection when they arrive.
+      resetting the collection when they arrive. If you wish to trigger an error if the fetched collection
+      is empty, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
+      event will be fired when records are successfully retrieved.
     </p>
 
     <p id="Collection-load">
@@ -1348,7 +1380,7 @@ new Story({id: 2}).fetch({
 </pre>
 
     <p id="Collection-create">
-      <b class="header">create</b><code>collection.create(relations, options).then(function(collection) {...</code>
+      <b class="header">create</b><code>collection.create(relations, options).then(function(model) {...</code>
       <br />
       Convenience to create a new instance of a model within a collection. Equivalent to instantiating a 
       model with a hash of attributes, saving the model to the database, and adding the model to the collection
@@ -1513,9 +1545,30 @@ collection
 
   <h2 id="Events">Bookshelf.Events</h2>
 
-    <p>
-      Unlike in Backbone, <tt>Events</tt> are not a prominent feature of Bookshelf. Models are 
-      typically short lived, so binding to events isn't quite as useful.
+    <p id="Events-Backbone-Methods">
+      <b class="header">Backbone Methods (5)</b><br />
+      Bookshelf mixes in the <tt>Events</tt> module from Backbone, and therefore each Model and Collection has access
+      to each of the following methods, which can be referenced in the Backbone documentation.
+    </p>
+
+    <ul>
+      <li><a href="http://backbonejs.org/#Events-on">on</a></li>
+      <li><a href="http://backbonejs.org/#Events-off">off</a></li>
+      <li><a href="http://backbonejs.org/#Events-trigger">trigger</a></li>
+      <li><a href="http://backbonejs.org/#Events-once">once</a></li>
+      <li><a href="http://backbonejs.org/#Events-listenTo">listenTo</a></li>
+      <li><a href="http://backbonejs.org/#Events-stopListening">stopListnening</a></li>
+      <li><a href="http://backbonejs.org/#Events-listenToOnce">listenToOnce</a></li>
+    </ul>
+
+    <p id="Events-emit">
+      <b class="header">.emit(args*)</b><br />
+      Alias to <a href="http://backbonejs.org/#Events-trigger">Events.trigger</a>.
+    </p>
+
+    <p id="Events-removeAllListeners">
+      <b class="header">.removeAllListeners([event])</b><br />
+      Alias to <tt>this.off(event, null, null);</tt>
     </p>
 
     <p id="Events-catalog">
@@ -1531,25 +1584,20 @@ collection
     <p><b>Model:</b></p>
 
     <ul class="small">
-      <li><b>"create"</b> (model, resp, options) &mdash; when a model is removed from a collection. </li>
-      <li><b>"update"</b> (model, resp, options) &mdash; when a model is removed from a collection. </li>
-      <li><b>"destroy"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
-      <li><b>"beforeSave"</b> (model, method, options) &mdash; last line before a model is persisted. </li>
-      <li><b>"beforeDestroy"</b> (model, method, options) &mdash; last line before a model is destroyed. </li>
-      <li><b>"change"</b> (model, options) &mdash; when a model's attributes have changed. </li>
-      <li><b>"change:[attribute]"</b> (model, value, options) &mdash; when a specific attribute has been updated. </li>
+      <li><b>"fetched"</b> (model, resp, options) &mdash; after a model is fetched. </li>
+      <li><b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted, throwing an Error prevents insertion. </li>
+      <li><b>"updating"</b> (model, attrs, options) &mdash; before a model is updating, throwing an Error prevents updating. </li>
+      <li><b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating. </li>
+      <li><b>"destroying"</b> (model, options) &mdash; before a model is destroyed, throwing an Error prevents destruction. </li>
+      <li><b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
+      <li><b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
+      <li><b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
+      <li><b>"destroyed"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
     </ul>
 
     <p><b>Collection:</b></p>
-
     <ul class="small">
-      <li><b>"reset"</b> (collection, options) &mdash; when the collection's entire contents have been replaced. </li>
-    </ul>
-
-    <p><b>General:</b></p>
-
-     <ul class="small">
-      <li><b>"all"</b> &mdash; this special event fires for <i>any</i> triggered event, passing the event name as the first argument. </li>
+      <li><b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
     </ul>
 
   <h2 id="Utility">Utility</h2>
@@ -1579,13 +1627,15 @@ collection
     </p>
 
 <pre>
+var When = require('when');
+
 Bookshelf.Transaction(function(t) {
   
   new Library({name: 'Old Books'})
     .save({transacting: t})
     .then(function(model) {
 
-      return Q.all(_.map([
+      return When.all(_.map([
         {title: 'Canterbury Tales'},
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
@@ -1596,12 +1646,12 @@ Bookshelf.Transaction(function(t) {
       }));  
     })
     .then(function(rows) {
-      t.commit(model.get('name') + 'Library created, ' + rows.length + ' new books saved!');
+      t.commit([model.get('name'), rows.length]);
     }, t.rollback);
 
-  }).then(function(msg) {
+  }).then(function(resp) {
 
-    // "Old Books" Library created, 3 new books saved!
+    // ['Old Books', 3]
     console.log(msg);
 
   }, function() {
@@ -1614,12 +1664,22 @@ Bookshelf.Transaction(function(t) {
     <h2 id="faq">F.A.Q.</h2>
 
     <p id="faq-debug">
-      <b class="header">How do I debug.</b><br />
+      <b class="header">How do I debug?</b><br />
       If you pass <tt>{debug: true}</tt> as one of the options in your initialize settings, you can see
       all of the query calls being made. Sometimes you need to dive a bit further into
       the various calls and see what all is going on behind the scenes. I'd recommend 
       <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug
       code with <tt>debugger</tt> statements like you would in the browser.
+    </p>
+
+    <p id="faq-tests">
+      <b class="header">How do I run the test suite?</b><br />
+      The test suite looks for an environment variable called <tt>BOOKSHELF_TEST</tt> for the path to the database
+      configuration. If you run the following command:
+      <tt>$ export BOOKSHELF_TEST='/path/to/your/knex_config.js'</tt>, replacing with the path to your config file,
+      and the config file is valid, the test suite should run with <tt>npm test</tt>. If you're going to 
+      add a test, you may want to follow similar patterns, used in the test suite, 
+      setting <tt>$ export BOOKSHELF_DEV=1</tt> to save the outputs data from the tests into the <tt>shared/output.js</tt> file.
     </p>
 
     <p id="faq-nonode">
@@ -1632,7 +1692,7 @@ Bookshelf.Transaction(function(t) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
-      <b class="header">0.1.0</b> &mdash; <small><i>TBD</i></small><br />
+      <b class="header">0.1.0</b> &mdash; <small><i>May 13, 2013</i></small><br />
       Initial Bookshelf release.
     </p>
 

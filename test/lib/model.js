@@ -261,13 +261,26 @@ module.exports = function(Bookshelf, handler) {
       });
     });
 
-    it('triggers a destroy event on the model', function(ok) {
+    it('triggers a destroying event on the model', function(ok) {
       var m = new Site({id: 3});
-      m.on('destroy', function() {
+      m.on('destroying', function() {
         m.off();
         ok();
       });
       m.destroy();
+    });
+
+    it('will not destroy the model if an error is thrown during the destroying event', function(ok) {
+      var m = new Site({id: 1});
+      m.on('destroying', function(model) {
+        if (model.id === 1) {
+          throw new Error("You cannot destroy the first site");
+        }
+      });
+      m.destroy().then(null, function(e) {
+        equal(e.toString(), 'Error: You cannot destroy the first site');
+        ok();
+      });
     });
 
   });

@@ -15,13 +15,14 @@
   var Backbone = Bookshelf.Backbone = require('backbone');
 
   // Local dependency references.
-  var _  = require('underscore');
-  var When = require('when');
-  var Knex = require('knex');
+  var _      = require('underscore');
+  var When   = require('when');
+  var WhenFn = require('when/function');
+  var Knex   = require('knex');
   var Inflection = require('inflection');
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.0.0';
+  Bookshelf.VERSION = '0.1.0';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability, adding a few
@@ -117,17 +118,18 @@
   // constructor, except that defaults are not set until the
   // object is persisted, and the collection property is not used.
 
-  // Create a new model with the specified attributes. A client id (`cid`)
-  // is automatically generated and assigned for you.
+  // A unique `cid` property is also added to each created model, similar to
+  // `Backbone` models, and is useful checking the identity of two models.
   var Model = Bookshelf.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
-    this.cid = _.uniqueId('c');
     this.attributes = {};
     this.relations = {};
-    this._configure(options);
-    if (options.parse) attrs = this.parse(attrs, options) || {};
-    options.protect || (options.protect = false);
+    this.cid = _.uniqueId('c');
+    if (options) {
+      _.extend(this, _.pick(options, modelProps));
+      if (options.parse) attrs = this.parse(attrs, options) || {};
+    }
     this.set(attrs, options);
     this.changed = {};
     this.initialize.apply(this, arguments);
@@ -142,18 +144,6 @@
   var modelProps = ['tableName', 'hasTimestamps'];
 
   _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, Shared, {
-
-    // The database `tableName` associated with the model.
-    tableName: null,
-
-    // Indicates if the model should be timestamped.
-    hasTimestamps: false,
-
-    // Ensures the options sent to the model are properly attached.
-    _configure: function(options) {
-      if (this.options) options = _.extend({}, _.result(this, 'options'), options);
-      _.extend(this, _.pick(options, modelProps));
-    },
 
     // The `hasOne` relation specifies that this table has exactly one of
     // another type of object, specified by a foreign key in the other table. The foreign key is assumed
@@ -209,9 +199,10 @@
       return this.sync(this, options).first();
     },
 
-    // Sets and saves the hash of model attributes,
-    // If the server returns an attributes hash that differs,
-    // the model's state will be `set` again.
+    // Sets and saves the hash of model attributes, triggering
+    // a "creating" or "updating" event on the model, as well as a "saving" event,
+    // to bind listeners for any necessary validation, logging, etc.
+    // If an error is thrown during these events, the model will not be saved.
     save: function(key, val, options) {
       var id, attrs;
 
@@ -243,29 +234,38 @@
       var sync   = model.sync(model, options);
       var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
-      // Trigger a "beforeSave" event on the model, so we can bind listeners to do any
-      // validation, mutating, logging, etc.
-      this.trigger('beforeSave', model, method, options);
-
-      return sync[method](attrs, options).then(function(resp) {
-
+      return WhenFn.call(function() {
+        model.trigger((method === 'insert' ? 'creating' : 'updating'), model, attrs, options);
+        model.trigger('saving', model, attrs, options);
+      })
+      .then(function() { return sync[method](attrs, options); })
+      .then(function(resp) {
+        
         // After a successful database save, the id is updated if the model was created
-        model.resetQuery();
         if (method === 'insert' && resp) model.set(model.idAttribute, resp[0]);
-        model.trigger((method === 'insert' ? 'create' : 'update'), model, resp, options);
-
+        model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
+        model.trigger('saved', model, resp, options);
         return model;
-      });
+      })
+      .ensure(function() { model.resetQuery(); });
     },
 
-    // Destroy a model, calling a delete based on its `idAttribute`.
+    // Destroy a model, calling a "delete" based on its `idAttribute`.
+    // A "destroying" and "destroyed" are triggered on the model before
+    // and after the model is destroyed, respectively. If an error is thrown
+    // during the "destroying" event, the model will not be destroyed.
     destroy: function(options) {
       options || (options = {});
       var model = this;
-      this.trigger('beforeDestroy', model, options);
-      return this.sync(this, options).del().then(function(resp) {
-        model.trigger('destroy', model, resp, options);
+      return WhenFn.call(function() {
+        model.trigger('destroying', model, options);
+      })
+      .then(function() { return model.sync(model, options).del(options); })
+      .then(function(resp) {
+        model.trigger('destroyed', model, resp, options);
         return resp;
+      }).ensure(function() {
+        model.resetQuery();
       });
     },
 
@@ -553,17 +553,15 @@
   var eagerRelated = function(type, target, eager, id) {
     var relation = target._relation;
     var where = {};
-    switch (type) {
-      case "hasOne":
-      case "belongsTo":
-        where[relation.foreignKey] = id;
-        return eager.findWhere(where) || new relation.modelCtor();
-      case "hasMany":
-        where[relation.foreignKey] = id;
-        return new relation.collectionCtor(eager.where(where), {parse: true});
-      case "belongsToMany":
-        where['_pivot_' + relation.otherKey] = id;
-        return new relation.collectionCtor(eager.where(where), {parse: true});
+    if (type === 'hasOne' || type === 'belongsTo') {
+      where[relation.foreignKey] = id;
+      return eager.findWhere(where) || new relation.modelCtor();
+    } else if (type === 'hasMany') {
+      where[relation.foreignKey] = id;
+      return new relation.collectionCtor(eager.where(where), {parse: true});
+    } else {
+      where['_pivot_' + relation.otherKey] = id;
+      return new relation.collectionCtor(eager.where(where), {parse: true});
     }
   };
 
@@ -860,7 +858,7 @@
   // Simple memoization of the singularize call.
   var singularMemo = (function(value) {
     var cache = {};
-    return function (arg) {
+    return function(arg) {
       if (arg in cache) {
         return cache[arg];
       } else {

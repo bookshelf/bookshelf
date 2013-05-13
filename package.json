@@ -1,8 +1,8 @@
 {
   "name": "bookshelf",
   "author": "Tim Griesser",
-  "version": "0.0.1",
-  "description": "A promise based ORM in the style of Backbone.js",
+  "version": "0.1.0",
+  "description": "An ORM with some Backbone",
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -b -R spec test/index.js"
@@ -20,10 +20,10 @@
   ],
   "dependencies": {
     "backbone": "1.0.x",
-    "knex": ">=0.0.5",
-    "underscore": "1.4.4",
-    "inflection": "1.2.x",
-    "when": "~2.0.1"
+    "knex": "0.1.x",
+    "underscore": "~1.4.4",
+    "inflection": "~1.2.x",
+    "when": "~2.1.0"
   },
   "devDependencies": {
     "mocha": "1.7.x",
