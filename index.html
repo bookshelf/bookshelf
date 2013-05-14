@@ -1680,6 +1680,9 @@ Bookshelf.Transaction(function(t) {
       and the config file is valid, the test suite should run with <tt>npm test</tt>. If you're going to 
       add a test, you may want to follow similar patterns, used in the test suite, 
       setting <tt>$ export BOOKSHELF_DEV=1</tt> to save the outputs data from the tests into the <tt>shared/output.js</tt> file.
+      Also note that you will have to create the appropriate database(s) for the test suite to run. For example, with mysql, 
+      you'll need to run the command <tt>create database bookshelf_test;</tt> in addition to exporting the correct test settings
+      prior to running the test suite.
     </p>
 
     <p id="faq-nonode">
