@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.0)</span>
+      Bookshelf.js <span class="version">(0.1.1)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -418,7 +418,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.0</h3>
+    <h3>Latest Release: 0.1.1</h3>
 
     <p>
       Current Develop &mdash;
@@ -1677,9 +1677,12 @@ Bookshelf.Transaction(function(t) {
       The test suite looks for an environment variable called <tt>BOOKSHELF_TEST</tt> for the path to the database
       configuration. If you run the following command:
       <tt>$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'</tt>, replacing with the path to your config file,
-      and the config file is valid, the test suite should run with <tt>npm test</tt>. If you're going to 
-      add a test, you may want to follow similar patterns, used in the test suite, 
-      setting <tt>$ export BOOKSHELF_DEV=1</tt> to save the outputs data from the tests into the <tt>shared/output.js</tt> file.
+      and the config file is valid, the test suite should run with <tt>npm test</tt>. 
+    </p>
+
+    <p>
+      If you're going to add a test, you should set <tt>$ export BOOKSHELF_DEV=1</tt> which will automatically save the
+      the outputs data from the tests into the <tt>shared/output.js</tt> file.
     </p>
 
     <p>
@@ -1696,6 +1699,11 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.1</b> &mdash; <small><i>May 16, 2013</i></small><br />
+      Fixed bug with eager loaded belongsTo relations (#14).
+    </p>
 
     <p>
       <b class="header">0.1.0</b> &mdash; <small><i>May 13, 2013</i></small><br />

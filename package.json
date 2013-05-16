@@ -1,7 +1,7 @@
 {
   "name": "bookshelf",
   "author": "Tim Griesser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An ORM with some Backbone",
   "main": "bookshelf.js",
   "scripts": {

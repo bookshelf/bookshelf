@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.1.0
+              <pre><code>Bookshelf.js 0.1.1
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -113,7 +113,7 @@ this specific instance elsewhere in the application.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.0'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.1'</span>;</pre></div></div>
             
         </li>
         
@@ -310,13 +310,17 @@ each time a query is run.</p>
             
             <div class="content"><div class='highlight'><pre>    _addConstraints: <span class="keyword">function</span>(resp) {
       <span class="keyword">var</span> relation = <span class="keyword">this</span>._relation;
-      <span class="keyword">if</span> (relation &amp;&amp; relation.fkValue || resp) {
+      <span class="keyword">if</span> (relation) {
+        <span class="keyword">if</span> (!relation.fkValue &amp;&amp; !resp) {
+          <span class="keyword">return</span> When.reject(<span class="keyword">new</span> Error(<span class="string">"The "</span> + relation.otherKey + <span class="string">" must be specified."</span>));
+        }
         <span class="keyword">if</span> (relation.type !== <span class="string">'belongsToMany'</span>) {
           constraints.call(<span class="keyword">this</span>, resp);
         } <span class="keyword">else</span> {
           belongsToMany.call(<span class="keyword">this</span>, resp);
         }
       }
+      <span class="keyword">return</span> When.resolve();
     }
 
   };</pre></div></div>
@@ -809,7 +813,7 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
         } <span class="keyword">else</span> {
           options.modelCtor = Target;
         }
-        options.parentIdAttr = _.result(<span class="keyword">this</span>, <span class="string">'idAttribute'</span>);
+        options.parentIdAttr = (type === <span class="string">'belongsTo'</span> ? options.otherKey : _.result(<span class="keyword">this</span>, <span class="string">'idAttribute'</span>));
       } <span class="keyword">else</span> {
         <span class="keyword">if</span> (type === <span class="string">'belongsTo'</span>) {
           options.fkValue = <span class="keyword">this</span>.get(options.otherKey);
@@ -851,7 +855,7 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (type === <span class="string">'belongsToMany'</span>) {
         _.extend(target, pivotHelpers);
       }
-      
+
       <span class="keyword">return</span> target;
     },</pre></div></div>
             
@@ -870,7 +874,7 @@ on its own and not mixed in with database logic.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    _validate: <span class="keyword">function</span>() { 
-      <span class="keyword">return</span> <span class="literal">true</span>; 
+      <span class="keyword">return</span> <span class="literal">true</span>;
     }
 
   });</pre></div></div>
@@ -1434,7 +1438,7 @@ the relation.</p>
     relation      = <span class="keyword">this</span>._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = <span class="keyword">this</span>.query(),
-    
+
     tableName     = _.result(<span class="keyword">this</span>, <span class="string">'tableName'</span>),
     idAttribute   = _.result(<span class="keyword">this</span>, <span class="string">'idAttribute'</span>),
 
@@ -1451,11 +1455,11 @@ the relation.</p>
       joinTableName + <span class="string">'.'</span> + otherKey + <span class="string">' as '</span> + <span class="string">'_pivot_'</span> + otherKey,
       joinTableName + <span class="string">'.'</span> + foreignKey + <span class="string">' as '</span> + <span class="string">'_pivot_'</span> + foreignKey
     );
-    
+
     <span class="keyword">if</span> (pivotColumns) push.apply(columns, pivotColumns);
-    
+
     builder.join(joinTableName, tableName + <span class="string">'.'</span> + idAttribute, <span class="string">'='</span>, joinTableName + <span class="string">'.'</span> + foreignKey);
-    
+
     <span class="keyword">if</span> (resp) {
       builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, idAttribute));
     } <span class="keyword">else</span> {
@@ -1485,9 +1489,10 @@ with the cumulative handling of multiple (potentially nested) relations.</p>
     <span class="keyword">var</span> models   = <span class="keyword">this</span>.models = [];
     <span class="keyword">var</span> relation = <span class="keyword">this</span>._relation;
 
-    <span class="keyword">this</span>._addConstraints(relation.parentResponse);
-
-    <span class="keyword">return</span> <span class="keyword">this</span>.query().select(relation.columns).then(<span class="keyword">function</span>(resp) {</pre></div></div>
+    <span class="keyword">return</span> <span class="keyword">this</span>._addConstraints(relation.parentResponse).then(<span class="keyword">function</span>() {
+      <span class="keyword">return</span> current.query().select(relation.columns);
+    })
+    .then(<span class="keyword">function</span>(resp) {</pre></div></div>
             
         </li>
         
@@ -1529,7 +1534,7 @@ there is a response from the query.</p>
       }
 
       <span class="keyword">return</span> models;
-    
+
     }).ensure(<span class="keyword">function</span>() {
       current.resetQuery();
     });
@@ -1608,7 +1613,7 @@ part of a transaction, and this information is passed along to <code>Knex</code>
     <span class="keyword">this</span>.model = model;
     <span class="keyword">this</span>.options = options;
     <span class="keyword">this</span>.query = model.query();
-    model._addConstraints();
+
     <span class="keyword">if</span> (options.transacting) <span class="keyword">this</span>.query.transacting(options.transacting);
   };
 
@@ -1650,18 +1655,24 @@ options will be called.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    select: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> sync = <span class="keyword">this</span>;
+      <span class="keyword">var</span> options = sync.options;
       <span class="keyword">var</span> model = <span class="keyword">this</span>.model;
-      <span class="keyword">var</span> options = <span class="keyword">this</span>.options;
-      <span class="keyword">var</span> columns = options.columns;
-      <span class="keyword">if</span> (!_.isArray(columns)) columns = columns ? [columns] : [<span class="string">'*'</span>];
-      
-      <span class="keyword">if</span> (model._relation &amp;&amp; model._relation.columns) {
-        columns = model._relation.columns;
-      }
 
-      <span class="keyword">return</span> <span class="keyword">this</span>.query.select(columns).then(<span class="keyword">function</span>(resp) {
+      <span class="keyword">return</span> model._addConstraints().then(<span class="keyword">function</span>() {
+        <span class="keyword">var</span> columns = options.columns;
+
+        <span class="keyword">if</span> (!_.isArray(columns)) columns = columns ? [columns] : [<span class="string">'*'</span>];
+
+        <span class="keyword">if</span> (model._relation &amp;&amp; model._relation.columns) {
+          columns = model._relation.columns;
+        }
+
+        <span class="keyword">return</span> sync.query.select(columns);
+      })
+      .then(<span class="keyword">function</span>(resp) {
         <span class="keyword">var</span> target;
-        
+
         <span class="keyword">if</span> (resp &amp;&amp; resp.length &gt; <span class="number">0</span>) {</pre></div></div>
             
         </li>
@@ -1706,7 +1717,7 @@ Once the <code>EagerRelation</code> is complete, we return the original response
               .processRelated(options)
               .<span class="keyword">yield</span>(resp);
           }
-          
+
           <span class="keyword">return</span> resp;
         }</pre></div></div>
             
@@ -1733,7 +1744,7 @@ a failure if the model comes up blank.</p>
 
         model.reset([], {silent: <span class="literal">true</span>});
         <span class="keyword">return</span> [];
-        
+
       }).then(<span class="keyword">function</span>(resp) {
         <span class="keyword">if</span> (resp.length &gt; <span class="number">0</span>) {
           model.trigger(<span class="string">'fetched'</span>, model, resp, options);

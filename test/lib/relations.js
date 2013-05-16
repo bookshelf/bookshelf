@@ -30,7 +30,7 @@ module.exports = function(Bookshelf, handler) {
     describe('Standard Relations - Models', function() {
 
       it('handles belongsTo', function(ok) {
-        
+
         var responses = [];
 
         new Blog({id: 4})
@@ -45,7 +45,7 @@ module.exports = function(Bookshelf, handler) {
           })
           .then(handler(ok), ok);
       });
-      
+
       it('handles hasMany', function(ok) {
         new Blog({id: 1})
           .fetch()
@@ -86,9 +86,15 @@ module.exports = function(Bookshelf, handler) {
       });
 
       it('eager loads "belongsTo" relationships correctly', function(ok) {
-        new Blog({id: 1}).fetch({
+        new Blog({id: 3}).fetch({
           withRelated: ['site']
         }).then(handler(ok), ok);
+      });
+
+      it('Throws an error if you try to fetch a related object without the necessary key', function(ok) {
+        new Blog({id: 1}).site().fetch().then(null, function() {
+          ok();
+        });
       });
 
       it('eager loads "belongsToMany" models correctly', function(ok) {
@@ -131,7 +137,7 @@ module.exports = function(Bookshelf, handler) {
     });
 
     describe('Nested Eager Loading - Models', function() {
-      
+
       it('eager loads "hasMany" -> "hasMany"', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.ownPosts']
@@ -184,7 +190,7 @@ module.exports = function(Bookshelf, handler) {
 
         var admin1 = new Admin({username: 'syncable', password: 'test'});
         var admin2 = new Admin({username: 'syncable', password: 'test'});
-        
+
         When.all([admin1.save(), admin2.save()])
           .then(function() {
             return When.all([
@@ -214,6 +220,9 @@ module.exports = function(Bookshelf, handler) {
             ]).then(function() {
               ok();
             });
+          })
+          .then(null, function(e) {
+            console.log(e.stack);
           });
       });
 

@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.0
+//     Bookshelf.js 0.1.1
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -22,7 +22,7 @@
   var Inflection = require('inflection');
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.0';
+  Bookshelf.VERSION = '0.1.1';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability, adding a few
@@ -99,13 +99,17 @@
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
       var relation = this._relation;
-      if (relation && relation.fkValue || resp) {
+      if (relation) {
+        if (!relation.fkValue && !resp) {
+          return When.reject(new Error("The " + relation.otherKey + " must be specified."));
+        }
         if (relation.type !== 'belongsToMany') {
           constraints.call(this, resp);
         } else {
           belongsToMany.call(this, resp);
         }
       }
+      return When.resolve();
     }
 
   };
@@ -337,7 +341,7 @@
         } else {
           options.modelCtor = Target;
         }
-        options.parentIdAttr = _.result(this, 'idAttribute');
+        options.parentIdAttr = (type === 'belongsTo' ? options.otherKey : _.result(this, 'idAttribute'));
       } else {
         if (type === 'belongsTo') {
           options.fkValue = this.get(options.otherKey);
@@ -355,14 +359,14 @@
       if (type === 'belongsToMany') {
         _.extend(target, pivotHelpers);
       }
-      
+
       return target;
     },
 
     // Validation can be complicated, and is better handled
     // on its own and not mixed in with database logic.
     _validate: function() { 
-      return true; 
+      return true;
     }
 
   });
@@ -581,7 +585,7 @@
     relation      = this._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = this.query(),
-    
+
     tableName     = _.result(this, 'tableName'),
     idAttribute   = _.result(this, 'idAttribute'),
 
@@ -598,11 +602,11 @@
       joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
       joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
     );
-    
+
     if (pivotColumns) push.apply(columns, pivotColumns);
-    
+
     builder.join(joinTableName, tableName + '.' + idAttribute, '=', joinTableName + '.' + foreignKey);
-    
+
     if (resp) {
       builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, idAttribute));
     } else {
@@ -620,9 +624,10 @@
     var models   = this.models = [];
     var relation = this._relation;
 
-    this._addConstraints(relation.parentResponse);
-
-    return this.query().select(relation.columns).then(function(resp) {
+    return this._addConstraints(relation.parentResponse).then(function() {
+      return current.query().select(relation.columns);
+    })
+    .then(function(resp) {
 
       // Only find additional related items & process if
       // there is a response from the query.
@@ -640,7 +645,7 @@
       }
 
       return models;
-    
+
     }).ensure(function() {
       current.resetQuery();
     });
@@ -673,7 +678,7 @@
     this.model = model;
     this.options = options;
     this.query = model.query();
-    model._addConstraints();
+
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
@@ -691,20 +696,26 @@
     // the promise is resolved. Any `success` handler passed in the
     // options will be called.
     select: function() {
+      var sync = this;
+      var options = sync.options;
       var model = this.model;
-      var options = this.options;
-      var columns = options.columns;
-      if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
-      
-      if (model._relation && model._relation.columns) {
-        columns = model._relation.columns;
-      }
 
-      return this.query.select(columns).then(function(resp) {
+      return model._addConstraints().then(function() {
+        var columns = options.columns;
+
+        if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
+
+        if (model._relation && model._relation.columns) {
+          columns = model._relation.columns;
+        }
+
+        return sync.query.select(columns);
+      })
+      .then(function(resp) {
         var target;
-        
+
         if (resp && resp.length > 0) {
-          
+
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
@@ -712,7 +723,7 @@
           } else {
             model.reset(resp, {silent: true, parse: true});
           }
-          
+
           // If the `withRelated` property is specified on the options hash, we dive
           // into the `EagerRelation`. If the current querying object is a collection, 
           // we find the associated `model` to determine necessary eager relations.
@@ -723,7 +734,7 @@
               .processRelated(options)
               .yield(resp);
           }
-          
+
           return resp;
         }
 
@@ -738,7 +749,7 @@
 
         model.reset([], {silent: true});
         return [];
-        
+
       }).then(function(resp) {
         if (resp.length > 0) {
           model.trigger('fetched', model, resp, options);

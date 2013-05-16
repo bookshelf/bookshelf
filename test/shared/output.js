@@ -325,30 +325,30 @@ module.exports = {
     },
     'relations.7': {
       mysql: {
-        id: 1,
-        site_id: 1,
+        id: 3,
+        site_id: 2,
         name: 'Main Site Blog',
         site: {
-          id: 1,
-          name: 'knexjs.org'
+          id: 2,
+          name: 'bookshelfjs.org'
         }
       },
       postgres: {
-        id: 1,
-        site_id: 1,
+        id: 3,
+        site_id: 2,
         name: 'Main Site Blog',
         site: {
-          id: 1,
-          name: 'knexjs.org'
+          id: 2,
+          name: 'bookshelfjs.org'
         }
       },
       sqlite3: {
-        id: 1,
-        site_id: 1,
+        id: 3,
+        site_id: 2,
         name: 'Main Site Blog',
         site: {
-          id: 1,
-          name: 'knexjs.org'
+          id: 2,
+          name: 'bookshelfjs.org'
         }
       }
     },
