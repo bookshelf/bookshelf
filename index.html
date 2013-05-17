@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.1)</span>
+      Bookshelf.js <span class="version">(0.1.2)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -375,7 +375,9 @@
     </a>
     <ul class="toc_section">
       <li>– <a href="#Events-Backbone-Methods"><b>Backbone Methods (5)</b></a></li>
+      <li>– <a href="#Events-triggerThen">triggerThen</a></li>
       <li>– <a href="#Events-emit">emit</a></li>
+      <li>– <a href="#Events-emitThen">emitThen</a></li>
       <li>– <a href="#Events-removeAllListeners">removeAllListeners</a></li>
       <li>- <a href="#Events-catalog"><b>Catalog of Built-in Events</b></a></li>
     </ul>
@@ -418,7 +420,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.1</h3>
+    <h3>Latest Release: 0.1.2</h3>
 
     <p>
       Current Develop &mdash;
@@ -625,7 +627,7 @@ var Books = Bookshelf.Model.extend({
   
   constructor: function() {
     Bookshelf.Model.apply(this, arguments);
-    this.on('beforeQuery', function(model) {
+    this.on('saving', function(model) {
       model.query('where', 'type', '=', 'book');
     });
   }
@@ -1110,6 +1112,16 @@ alert("Dessert will be " + (new Meal).get('dessert'));
       model are left intact.
     </p>    
 
+<pre>
+// Example of a "format" to convert camelCase to snake_case when saving, using `underscore.string`
+model.format = function(attrs) {
+  return _.reduce(attrs, function(memo, val, key) {
+    memo[_.str.underscored(key)] = val;
+    return memo;
+  }, {});
+};
+</pre>
+
     <p id="Model-parse">
       <b class="header">parse</b><code>model.parse(response, [options])</code>
       <br />
@@ -1122,6 +1134,16 @@ alert("Dessert will be " + (new Meal).get('dessert'));
       on a text field containing <tt>JSON</tt>, or explicitly typecasting a boolean
       in a <tt>sqlite3</tt> database response.
     </p>
+
+<pre>
+// Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
+model.parse = function(attrs) {
+  return _.reduce(attrs, function(memo, val, key) {
+    memo[_.str.camelize(key)] = val;
+    return memo;
+  }, {});
+};
+</pre>
 
     <p id="Model-toJSON">
       <b class="header">toJSON</b><code>model.toJSON([options])</code>
@@ -1561,9 +1583,23 @@ collection
       <li><a href="http://backbonejs.org/#Events-listenToOnce">listenToOnce</a></li>
     </ul>
 
+    <p id="Events-triggerThen">
+      <b class="header">.triggerThen(name, args*)</b><br />
+      A promise version of "trigger", returning a promise which resolves with all return values
+      from triggered event handlers. If any of the event handlers throw an <tt>Error</tt> or return
+      a rejected promise, the promise will be rejected. Used internally on the "creating", "updating",
+      "saving", and "destroying" events, and can be helpful when needing async event handlers (for 
+      validations, etc).
+    </p>
+
     <p id="Events-emit">
-      <b class="header">.emit(args*)</b><br />
+      <b class="header">.emit(name, args*)</b><br />
       Alias to <a href="http://backbonejs.org/#Events-trigger">Events.trigger</a>.
+    </p>
+
+    <p id="Events-emitThen">
+      <b class="header">.emitThen(name, args*)</b><br />
+      Alias to <a href="#Events-triggerThen">Events.trigger</a>.
     </p>
 
     <p id="Events-removeAllListeners">
@@ -1701,8 +1737,16 @@ Bookshelf.Transaction(function(t) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
+      <b class="header">0.1.2</b> &mdash; <small><i>May 17, 2013</i></small><br />
+      Added <tt>triggerThen</tt> and <tt>emitThen</tt> for promise based events, used internally in the
+      "creating", "updating", "saving", and "destroying" events. Docs updates, fixing <tt>{patch: true}</tt>
+      on <tt>update</tt> to have intended functionality. A model's <tt>toJSON</tt> is now correctly 
+      called on any related properties.
+    </p>
+
+    <p>
       <b class="header">0.1.1</b> &mdash; <small><i>May 16, 2013</i></small><br />
-      Fixed bug with eager loaded belongsTo relations (#14).
+      Fixed bug with eager loaded <tt>belongsTo</tt> relations (#14).
     </p>
 
     <p>

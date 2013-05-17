@@ -1,7 +1,7 @@
 {
   "name": "bookshelf",
   "author": "Tim Griesser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An ORM with some Backbone",
   "main": "bookshelf.js",
   "scripts": {
@@ -23,14 +23,16 @@
     "knex": "0.1.x",
     "underscore": "~1.4.4",
     "inflection": "~1.2.x",
-    "when": "~2.1.0"
+    "when": "~2.1.0",
+    "trigger-then": ">=0.1.1"
   },
   "devDependencies": {
     "mocha": "1.7.x",
     "mysql": "~2.0.0-alpha7",
     "pg": "~0.15.1",
     "sqlite3": "~2.1.7",
-    "objectdump": "~0.3.0"
+    "objectdump": "~0.3.0",
+    "underscore.string": "~2.3.1"
   },
   "license": "MIT",
   "readmeFilename": "README.md"

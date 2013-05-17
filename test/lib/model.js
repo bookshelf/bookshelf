@@ -1,4 +1,6 @@
 var _ = require('underscore');
+_.str = require('underscore.string');
+
 var When = require('when');
 
 var equal     = require('assert').equal;
@@ -175,6 +177,35 @@ module.exports = function(Bookshelf, handler) {
       equal(one.get('name'), 'Site');
       var two = new ParsedSite({name: 'Site'}, {parse: true});
       equal(two.get('name'), 'Test: Site');
+    });
+
+  });
+
+  describe('format', function() {
+
+    // TODO: better way to test this.
+    it('calls format when saving', function(ok) {
+
+      var M = Backbone.Model.extend({
+        tableName: 'test',
+        format: function(attrs) {
+          return _.reduce(attrs, function(memo, val, key) {
+            memo[_.str.underscored(key)] = val;
+            return memo;
+          }, {});
+        }
+      });
+
+      var m = new M({firstName: 'Tim', lastName: 'G'});
+      m.sync = function() {
+        var data = this.format(_.extend({}, this.attributes));
+        equal(data.first_name, 'Tim');
+        equal(data.last_name, 'G');
+        ok();
+        return stubSync;
+      };
+      m.save();
+
     });
 
   });

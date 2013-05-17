@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.1
+//     Bookshelf.js 0.1.2
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -17,18 +17,22 @@
   // Local dependency references.
   var _      = require('underscore');
   var When   = require('when');
-  var WhenFn = require('when/function');
   var Knex   = require('knex');
   var Inflection = require('inflection');
 
+  // Mixin the `triggerThen` function into all relevant Backbone objects,
+  // so we can have event driven async validations, functions, etc.
+  require('trigger-then')(Backbone, When);
+
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.1';
+  Bookshelf.VERSION = '0.1.2';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability, adding a few
   // functions to make the API feel a bit more like Node.
   var Events = Bookshelf.Events = Backbone.Events;
       Events.emit = function() { this.trigger.apply(this, arguments); };
+      Events.emitThen = function() { return this.triggerThen.apply(this, arguments); };
       Events.removeAllListeners = function(event) { this.off(event, null, null); };
 
   // `Bookshelf` may be used as a top-level pub-sub bus.
@@ -109,7 +113,6 @@
           belongsToMany.call(this, resp);
         }
       }
-      return When.resolve();
     }
 
   };
@@ -232,19 +235,19 @@
       if (defaults) {
         vals = _.extend({}, defaults, this.attributes, vals);
       }
-      
+
       // Set the attributes on the model, and maintain a reference to use below.
       var model  = this.set(vals);
       var sync   = model.sync(model, options);
       var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
-      return WhenFn.call(function() {
-        model.trigger((method === 'insert' ? 'creating' : 'updating'), model, attrs, options);
-        model.trigger('saving', model, attrs, options);
-      })
+      return When.all([
+        model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
+        model.triggerThen('saving', model, attrs, options)
+      ])
       .then(function() { return sync[method](attrs, options); })
       .then(function(resp) {
-        
+
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) model.set(model.idAttribute, resp[0]);
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
@@ -261,9 +264,7 @@
     destroy: function(options) {
       options || (options = {});
       var model = this;
-      return WhenFn.call(function() {
-        model.trigger('destroying', model, options);
-      })
+      return model.triggerThen('destroying', model, options)
       .then(function() { return model.sync(model, options).del(options); })
       .then(function(resp) {
         model.trigger('destroyed', model, resp, options);
@@ -287,7 +288,7 @@
       if (options && options.shallow) return attrs;
       var relations = this.relations;
       for (var key in relations) {
-        attrs[key] = relations[key];
+        attrs[key] = relations[key].toJSON();
       }
       return attrs;
     },
@@ -468,7 +469,7 @@
 
         // Only allow one of a certain nested type per-level.
         if (handled[name]) continue;
-        
+
         // Internal flag to determine whether to set the ctor(s) on the _relation hash.
         target._isEager = true;
         relation = target[name]();
@@ -624,7 +625,7 @@
     var models   = this.models = [];
     var relation = this._relation;
 
-    return this._addConstraints(relation.parentResponse).then(function() {
+    return When(this._addConstraints(relation.parentResponse)).then(function() {
       return current.query().select(relation.columns);
     })
     .then(function(resp) {
@@ -700,7 +701,7 @@
       var options = sync.options;
       var model = this.model;
 
-      return model._addConstraints().then(function() {
+      return When(model._addConstraints()).then(function() {
         var columns = options.columns;
 
         if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
@@ -772,7 +773,7 @@
       attrs = (attrs && options.patch ? attrs : this.model.attributes);
       return this.query
         .where(this.model.idAttribute, this.model.id)
-        .update(this.model.format(_.extend({}, this.model.attributes)));
+        .update(this.model.format(_.extend({}, attrs)));
     },
 
     // Issues a `delete` command on the query.
@@ -796,36 +797,6 @@
   // into the `belongsToMany` relationships when they are created,
   // providing helpers for attaching and detaching related models.
   var pivotHelpers = {
-
-    _handler: function(method, ids, options) {
-      if (ids == void 0 && method === 'insert') return When.resolve();
-      if (!_.isArray(ids)) ids = ids ? [ids] : [];
-      var pivot = this._relation;
-      var context = this;
-      return When.all(_.map(ids, function(item) {
-        var data = {};
-        data[pivot.otherKey] = pivot.fkValue;
-
-        // If the item is an object, it's either a model
-        // that we're looking to attach to this model, or
-        // a hash of attributes to set in the relation.
-        if (_.isObject(item)) {
-          if (item instanceof Model) {
-            data[pivot.foreignKey] = item.id;
-          } else {
-            _.extend(data, item);
-          }
-        } else if (item) {
-          data[pivot.foreignKey] = item;
-        }
-        var builder = context.builder(pivot.joinTableName);
-        if (options && options.transacting) {
-          builder.transacting(options.transacting);
-        }
-        if (method === 'delete') return builder.where(data).del();
-        return builder.insert(data);
-      }));
-    },
 
     // Attach one or more "ids" from a foreign
     // table to the current. Creates & saves a new model
@@ -863,7 +834,48 @@
         }
       }
       return this;
+    },
+
+    // Helper for handling either the `attach` or `detach` call on
+    // the `belongsToMany` relationship.
+    _handler: function(method, ids, options) {
+      if (ids == void 0 && method === 'insert') return When.resolve();
+      if (!_.isArray(ids)) ids = ids ? [ids] : [];
+      var pending = [];
+      for (var i = 0, l = ids.length; i < l; i++) {
+        pending.push(this._processPivot(method, ids[i], options));
+      }
+      return When.all(pending);
+    },
+
+    // Handles setting the appropriate constraints and shelling out
+    // to either the `insert` or `delete` call for the current model,
+    // returning a promise.
+    _processPivot: function(method, item, options) {
+      var data = {};
+      var pivot = this._relation;
+      data[pivot.otherKey] = pivot.fkValue;
+
+      // If the item is an object, it's either a model
+      // that we're looking to attach to this model, or
+      // a hash of attributes to set in the relation.
+      if (_.isObject(item)) {
+        if (item instanceof Model) {
+          data[pivot.foreignKey] = item.id;
+        } else {
+          _.extend(data, item);
+        }
+      } else if (item) {
+        data[pivot.foreignKey] = item;
+      }
+      var builder = this.builder(pivot.joinTableName);
+      if (options && options.transacting) {
+        builder.transacting(options.transacting);
+      }
+      if (method === 'delete') return builder.where(data).del();
+      return builder.insert(data);
     }
+
   };
 
   // Simple memoization of the singularize call.
@@ -906,7 +918,7 @@
       Target = Bookshelf.Instances['main'] = Bookshelf;
     } else {
       Target = Bookshelf.Instances[name] = {};
-      
+
       // Create a new `Bookshelf` instance for this database connection.
       _.extend(Target, _.omit(Bookshelf, 'Instances', 'Initialize', 'Knex', 'Transaction', 'VERSION'), {
         Knex: Builder,
