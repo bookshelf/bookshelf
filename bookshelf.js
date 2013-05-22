@@ -99,7 +99,7 @@
       return this.relations[item];
     },
 
-    // Helper for attaching query constraints on related 
+    // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
       var relation = this._relation;
@@ -193,7 +193,7 @@
         otherKey: otherKey     || singularMemo(_.result(this, 'tableName')) + '_id',
         foreignKey: foreignKey || singularMemo(_.result(Target.prototype, 'tableName')) + '_id',
         joinTableName: joinTableName || [
-          _.result(this, 'tableName'), 
+          _.result(this, 'tableName'),
           _.result(Target.prototype, 'tableName')
         ].sort().join('_')
       });
@@ -211,7 +211,7 @@
     // to bind listeners for any necessary validation, logging, etc.
     // If an error is thrown during these events, the model will not be saved.
     save: function(key, val, options) {
-      var id, attrs;
+      var attrs;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
@@ -332,7 +332,7 @@
       }
 
       // If we're handling an eager loaded related model,
-      // keep a reference to the original constructor to assemble 
+      // keep a reference to the original constructor to assemble
       // the correct object once the eager matching is finished.
       // Otherwise, just grab the `foreignKey` value for building the query.
       if (this._isEager) {
@@ -366,7 +366,7 @@
 
     // Validation can be complicated, and is better handled
     // on its own and not mixed in with database logic.
-    _validate: function() { 
+    _validate: function() {
       return true;
     }
 
@@ -375,7 +375,7 @@
   // Bookshelf.Collection
   // -------------------
 
-  // A Bookshelf Collection contains a number of database rows, represented by 
+  // A Bookshelf Collection contains a number of database rows, represented by
   // models, so they can be easily sorted, serialized, and manipulated.
   var Collection = Bookshelf.Collection = function(models, options) {
     if (options) _.extend(this, _.pick(options, collectionProps));
@@ -408,7 +408,7 @@
       options || (options = {});
       model = this._prepareModel(model, options);
       var collection = this;
-      return model.save(null, options).then(function(resp) {
+      return model.save(null, options).then(function() {
         collection.add(model, options);
         return model;
       });
@@ -508,10 +508,10 @@
       var args = _.toArray(arguments);
       var parent  = this.parent;
       var handled = this.handled;
-      
+
       // Pair each of the query responses with the parent models.
       for (var i = 0, l = args.length; i < l; i++) {
-        
+
         // Get the current relation this response matches up with, based
         // on the pendingNames array.
         var name = this.pendingNames[i];
@@ -524,7 +524,7 @@
         // fetched eagerly. We will re-use the same models for each association level.
         if (parent instanceof Collection) {
           var models = parent.models;
-          
+
           // Attach the appropriate related items onto the parent model.
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m  = models[i2];
@@ -582,7 +582,7 @@
 
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(resp) {
-    var 
+    var
     relation      = this._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = this.query(),
@@ -615,9 +615,9 @@
     }
   };
 
-  // Called from `EagerRelation.processRelated` with the context 
+  // Called from `EagerRelation.processRelated` with the context
   // of an eager-loading model or collection, this function
-  // fetches the nested related items, and returns a deferred object, 
+  // fetches the nested related items, and returns a deferred object,
   // with the cumulative handling of multiple (potentially nested) relations.
   var eagerFetch = function(options) {
 
@@ -726,7 +726,7 @@
           }
 
           // If the `withRelated` property is specified on the options hash, we dive
-          // into the `EagerRelation`. If the current querying object is a collection, 
+          // into the `EagerRelation`. If the current querying object is a collection,
           // we find the associated `model` to determine necessary eager relations.
           // Once the `EagerRelation` is complete, we return the original response from the query.
           if (options.withRelated) {
@@ -809,7 +809,7 @@
     // If a model or id is passed, it attempts to remove the
     // pivot table based on that foreign key. If a hash is passed,
     // it attempts to remove the item based on a where clause with
-    // these parameters. If no parameters are specified, we assume we will 
+    // these parameters. If no parameters are specified, we assume we will
     // detach all related associations.
     detach: function(ids, options) {
       return this._handler('delete', ids, options);
@@ -821,7 +821,7 @@
     // output to the model attributes.
     withPivot: function(columns) {
       if (!_.isArray(columns)) columns = columns ? [columns] : [];
-      var joinString, relation = this._relation;
+      var relation = this._relation;
       relation.pivotColumns || (relation.pivotColumns = []);
       for (var i = 0, l = columns.length; i < l; i++) {
         var column = columns[i];
@@ -879,7 +879,7 @@
   };
 
   // Simple memoization of the singularize call.
-  var singularMemo = (function(value) {
+  var singularMemo = (function() {
     var cache = {};
     return function(arg) {
       if (arg in cache) {
@@ -943,7 +943,7 @@
   };
 
   // Named instances of Bookshelf, presumably with different `Knex`
-  // options, to initialize different databases. 
+  // options, to initialize different databases.
   // The main instance being named "main"...
   Bookshelf.Instances = {};
 
