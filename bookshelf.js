@@ -574,7 +574,7 @@
   var constraints = function(resp) {
     var relation = this._relation;
     if (resp) {
-      this.query('whereIn', relation.foreignKey, _.pluck(resp, relation.parentIdAttr));
+      this.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
     } else {
       this.query('where', relation.foreignKey, '=', relation.fkValue);
     }
