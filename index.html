@@ -320,13 +320,13 @@
       <li>– <a href="#Model-belongsToMany">belongsToMany</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
-      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>      
+      <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
       <li>– <a href="#Model-save">save</a></li>
       <li>– <a href="#Model-destroy">destroy</a></li>
       <li>– <a href="#Model-format">format</a></li>
       <li>– <a href="#Model-parse">parse</a></li>
       <li>– <a href="#Model-toJSON">toJSON</a></li>
-      <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>      
+      <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>
       <li>– <a href="#Model-query">query</a></li>
       <li>– <a href="#Model-resetQuery">resetQuery</a></li>
       <li>– <a href="#Model-hasTimestamps">hasTimestamps</a></li>
@@ -394,7 +394,7 @@
     <a class="toc_title" href="#faq">
       F.A.Q.
     </a>
-    
+
     <a class="toc_title" href="#changelog">
       Change Log
     </a>
@@ -409,8 +409,8 @@
 
     <p>
       <b>Bookshelf</b> is a <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> ORM for Node.js,
-      built on <a href="http://knexjs.org">Knex query builder</a>. It extends the Model &amp; Collection 
-      foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>, eager/nested-eager relation loading, and 
+      built on <a href="http://knexjs.org">Knex query builder</a>. It extends the Model &amp; Collection
+      foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>, eager/nested-eager relation loading, and
       support for one-to-one, one-to-many, and many-to-many relations.
     </p>
 
@@ -445,7 +445,7 @@
       <a href="http://backbonejs.org">Backbone.js</a> <small>(1.0.x)</small>,
       <a href="http://underscorejs.org/">Underscore.js</a> <small>(1.4.x)</small>,
       <a href="https://github.com/cujojs/when">when.js</a> <small>(2.0.1)</small>
-      for promise flow control, <a href="http://knexjs.org">Knex.js.</a> as the query 
+      for promise flow control, <a href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
     </p>
@@ -454,25 +454,25 @@
 
     <p>
       Bookshelf aims to provide a simple library for common tasks when querying relational
-      databases in javascript, and forming relations between these objects, using ideas from 
-      DataMapper and Active Record. At ~900 lines of <a href="docs/bookshelf.html">well documented code</a>, 
+      databases in javascript, and forming relations between these objects, using ideas from
+      DataMapper and Active Record. At ~900 lines of <a href="docs/bookshelf.html">well documented code</a>,
       Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific
       validation scheme, and provides flexible and efficient relation/nested-relation loading, and
       first class transaction support.
     </p>
 
     <p>
-      Bookshelf extends the excellent foundation provided by Backbone.js Models and Collections, 
-      using similar patterns, naming conventions, and philosophies to build a lightweight, 
-      easy to navigate ORM. If you know how to use Backbone, you probably already know how 
+      Bookshelf extends the excellent foundation provided by Backbone.js Models and Collections,
+      using similar patterns, naming conventions, and philosophies to build a lightweight,
+      easy to navigate ORM. If you know how to use Backbone, you probably already know how
       to use Bookshelf.
     </p>
 
     <h2 id="installation">Installation</h2>
 
     <p>
-      All dependencies are specified in package.json file but include underscore.js, when.js, and knex.js library. 
-      You'll then need to install either mysql, pg, or sqlite3 from npm. It is advisable to install your own copy 
+      All dependencies are specified in package.json file but include underscore.js, when.js, and knex.js library.
+      You'll then need to install either mysql, pg, or sqlite3 from npm. It is advisable to install your own copy
       of Knex as well if you wish to build any custom queries outside of the ORM.
     </p>
 
@@ -506,7 +506,7 @@ Bookshelf.Initialize({
 </pre>
 
   <p id="Init-multi-instance">
-    It is also possible to use <b>Bookshelf</b> with multiple database connection instances if you'd like, 
+    It is also possible to use <b>Bookshelf</b> with multiple database connection instances if you'd like,
     by creating named instances with <tt>Bookshelf.Initialize</tt>. To do this, pass the name of the
     connection as the first parameter into <b>Bookshelf</b> and it will return that instance, which may
     also be referenced by name under <tt>Bookshelf.Instances</tt>.
@@ -595,7 +595,7 @@ var Customer = Bookshelf.Model.extend({
 Customer.forge({item: 'value'}).save().then(function() {
   // ...
 });
-</pre>  
+</pre>
 
 
     <p id="Model-constructor">
@@ -622,9 +622,9 @@ new Book({
 
 <pre>
 var Books = Bookshelf.Model.extend({
-  
+
   tableName: 'documents',
-  
+
   constructor: function() {
     Bookshelf.Model.apply(this, arguments);
     this.on('saving', function(model) {
@@ -668,9 +668,9 @@ var Television = Bookshelf.Model.extend({
     <p id="Model-id">
       <b class="header">id</b><code>model.id</code>
       <br />
-      A special property of models, the <b>id</b> is the unique idenfifer associated 
-      named by the <a href="#Model-idAttribute">idAttribute</a>. If you set the <b>id</b> 
-      in the attributes hash, it will be copied onto the model as a direct property. 
+      A special property of models, the <b>id</b> is the unique idenfifer associated
+      named by the <a href="#Model-idAttribute">idAttribute</a>. If you set the <b>id</b>
+      in the attributes hash, it will be copied onto the model as a direct property.
       Models can be retrieved by id from collections, and the id is used in fetching models and
       building model relations.
     </p>
@@ -680,8 +680,8 @@ var Television = Bookshelf.Model.extend({
       <br />
       Set a hash of attributes (one or many) on the model. If any of the attributes
       change the model's state, a <tt>"change"</tt> event will be triggered.
-      Change events for specific attributes are also triggered, and you can 
-      bind to those as well, for example: <tt>change:title</tt>, and 
+      Change events for specific attributes are also triggered, and you can
+      bind to those as well, for example: <tt>change:title</tt>, and
       <tt>change:content</tt>. You may also pass individual keys and values.
     </p>
 
@@ -719,12 +719,12 @@ new Book({'ISBN-13': '9780440180296'})
 </pre>
 
     <p>
-      The <tt>withRelated</tt> parameter may be specified to fetch the resource, 
-      along with any specified <a href="#Model-relations">relations</a> named on the model. 
+      The <tt>withRelated</tt> parameter may be specified to fetch the resource,
+      along with any specified <a href="#Model-relations">relations</a> named on the model.
       A single property, or an array of properties can be specified as a value for the <tt>withRelated</tt>
       property. The results of these relation queries will be loaded into a <tt>relations</tt> property on
-      the model, may be retreived with the <a href="#Model-related">related</a> method, and will 
-      be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless 
+      the model, may be retreived with the <a href="#Model-related">related</a> method, and will
+      be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless
       <tt>{shallow: true}</tt> is passed.
     </p>
 
@@ -749,8 +749,8 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
     <p id="Model-load">
       <b class="header">load</b><code>model.load(relations, [options]).then(function(model) {...</code>
       <br />
-      The <b>load</b> method takes an array of <b>relations</b> to eager load attributes onto a Model, 
-      in a similar way that the <tt>withRelated</tt> property works on fetch. Dot separated attributes 
+      The <b>load</b> method takes an array of <b>relations</b> to eager load attributes onto a Model,
+      in a similar way that the <tt>withRelated</tt> property works on fetch. Dot separated attributes
       may be used to specify deep eager loading.
     </p>
 
@@ -776,10 +776,10 @@ new Posts().fetch().then(function(collection) {
     <h3 id="Model-relation-types">Relation Types:</h3>
 
     <p>
-      There are four types of relationships that may be defined between Models and 
-      Collections: <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>, 
-      <a href="#Model-belongsTo">belongsTo</a>, <a href="#Model-belongsToMany">belongsToMany</a>. 
-      The relations are specified by created named methods on the model, which return the 
+      There are four types of relationships that may be defined between Models and
+      Collections: <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>,
+      <a href="#Model-belongsTo">belongsTo</a>, <a href="#Model-belongsToMany">belongsToMany</a>.
+      The relations are specified by created named methods on the model, which return the
       appropriate relation type.
     </p>
 
@@ -809,7 +809,7 @@ new Book({id: 1}).summary().fetch().then(function(summary) {
   console.log(summary.toJSON());
 });
 </pre>
-    
+
     <p>
       Relations may also be loaded eagerly, by specifying a <tt>withRelated</tt> option
       during the fetch call.
@@ -825,7 +825,7 @@ new Book({id: 2}).fetch({
 
     <p>
       You may also want to eagerly load related models on a model or collection after it has already been fetched.
-      For this, you may use the <a href="#Model-load">load</a> method to specify which relations should be eagerly 
+      For this, you may use the <a href="#Model-load">load</a> method to specify which relations should be eagerly
       loaded on the model or collection.
     </p>
 
@@ -837,7 +837,7 @@ accounts.fetch()
   })
   .then(function(model) {
     res.json({
-      accounts: accounts.toJSON({shallow: true}), 
+      accounts: accounts.toJSON({shallow: true}),
       current_account: model
     });
   })
@@ -858,12 +858,12 @@ new Story({id: 2}).fetch({
 
 // performs 5 queries in total, outputting:
 {
-  id: 2, 
-  title: '', 
+  id: 2,
+  title: '',
   author: {...},
   comments: [
-    {tags: [{...}, {...}], author: {...}}, 
-    {tags: [...], author: {...}}, 
+    {tags: [{...}, {...}], author: {...}},
+    {tags: [...], author: {...}},
     {tags: [...], author: {...}}
   ]
 }
@@ -873,7 +873,7 @@ new Story({id: 2}).fetch({
     <p id="Model-hasOne">
       <b class="header">hasOne</b><code>model.hasOne(Model, [foreignKey])</code>
       <br />
-      A one-to-one relation is a very basic relation, where the model has exactly 
+      A one-to-one relation is a very basic relation, where the model has exactly
       one of another <b>Model</b>, referenced by a <b>foreignKey</b> in the target <b>Model</b>.
       By default, the foreign key is assumed to be the singular form of the current model,
       followed by <tt>_id</tt>.
@@ -926,9 +926,9 @@ var Book = Bookshelf.Model.extend({
   }
 });
 
-// select * from `author` where 
+// select * from `author` where
 new Book({id: 1}).author().fetch().then(function() {
-  
+
 });
 </pre>
 
@@ -947,17 +947,17 @@ var Account = Bookshelf.Model.extend({
 });
 
 var User = Bookshelf.Model.extend({
-  
+
   tableName: 'users',
-  
+
   allAccounts: function () {
     return this.belongsToMany(User);
   },
-  
+
   adminAccounts: function() {
     return this.belongsToMany(User).query('where', 'access', '=', 'admin');
   },
-  
+
   viewAccounts: function() {
     return this.belongsToMany(User).query('where', 'access', '=', 'readonly');
   }
@@ -974,7 +974,7 @@ var User = Bookshelf.Model.extend({
     <p id="Model-attach">
       <b class="header">attach</b><code>relation.attach(ids, [options])</code>
       <br />
-      Attaches one or more <b>ids</b> from a foreign table to the current table, in a 
+      Attaches one or more <b>ids</b> from a foreign table to the current table, in a
       <a href="#Model-belongsToMany">belongsToMany</a> relationship.
       Creates &amp; saves a new model and attaches the model with the related model.
     </p>
@@ -982,8 +982,8 @@ var User = Bookshelf.Model.extend({
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
       <br />
-      Detach one or more related object from their pivot tables. If a model or id is passed, 
-      it attempts to remove the pivot table based on that foreign key. If no parameters 
+      Detach one or more related object from their pivot tables. If a model or id is passed,
+      it attempts to remove the pivot table based on that foreign key. If no parameters
       are specified, we assume we will detach all related associations.
     </p>
 
@@ -1012,7 +1012,7 @@ var Tag = Bookshelf.Model.extend({
 var Tag = Bookshelf.Model.extend({
   comments: function() {
     return this.belongsToMany(Comment).withPivot({
-      created_at: 'comment_created_at', 
+      created_at: 'comment_created_at',
       order: 'order'
     });
   }
@@ -1032,8 +1032,8 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
       <br />
       The Model's <b>save</b> method is used to perform an <tt>insert</tt> or <tt>update</tt>
       query with the model, dependent on whether the model <a href="#Model-isNew">isNew</a>.
-      If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the 
-      <tt>{method: ...}</tt> option may be specified to explicitly state which 
+      If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the
+      <tt>{method: ...}</tt> option may be specified to explicitly state which
       <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
       <tt>{patch: true}</tt> may be specified to only save the items in the <b>params</b> rather than
       the full model.
@@ -1044,7 +1044,7 @@ new Post({name: 'New Article'}).save().then(function(model) {
   // ...
 });
 </pre>
-    
+
     <p>
       Several events fired on the model when saving: a <tt>"creating"</tt>, or <tt>"updating"</tt>
       event if the model is being inserted or updated, and a <tt>"saving"</tt> event in either case. To prevent
@@ -1108,9 +1108,9 @@ alert("Dessert will be " + (new Meal).get('dessert'));
       <br />
       The <b>format</b> method is used to modify the current state of the model before
       it is persisted to the database. The <b>attributes</b> passed are a shallow clone
-      of the model, and are only used for inserting/updating - the current values of the 
+      of the model, and are only used for inserting/updating - the current values of the
       model are left intact.
-    </p>    
+    </p>
 
 <pre>
 // Example of a "format" to convert camelCase to snake_case when saving, using `underscore.string`
@@ -1125,11 +1125,11 @@ model.format = function(attrs) {
     <p id="Model-parse">
       <b class="header">parse</b><code>model.parse(response, [options])</code>
       <br />
-      The <b>parse</b> method is called whenever a model's data is returned in a 
-      <a href="#Model-fetch">fetch</a> call. The function is passed 
-      the raw database <tt>response</tt> object, and should return the attributes hash 
-      to be <a href="#Model-set">set</a> on the model. The default implementation 
-      is a no-op, simply passing through the JSON response. Override this if 
+      The <b>parse</b> method is called whenever a model's data is returned in a
+      <a href="#Model-fetch">fetch</a> call. The function is passed
+      the raw database <tt>response</tt> object, and should return the attributes hash
+      to be <a href="#Model-set">set</a> on the model. The default implementation
+      is a no-op, simply passing through the JSON response. Override this if
       you need to format the database responses - for example calling <tt>JSON.parse</tt>
       on a text field containing <tt>JSON</tt>, or explicitly typecasting a boolean
       in a <tt>sqlite3</tt> database response.
@@ -1151,7 +1151,7 @@ model.parse = function(attrs) {
       Return a copy of the model's <a href="#Model-attributes">attributes</a> for JSON stringification.
       If the model has any <a href="#Model-relations">relations</a> defined, this will also call
       <tt>toJSON</tt> on each of the related objects, and include them on the object unless <tt>{shallow: true}</tt>
-      is passed as an option. For more information on the use of <tt>toJSON</tt>, check out the 
+      is passed as an option. For more information on the use of <tt>toJSON</tt>, check out the
       <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript API for <b>JSON.stringify</b></a>.
     </p>
 
@@ -1244,7 +1244,7 @@ model
     <p id="Model-isNew">
       <b class="header">isNew</b><code>model.isNew()</code>
       <br />
-      Checks for the existence of an <a href="#Model-id">id</a> to determine whether the model 
+      Checks for the existence of an <a href="#Model-id">id</a> to determine whether the model
       is considered "new".
     </p>
 
@@ -1269,7 +1269,7 @@ modelB.isNew(); // false
       (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
       the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
       the relation using the <a href="#Model-related">related</a> method on the model.
-    </p>    
+    </p>
 
     <p id="Model-related">
       <b class="header">related</b><code>model.related()</code>
@@ -1307,12 +1307,12 @@ var Accounts = Bookshelf.Model.extend({
 });
 
 Accounts.forge([
-  {name: 'Person1'}, 
+  {name: 'Person1'},
   {name: 'Person2'}
 ]).save().then(function() {
   // ...
 });
-</pre>  
+</pre>
 
     <p id="Collection-model">
       <b class="header">model</b><code>collection.model</code>
@@ -1321,7 +1321,7 @@ Accounts.forge([
       contains. If defined, you can pass raw attributes objects (and arrays) to
       <a href="#Collection-add">add</a>, <a href="#Collection-create">create</a>,
       and <a href="#Collection-reset">reset</a>, and the attributes will be
-      converted into a model of the proper type. Unlike in Backbone.js, the model 
+      converted into a model of the proper type. Unlike in Backbone.js, the model
       attribute may not be a polymorphic model.
     </p>
 
@@ -1358,10 +1358,10 @@ var tabs = new TabSet([tab1, tab2, tab3]);
     <p id="Model-parse">
       <b class="header">parse</b><code>model.parse(response, [options])</code>
       <br />
-      The <b>parse</b> method is called whenever a collection's data is returned in a 
-      <a href="#Collection-fetch">fetch</a> call. The function is passed 
+      The <b>parse</b> method is called whenever a collection's data is returned in a
+      <a href="#Collection-fetch">fetch</a> call. The function is passed
       the raw database <tt>response</tt> array, and should return an array
-      to be <a href="#Collection-set">set</a> on the collection. The default implementation 
+      to be <a href="#Collection-set">set</a> on the collection. The default implementation
       is a no-op, simply passing through the JSON response.
     </p>
 
@@ -1371,7 +1371,7 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       Return an array containing the <tt>toJSON</tt> for each model in the
       collection. For more information about toJSON, check out
       <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript's JSON API</a>.
-      You may pass <tt>{shallow: true}</tt> in the options to omit any 
+      You may pass <tt>{shallow: true}</tt> in the options to omit any
       relations loaded on the collection's models.
     </p>
 
@@ -1389,7 +1389,7 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       <b class="header">load</b><code>collection.load(relations, options).then(function(collection) {...</code>
       <br />
       The <b>load</b> method can be used to eager load attributes onto a Collection, in a similar way
-      that the <tt>withRelated</tt> property works on <a href="#Collection-fetch">fetch</a>. Nested eager 
+      that the <tt>withRelated</tt> property works on <a href="#Collection-fetch">fetch</a>. Nested eager
       loads can be specified by separating the nested relations with <tt>'.'</tt>.
     </p>
 
@@ -1398,13 +1398,13 @@ new Story({id: 2}).fetch({
   withRelated: ['comments.tags', 'comments.author', 'author']
 }).then(function(model) {
   JSON.stringify(model);
-});    
+});
 </pre>
 
     <p id="Collection-create">
       <b class="header">create</b><code>collection.create(relations, options).then(function(model) {...</code>
       <br />
-      Convenience to create a new instance of a model within a collection. Equivalent to instantiating a 
+      Convenience to create a new instance of a model within a collection. Equivalent to instantiating a
       model with a hash of attributes, saving the model to the database, and adding the model to the collection
       after being successfully created. Returns a promise, resolving with the new model.
     </p>
@@ -1447,7 +1447,7 @@ collection
       <b class="header">Backbone Methods (19)</b>
       <br />
       Bookshelf also proxies to <b>Backbone.js</b> for any of the core Collection methods
-      that don't need modification for the ORM. The Backbone documentation 
+      that don't need modification for the ORM. The Backbone documentation
       applies equally for Bookself, and can be used to read more on these methods.
     </p>
 
@@ -1516,10 +1516,10 @@ collection
     <p>
       The <b>Bookshelf.Sync</b> object handles all database communication for models and collections.
       Unlike Backbone's <tt>sync</tt> method, <b>Bookshelf.Sync</b> is a constructor taking two arguments:
-      the current <tt>model</tt> (or collection) and any <tt>options</tt> needed for 
-      the sync method being performed. It comes with five built in 
-      methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>, 
-      <a href="#Sync-insert">insert</a>, <a href="#Sync-update">update</a>, and 
+      the current <tt>model</tt> (or collection) and any <tt>options</tt> needed for
+      the sync method being performed. It comes with five built in
+      methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>,
+      <a href="#Sync-insert">insert</a>, <a href="#Sync-update">update</a>, and
       <a href="#Sync-del">del</a> (delete).
     </p>
 
@@ -1533,8 +1533,8 @@ collection
     <p id="Sync-select">
       <b class="header">select</b><code>sync.select([options]).then(function(model) {...</code>
       <br />
-      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the 
-      <a href="#Model-tableName">tableName</a> and <a href="#Model-idAttribute">idAttrribute</a>, along with 
+      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the
+      <a href="#Model-tableName">tableName</a> and <a href="#Model-idAttribute">idAttrribute</a>, along with
       any custom query constraints.
     </p>
 
@@ -1559,7 +1559,7 @@ collection
       <b class="header">del</b><code>sync.del([options]).then(function(model) {...</code>
       <br />
       Used by models, collections, and relations, the <tt>del</tt> method removes one or more models,
-      based on the <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a> 
+      based on the <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a>
       and any custom <a href="#Model-query">query</a> or <a href="#Model-relation-types">relation</a> constraints,
       returning a promise which resolves with no arguments. If no <a href="#Model-idAtribute">idAtribute</a> or
       custom constraints have been defined, the promise will fail.
@@ -1588,7 +1588,7 @@ collection
       A promise version of "trigger", returning a promise which resolves with all return values
       from triggered event handlers. If any of the event handlers throw an <tt>Error</tt> or return
       a rejected promise, the promise will be rejected. Used internally on the "creating", "updating",
-      "saving", and "destroying" events, and can be helpful when needing async event handlers (for 
+      "saving", and "destroying" events, and can be helpful when needing async event handlers (for
       validations, etc).
     </p>
 
@@ -1599,7 +1599,7 @@ collection
 
     <p id="Events-emitThen">
       <b class="header">.emitThen(name, args*)</b><br />
-      Alias to <a href="#Events-triggerThen">Events.trigger</a>.
+      Alias to <a href="#Events-triggerThen">Events.triggerThen</a>.
     </p>
 
     <p id="Events-removeAllListeners">
@@ -1613,22 +1613,30 @@ collection
       Here's the complete list of recognized Bookshelf events, with arguments.
       Other events from <tt>Backbone</tt> might be triggered, but aren't officially supported unless they
       are noted in this list. You're also free to trigger your own events on Models and Collections and
-      The <tt>Bookshelf</tt> object itself mixes in <tt>Events</tt>, and can be used to emit any 
+      The <tt>Bookshelf</tt> object itself mixes in <tt>Events</tt>, and can be used to emit any
       global events that your application needs.
     </p>
 
     <p><b>Model:</b></p>
 
     <ul class="small">
-      <li><b>"fetched"</b> (model, resp, options) &mdash; after a model is fetched. </li>
-      <li><b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted, throwing an Error prevents insertion. </li>
-      <li><b>"updating"</b> (model, attrs, options) &mdash; before a model is updating, throwing an Error prevents updating. </li>
-      <li><b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating. </li>
-      <li><b>"destroying"</b> (model, options) &mdash; before a model is destroyed, throwing an Error prevents destruction. </li>
-      <li><b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
-      <li><b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
-      <li><b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
-      <li><b>"destroyed"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+      <li class="ul-header"><b>triggerThen</b>
+      <ul class="small">
+        <li>   <b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted, a failed promise prevents insertion. </li>
+        <li>   <b>"updating"</b> (model, attrs, options) &mdash; before a model is updating, a failed promise prevents updating. </li>
+        <li>   <b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating, a failed promise cancels. </li>
+        <li>   <b>"destroying"</b> (model, options) &mdash; before a model is destroyed, a failed promise prevents destruction. </li>
+      </ul>
+      </li>
+      <li class="ul-header"><b>trigger</b>
+        <ul class="small">
+          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a model is fetched. </li>
+          <li>   <b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
+          <li>   <b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
+          <li>   <b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
+          <li>   <b>"destroyed"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+        </ul>
+      </li>
     </ul>
 
     <p><b>Collection:</b></p>
@@ -1655,10 +1663,10 @@ collection
     <p id="Bookshelf-Transaction">
       <b class="header">Bookshelf.Transaction</b>
       <br />
-      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, the transaction 
-      object must be passed along in the options of any relevant <tt>Bookshelf.Sync</tt> calls, 
-      to ensure all queries are on the same connection. The entire transaction block is 
-      a promise that will resolve when the transaction is committed, or fail if the 
+      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, the transaction
+      object must be passed along in the options of any relevant <tt>Bookshelf.Sync</tt> calls,
+      to ensure all queries are on the same connection. The entire transaction block is
+      a promise that will resolve when the transaction is committed, or fail if the
       transaction is rolled back.
     </p>
 
@@ -1666,7 +1674,7 @@ collection
 var When = require('when');
 
 Bookshelf.Transaction(function(t) {
-  
+
   new Library({name: 'Old Books'})
     .save({transacting: t})
     .then(function(model) {
@@ -1676,10 +1684,10 @@ Bookshelf.Transaction(function(t) {
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
       ], function(info) {
-        
+
         // Some validation could take place here.
         return new Book(info).save('shelf_id', model.id, {transacting: t});
-      }));  
+      }));
     })
     .then(function(rows) {
       t.commit([model.get('name'), rows.length]);
@@ -1703,7 +1711,7 @@ Bookshelf.Transaction(function(t) {
       <b class="header">How do I debug?</b><br />
       If you pass <tt>{debug: true}</tt> as one of the options in your initialize settings, you can see
       all of the query calls being made. Sometimes you need to dive a bit further into
-      the various calls and see what all is going on behind the scenes. I'd recommend 
+      the various calls and see what all is going on behind the scenes. I'd recommend
       <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug
       code with <tt>debugger</tt> statements like you would in the browser.
     </p>
@@ -1713,7 +1721,7 @@ Bookshelf.Transaction(function(t) {
       The test suite looks for an environment variable called <tt>BOOKSHELF_TEST</tt> for the path to the database
       configuration. If you run the following command:
       <tt>$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'</tt>, replacing with the path to your config file,
-      and the config file is valid, the test suite should run with <tt>npm test</tt>. 
+      and the config file is valid, the test suite should run with <tt>npm test</tt>.
     </p>
 
     <p>
@@ -1730,7 +1738,7 @@ Bookshelf.Transaction(function(t) {
     <p id="faq-nonode">
       <b class="header">Can I use Bookshelf outside of Node.js</b><br />
       While it primarily targets Node.js, all dependencies are browser compatible, and
-      it could be adapted to work with other javascript environments supporting a <tt>sqlite3</tt> 
+      it could be adapted to work with other javascript environments supporting a <tt>sqlite3</tt>
       database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>.
     </p>
 
@@ -1740,7 +1748,7 @@ Bookshelf.Transaction(function(t) {
       <b class="header">0.1.2</b> &mdash; <small><i>May 17, 2013</i></small><br />
       Added <tt>triggerThen</tt> and <tt>emitThen</tt> for promise based events, used internally in the
       "creating", "updating", "saving", and "destroying" events. Docs updates, fixing <tt>{patch: true}</tt>
-      on <tt>update</tt> to have intended functionality. A model's <tt>toJSON</tt> is now correctly 
+      on <tt>update</tt> to have intended functionality. A model's <tt>toJSON</tt> is now correctly
       called on any related properties.
     </p>
 
