@@ -94,11 +94,6 @@
       return new Bookshelf.Sync(model, options);
     },
 
-    // Returns the related item
-    related: function(item) {
-      return this.relations[item];
-    },
-
     // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
@@ -362,6 +357,11 @@
       }
 
       return target;
+    },
+
+    // Returns the related item.
+    related: function(item) {
+      return this.relations[item];
     },
 
     // Validation can be complicated, and is better handled
