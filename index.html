@@ -951,15 +951,15 @@ var User = Bookshelf.Model.extend({
   tableName: 'users',
 
   allAccounts: function () {
-    return this.belongsToMany(User);
+    return this.belongsToMany(Account);
   },
 
   adminAccounts: function() {
-    return this.belongsToMany(User).query('where', 'access', '=', 'admin');
+    return this.belongsToMany(Account).query('where', 'access', '=', 'admin');
   },
 
   viewAccounts: function() {
-    return this.belongsToMany(User).query('where', 'access', '=', 'readonly');
+    return this.belongsToMany(Account).query('where', 'access', '=', 'readonly');
   }
 
 });
