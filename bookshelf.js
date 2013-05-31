@@ -493,7 +493,7 @@
       var pendingNames = this.pendingNames = [];
       for (name in handled) {
         pendingNames.push(name);
-        pendingDeferred.push(eagerFetch.call(handled[name], {
+        pendingDeferred.push(eagerFetch(handled[name], {
           transacting: options.transacting,
           withRelated: subRelated[name]
         }));
@@ -620,14 +620,13 @@
   // of an eager-loading model or collection, this function
   // fetches the nested related items, and returns a deferred object,
   // with the cumulative handling of multiple (potentially nested) relations.
-  var eagerFetch = function(options) {
+  var eagerFetch = function(related, options) {
 
-    var current  = this;
-    var models   = this.models = [];
-    var relation = this._relation;
+    var models   = related.models = [];
+    var relation = related._relation;
 
-    return When(this._addConstraints(relation.parentResponse)).then(function() {
-      return current.query().select(relation.columns);
+    return When(related._addConstraints(relation.parentResponse)).then(function() {
+      return related.query().select(relation.columns);
     })
     .then(function(resp) {
 
@@ -642,14 +641,14 @@
 
         if (options.withRelated) {
           var model = new relation.modelCtor();
-          return new EagerRelation(current, model, resp).processRelated(options);
+          return new EagerRelation(related, model, resp).processRelated(options);
         }
       }
 
       return models;
 
     }).ensure(function() {
-      current.resetQuery();
+      related.resetQuery();
     });
   };
 
