@@ -301,9 +301,10 @@
     // including any relations on the current model.
     clone: function() {
       var model = new this.constructor(this.attributes);
-      model.relations = _.map(this.relations, function(relation) {
-        return relation.clone();
-      });
+      var relations = this.relations;
+      for (var key in relations) {
+        model.relations[key] = relations[key].clone();
+      }
       return model;
     },
 
