@@ -27,7 +27,7 @@ module.exports = function(Bookshelf, handler) {
     }, {
       classMethod: function() { return 'test'; }
     });
-    
+
     var SubUser = User.extend({
       otherMethod: function() { return this.getData(); }
     }, {
@@ -121,9 +121,9 @@ module.exports = function(Bookshelf, handler) {
   });
 
   describe('tableName', function() {
-    
+
     var table = new Bookshelf.Model({}, {tableName: 'customers'});
-    
+
     it('can be passed in the initialize options', function() {
       equal(table.tableName, 'customers');
     });
@@ -376,7 +376,7 @@ module.exports = function(Bookshelf, handler) {
       equal(_.isEmpty(ts2.created_at), true);
       equal(_.isDate(ts2.updated_at), true);
     });
-  });  
+  });
 
   describe('resetQuery', function() {
 
@@ -392,18 +392,35 @@ module.exports = function(Bookshelf, handler) {
 
     it('assigns defaults on save, rather than initialize', function(ok) {
       var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
-      var item = new Item({id: 1});
-      deepEqual(item.toJSON(), {id: 1});
+      var item = new Item({newItem: 'test2'});
+      deepEqual(item.toJSON(), {newItem: 'test2'});
       item.sync = function() {
-        deepEqual(this.toJSON(), {id: 1, item: 'test'});
+        deepEqual(this.toJSON(), {id: 1, item: 'test', newItem: 'test2'});
         ok();
         return stubSync;
       };
-      item.save();
+      item.save({id: 1});
     });
-  
+
+    it('only assigns defaults when creating a model, unless {defaults: true} is passed in the save options', function(ok) {
+      var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
+      var item = new Item({id: 1, newItem: 'test2'});
+      deepEqual(item.toJSON(), {id: 1, newItem: 'test2'});
+      item.sync = function() {
+        deepEqual(this.toJSON(), {id: 1, newItem: 'test2'});
+        return stubSync;
+      };
+      item.save();
+      item.sync = function() {
+        deepEqual(this.toJSON(), {id: 2, item: 'test', newItem: 'test2'});
+        ok();
+        return stubSync;
+      };
+      item.save({id: 2}, {defaults: true});
+    });
+
   });
-  
+
   describe('isNew', function() {
 
     it('uses the idAttribute to determine if the model isNew', function(){
@@ -421,6 +438,6 @@ module.exports = function(Bookshelf, handler) {
       var model = new Bookshelf.Model();
       equal((model.sync(model) instanceof Bookshelf.Sync), true);
     });
-  });  
+  });
 
 };

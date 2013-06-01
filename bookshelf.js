@@ -224,17 +224,23 @@
         _.extend(attrs, this.timestamp(options));
       }
 
-      // Merge any defaults here rather than during object creation.
-      var defaults = _.result(this, 'defaults');
+      // Determine whether the model is new, typically based on whether the model has
+      // an `idAttribute` or not.
+      var method = options.method || (this.isNew(options) ? 'insert' : 'update');
       var vals = attrs;
-      if (defaults) {
-        vals = _.extend({}, defaults, this.attributes, vals);
+
+      // If the object is being created, we merge any defaults here
+      // rather than during object creation.
+      if (method === 'insert' || options.defaults) {
+        var defaults = _.result(this, 'defaults');
+        if (defaults) {
+          vals = _.extend({}, defaults, this.attributes, vals);
+        }
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
       var model  = this.set(vals);
       var sync   = model.sync(model, options);
-      var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
       return When.all([
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
