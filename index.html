@@ -741,8 +741,10 @@ var Book = Bookshelf.Model.extend({
 
 new Book({'ISBN-13': '9780440180296'}).fetch({
   withRelated: ['genre', 'editions']
-}).then(function(result) {
-  ...
+}).then(function(book) {
+  console.log(book.related('genre').toJSON());
+  console.log(book.related('editions').toJSON());
+  console.log(book.toJSON());
 });
 </pre>
 
@@ -820,6 +822,10 @@ new Book({id: 2}).fetch({
   withRelated: ['summary', 'owner', 'pages', 'author']
 }).then(function(book) {
   console.log(book.toJSON());
+  var owner = book.related('owner');
+  if (owner) {
+    console.log(owner.toJSON());
+  }
 });
 </pre>
 

@@ -1,3 +1,4 @@
+/*global describe, it */
 var _ = require('underscore');
 _.str = require('underscore.string');
 
@@ -438,6 +439,22 @@ module.exports = function(Bookshelf, handler) {
       var model = new Bookshelf.Model();
       equal((model.sync(model) instanceof Bookshelf.Sync), true);
     });
+  });
+
+  describe('previous, previousAttributes', function() {
+
+    it('will return the previous value of an attribute the last time it was synced', function() {
+
+      var model = new Bookshelf.Model({id: 1});
+
+    });
+
+  });
+
+  describe('hasChanged, changedAttributes', function() {
+
+
+
   });
 
 };

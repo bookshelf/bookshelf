@@ -103,9 +103,9 @@
           return When.reject(new Error("The " + relation.otherKey + " must be specified."));
         }
         if (relation.type !== 'belongsToMany') {
-          constraints.call(this, resp);
+          constraints(this, resp);
         } else {
-          belongsToMany.call(this, resp);
+          belongsToMany(this, resp);
         }
       }
     }
@@ -125,25 +125,30 @@
   var Model = Bookshelf.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
+    this.changed = {};
     this.attributes = {};
     this.relations = {};
+    this._previousAttributes = {};
     this.cid = _.uniqueId('c');
+    this._fetched = false;
     if (options) {
       _.extend(this, _.pick(options, modelProps));
       if (options.parse) attrs = this.parse(attrs, options) || {};
     }
     this.set(attrs, options);
-    this.changed = {};
     this.initialize.apply(this, arguments);
   };
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
-  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop all of
-  // these related keys.
-  var modelOmitted = ['isValid', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes'];
+  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop these
+  // specific methods.
+  var modelOmitted = ['isValid', 'validationError', 'changedAttributes'];
 
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
+
+  // The original set method from the Backbone.Model's prototype.
+  var backboneSet = Model.prototype.set;
 
   _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, Shared, {
 
@@ -192,6 +197,50 @@
           _.result(Target.prototype, 'tableName')
         ].sort().join('_')
       });
+    },
+
+    // Similar to the standard `Backbone` set method, but without individual
+    // change events, and adding different meaning to `changed` and `previousAttributes`
+    // defined as the last "sync"'ed state of the model.
+    set: function(key, val, options) {
+      if (key == null) return this;
+      var attr, attrs, changing;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      if (typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+      options || (options = {});
+
+      // Run validation.
+      if (!this._validate(attrs, options)) return false;
+
+      // Extract attributes and options.
+      var pending = false;
+      var unset   = options.unset;
+      var current = this.attributes;
+      var prev    = this._previousAttributes;
+
+      // Check for changes of `id`.
+      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+
+      // For each `set` attribute, update or delete the current value.
+      for (attr in attrs) {
+        val = attrs[attr];
+        if (!_.isEqual(prev[attr], val)) {
+          this.changed[attr] = val;
+          if (!_.isEqual(current[attr], val)) pending = true;
+        } else {
+          delete this.changed[attr];
+        }
+        unset ? delete current[attr] : current[attr] = val;
+      }
+
+      if (pending) this.trigger('change', this, options);
+      return this;
     },
 
     // Fetch a model based on the currently set attributes,
@@ -250,7 +299,10 @@
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && resp) model.set(model.idAttribute, resp[0]);
+        if (method === 'insert' && resp) {
+          model.set(model.idAttribute, resp[0]);
+          model._previousAttributes = _.clone(model.attributes);
+        }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
         return model;
@@ -268,6 +320,7 @@
       return model.triggerThen('destroying', model, options)
       .then(function() { return model.sync(model, options).del(options); })
       .then(function(resp) {
+        model.clear();
         model.trigger('destroyed', model, resp, options);
         return resp;
       }).ensure(function() {
@@ -366,9 +419,10 @@
       return target;
     },
 
-    // Returns the related item.
-    related: function(item) {
-      return this.relations[item];
+    // Returns the related item, or creates a new
+    // related item by creating a new model or collection.
+    related: function(name) {
+      return this.relations[name] || (this.relations[name] = this[name]());
     },
 
     // Validation can be complicated, and is better handled
@@ -578,24 +632,24 @@
   };
 
   // Standard constraints for regular or eager loaded relations.
-  var constraints = function(resp) {
-    var relation = this._relation;
+  var constraints = function(target, resp) {
+    var relation = target._relation;
     if (resp) {
-      this.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
+      target.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
     } else {
-      this.query('where', relation.foreignKey, '=', relation.fkValue);
+      target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
   };
 
   // Helper function for adding the constraints needed on a eager load.
-  var belongsToMany = function(resp) {
+  var belongsToMany = function(target, resp) {
     var
-    relation      = this._relation,
+    relation      = target._relation,
     columns       = relation.columns || (relation.columns = []),
-    builder       = this.query(),
+    builder       = target.query(),
 
-    tableName     = _.result(this, 'tableName'),
-    idAttribute   = _.result(this, 'idAttribute'),
+    tableName     = _.result(target, 'tableName'),
+    idAttribute   = _.result(target, 'idAttribute'),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -776,10 +830,9 @@
 
     // Issues an `update` command on the query.
     update: function(attrs, options) {
-      attrs = (attrs && options.patch ? attrs : this.model.attributes);
       return this.query
-        .where(this.model.idAttribute, this.model.id)
-        .update(this.model.format(_.extend({}, attrs)));
+        .where(_.result(this.model, 'idAttribute'), this.model.id)
+        .update(this.model.format(_.extend({}, this.model.attributes)));
     },
 
     // Issues a `delete` command on the query.
