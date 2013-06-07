@@ -295,7 +295,7 @@
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) {
           model.set(model.idAttribute, resp[0]);
-          model._previousAttributes = _.extend(Object.create(null), model.attributes);
+          model._previousAttributes = extendNull(model.attributes);
         }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
@@ -731,15 +731,14 @@
     this.model = model;
     this.options = options;
     this.query = model.query();
-
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
   _.extend(Sync.prototype, {
 
-    // Select the first item from the database.
+    // Select the first item from the database - only used by models.
     first: function() {
-      this.query.where(_.extend({}, this.model.attributes)).limit(1);
+      this.query.where(extendNull(this.model.attributes)).limit(1);
       return this.select();
     },
 
@@ -747,7 +746,7 @@
     // constraints, resetting the query when complete. If there are results and
     // eager loaded relations, those are fetched and returned on the model before
     // the promise is resolved. Any `success` handler passed in the
-    // options will be called.
+    // options will be called - used by both models & collections.
     select: function() {
       var sync = this;
       var options = sync.options;
@@ -772,7 +771,7 @@
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
             model.set(model.parse(resp[0], options), options);
-            model._previousAttributes = _.extend(Object.create(null), model.attributes);
+            model._previousAttributes = extendNull(model.attributes);
           } else {
             model.reset(resp, {silent: true, parse: true});
           }
@@ -813,23 +812,33 @@
       });
     },
 
-    // Issues an `insert` command on the query.
+    // Issues an `insert` command on the query - only used by models.
     insert: function() {
+      var model = this.model;
       return this.query
-        .idAttribute(_.result(this.model, 'idAttribute'))
-        .insert(this.model.format(_.extend({}, this.model.attributes)));
+        .idAttribute(model.idAttribute)
+        .insert(model.format(extendNull(model.attributes)))
+        .then(function(resp) {
+          model._previousAttributes = extendNull(model.attributes);
+          return resp;
+        });
     },
 
-    // Issues an `update` command on the query.
+    // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
+      var model = this.model;
       return this.query
-        .where(_.result(this.model, 'idAttribute'), this.model.id)
-        .update(this.model.format(_.extend({}, this.model.attributes)));
+        .where(model.idAttribute, model.id)
+        .update(model.format(extendNull(model.attributes)))
+        .then(function(resp) {
+          model._previousAttributes = extendNull(model.attributes);
+          return resp;
+        });
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres;
+      var wheres, model = this.model;
       if (this.model.id != null) {
         wheres = {};
         wheres[this.model.idAttribute] = this.model.id;
@@ -927,6 +936,12 @@
       return builder.insert(data);
     }
 
+  };
+
+  // Creates a new object, extending an object that
+  // does not inherit the `Object.prototype`.
+  var extendNull = function(target) {
+    return _.extend(Object.create(null), target);
   };
 
   // Simple memoization of the singularize call.
