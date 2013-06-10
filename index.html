@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="canonical" href="http://bookshelfjs.org" />
   <link rel="icon" href="docs/images/favicon.ico" />
-  <title>Bookshelf.js - Javascript ORM with some Backbone</title>
+  <title>Bookshelf.js - a Javascript ORM for Node.js for PostgreSQL, MySQL, and SQLite3</title>
   <style>
     body {
       font-size: 14px;
@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.2)</span>
+      Bookshelf.js <span class="version">(0.1.3)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -321,6 +321,8 @@
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
+      <li>– <a href="#Model-relations">relations</a></li>
+      <li>– <a href="#Model-related">related</a></li>
       <li>– <a href="#Model-save">save</a></li>
       <li>– <a href="#Model-destroy">destroy</a></li>
       <li>– <a href="#Model-format">format</a></li>
@@ -333,9 +335,10 @@
       <li>– <a href="#Model-timestamp">timestamp</a></li>
       <li>– <a href="#Model-defaults">defaults</a></li>
       <li>– <a href="#Model-isNew">isNew</a></li>
+      <li>– <a href="#Model-hasChanged">hasChanged</a></li>
+      <li>– <a href="#Model-previous">previous</a></li>
+      <li>– <a href="#Model-previousAttributes">previousAttributes</a></li>
       <li>– <a href="#Model-sync">sync</a></li>
-      <li>– <a href="#Model-relations">relations</a></li>
-      <li>– <a href="#Model-related">related</a></li>
     </ul>
 
     <a class="toc_title" href="#Collection">
@@ -409,9 +412,13 @@
 
     <p>
       <b>Bookshelf</b> is a <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> ORM for Node.js,
-      built on <a href="http://knexjs.org">Knex query builder</a>. It extends the Model &amp; Collection
-      foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>, eager/nested-eager relation loading, and
-      support for one-to-one, one-to-many, and many-to-many relations.
+      built on <a href="http://knexjs.org">Knex</a> query builder.
+      It extends the Model &amp; Collection foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>,
+      eager/nested-eager relation loading, and support for one-to-one, one-to-many, and many-to-many relations.
+    </p>
+
+    <p>
+      It is designed to work well with <b>PostgreSQL</b>, <b>MySQL</b>, and <b>SQLite3</b>.
     </p>
 
     <p>
@@ -420,7 +427,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.2</h3>
+    <h3>Latest Release: 0.1.3</h3>
 
     <p>
       Current Develop &mdash;
@@ -455,7 +462,7 @@
     <p>
       Bookshelf aims to provide a simple library for common tasks when querying relational
       databases in javascript, and forming relations between these objects, using ideas from
-      DataMapper and Active Record. At ~900 lines of <a href="docs/bookshelf.html">well documented code</a>,
+      DataMapper and Active Record. At ~1000 lines of <a href="docs/bookshelf.html">well documented code</a>,
       Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific
       validation scheme, and provides flexible and efficient relation/nested-relation loading, and
       first class transaction support.
@@ -472,7 +479,7 @@
 
     <p>
       All dependencies are specified in package.json file but include underscore.js, when.js, and knex.js library.
-      You'll then need to install either mysql, pg, or sqlite3 from npm. It is advisable to install your own copy
+      You'll then need to install either <tt>mysql</tt>, <tt>pg</tt>, or <tt>sqlite3</tt> from npm. It is advisable to install your own copy
       of Knex as well if you wish to build any custom queries outside of the ORM.
     </p>
 
@@ -1033,16 +1040,34 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
 });
 </pre>
 
+    <p id="Model-relations">
+      <b class="header">relations</b><code>model.relations</code>
+      <br />
+      The <b>relations</b> property is the internal hash containing each of the relations
+      (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
+      the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
+      the relation using the <a href="#Model-related">related</a> method on the model.
+    </p>
+
+    <p id="Model-related">
+      <b class="header">related</b><code>model.related()</code>
+      <br />
+      The <b>relations</b> property is the internal hash containing each of the relations
+      (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
+      the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
+      the relation using the <a href="#Model-related">related</a> method on the model.
+    </p>
+
     <p id="Model-save">
       <b class="header">save</b><code>model.save([params], [options]).then(function(model) {...</code>
       <br />
       The Model's <b>save</b> method is used to perform an <tt>insert</tt> or <tt>update</tt>
       query with the model, dependent on whether the model <a href="#Model-isNew">isNew</a>.
-      If you wish to use <tt>update</tt> rather than <tt>insert</tt> or vice versa, the
-      <tt>{method: ...}</tt> option may be specified to explicitly state which
+      If the model <tt>isNew</tt>, any <a href="#Model-defaults">defaults</a> will be added to
+      the object being saved. If you wish to use <tt>update</tt> rather than <tt>insert</tt> or
+      vice versa, the <tt>{method: ...}</tt> option may be specified to explicitly state which
       <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
-      <tt>{patch: true}</tt> may be specified to only save the items in the <b>params</b> rather than
-      the full model.
+      a <tt>{defaults: true}</tt> option may be specified to also merge with the default values.
     </p>
 
 <pre>
@@ -1088,7 +1113,7 @@ new Post({name: 'New Article'}).save().then(function(model) {
       <br />
       The <b>defaults</b> hash (or function) can be used to specify the default
       attributes for your model. Unlike with Backbone's model defaults, Bookshelf defaults
-      are applied when an object is persisted rather than during creation.
+      are applied before an "insert" query, rather than during object creation.
     </p>
 
 <pre>
@@ -1262,28 +1287,56 @@ var modelB = new Bookshelf.Model({id: 1});
 modelB.isNew(); // false
 </pre>
 
+    <p id="Model-isNew">
+      <b class="header">isNew</b><code>model.isNew()</code>
+      <br />
+      Checks for the existence of an <a href="#Model-id">id</a> to determine whether the model
+      is considered "new".
+    </p>
+
+<pre>
+var modelA = new Bookshelf.Model();
+modelA.isNew(); // true
+
+var modelB = new Bookshelf.Model({id: 1});
+modelB.isNew(); // false
+</pre>
+
+    <p id="Model-changed">
+      <b class="header">changed</b><code>model.changed</code>
+      <br />
+      The <b>changed</b> property is the internal hash containing all the attributes
+      that have changed since the model's last <a href="#Model-fetch">fetch</a>,
+      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>.
+    </p>
+
+    <p id="Model-hasChanged">
+      <b class="header">hasChanged</b><code>model.hasChanged([attribute])</code>
+      <br />
+      Checks whether an attribute has changed since the last <a href="#Model-fetch">fetch</a>,
+      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>. If an <b>attribute</b>
+      is passed, returns <tt>true</tt> if that specific attribute has changed.
+    </p>
+
+    <p id="Model-previous">
+      <b class="header">previous</b><code>model.previous(attribute)</code>
+      <br />
+      Returns the this previous value of a changed <b>attribute</b>, or <tt>undefined</tt>
+      if one had not been specified previously.
+    </p>
+
+    <p id="Model-previousAttributes">
+      <b class="header">previousAttributes</b><code>model.previousAttributes()</code>
+      <br />
+      Return a copy of the model's previous attributes from the model's last <a href="#Model-fetch">fetch</a>,
+      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>. Useful for getting a
+      diff between versions of a model, or getting back to a valid state after an error occurs.
+    </p>
+
     <p id="Model-sync">
       <b class="header">sync</b><code>model.sync(method, model, [options])</code>
       <br />
       Creates and returns a new <a href="#Sync">Bookshelf.Sync</a> instance. Can be overridden for custom behavior.
-    </p>
-
-    <p id="Model-relations">
-      <b class="header">relations</b><code>model.relations</code>
-      <br />
-      The <b>relations</b> property is the internal hash containing each of the relations
-      (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
-      the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
-      the relation using the <a href="#Model-related">related</a> method on the model.
-    </p>
-
-    <p id="Model-related">
-      <b class="header">related</b><code>model.related()</code>
-      <br />
-      The <b>relations</b> property is the internal hash containing each of the relations
-      (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
-      the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
-      the relation using the <a href="#Model-related">related</a> method on the model.
     </p>
 
     <h2 id="Collection">Bookshelf.Collection</h2>
@@ -1628,6 +1681,7 @@ collection
     <ul class="small">
       <li class="ul-header"><b>triggerThen</b>
       <ul class="small">
+        <li>   <b>"fetching"</b> (model, columns, options) &mdash; before a model is fetched, a failed promise prevents the fetch. </li>
         <li>   <b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted, a failed promise prevents insertion. </li>
         <li>   <b>"updating"</b> (model, attrs, options) &mdash; before a model is updating, a failed promise prevents updating. </li>
         <li>   <b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating, a failed promise cancels. </li>
@@ -1647,7 +1701,16 @@ collection
 
     <p><b>Collection:</b></p>
     <ul class="small">
-      <li><b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
+      <li class="ul-header"><b>triggerThen</b>
+        <ul class="small">
+          <li>  <b>"fetching"</b> (model, columns, options) &mdash; before a collection is fetched, a failed promise prevents the fetch.</li>
+        </ul>
+      </li>
+      <li class="ul-header"><b>trigger</b>
+        <ul class="small">
+          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
+        </ul>
+      </li>
     </ul>
 
   <h2 id="Utility">Utility</h2>
@@ -1749,6 +1812,17 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.3</b> &mdash; <small><i>June 10, 2013</i></small><br />
+      Added <a href="#Model-hasChanged">hasChanged</a>,
+      <a href="#Model-previous">previous</a>, and <a href="#Model-previousAttributes">previousAttributes</a>
+      methods, for getting the previous value of the model since the last sync. Using <tt>Object.create(null)</tt> for various
+      internal model objects dealing with user values. Calling <a href="#Model-related">related</a> on a model will now create
+      an empty related object if one is not present on the <tt>relations</tt> object. Removed the <tt>{patch: true}</tt>
+      option on save, instead only applying defaults if the object <tt>isNew</tt>, or if <tt>{defaults: true}</tt> is passed.
+      Fix for <tt>model.clone</tt>'s relation responses.
+    </p>
 
     <p>
       <b class="header">0.1.2</b> &mdash; <small><i>May 17, 2013</i></small><br />
