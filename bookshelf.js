@@ -125,12 +125,10 @@
   var Model = Bookshelf.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
-    this.changed = Object.create(null);
     this.attributes = Object.create(null);
-    this._previousAttributes = Object.create(null);
+    this._reset();
     this.relations = {};
     this.cid = _.uniqueId('c');
-    this._fetched = false;
     if (options) {
       _.extend(this, _.pick(options, modelProps));
       if (options.parse) attrs = this.parse(attrs, options) || {};
@@ -233,7 +231,7 @@
         unset ? delete current[attr] : current[attr] = val;
       }
 
-      if (hasChanged) this.trigger('change', this, options);
+      if (hasChanged && !options.silent) this.trigger('change', this, options);
       return this;
     },
 
@@ -241,7 +239,10 @@
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
-      return this.sync(this, options).first();
+      return this.sync(this, options).first().then(function(model) {
+        model._reset();
+        return model;
+      });
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -282,7 +283,7 @@
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
-      var model  = this.set(vals);
+      var model  = this.set(vals, {silent: true});
       var sync   = model.sync(model, options);
 
       return when.all([
@@ -294,11 +295,12 @@
 
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) {
-          model.set(model.idAttribute, resp[0]);
-          model._previousAttributes = extendNull(model.attributes);
+          model[model.idAttribute] = resp[0];
         }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
+        model._reset();
+
         return model;
       })
       .ensure(function() { model.resetQuery(); });
@@ -316,6 +318,7 @@
       .then(function(resp) {
         model.clear();
         model.trigger('destroyed', model, resp, options);
+        model._reset();
         return resp;
       }).ensure(function() {
         model.resetQuery();
@@ -417,6 +420,13 @@
     // related item by creating a new model or collection.
     related: function(name) {
       return this.relations[name] || (this.relations[name] = this[name]());
+    },
+
+    // Called after a `sync` action (save, fetch, delete) -
+    // resets the `_previousAttributes` and `changed` hash for the model.
+    _reset: function() {
+      this._previousAttributes = extendNull(this.attributes);
+      this.changed = extendNull();
     },
 
     // Validation can be complicated, and is better handled
@@ -761,7 +771,9 @@
           columns = model._relation.columns;
         }
 
-        return sync.query.select(columns);
+        return model.triggerThen('fetching', model, columns, options).then(function() {
+          return sync.query.select(columns);
+        });
       })
       .then(function(resp) {
 
@@ -770,7 +782,7 @@
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
-            model.set(model.parse(resp[0], options), options);
+            model.set(model.parse(resp[0], options), _.extend({silent: true}, options));
             model._previousAttributes = extendNull(model.attributes);
           } else {
             model.reset(resp, {silent: true, parse: true});
@@ -795,7 +807,7 @@
         if (options.require) return when.reject(new Error('EmptyResponse'));
 
         if (model instanceof Model) {
-          model.clear();
+          model.clear({silent: true});
           return {};
         }
 
