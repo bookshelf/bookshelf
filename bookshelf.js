@@ -28,12 +28,8 @@
   Bookshelf.VERSION = '0.1.3';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
-  // for consistency and portability, adding a few
-  // functions to make the API feel a bit more like Node.
+  // for consistency and portability.
   var Events = Bookshelf.Events = Backbone.Events;
-      Events.emit = function() { this.trigger.apply(this, arguments); };
-      Events.emitThen = function() { return this.triggerThen.apply(this, arguments); };
-      Events.removeAllListeners = function(event) { this.off(event, null, null); };
 
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);

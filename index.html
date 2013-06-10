@@ -379,9 +379,6 @@
     <ul class="toc_section">
       <li>– <a href="#Events-Backbone-Methods"><b>Backbone Methods (5)</b></a></li>
       <li>– <a href="#Events-triggerThen">triggerThen</a></li>
-      <li>– <a href="#Events-emit">emit</a></li>
-      <li>– <a href="#Events-emitThen">emitThen</a></li>
-      <li>– <a href="#Events-removeAllListeners">removeAllListeners</a></li>
       <li>- <a href="#Events-catalog"><b>Catalog of Built-in Events</b></a></li>
     </ul>
 
@@ -1651,21 +1648,6 @@ collection
       validations, etc).
     </p>
 
-    <p id="Events-emit">
-      <b class="header">.emit(name, args*)</b><br />
-      Alias to <a href="http://backbonejs.org/#Events-trigger">Events.trigger</a>.
-    </p>
-
-    <p id="Events-emitThen">
-      <b class="header">.emitThen(name, args*)</b><br />
-      Alias to <a href="#Events-triggerThen">Events.triggerThen</a>.
-    </p>
-
-    <p id="Events-removeAllListeners">
-      <b class="header">.removeAllListeners([event])</b><br />
-      Alias to <tt>this.off(event, null, null);</tt>
-    </p>
-
     <p id="Events-catalog">
       <b class="header">Catalog of Events</b>
       <br />
@@ -1679,13 +1661,13 @@ collection
     <p><b>Model:</b></p>
 
     <ul class="small">
-      <li class="ul-header"><b>triggerThen</b>
+      <li class="ul-header"><b>triggerThen</b> - a thrown Error or returned rejected promise cancels the next action
       <ul class="small">
-        <li>   <b>"fetching"</b> (model, columns, options) &mdash; before a model is fetched, a failed promise prevents the fetch. </li>
-        <li>   <b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted, a failed promise prevents insertion. </li>
-        <li>   <b>"updating"</b> (model, attrs, options) &mdash; before a model is updating, a failed promise prevents updating. </li>
-        <li>   <b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating, a failed promise cancels. </li>
-        <li>   <b>"destroying"</b> (model, options) &mdash; before a model is destroyed, a failed promise prevents destruction. </li>
+        <li>   <b>"fetching"</b> (model, columns, options) &mdash; before a model is fetched. </li>
+        <li>   <b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted. </li>
+        <li>   <b>"updating"</b> (model, attrs, options) &mdash; before a model is updating. </li>
+        <li>   <b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating. </li>
+        <li>   <b>"destroying"</b> (model, options) &mdash; before a model is destroyed. </li>
       </ul>
       </li>
       <li class="ul-header"><b>trigger</b>
@@ -1694,16 +1676,16 @@ collection
           <li>   <b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
           <li>   <b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
           <li>   <b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
-          <li>   <b>"destroyed"</b> (model, resp, options) &mdash; when a model is <a href="#Model-destroy">destroyed</a>. </li>
+          <li>   <b>"destroyed"</b> (model, resp, options) &mdash; after a model is destroyed. </li>
         </ul>
       </li>
     </ul>
 
     <p><b>Collection:</b></p>
     <ul class="small">
-      <li class="ul-header"><b>triggerThen</b>
+      <li class="ul-header"><b>triggerThen</b> - a thrown Error or returned rejected promise cancels the next action
         <ul class="small">
-          <li>  <b>"fetching"</b> (model, columns, options) &mdash; before a collection is fetched, a failed promise prevents the fetch.</li>
+          <li>  <b>"fetching"</b> (model, columns, options) &mdash; before a collection is fetched. </li>
         </ul>
       </li>
       <li class="ul-header"><b>trigger</b>
