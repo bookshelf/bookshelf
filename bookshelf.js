@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.2
+//     Bookshelf.js 0.1.3
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -16,16 +16,16 @@
 
   // Local dependency references.
   var _      = require('underscore');
-  var When   = require('when');
+  var when   = require('when');
   var Knex   = require('knex');
   var Inflection = require('inflection');
 
   // Mixin the `triggerThen` function into all relevant Backbone objects,
   // so we can have event driven async validations, functions, etc.
-  require('trigger-then')(Backbone, When);
+  require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.2';
+  Bookshelf.VERSION = '0.1.3';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability, adding a few
@@ -94,23 +94,18 @@
       return new Bookshelf.Sync(model, options);
     },
 
-    // Returns the related item
-    related: function(item) {
-      return this.relations[item];
-    },
-
     // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
       var relation = this._relation;
       if (relation) {
         if (!relation.fkValue && !resp) {
-          return When.reject(new Error("The " + relation.otherKey + " must be specified."));
+          return when.reject(new Error("The " + relation.otherKey + " must be specified."));
         }
         if (relation.type !== 'belongsToMany') {
-          constraints.call(this, resp);
+          constraints(this, resp);
         } else {
-          belongsToMany.call(this, resp);
+          belongsToMany(this, resp);
         }
       }
     }
@@ -130,7 +125,8 @@
   var Model = Bookshelf.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
-    this.attributes = {};
+    this.attributes = Object.create(null);
+    this._reset();
     this.relations = {};
     this.cid = _.uniqueId('c');
     if (options) {
@@ -138,14 +134,13 @@
       if (options.parse) attrs = this.parse(attrs, options) || {};
     }
     this.set(attrs, options);
-    this.changed = {};
     this.initialize.apply(this, arguments);
   };
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
-  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop all of
-  // these related keys.
-  var modelOmitted = ['isValid', 'hasChanged', 'changedAttributes', 'previous', 'previousAttributes'];
+  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop these
+  // specific methods.
+  var modelOmitted = ['isValid', 'validationError', 'changedAttributes'];
 
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
@@ -199,11 +194,55 @@
       });
     },
 
+    // Similar to the standard `Backbone` set method, but without individual
+    // change events, and adding different meaning to `changed` and `previousAttributes`
+    // defined as the last "sync"'ed state of the model.
+    set: function(key, val, options) {
+      if (key == null) return this;
+      var attr, attrs, changing;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      if (typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+      options || (options = {});
+
+      // Extract attributes and options.
+      var hasChanged = false;
+      var unset   = options.unset;
+      var current = this.attributes;
+      var prev    = this._previousAttributes;
+
+      // Check for changes of `id`.
+      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+
+      // For each `set` attribute, update or delete the current value.
+      for (attr in attrs) {
+        val = attrs[attr];
+        if (!_.isEqual(prev[attr], val)) {
+          this.changed[attr] = val;
+          if (!_.isEqual(current[attr], val)) hasChanged = true;
+        } else {
+          delete this.changed[attr];
+        }
+        unset ? delete current[attr] : current[attr] = val;
+      }
+
+      if (hasChanged && !options.silent) this.trigger('change', this, options);
+      return this;
+    },
+
     // Fetch a model based on the currently set attributes,
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
-      return this.sync(this, options).first();
+      return this.sync(this, options).first().then(function(model) {
+        model._reset();
+        return model;
+      });
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -229,19 +268,25 @@
         _.extend(attrs, this.timestamp(options));
       }
 
-      // Merge any defaults here rather than during object creation.
-      var defaults = _.result(this, 'defaults');
+      // Determine whether the model is new, typically based on whether the model has
+      // an `idAttribute` or not.
+      var method = options.method || (this.isNew(options) ? 'insert' : 'update');
       var vals = attrs;
-      if (defaults) {
-        vals = _.extend({}, defaults, this.attributes, vals);
+
+      // If the object is being created, we merge any defaults here
+      // rather than during object creation.
+      if (method === 'insert' || options.defaults) {
+        var defaults = _.result(this, 'defaults');
+        if (defaults) {
+          vals = _.extend({}, defaults, this.attributes, vals);
+        }
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
-      var model  = this.set(vals);
+      var model  = this.set(vals, {silent: true});
       var sync   = model.sync(model, options);
-      var method = options.method || (model.isNew(options) ? 'insert' : 'update');
 
-      return When.all([
+      return when.all([
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
         model.triggerThen('saving', model, attrs, options)
       ])
@@ -249,9 +294,13 @@
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && resp) model.set(model.idAttribute, resp[0]);
+        if (method === 'insert' && resp) {
+          model[model.idAttribute] = resp[0];
+        }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
+        model._reset();
+
         return model;
       })
       .ensure(function() { model.resetQuery(); });
@@ -267,7 +316,9 @@
       return model.triggerThen('destroying', model, options)
       .then(function() { return model.sync(model, options).del(options); })
       .then(function(resp) {
+        model.clear();
         model.trigger('destroyed', model, resp, options);
+        model._reset();
         return resp;
       }).ensure(function() {
         model.resetQuery();
@@ -306,9 +357,10 @@
     // including any relations on the current model.
     clone: function() {
       var model = new this.constructor(this.attributes);
-      model.relations = _.map(this.relations, function(relation) {
-        return relation.clone();
-      });
+      var relations = this.relations;
+      for (var key in relations) {
+        model.relations[key] = relations[key].clone();
+      }
       return model;
     },
 
@@ -362,6 +414,19 @@
       }
 
       return target;
+    },
+
+    // Returns the related item, or creates a new
+    // related item by creating a new model or collection.
+    related: function(name) {
+      return this.relations[name] || (this.relations[name] = this[name]());
+    },
+
+    // Called after a `sync` action (save, fetch, delete) -
+    // resets the `_previousAttributes` and `changed` hash for the model.
+    _reset: function() {
+      this._previousAttributes = extendNull(this.attributes);
+      this.changed = extendNull();
     },
 
     // Validation can be complicated, and is better handled
@@ -492,7 +557,7 @@
       var pendingNames = this.pendingNames = [];
       for (name in handled) {
         pendingNames.push(name);
-        pendingDeferred.push(eagerFetch.call(handled[name], {
+        pendingDeferred.push(eagerFetch(handled[name], {
           transacting: options.transacting,
           withRelated: subRelated[name]
         }));
@@ -500,7 +565,7 @@
 
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs are complete.
-      return When.all(pendingDeferred).spread(_.bind(this.matchResponses, this));
+      return when.all(pendingDeferred).spread(_.bind(this.matchResponses, this));
     },
 
     // Handles the matching against an eager loaded relation.
@@ -571,24 +636,24 @@
   };
 
   // Standard constraints for regular or eager loaded relations.
-  var constraints = function(resp) {
-    var relation = this._relation;
+  var constraints = function(target, resp) {
+    var relation = target._relation;
     if (resp) {
-      this.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
+      target.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
     } else {
-      this.query('where', relation.foreignKey, '=', relation.fkValue);
+      target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
   };
 
   // Helper function for adding the constraints needed on a eager load.
-  var belongsToMany = function(resp) {
+  var belongsToMany = function(target, resp) {
     var
-    relation      = this._relation,
+    relation      = target._relation,
     columns       = relation.columns || (relation.columns = []),
-    builder       = this.query(),
+    builder       = target.query(),
 
-    tableName     = _.result(this, 'tableName'),
-    idAttribute   = _.result(this, 'idAttribute'),
+    tableName     = _.result(target, 'tableName'),
+    idAttribute   = _.result(target, 'idAttribute'),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -619,14 +684,13 @@
   // of an eager-loading model or collection, this function
   // fetches the nested related items, and returns a deferred object,
   // with the cumulative handling of multiple (potentially nested) relations.
-  var eagerFetch = function(options) {
+  var eagerFetch = function(related, options) {
 
-    var current  = this;
-    var models   = this.models = [];
-    var relation = this._relation;
+    var models   = related.models = [];
+    var relation = related._relation;
 
-    return When(this._addConstraints(relation.parentResponse)).then(function() {
-      return current.query().select(relation.columns);
+    return when(related._addConstraints(relation.parentResponse)).then(function() {
+      return related.query().select(relation.columns);
     })
     .then(function(resp) {
 
@@ -641,14 +705,14 @@
 
         if (options.withRelated) {
           var model = new relation.modelCtor();
-          return new EagerRelation(current, model, resp).processRelated(options);
+          return new EagerRelation(related, model, resp).processRelated(options);
         }
       }
 
       return models;
 
     }).ensure(function() {
-      current.resetQuery();
+      related.resetQuery();
     });
   };
 
@@ -659,9 +723,7 @@
   // without needing the "new" keyword... to make object creation cleaner
   // and more chainable.
   Model.forge = Collection.forge = function() {
-    var Ctor = function() {};
-    Ctor.prototype = this.prototype;
-    var inst = new Ctor();
+    var inst = Object.create(this.prototype);
     var obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   };
@@ -679,15 +741,14 @@
     this.model = model;
     this.options = options;
     this.query = model.query();
-
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
   _.extend(Sync.prototype, {
 
-    // Select the first item from the database.
+    // Select the first item from the database - only used by models.
     first: function() {
-      this.query.where(_.extend({}, this.model.attributes)).limit(1);
+      this.query.where(extendNull(this.model.attributes)).limit(1);
       return this.select();
     },
 
@@ -695,13 +756,13 @@
     // constraints, resetting the query when complete. If there are results and
     // eager loaded relations, those are fetched and returned on the model before
     // the promise is resolved. Any `success` handler passed in the
-    // options will be called.
+    // options will be called - used by both models & collections.
     select: function() {
       var sync = this;
       var options = sync.options;
       var model = this.model;
 
-      return When(model._addConstraints()).then(function() {
+      return when(model._addConstraints()).then(function() {
         var columns = options.columns;
 
         if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
@@ -710,17 +771,19 @@
           columns = model._relation.columns;
         }
 
-        return sync.query.select(columns);
+        return model.triggerThen('fetching', model, columns, options).then(function() {
+          return sync.query.select(columns);
+        });
       })
       .then(function(resp) {
-        var target;
 
         if (resp && resp.length > 0) {
 
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
-            model.set(model.parse(resp[0], options), options);
+            model.set(model.parse(resp[0], options), _.extend({silent: true}, options));
+            model._previousAttributes = extendNull(model.attributes);
           } else {
             model.reset(resp, {silent: true, parse: true});
           }
@@ -730,7 +793,7 @@
           // we find the associated `model` to determine necessary eager relations.
           // Once the `EagerRelation` is complete, we return the original response from the query.
           if (options.withRelated) {
-            target = (model instanceof Collection ? new model.model() : model);
+            var target = (model instanceof Collection ? new model.model() : model);
             return new EagerRelation(model, target, resp)
               .processRelated(options)
               .yield(resp);
@@ -741,10 +804,10 @@
 
         // If `{require: true}` is set as an option, the fetch is considered
         // a failure if the model comes up blank.
-        if (options.require) return When.reject(new Error('EmptyResponse'));
+        if (options.require) return when.reject(new Error('EmptyResponse'));
 
         if (model instanceof Model) {
-          model.clear();
+          model.clear({silent: true});
           return {};
         }
 
@@ -761,30 +824,39 @@
       });
     },
 
-    // Issues an `insert` command on the query.
+    // Issues an `insert` command on the query - only used by models.
     insert: function() {
+      var model = this.model;
       return this.query
-        .idAttribute(_.result(this.model, 'idAttribute'))
-        .insert(this.model.format(_.extend({}, this.model.attributes)));
+        .idAttribute(model.idAttribute)
+        .insert(model.format(extendNull(model.attributes)))
+        .then(function(resp) {
+          model._previousAttributes = extendNull(model.attributes);
+          return resp;
+        });
     },
 
-    // Issues an `update` command on the query.
+    // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      attrs = (attrs && options.patch ? attrs : this.model.attributes);
+      var model = this.model;
       return this.query
-        .where(this.model.idAttribute, this.model.id)
-        .update(this.model.format(_.extend({}, attrs)));
+        .where(model.idAttribute, model.id)
+        .update(model.format(extendNull(model.attributes)))
+        .then(function(resp) {
+          model._previousAttributes = extendNull(model.attributes);
+          return resp;
+        });
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres;
+      var wheres, model = this.model;
       if (this.model.id != null) {
         wheres = {};
         wheres[this.model.idAttribute] = this.model.id;
       }
       if (!wheres && this.query.wheres.length === 0) {
-        return When.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
+        return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
       return this.query.where(wheres).del();
     }
@@ -839,13 +911,13 @@
     // Helper for handling either the `attach` or `detach` call on
     // the `belongsToMany` relationship.
     _handler: function(method, ids, options) {
-      if (ids == void 0 && method === 'insert') return When.resolve();
+      if (ids == void 0 && method === 'insert') return when.resolve();
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pending = [];
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      return When.all(pending);
+      return when.all(pending);
     },
 
     // Handles setting the appropriate constraints and shelling out
@@ -878,9 +950,15 @@
 
   };
 
+  // Creates a new object, extending an object that
+  // does not inherit the `Object.prototype`.
+  var extendNull = function(target) {
+    return _.extend(Object.create(null), target);
+  };
+
   // Simple memoization of the singularize call.
   var singularMemo = (function() {
-    var cache = {};
+    var cache = Object.create(null);
     return function(arg) {
       if (arg in cache) {
         return cache[arg];

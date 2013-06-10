@@ -1,3 +1,4 @@
+/*global describe, it */
 var _ = require('underscore');
 _.str = require('underscore.string');
 
@@ -27,7 +28,7 @@ module.exports = function(Bookshelf, handler) {
     }, {
       classMethod: function() { return 'test'; }
     });
-    
+
     var SubUser = User.extend({
       otherMethod: function() { return this.getData(); }
     }, {
@@ -121,9 +122,9 @@ module.exports = function(Bookshelf, handler) {
   });
 
   describe('tableName', function() {
-    
+
     var table = new Bookshelf.Model({}, {tableName: 'customers'});
-    
+
     it('can be passed in the initialize options', function() {
       equal(table.tableName, 'customers');
     });
@@ -214,11 +215,29 @@ module.exports = function(Bookshelf, handler) {
 
     var Site = Models.Site;
 
-    it('issues a first (get one) to Knex, returning a promise', function(ok) {
+    it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function(ok) {
+      var count = 0;
+      var model = new Site({id: 1});
+      model.on('fetched', function() {
+        count++;
+      });
 
-      new Site({id: 1}).fetch().then(function(model) {
+      model.fetch().then(function(model) {
         equal(model.get('id'), 1);
         equal(model.get('name'), 'knexjs.org');
+        equal(count, 1);
+        ok();
+      });
+
+    });
+
+    it('has a fetching event, which will fail if an error is thrown or if a rejected promise is provided', function(ok) {
+
+      var model = new Site({id: 1});
+      model.on('fetching', function() {
+        throw new Error("This failed");
+      });
+      model.fetch().then(null, function() {
         ok();
       });
 
@@ -376,7 +395,7 @@ module.exports = function(Bookshelf, handler) {
       equal(_.isEmpty(ts2.created_at), true);
       equal(_.isDate(ts2.updated_at), true);
     });
-  });  
+  });
 
   describe('resetQuery', function() {
 
@@ -392,18 +411,43 @@ module.exports = function(Bookshelf, handler) {
 
     it('assigns defaults on save, rather than initialize', function(ok) {
       var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
-      var item = new Item({id: 1});
-      deepEqual(item.toJSON(), {id: 1});
+      var item = new Item({newItem: 'test2'});
+      deepEqual(item.toJSON(), {newItem: 'test2'});
       item.sync = function() {
-        deepEqual(this.toJSON(), {id: 1, item: 'test'});
+        deepEqual(this.toJSON(), {id: 1, item: 'test', newItem: 'test2'});
         ok();
         return stubSync;
       };
-      item.save();
+      item.save({id: 1});
     });
-  
+
+    it('only assigns defaults when creating a model, unless {defaults: true} is passed in the save options', function(ok) {
+      var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
+      var item = new Item({id: 1, newItem: 'test2'});
+      deepEqual(item.toJSON(), {id: 1, newItem: 'test2'});
+      item.sync = function() {
+        deepEqual(this.toJSON(), {id: 1, newItem: 'test2'});
+        return stubSync;
+      };
+      item.save();
+      item.sync = function() {
+        deepEqual(this.toJSON(), {id: 2, item: 'test', newItem: 'test2'});
+        ok();
+        return stubSync;
+      };
+      item.save({id: 2}, {defaults: true});
+    });
+
   });
-  
+
+  describe('sync', function() {
+
+    it('creates a new instance of Bookshelf.Sync', function(){
+      var model = new Bookshelf.Model();
+      equal((model.sync(model) instanceof Bookshelf.Sync), true);
+    });
+  });
+
   describe('isNew', function() {
 
     it('uses the idAttribute to determine if the model isNew', function(){
@@ -415,12 +459,39 @@ module.exports = function(Bookshelf, handler) {
     });
   });
 
-  describe('sync', function() {
+  describe('previous, previousAttributes', function() {
 
-    it('creates a new instance of Bookshelf.Sync', function(){
-      var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof Bookshelf.Sync), true);
+    it('will return the previous value of an attribute the last time it was synced', function(ok) {
+      var count = 0;
+      var model = new Models.Site({id: 1});
+      model.on('change', function() {
+        count++;
+      });
+      equal(model.previous('id'), void 0);
+      model.fetch().then(function() {
+        deepEqual(model.previousAttributes(), {id: 1, name: 'knexjs.org'});
+        deepEqual(model.changed, {});
+        model.set('id', 2);
+        equal(model.previous('id'), 1);
+        deepEqual(model.changed, {id: 2});
+        model.set('id', 1);
+        equal(count, 1);
+        ok();
+      }).then(null, ok);
+
     });
-  });  
+
+  });
+
+  describe('hasChanged', function(ok) {
+
+    var site = new Models.Site({name: 'Third Site'});
+    equal(site.hasChanged('name'), true);
+    deepEqual(site.changed, {name: 'Third Site'});
+    site.fetch().then(function() {
+      deepEqual(site.hasChanged, {});
+    });
+
+  });
 
 };
