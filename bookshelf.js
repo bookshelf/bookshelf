@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.3
+//     Bookshelf.js 0.1.4
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,15 +25,11 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.3';
+  Bookshelf.VERSION = '0.1.4';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
-  // for consistency and portability, adding a few
-  // functions to make the API feel a bit more like Node.
+  // for consistency and portability.
   var Events = Bookshelf.Events = Backbone.Events;
-      Events.emit = function() { this.trigger.apply(this, arguments); };
-      Events.emitThen = function() { return this.triggerThen.apply(this, arguments); };
-      Events.removeAllListeners = function(event) { this.off(event, null, null); };
 
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
@@ -295,7 +291,7 @@
 
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) {
-          model[model.idAttribute] = resp[0];
+          model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
         }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
