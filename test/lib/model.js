@@ -250,7 +250,8 @@ module.exports = function(Bookshelf, handler) {
     var Site = Models.Site;
 
     it('saves an new object', function(ok) {
-      new Site({name: 'Third Site'}).save().then(function() {
+      new Site({name: 'Third Site'}).save().then(function(m) {
+        equal(m.get('id'), 3);
         return new Bookshelf.Collection(null, {model: Site}).fetch();
       })
       .then(function(c) {
@@ -258,7 +259,7 @@ module.exports = function(Bookshelf, handler) {
         equal(c.last().get('name'), 'Third Site');
         equal(c.length, 3);
         ok();
-      });
+      }).then(null, ok);
     });
 
     it('updates an existing object', function(ok) {

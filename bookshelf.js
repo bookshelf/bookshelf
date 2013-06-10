@@ -291,7 +291,7 @@
 
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) {
-          model[model.idAttribute] = resp[0];
+          model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
         }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
