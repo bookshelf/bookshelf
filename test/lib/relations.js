@@ -201,6 +201,9 @@ module.exports = function(Bookshelf, handler) {
           .then(function(resp) {
             return When.all([
               new Site({id: 1}).admins().fetch().then(function(c) {
+                c.each(function(m) {
+                  equal(m.hasChanged(), false);
+                });
                 equal(c.at(0).has('pivot_item'), true);
                 equal(c.length, 2);
               }),

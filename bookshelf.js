@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.4
+//     Bookshelf.js 0.1.5
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.4';
+  Bookshelf.VERSION = '0.1.5';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -236,8 +236,7 @@
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
       return this.sync(this, options).first().then(function(model) {
-        model._reset();
-        return model;
+        return model._reset();
       });
     },
 
@@ -295,9 +294,7 @@
         }
         model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
         model.trigger('saved', model, resp, options);
-        model._reset();
-
-        return model;
+        return model._reset();
       })
       .ensure(function() { model.resetQuery(); });
     },
@@ -314,8 +311,7 @@
       .then(function(resp) {
         model.clear();
         model.trigger('destroyed', model, resp, options);
-        model._reset();
-        return resp;
+        return model._reset();
       }).ensure(function() {
         model.resetQuery();
       });
@@ -357,6 +353,8 @@
       for (var key in relations) {
         model.relations[key] = relations[key].clone();
       }
+      model._previousAttributes = _.clone(this._previousAttributes);
+      model.changed = _.clone(this.changed);
       return model;
     },
 
@@ -423,6 +421,7 @@
     _reset: function() {
       this._previousAttributes = extendNull(this.attributes);
       this.changed = extendNull();
+      return this;
     },
 
     // Validation can be complicated, and is better handled
@@ -696,7 +695,7 @@
 
         // We can just push the models onto the collection, rather than resetting.
         for (var i = 0, l = resp.length; i < l; i++) {
-          models.push(new relation.modelCtor(resp[i], {parse: true}));
+          models.push(new relation.modelCtor(resp[i], {parse: true})._reset());
         }
 
         if (options.withRelated) {
@@ -781,7 +780,7 @@
             model.set(model.parse(resp[0], options), _.extend({silent: true}, options));
             model._previousAttributes = extendNull(model.attributes);
           } else {
-            model.reset(resp, {silent: true, parse: true});
+            model.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
           }
 
           // If the `withRelated` property is specified on the options hash, we dive
@@ -803,7 +802,7 @@
         if (options.require) return when.reject(new Error('EmptyResponse'));
 
         if (model instanceof Model) {
-          model.clear({silent: true});
+          model.clear({silent: true})._reset();
           return {};
         }
 
