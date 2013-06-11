@@ -612,8 +612,7 @@ Returns a deferred promise through the Bookshelf.sync.</p>
             
             <div class="content"><div class='highlight'><pre>    fetch: <span class="keyword">function</span>(options) {
       <span class="keyword">return</span> <span class="keyword">this</span>.sync(<span class="keyword">this</span>, options).first().then(<span class="keyword">function</span>(model) {
-        model._reset();
-        <span class="keyword">return</span> model;
+        <span class="keyword">return</span> model._reset();
       });
     },</pre></div></div>
             
@@ -755,9 +754,7 @@ rather than during object creation.</p>
         }
         model.trigger((method === <span class="string">'insert'</span> ? <span class="string">'created'</span> : <span class="string">'updated'</span>), model, resp, options);
         model.trigger(<span class="string">'saved'</span>, model, resp, options);
-        model._reset();
-
-        <span class="keyword">return</span> model;
+        <span class="keyword">return</span> model._reset();
       })
       .ensure(<span class="keyword">function</span>() { model.resetQuery(); });
     },</pre></div></div>
@@ -786,8 +783,7 @@ during the &quot;destroying&quot; event, the model will not be destroyed.</p>
       .then(<span class="keyword">function</span>(resp) {
         model.clear();
         model.trigger(<span class="string">'destroyed'</span>, model, resp, options);
-        model._reset();
-        <span class="keyword">return</span> resp;
+        <span class="keyword">return</span> model._reset();
       }).ensure(<span class="keyword">function</span>() {
         model.resetQuery();
       });
@@ -877,6 +873,8 @@ including any relations on the current model.</p>
       <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> relations) {
         model.relations[key] = relations[key].clone();
       }
+      model._previousAttributes = _.clone(<span class="keyword">this</span>._previousAttributes);
+      model.changed = _.clone(<span class="keyword">this</span>.changed);
       <span class="keyword">return</span> model;
     },</pre></div></div>
             
@@ -1015,6 +1013,7 @@ resets the <code>_previousAttributes</code> and <code>changed</code> hash for th
             <div class="content"><div class='highlight'><pre>    _reset: <span class="keyword">function</span>() {
       <span class="keyword">this</span>._previousAttributes = extendNull(<span class="keyword">this</span>.attributes);
       <span class="keyword">this</span>.changed = extendNull();
+      <span class="keyword">return</span> <span class="keyword">this</span>;
     },</pre></div></div>
             
         </li>
@@ -1681,7 +1680,7 @@ there is a response from the query.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = resp.length; i &lt; l; i++) {
-          models.push(<span class="keyword">new</span> relation.modelCtor(resp[i], {parse: <span class="literal">true</span>}));
+          models.push(<span class="keyword">new</span> relation.modelCtor(resp[i], {parse: <span class="literal">true</span>})._reset());
         }
 
         <span class="keyword">if</span> (options.withRelated) {
@@ -1848,7 +1847,7 @@ on the model, otherwise, we reset the collection.</p>
             model.set(model.parse(resp[<span class="number">0</span>], options), _.extend({silent: <span class="literal">true</span>}, options));
             model._previousAttributes = extendNull(model.attributes);
           } <span class="keyword">else</span> {
-            model.reset(resp, {silent: <span class="literal">true</span>, parse: <span class="literal">true</span>});
+            model.reset(resp, {silent: <span class="literal">true</span>, parse: <span class="literal">true</span>}).each(<span class="keyword">function</span>(m) { m._reset(); });
           }</pre></div></div>
             
         </li>
@@ -1894,7 +1893,7 @@ a failure if the model comes up blank.</p>
             <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (options.require) <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'EmptyResponse'</span>));
 
         <span class="keyword">if</span> (model <span class="keyword">instanceof</span> Model) {
-          model.clear({silent: <span class="literal">true</span>});
+          model.clear({silent: <span class="literal">true</span>})._reset();
           <span class="keyword">return</span> {};
         }
 
