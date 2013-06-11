@@ -777,8 +777,7 @@
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
-            model.set(model.parse(resp[0], options), _.extend({silent: true}, options));
-            model._previousAttributes = extendNull(model.attributes);
+            model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
           } else {
             model.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
           }
