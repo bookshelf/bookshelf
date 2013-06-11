@@ -363,10 +363,12 @@
     // options which can include the `type` of relation.
     // The `hasOne` and `belongsTo` relations may only "target" a `Model`.
     _relatesTo: function(Target, options) {
-      var target;
+      var target, data;
       var type = options.type;
       var multi = (type === 'hasMany' || type === 'belongsToMany');
+
       if (!multi) {
+        data = {};
         if (!Target.prototype instanceof Model) {
           throw new Error('The `'+type+'` related object must be a Bookshelf.Model');
         }
@@ -395,11 +397,12 @@
         } else {
           options.fkValue = this.id;
         }
+        if (!multi) data[options.foreignKey] = options.fkValue;
       }
 
       // Create a new instance of the `Model` or `Collection`, and set the
       // `_relation` options as a property on the instance.
-      target = new Target();
+      target = new Target(data);
       target._relation = options;
 
       // Extend the relation with relation-specific methods.
@@ -631,11 +634,14 @@
   };
 
   // Standard constraints for regular or eager loaded relations.
+  // If the model isn't an eager load or a collection, it doesn't need
+  // to be populated with the additional `where` clause, as that's already taken
+  // care of during model creation.
   var constraints = function(target, resp) {
     var relation = target._relation;
     if (resp) {
       target.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
-    } else {
+    } else if (target instanceof Collection) {
       target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
   };
