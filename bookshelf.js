@@ -93,12 +93,12 @@
     // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
-      var relation = this._relation;
-      if (relation) {
-        if (!relation.fkValue && !resp) {
-          return when.reject(new Error("The " + relation.otherKey + " must be specified."));
+      var relatedData = this._relation;
+      if (relatedData) {
+        if (!relatedData.fkValue && !resp) {
+          return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
-        if (relation.type !== 'belongsToMany') {
+        if (relatedData.type !== 'belongsToMany') {
           constraints(this, resp);
         } else {
           belongsToMany(this, resp);
@@ -577,9 +577,10 @@
 
         // Get the current relation this response matches up with, based
         // on the pendingNames array.
-        var name = this.pendingNames[i];
-        var relation = handled[name];
-        var type = relation._relation.type;
+        var name          = this.pendingNames[i];
+        var relation      = handled[name];
+        var relatedData   = relation._relation;
+        var type          = relatedData.type;
         var relatedModels = new RelatedModels(relation.models);
 
         // If the parent is a collection, we need to loop over each of the
@@ -591,7 +592,7 @@
           // Attach the appropriate related items onto the parent model.
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m  = models[i2];
-            var id = (type === 'belongsTo' ? m.get(relation._relation.otherKey) : m.id);
+            var id = (type === 'belongsTo' ? m.get(relatedData.otherKey) : m.id);
             var result = eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
@@ -599,9 +600,9 @@
           // If this is a hasOne or belongsTo, we only choose a single item from
           // the relation.
           if (type === 'hasOne' || type === 'belongsTo') {
-            parent.relations[name] = relation.models[0] || new relation._relation.modelCtor();
+            parent.relations[name] = relation.models[0] || new relatedData.modelCtor();
           } else {
-            parent.relations[name] = new relation._relation.collectionCtor(relation.models, {parse: true});
+            parent.relations[name] = new relatedData.collectionCtor(relation.models, {parse: true});
           }
         }
       }
@@ -619,17 +620,17 @@
 
   // Handles the "eager related" relationship matching.
   var eagerRelated = function(type, target, eager, id) {
-    var relation = target._relation;
+    var relatedData = target._relation;
     var where = {};
     if (type === 'hasOne' || type === 'belongsTo') {
-      where[relation.foreignKey] = id;
-      return eager.findWhere(where) || new relation.modelCtor();
+      where[relatedData.foreignKey] = id;
+      return eager.findWhere(where) || new relatedData.modelCtor();
     } else if (type === 'hasMany') {
-      where[relation.foreignKey] = id;
-      return new relation.collectionCtor(eager.where(where), {parse: true});
+      where[relatedData.foreignKey] = id;
+      return new relatedData.collectionCtor(eager.where(where), {parse: true});
     } else {
-      where['_pivot_' + relation.otherKey] = id;
-      return new relation.collectionCtor(eager.where(where), {parse: true});
+      where['_pivot_' + relatedData.otherKey] = id;
+      return new relatedData.collectionCtor(eager.where(where), {parse: true});
     }
   };
 
@@ -638,26 +639,26 @@
   // to be populated with the additional `where` clause, as that's already taken
   // care of during model creation.
   var constraints = function(target, resp) {
-    var relation = target._relation;
+    var relatedData = target._relation;
     if (resp) {
-      target.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
+      target.query('whereIn', relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
     } else if (target instanceof Collection) {
-      target.query('where', relation.foreignKey, '=', relation.fkValue);
+      target.query('where', relatedData.foreignKey, '=', relatedData.fkValue);
     }
   };
 
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(target, resp) {
     var
-    relation      = target._relation,
-    columns       = relation.columns || (relation.columns = []),
+    relatedData   = target._relation,
+    columns       = relatedData.columns || (relatedData.columns = []),
     builder       = target.query(),
     tableName     = _.result(target, 'tableName'),
 
-    otherKey      = relation.otherKey,
-    foreignKey    = relation.foreignKey,
-    pivotColumns  = relation.pivotColumns,
-    joinTableName = relation.joinTableName;
+    otherKey      = relatedData.otherKey,
+    foreignKey    = relatedData.foreignKey,
+    pivotColumns  = relatedData.pivotColumns,
+    joinTableName = relatedData.joinTableName;
 
     if (builder.columns.length === 0 && columns.length === 0) {
       columns.push(tableName + '.*');
@@ -673,9 +674,9 @@
     builder.join(joinTableName, tableName + '.' + _.result(target, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
 
     if (resp) {
-      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relation.parentIdAttr));
+      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
     } else {
-      builder.where(joinTableName + '.' + otherKey, '=', relation.fkValue);
+      builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
     }
   };
 
@@ -686,10 +687,10 @@
   var eagerFetch = function(related, options) {
 
     var models   = related.models = [];
-    var relation = related._relation;
+    var relatedData = related._relation;
 
-    return when(related._addConstraints(relation.parentResponse)).then(function() {
-      return related.query().select(relation.columns);
+    return when(related._addConstraints(relatedData.parentResponse)).then(function() {
+      return related.query().select(relatedData.columns);
     })
     .then(function(resp) {
 
@@ -699,11 +700,11 @@
 
         // We can just push the models onto the collection, rather than resetting.
         for (var i = 0, l = resp.length; i < l; i++) {
-          models.push(new relation.modelCtor(resp[i], {parse: true})._reset());
+          models.push(new relatedData.modelCtor(resp[i], {parse: true})._reset());
         }
 
         if (options.withRelated) {
-          var model = new relation.modelCtor();
+          var model = new relatedData.modelCtor();
           return new EagerRelation(related, model, resp).processRelated(options);
         }
       }
@@ -760,14 +761,15 @@
       var sync = this;
       var options = sync.options;
       var model = this.model;
+      var relatedData = model._relation;
 
       return when(model._addConstraints()).then(function() {
         var columns = options.columns;
 
         if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
 
-        if (model._relation && model._relation.columns) {
-          columns = model._relation.columns;
+        if (relatedData && relatedData.columns) {
+          columns = relatedData.columns;
         }
 
         return model.triggerThen('fetching', model, columns, options).then(function() {
@@ -891,15 +893,15 @@
     // output to the model attributes.
     withPivot: function(columns) {
       if (!_.isArray(columns)) columns = columns ? [columns] : [];
-      var relation = this._relation;
-      relation.pivotColumns || (relation.pivotColumns = []);
+      var relatedData = this._relation;
+      relatedData.pivotColumns || (relatedData.pivotColumns = []);
       for (var i = 0, l = columns.length; i < l; i++) {
         var column = columns[i];
         if (_.isString(column)) {
-          relation.pivotColumns.push(relation.joinTableName + '.' + column + ' as pivot_' + column);
+          relatedData.pivotColumns.push(relatedData.joinTableName + '.' + column + ' as pivot_' + column);
         } else {
           for (var key in column) {
-            relation.pivotColumns.push(relation.joinTableName + '.' + key + ' as ' + column[key]);
+            relatedData.pivotColumns.push(relatedData.joinTableName + '.' + key + ' as ' + column[key]);
           }
         }
       }
@@ -923,22 +925,22 @@
     // returning a promise.
     _processPivot: function(method, item, options) {
       var data = {};
-      var pivot = this._relation;
-      data[pivot.otherKey] = pivot.fkValue;
+      var relatedData = this._relation;
+      data[relatedData.otherKey] = relatedData.fkValue;
 
       // If the item is an object, it's either a model
       // that we're looking to attach to this model, or
       // a hash of attributes to set in the relation.
       if (_.isObject(item)) {
         if (item instanceof Model) {
-          data[pivot.foreignKey] = item.id;
+          data[relatedData.foreignKey] = item.id;
         } else {
           _.extend(data, item);
         }
       } else if (item) {
-        data[pivot.foreignKey] = item;
+        data[relatedData.foreignKey] = item;
       }
-      var builder = this.builder(pivot.joinTableName);
+      var builder = this.builder(relatedData.joinTableName);
       if (options && options.transacting) {
         builder.transacting(options.transacting);
       }
