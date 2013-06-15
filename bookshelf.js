@@ -540,7 +540,7 @@
         delete target['_isEager'];
 
         // Set the parent's response, for purposes of setting query constraints.
-        relation.relatedData.parentResponse = this.parentResponse;
+        relation.relatedData.eager.parentResponse = this.parentResponse;
 
         if (!relation) {
           throw new Error(name + ' is not defined on the model.');
@@ -690,7 +690,7 @@
     var models   = related.models = [];
     var relatedData = related.relatedData;
 
-    return when(related._addConstraints(relatedData.parentResponse)).then(function() {
+    return when(related._addConstraints(relatedData.eager.parentResponse)).then(function() {
       return related.query().select(relatedData.columns);
     })
     .then(function(resp) {
