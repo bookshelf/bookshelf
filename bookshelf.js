@@ -93,7 +93,7 @@
     // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
     _addConstraints: function(resp) {
-      var relatedData = this._relation;
+      var relatedData = this.relatedData;
       if (relatedData) {
         if (!relatedData.fkValue && !resp) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
@@ -401,9 +401,9 @@
       }
 
       // Create a new instance of the `Model` or `Collection`, and set the
-      // `_relation` options as a property on the instance.
+      // `relatedData` options as a property on the instance.
       target = new Target(data);
-      target._relation = options;
+      target.relatedData = options;
 
       // Extend the relation with relation-specific methods.
       if (type === 'belongsToMany') {
@@ -533,13 +533,13 @@
         // Only allow one of a certain nested type per-level.
         if (handled[name]) continue;
 
-        // Internal flag to determine whether to set the ctor(s) on the _relation hash.
+        // Internal flag to determine whether to set the ctor(s) on the relatedData hash.
         target._isEager = true;
         relation = target[name]();
         delete target['_isEager'];
 
         // Set the parent's response, for purposes of setting query constraints.
-        relation._relation.parentResponse = this.parentResponse;
+        relation.relatedData.parentResponse = this.parentResponse;
 
         if (!relation) {
           throw new Error(name + ' is not defined on the model.');
@@ -579,7 +579,7 @@
         // on the pendingNames array.
         var name          = this.pendingNames[i];
         var relation      = handled[name];
-        var relatedData   = relation._relation;
+        var relatedData   = relation.relatedData;
         var type          = relatedData.type;
         var relatedModels = new RelatedModels(relation.models);
 
@@ -620,7 +620,7 @@
 
   // Handles the "eager related" relationship matching.
   var eagerRelated = function(type, target, eager, id) {
-    var relatedData = target._relation;
+    var relatedData = target.relatedData;
     var where = {};
     if (type === 'hasOne' || type === 'belongsTo') {
       where[relatedData.foreignKey] = id;
@@ -639,7 +639,7 @@
   // to be populated with the additional `where` clause, as that's already taken
   // care of during model creation.
   var constraints = function(target, resp) {
-    var relatedData = target._relation;
+    var relatedData = target.relatedData;
     if (resp) {
       target.query('whereIn', relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
     } else if (target instanceof Collection) {
@@ -650,7 +650,7 @@
   // Helper function for adding the constraints needed on a eager load.
   var belongsToMany = function(target, resp) {
     var
-    relatedData   = target._relation,
+    relatedData   = target.relatedData,
     columns       = relatedData.columns || (relatedData.columns = []),
     builder       = target.query(),
     tableName     = _.result(target, 'tableName'),
@@ -687,7 +687,7 @@
   var eagerFetch = function(related, options) {
 
     var models   = related.models = [];
-    var relatedData = related._relation;
+    var relatedData = related.relatedData;
 
     return when(related._addConstraints(relatedData.parentResponse)).then(function() {
       return related.query().select(relatedData.columns);
@@ -761,7 +761,7 @@
       var sync = this;
       var options = sync.options;
       var model = this.model;
-      var relatedData = model._relation;
+      var relatedData = model.relatedData;
 
       return when(model._addConstraints()).then(function() {
         var columns = options.columns;
@@ -893,7 +893,7 @@
     // output to the model attributes.
     withPivot: function(columns) {
       if (!_.isArray(columns)) columns = columns ? [columns] : [];
-      var relatedData = this._relation;
+      var relatedData = this.relatedData;
       relatedData.pivotColumns || (relatedData.pivotColumns = []);
       for (var i = 0, l = columns.length; i < l; i++) {
         var column = columns[i];
@@ -925,7 +925,7 @@
     // returning a promise.
     _processPivot: function(method, item, options) {
       var data = {};
-      var relatedData = this._relation;
+      var relatedData = this.relatedData;
       data[relatedData.otherKey] = relatedData.fkValue;
 
       // If the item is an object, it's either a model
