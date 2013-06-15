@@ -82,7 +82,9 @@
       var model = this;
       return new EagerRelation(this, target, data)
         .processRelated(options)
-        .yield(model);
+        .then(function() {
+          return model;
+        });
     },
 
     // Creates and returns a new `Bookshelf.Sync` instance.
@@ -686,7 +688,6 @@
   // fetches the nested related items, and returns a deferred object,
   // with the cumulative handling of multiple (potentially nested) relations.
   var eagerFetch = function(related, options) {
-
     var models   = related.models = [];
     var relatedData = related.relatedData;
 
@@ -797,7 +798,9 @@
             var target = (model instanceof Collection ? new model.model() : model);
             return new EagerRelation(model, target, resp)
               .processRelated(options)
-              .yield(resp);
+              .then(function() {
+                return resp;
+              });
           }
 
           return resp;
