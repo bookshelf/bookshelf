@@ -1640,17 +1640,32 @@ module.exports = {
       mysql: {
         uid: 1,
         username: 'root',
-        roles: []
+        roles: [{
+          rid: 1,
+          name: 'admin',
+          _pivot_uid: 1,
+          _pivot_rid: 1
+        }]
       },
       postgres: {
         uid: 1,
         username: 'root',
-        roles: []
+        roles: [{
+          rid: 1,
+          name: 'admin',
+          _pivot_uid: 1,
+          _pivot_rid: 1
+        }]
       },
       sqlite3: {
         uid: 1,
         username: 'root',
-        roles: []
+        roles: [{
+          rid: 1,
+          name: 'admin',
+          _pivot_uid: 1,
+          _pivot_rid: 1
+        }]
       }
     }
   }

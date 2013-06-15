@@ -652,9 +652,7 @@
     relation      = target._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = target.query(),
-
     tableName     = _.result(target, 'tableName'),
-    idAttribute   = _.result(target, 'idAttribute'),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -672,10 +670,10 @@
 
     if (pivotColumns) push.apply(columns, pivotColumns);
 
-    builder.join(joinTableName, tableName + '.' + idAttribute, '=', joinTableName + '.' + foreignKey);
+    builder.join(joinTableName, tableName + '.' + _.result(target, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
 
     if (resp) {
-      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, idAttribute));
+      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relation.parentIdAttr));
     } else {
       builder.where(joinTableName + '.' + otherKey, '=', relation.fkValue);
     }
