@@ -17,7 +17,7 @@ module.exports = function(Bookshelf, type) {
         })
         .then(function() {
           ok();
-        });
+        }, ok);
     });
 
     describe('Bookshelf.Model - ' + type, function() {
