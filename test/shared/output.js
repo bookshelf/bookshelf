@@ -427,29 +427,53 @@ module.exports = {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
-        admins: []
+        meta: {
+          id: 1,
+          site_id: 1,
+          description: 'This is a description for the Knexjs Site'
+        }
       },{
         id: 2,
         name: 'bookshelfjs.org',
-        admins: []
+        meta: {
+          id: 2,
+          site_id: 2,
+          description: 'This is a description for the Bookshelfjs Site'
+        }
       }],
       postgres: [{
         id: 1,
         name: 'knexjs.org',
-        admins: []
+        meta: {
+          id: 1,
+          site_id: 1,
+          description: 'This is a description for the Knexjs Site'
+        }
       },{
         id: 2,
         name: 'bookshelfjs.org',
-        admins: []
+        meta: {
+          id: 2,
+          site_id: 2,
+          description: 'This is a description for the Bookshelfjs Site'
+        }
       }],
       sqlite3: [{
         id: 1,
         name: 'knexjs.org',
-        admins: []
+        meta: {
+          id: 1,
+          site_id: 1,
+          description: 'This is a description for the Knexjs Site'
+        }
       },{
         id: 2,
         name: 'bookshelfjs.org',
-        admins: []
+        meta: {
+          id: 2,
+          site_id: 2,
+          description: 'This is a description for the Bookshelfjs Site'
+        }
       }]
     },
     'relations.10 - eager loads "belongsTo" models correctly': {

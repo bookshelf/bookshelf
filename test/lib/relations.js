@@ -111,7 +111,7 @@ module.exports = function(Bookshelf, handler) {
 
       it('eager loads "hasOne" models correctly', function(ok) {
         new Sites().fetch({
-          withRelated: ['admins']
+          withRelated: ['meta']
         }).then(handler(this, ok), ok);
       });
 
@@ -217,9 +217,13 @@ module.exports = function(Bookshelf, handler) {
           .then(function(resp) {
             return When.all([
               new Site({id: 1}).admins().detach().then(function(c) {
+                return c.fetch();
+              }).then(function(c) {
                 equal(c.length, 0);
               }),
               new Site({id: 2}).admins().detach().then(function(c) {
+                return c.fetch();
+              }).then(function(c) {
                 equal(c.length, 0);
               })
             ]).then(function() {
