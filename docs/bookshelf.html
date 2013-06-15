@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.1.6
+              <pre><code>Bookshelf.js 0.1.7
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -128,7 +128,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.6'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.7'</span>;</pre></div></div>
             
         </li>
         
@@ -269,7 +269,9 @@ each time a query is run.</p>
       <span class="keyword">var</span> model = <span class="keyword">this</span>;
       <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(<span class="keyword">this</span>, target, data)
         .processRelated(options)
-        .<span class="keyword">yield</span>(model);
+        .then(<span class="keyword">function</span>() {
+          <span class="keyword">return</span> model;
+        });
     },</pre></div></div>
             
         </li>
@@ -304,12 +306,12 @@ each time a query is run.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    _addConstraints: <span class="keyword">function</span>(resp) {
-      <span class="keyword">var</span> relation = <span class="keyword">this</span>._relation;
-      <span class="keyword">if</span> (relation) {
-        <span class="keyword">if</span> (!relation.fkValue &amp;&amp; !resp) {
-          <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">"The "</span> + relation.otherKey + <span class="string">" must be specified."</span>));
+      <span class="keyword">var</span> relatedData = <span class="keyword">this</span>.relatedData;
+      <span class="keyword">if</span> (relatedData) {
+        <span class="keyword">if</span> (!relatedData.fkValue &amp;&amp; !resp) {
+          <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">"The "</span> + relatedData.otherKey + <span class="string">" must be specified."</span>));
         }
-        <span class="keyword">if</span> (relation.type !== <span class="string">'belongsToMany'</span>) {
+        <span class="keyword">if</span> (relatedData.type !== <span class="string">'belongsToMany'</span>) {
           constraints(<span class="keyword">this</span>, resp);
         } <span class="keyword">else</span> {
           belongsToMany(<span class="keyword">this</span>, resp);
@@ -928,11 +930,12 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
             </div>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (<span class="keyword">this</span>._isEager) {
+        options.eager = {};
         <span class="keyword">if</span> (multi) {
-          options.modelCtor = Target.prototype.model;
-          options.collectionCtor = Target;
+          options.eager.ModelCtor = Target.prototype.model;
+          options.eager.CollectionCtor = Target;
         } <span class="keyword">else</span> {
-          options.modelCtor = Target;
+          options.eager.ModelCtor = Target;
         }
         options.parentIdAttr = (type === <span class="string">'belongsTo'</span> ? options.otherKey : _.result(<span class="keyword">this</span>, <span class="string">'idAttribute'</span>));
       } <span class="keyword">else</span> {
@@ -954,12 +957,12 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
                 <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
               <p>Create a new instance of the <code>Model</code> or <code>Collection</code>, and set the
-<code>_relation</code> options as a property on the instance.</p>
+<code>relatedData</code> options as a property on the instance.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>      target = <span class="keyword">new</span> Target(data);
-      target._relation = options;</pre></div></div>
+      target.relatedData = options;</pre></div></div>
             
         </li>
         
@@ -1322,7 +1325,7 @@ which indicates a nested eager load.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
-              <p>Internal flag to determine whether to set the ctor(s) on the _relation hash.</p>
+              <p>Internal flag to determine whether to set the ctor(s) on the relatedData hash.</p>
 
             </div>
             
@@ -1343,7 +1346,7 @@ which indicates a nested eager load.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        relation._relation.parentResponse = <span class="keyword">this</span>.parentResponse;
+            <div class="content"><div class='highlight'><pre>        relation.relatedData.eager.parentResponse = <span class="keyword">this</span>.parentResponse;
 
         <span class="keyword">if</span> (!relation) {
           <span class="keyword">throw</span> <span class="keyword">new</span> Error(name + <span class="string">' is not defined on the model.'</span>);
@@ -1441,10 +1444,10 @@ on the pendingNames array.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> name = <span class="keyword">this</span>.pendingNames[i];
-        <span class="keyword">var</span> relation = handled[name];
-        <span class="keyword">var</span> type = relation._relation.type;
-        <span class="keyword">var</span> relatedModels = <span class="keyword">new</span> RelatedModels(relation.models);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> name          = <span class="keyword">this</span>.pendingNames[i];
+        <span class="keyword">var</span> relation      = handled[name];
+        <span class="keyword">var</span> relatedData   = relation.relatedData;
+        <span class="keyword">var</span> type          = relatedData.type;</pre></div></div>
             
         </li>
         
@@ -1462,6 +1465,7 @@ fetched eagerly. We will re-use the same models for each association level.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (parent <span class="keyword">instanceof</span> Collection) {
+          <span class="keyword">var</span> relatedModels = <span class="keyword">new</span> RelatedModels(relation.models);
           <span class="keyword">var</span> models = parent.models;</pre></div></div>
             
         </li>
@@ -1479,7 +1483,7 @@ fetched eagerly. We will re-use the same models for each association level.</p>
             
             <div class="content"><div class='highlight'><pre>          <span class="keyword">for</span> (<span class="keyword">var</span> i2 = <span class="number">0</span>, l2 = models.length; i2 &lt; l2; i2++) {
             <span class="keyword">var</span> m  = models[i2];
-            <span class="keyword">var</span> id = (type === <span class="string">'belongsTo'</span> ? m.get(relation._relation.otherKey) : m.id);
+            <span class="keyword">var</span> id = (type === <span class="string">'belongsTo'</span> ? m.get(relatedData.otherKey) : m.id);
             <span class="keyword">var</span> result = eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
@@ -1500,9 +1504,9 @@ the relation.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> (type === <span class="string">'hasOne'</span> || type === <span class="string">'belongsTo'</span>) {
-            parent.relations[name] = relation.models[<span class="number">0</span>] || <span class="keyword">new</span> relation._relation.modelCtor();
+            parent.relations[name] = relation.models[<span class="number">0</span>] || <span class="keyword">new</span> relatedData.eager.ModelCtor();
           } <span class="keyword">else</span> {
-            parent.relations[name] = <span class="keyword">new</span> relation._relation.collectionCtor(relation.models, {parse: <span class="literal">true</span>});
+            parent.relations[name] = <span class="keyword">new</span> relatedData.eager.CollectionCtor(relation.models, {parse: <span class="literal">true</span>});
           }
         }
       }
@@ -1544,17 +1548,17 @@ the relation.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> eagerRelated = <span class="keyword">function</span>(type, target, eager, id) {
-    <span class="keyword">var</span> relation = target._relation;
+    <span class="keyword">var</span> relatedData = target.relatedData;
     <span class="keyword">var</span> where = {};
     <span class="keyword">if</span> (type === <span class="string">'hasOne'</span> || type === <span class="string">'belongsTo'</span>) {
-      where[relation.foreignKey] = id;
-      <span class="keyword">return</span> eager.findWhere(where) || <span class="keyword">new</span> relation.modelCtor();
+      where[relatedData.foreignKey] = id;
+      <span class="keyword">return</span> eager.findWhere(where) || <span class="keyword">new</span> relatedData.eager.ModelCtor();
     } <span class="keyword">else</span> <span class="keyword">if</span> (type === <span class="string">'hasMany'</span>) {
-      where[relation.foreignKey] = id;
-      <span class="keyword">return</span> <span class="keyword">new</span> relation.collectionCtor(eager.where(where), {parse: <span class="literal">true</span>});
+      where[relatedData.foreignKey] = id;
+      <span class="keyword">return</span> <span class="keyword">new</span> relatedData.eager.CollectionCtor(eager.where(where), {parse: <span class="literal">true</span>});
     } <span class="keyword">else</span> {
-      where[<span class="string">'_pivot_'</span> + relation.otherKey] = id;
-      <span class="keyword">return</span> <span class="keyword">new</span> relation.collectionCtor(eager.where(where), {parse: <span class="literal">true</span>});
+      where[<span class="string">'_pivot_'</span> + relatedData.otherKey] = id;
+      <span class="keyword">return</span> <span class="keyword">new</span> relatedData.eager.CollectionCtor(eager.where(where), {parse: <span class="literal">true</span>});
     }
   };</pre></div></div>
             
@@ -1575,11 +1579,11 @@ care of during model creation.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> constraints = <span class="keyword">function</span>(target, resp) {
-    <span class="keyword">var</span> relation = target._relation;
+    <span class="keyword">var</span> relatedData = target.relatedData;
     <span class="keyword">if</span> (resp) {
-      target.query(<span class="string">'whereIn'</span>, relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
+      target.query(<span class="string">'whereIn'</span>, relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
     } <span class="keyword">else</span> <span class="keyword">if</span> (target <span class="keyword">instanceof</span> Collection) {
-      target.query(<span class="string">'where'</span>, relation.foreignKey, <span class="string">'='</span>, relation.fkValue);
+      target.query(<span class="string">'where'</span>, relatedData.foreignKey, <span class="string">'='</span>, relatedData.fkValue);
     }
   };</pre></div></div>
             
@@ -1598,15 +1602,15 @@ care of during model creation.</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> belongsToMany = <span class="keyword">function</span>(target, resp) {
     <span class="keyword">var</span>
-    relation      = target._relation,
-    columns       = relation.columns || (relation.columns = []),
+    relatedData   = target.relatedData,
+    columns       = relatedData.columns || (relatedData.columns = []),
     builder       = target.query(),
     tableName     = _.result(target, <span class="string">'tableName'</span>),
 
-    otherKey      = relation.otherKey,
-    foreignKey    = relation.foreignKey,
-    pivotColumns  = relation.pivotColumns,
-    joinTableName = relation.joinTableName;
+    otherKey      = relatedData.otherKey,
+    foreignKey    = relatedData.foreignKey,
+    pivotColumns  = relatedData.pivotColumns,
+    joinTableName = relatedData.joinTableName;
 
     <span class="keyword">if</span> (builder.columns.length === <span class="number">0</span> &amp;&amp; columns.length === <span class="number">0</span>) {
       columns.push(tableName + <span class="string">'.*'</span>);
@@ -1622,9 +1626,9 @@ care of during model creation.</p>
     builder.join(joinTableName, tableName + <span class="string">'.'</span> + _.result(target, <span class="string">'idAttribute'</span>), <span class="string">'='</span>, joinTableName + <span class="string">'.'</span> + foreignKey);
 
     <span class="keyword">if</span> (resp) {
-      builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, relation.parentIdAttr));
+      builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, relatedData.parentIdAttr));
     } <span class="keyword">else</span> {
-      builder.where(joinTableName + <span class="string">'.'</span> + otherKey, <span class="string">'='</span>, relation.fkValue);
+      builder.where(joinTableName + <span class="string">'.'</span> + otherKey, <span class="string">'='</span>, relatedData.fkValue);
     }
   };</pre></div></div>
             
@@ -1645,12 +1649,11 @@ with the cumulative handling of multiple (potentially nested) relations.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> eagerFetch = <span class="keyword">function</span>(related, options) {
-
     <span class="keyword">var</span> models   = related.models = [];
-    <span class="keyword">var</span> relation = related._relation;
+    <span class="keyword">var</span> relatedData = related.relatedData;
 
-    <span class="keyword">return</span> when(related._addConstraints(relation.parentResponse)).then(<span class="keyword">function</span>() {
-      <span class="keyword">return</span> related.query().select(relation.columns);
+    <span class="keyword">return</span> when(related._addConstraints(relatedData.eager.parentResponse)).then(<span class="keyword">function</span>() {
+      <span class="keyword">return</span> related.query().select(relatedData.columns);
     })
     .then(<span class="keyword">function</span>(resp) {</pre></div></div>
             
@@ -1684,11 +1687,11 @@ there is a response from the query.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = resp.length; i &lt; l; i++) {
-          models.push(<span class="keyword">new</span> relation.modelCtor(resp[i], {parse: <span class="literal">true</span>})._reset());
+          models.push(<span class="keyword">new</span> relatedData.eager.ModelCtor(resp[i], {parse: <span class="literal">true</span>})._reset());
         }
 
         <span class="keyword">if</span> (options.withRelated) {
-          <span class="keyword">var</span> model = <span class="keyword">new</span> relation.modelCtor();
+          <span class="keyword">var</span> model = <span class="keyword">new</span> relatedData.eager.ModelCtor();
           <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(related, model, resp).processRelated(options);
         }
       }
@@ -1815,14 +1818,15 @@ options will be called - used by both models &amp; collections.</p>
       <span class="keyword">var</span> sync = <span class="keyword">this</span>;
       <span class="keyword">var</span> options = sync.options;
       <span class="keyword">var</span> model = <span class="keyword">this</span>.model;
+      <span class="keyword">var</span> relatedData = model.relatedData;
 
       <span class="keyword">return</span> when(model._addConstraints()).then(<span class="keyword">function</span>() {
         <span class="keyword">var</span> columns = options.columns;
 
         <span class="keyword">if</span> (!_.isArray(columns)) columns = columns ? [columns] : [<span class="string">'*'</span>];
 
-        <span class="keyword">if</span> (model._relation &amp;&amp; model._relation.columns) {
-          columns = model._relation.columns;
+        <span class="keyword">if</span> (relatedData &amp;&amp; relatedData.columns) {
+          columns = relatedData.columns;
         }
 
         <span class="keyword">return</span> model.triggerThen(<span class="string">'fetching'</span>, model, columns, options).then(<span class="keyword">function</span>() {
@@ -1873,7 +1877,9 @@ Once the <code>EagerRelation</code> is complete, we return the original response
             <span class="keyword">var</span> target = (model <span class="keyword">instanceof</span> Collection ? <span class="keyword">new</span> model.model() : model);
             <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(model, target, resp)
               .processRelated(options)
-              .<span class="keyword">yield</span>(resp);
+              .then(<span class="keyword">function</span>() {
+                <span class="keyword">return</span> resp;
+              });
           }
 
           <span class="keyword">return</span> resp;
@@ -2076,15 +2082,15 @@ output to the model attributes.</p>
             
             <div class="content"><div class='highlight'><pre>    withPivot: <span class="keyword">function</span>(columns) {
       <span class="keyword">if</span> (!_.isArray(columns)) columns = columns ? [columns] : [];
-      <span class="keyword">var</span> relation = <span class="keyword">this</span>._relation;
-      relation.pivotColumns || (relation.pivotColumns = []);
+      <span class="keyword">var</span> relatedData = <span class="keyword">this</span>.relatedData;
+      relatedData.pivotColumns || (relatedData.pivotColumns = []);
       <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = columns.length; i &lt; l; i++) {
         <span class="keyword">var</span> column = columns[i];
         <span class="keyword">if</span> (_.isString(column)) {
-          relation.pivotColumns.push(relation.joinTableName + <span class="string">'.'</span> + column + <span class="string">' as pivot_'</span> + column);
+          relatedData.pivotColumns.push(relatedData.joinTableName + <span class="string">'.'</span> + column + <span class="string">' as pivot_'</span> + column);
         } <span class="keyword">else</span> {
           <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> column) {
-            relation.pivotColumns.push(relation.joinTableName + <span class="string">'.'</span> + key + <span class="string">' as '</span> + column[key]);
+            relatedData.pivotColumns.push(relatedData.joinTableName + <span class="string">'.'</span> + key + <span class="string">' as '</span> + column[key]);
           }
         }
       }
@@ -2106,13 +2112,19 @@ the <code>belongsToMany</code> relationship.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    _handler: <span class="keyword">function</span>(method, ids, options) {
-      <span class="keyword">if</span> (ids == <span class="keyword">void</span> <span class="number">0</span> &amp;&amp; method === <span class="string">'insert'</span>) <span class="keyword">return</span> when.resolve();
-      <span class="keyword">if</span> (!_.isArray(ids)) ids = ids ? [ids] : [];
       <span class="keyword">var</span> pending = [];
+      <span class="keyword">if</span> (ids == <span class="keyword">void</span> <span class="number">0</span>) {
+        <span class="keyword">if</span> (method === <span class="string">'insert'</span>) <span class="keyword">return</span> when.resolve(<span class="keyword">this</span>);
+        <span class="keyword">if</span> (method === <span class="string">'delete'</span>) pending.push(<span class="keyword">this</span>._processPivot(method, <span class="literal">null</span>, options));
+      }
+      <span class="keyword">if</span> (!_.isArray(ids)) ids = ids ? [ids] : [];
       <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = ids.length; i &lt; l; i++) {
         pending.push(<span class="keyword">this</span>._processPivot(method, ids[i], options));
       }
-      <span class="keyword">return</span> when.all(pending);
+      <span class="keyword">var</span> collection = <span class="keyword">this</span>;
+      <span class="keyword">return</span> when.all(pending).then(<span class="keyword">function</span>() {
+        <span class="keyword">return</span> collection;
+      });
     },</pre></div></div>
             
         </li>
@@ -2132,8 +2144,8 @@ returning a promise.</p>
             
             <div class="content"><div class='highlight'><pre>    _processPivot: <span class="keyword">function</span>(method, item, options) {
       <span class="keyword">var</span> data = {};
-      <span class="keyword">var</span> pivot = <span class="keyword">this</span>._relation;
-      data[pivot.otherKey] = pivot.fkValue;</pre></div></div>
+      <span class="keyword">var</span> relatedData = <span class="keyword">this</span>.relatedData;
+      data[relatedData.otherKey] = relatedData.fkValue;</pre></div></div>
             
         </li>
         
@@ -2152,19 +2164,22 @@ a hash of attributes to set in the relation.</p>
             
             <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (_.isObject(item)) {
         <span class="keyword">if</span> (item <span class="keyword">instanceof</span> Model) {
-          data[pivot.foreignKey] = item.id;
+          data[relatedData.foreignKey] = item.id;
         } <span class="keyword">else</span> {
           _.extend(data, item);
         }
       } <span class="keyword">else</span> <span class="keyword">if</span> (item) {
-        data[pivot.foreignKey] = item;
+        data[relatedData.foreignKey] = item;
       }
-      <span class="keyword">var</span> builder = <span class="keyword">this</span>.builder(pivot.joinTableName);
+      <span class="keyword">var</span> builder = <span class="keyword">this</span>.builder(relatedData.joinTableName);
       <span class="keyword">if</span> (options &amp;&amp; options.transacting) {
         builder.transacting(options.transacting);
       }
       <span class="keyword">if</span> (method === <span class="string">'delete'</span>) <span class="keyword">return</span> builder.where(data).del();
-      <span class="keyword">return</span> builder.insert(data);
+      <span class="keyword">var</span> collection = <span class="keyword">this</span>;
+      <span class="keyword">return</span> builder.insert(data).then(<span class="keyword">function</span>() {
+        <span class="keyword">return</span> collection;
+      });
     }
 
   };</pre></div></div>
