@@ -42,10 +42,10 @@ module.exports = function(Bookshelf, type) {
 
 var handler = function(instance, section) {
   var item = 1;
-  return function(resolver, isAll) {
+  return function(test, resolver, isAll) {
     var fn = function(data) {
       data = JSON.parse(JSON.stringify(data));
-      var label = '' + section + '.' + item;
+      var label = '' + section + '.' + item + ' - ' + test.test.title;
       if (dev) {
         if (_.isArray(data)) data = _.map(data, omitDates);
         out['db'] = out['db'] || {};

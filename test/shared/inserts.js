@@ -136,8 +136,16 @@ module.exports = function(Bookshelf) {
       name: '(blank)',
       email: 'test@example.com',
       comment: 'this is neat.'
-    }])
+    }]),
 
-  ]);
+    Knex('users').idAttribute('uid').insert({uid: 1, username: 'root'}),
+
+    Knex('roles').idAttribute('rid').insert({rid: 1, name: 'admin'}),
+
+    Knex('users_roles').idAttribute(null).insert({uid: 1, rid: 1})
+
+  ]).then(null, function(e) {
+    console.log(e.stack);
+  });
 
 };

@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.5
+//     Bookshelf.js 0.1.6
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.5';
+  Bookshelf.VERSION = '0.1.6';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -363,10 +363,12 @@
     // options which can include the `type` of relation.
     // The `hasOne` and `belongsTo` relations may only "target" a `Model`.
     _relatesTo: function(Target, options) {
-      var target;
+      var target, data;
       var type = options.type;
       var multi = (type === 'hasMany' || type === 'belongsToMany');
+
       if (!multi) {
+        data = {};
         if (!Target.prototype instanceof Model) {
           throw new Error('The `'+type+'` related object must be a Bookshelf.Model');
         }
@@ -395,11 +397,12 @@
         } else {
           options.fkValue = this.id;
         }
+        if (!multi) data[options.foreignKey] = options.fkValue;
       }
 
       // Create a new instance of the `Model` or `Collection`, and set the
       // `_relation` options as a property on the instance.
-      target = new Target();
+      target = new Target(data);
       target._relation = options;
 
       // Extend the relation with relation-specific methods.
@@ -631,11 +634,14 @@
   };
 
   // Standard constraints for regular or eager loaded relations.
+  // If the model isn't an eager load or a collection, it doesn't need
+  // to be populated with the additional `where` clause, as that's already taken
+  // care of during model creation.
   var constraints = function(target, resp) {
     var relation = target._relation;
     if (resp) {
       target.query('whereIn', relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
-    } else {
+    } else if (target instanceof Collection) {
       target.query('where', relation.foreignKey, '=', relation.fkValue);
     }
   };
@@ -646,9 +652,7 @@
     relation      = target._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = target.query(),
-
     tableName     = _.result(target, 'tableName'),
-    idAttribute   = _.result(target, 'idAttribute'),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -666,10 +670,10 @@
 
     if (pivotColumns) push.apply(columns, pivotColumns);
 
-    builder.join(joinTableName, tableName + '.' + idAttribute, '=', joinTableName + '.' + foreignKey);
+    builder.join(joinTableName, tableName + '.' + _.result(target, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
 
     if (resp) {
-      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, idAttribute));
+      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relation.parentIdAttr));
     } else {
       builder.where(joinTableName + '.' + otherKey, '=', relation.fkValue);
     }
@@ -777,8 +781,7 @@
           // If this is a model fetch, then we set the parsed attributes
           // on the model, otherwise, we reset the collection.
           if (model instanceof Model) {
-            model.set(model.parse(resp[0], options), _.extend({silent: true}, options));
-            model._previousAttributes = extendNull(model.attributes);
+            model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
           } else {
             model.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
           }

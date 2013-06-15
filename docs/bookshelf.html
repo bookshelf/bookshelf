@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.1.4
+              <pre><code>Bookshelf.js 0.1.6
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -128,7 +128,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.4'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.6'</span>;</pre></div></div>
             
         </li>
         
@@ -895,10 +895,12 @@ The <code>hasOne</code> and <code>belongsTo</code> relations may only &quot;targ
             </div>
             
             <div class="content"><div class='highlight'><pre>    _relatesTo: <span class="keyword">function</span>(Target, options) {
-      <span class="keyword">var</span> target;
+      <span class="keyword">var</span> target, data;
       <span class="keyword">var</span> type = options.type;
       <span class="keyword">var</span> multi = (type === <span class="string">'hasMany'</span> || type === <span class="string">'belongsToMany'</span>);
+
       <span class="keyword">if</span> (!multi) {
+        data = {};
         <span class="keyword">if</span> (!Target.prototype <span class="keyword">instanceof</span> Model) {
           <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'The `'</span>+type+<span class="string">'` related object must be a Bookshelf.Model'</span>);
         }
@@ -939,6 +941,7 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
         } <span class="keyword">else</span> {
           options.fkValue = <span class="keyword">this</span>.id;
         }
+        <span class="keyword">if</span> (!multi) data[options.foreignKey] = options.fkValue;
       }</pre></div></div>
             
         </li>
@@ -955,7 +958,7 @@ Otherwise, just grab the <code>foreignKey</code> value for building the query.</
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      target = <span class="keyword">new</span> Target();
+            <div class="content"><div class='highlight'><pre>      target = <span class="keyword">new</span> Target(data);
       target._relation = options;</pre></div></div>
             
         </li>
@@ -1564,7 +1567,10 @@ the relation.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
-              <p>Standard constraints for regular or eager loaded relations.</p>
+              <p>Standard constraints for regular or eager loaded relations.
+If the model isn&#39;t an eager load or a collection, it doesn&#39;t need
+to be populated with the additional <code>where</code> clause, as that&#39;s already taken
+care of during model creation.</p>
 
             </div>
             
@@ -1572,7 +1578,7 @@ the relation.</p>
     <span class="keyword">var</span> relation = target._relation;
     <span class="keyword">if</span> (resp) {
       target.query(<span class="string">'whereIn'</span>, relation.foreignKey, _.uniq(_.pluck(resp, relation.parentIdAttr)));
-    } <span class="keyword">else</span> {
+    } <span class="keyword">else</span> <span class="keyword">if</span> (target <span class="keyword">instanceof</span> Collection) {
       target.query(<span class="string">'where'</span>, relation.foreignKey, <span class="string">'='</span>, relation.fkValue);
     }
   };</pre></div></div>
@@ -1595,9 +1601,7 @@ the relation.</p>
     relation      = target._relation,
     columns       = relation.columns || (relation.columns = []),
     builder       = target.query(),
-
     tableName     = _.result(target, <span class="string">'tableName'</span>),
-    idAttribute   = _.result(target, <span class="string">'idAttribute'</span>),
 
     otherKey      = relation.otherKey,
     foreignKey    = relation.foreignKey,
@@ -1615,10 +1619,10 @@ the relation.</p>
 
     <span class="keyword">if</span> (pivotColumns) push.apply(columns, pivotColumns);
 
-    builder.join(joinTableName, tableName + <span class="string">'.'</span> + idAttribute, <span class="string">'='</span>, joinTableName + <span class="string">'.'</span> + foreignKey);
+    builder.join(joinTableName, tableName + <span class="string">'.'</span> + _.result(target, <span class="string">'idAttribute'</span>), <span class="string">'='</span>, joinTableName + <span class="string">'.'</span> + foreignKey);
 
     <span class="keyword">if</span> (resp) {
-      builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, idAttribute));
+      builder.whereIn(joinTableName + <span class="string">'.'</span> + otherKey, _.pluck(resp, relation.parentIdAttr));
     } <span class="keyword">else</span> {
       builder.where(joinTableName + <span class="string">'.'</span> + otherKey, <span class="string">'='</span>, relation.fkValue);
     }
@@ -1844,8 +1848,7 @@ on the model, otherwise, we reset the collection.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> (model <span class="keyword">instanceof</span> Model) {
-            model.set(model.parse(resp[<span class="number">0</span>], options), _.extend({silent: <span class="literal">true</span>}, options));
-            model._previousAttributes = extendNull(model.attributes);
+            model.set(model.parse(resp[<span class="number">0</span>], options), _.extend({silent: <span class="literal">true</span>}, options))._reset();
           } <span class="keyword">else</span> {
             model.reset(resp, {silent: <span class="literal">true</span>, parse: <span class="literal">true</span>}).each(<span class="keyword">function</span>(m) { m._reset(); });
           }</pre></div></div>

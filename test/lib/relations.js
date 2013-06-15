@@ -17,6 +17,8 @@ module.exports = function(Bookshelf, handler) {
   var Post     = Models.Post;
   var Comment  = Models.Comment;
   var Tag      = Models.Tag;
+  var User     = Models.User;
+  var Role     = Models.Role;
 
   // Collections
   var Sites    = Collections.Sites;
@@ -43,7 +45,7 @@ module.exports = function(Bookshelf, handler) {
             responses.push({site: site.toJSON()});
             return responses;
           })
-          .then(handler(ok), ok);
+          .then(handler(this, ok), ok);
       });
 
       it('handles hasMany', function(ok) {
@@ -52,21 +54,21 @@ module.exports = function(Bookshelf, handler) {
           .then(function(model) {
             return model.posts().fetch();
           })
-          .then(handler(ok), ok);
+          .then(handler(this, ok), ok);
       });
 
       it('handles hasOne', function(ok) {
         new Site({id: 1})
           .meta()
           .fetch()
-          .then(handler(ok), ok);
+          .then(handler(this, ok), ok);
       });
 
       it('handles belongsToMany', function(ok) {
         new Author({id: 1})
           .posts()
           .fetch()
-          .then(handler(ok), ok);
+          .then(handler(this, ok), ok);
       });
 
     });
@@ -76,19 +78,19 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads "hasOne" relationships correctly', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['meta']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "hasMany" relationships correctly', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors', 'blogs']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "belongsTo" relationships correctly', function(ok) {
         new Blog({id: 3}).fetch({
           withRelated: ['site']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('Throws an error if you try to fetch a related object without the necessary key', function(ok) {
@@ -100,7 +102,7 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads "belongsToMany" models correctly', function(ok) {
         new Post({id: 1}).fetch({
           withRelated: ['tags']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
     });
@@ -110,19 +112,19 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads "hasOne" models correctly', function(ok) {
         new Sites().fetch({
           withRelated: ['admins']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "belongsTo" models correctly', function(ok) {
         new Blogs().fetch({
           withRelated: ['site']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "hasMany" models correctly', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['blogs']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "belongsToMany" models correctly', function(ok) {
@@ -131,7 +133,7 @@ module.exports = function(Bookshelf, handler) {
           .fetch({
             withRelated: ['tags']
           })
-          .then(handler(ok), ok);
+          .then(handler(this, ok), ok);
       });
 
     });
@@ -141,19 +143,19 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads "hasMany" -> "hasMany"', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.ownPosts']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads "hasMany" -> "belongsToMany"', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.posts']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('does multi deep eager loads', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
     });
@@ -164,7 +166,7 @@ module.exports = function(Bookshelf, handler) {
         var site = new Sites();
         site.fetch({
           withRelated: ['authors.ownPosts']
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
     });
@@ -174,13 +176,13 @@ module.exports = function(Bookshelf, handler) {
       it('eager loads relations on a populated model', function(ok) {
         new Site({id: 1}).fetch().then(function(m) {
           return m.load(['blogs', 'authors.site']);
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
 
       it('eager loads attributes on a collection', function(ok) {
         new Sites().fetch().then(function(c) {
           return c.load(['blogs', 'authors.site']);
-        }).then(handler(ok), ok);
+        }).then(handler(this, ok), ok);
       });
     });
 
@@ -230,6 +232,24 @@ module.exports = function(Bookshelf, handler) {
       });
 
     });
+
+    describe('Custom foreignKey & otherKey', function() {
+
+      it('works with many-to-many', function(ok) {
+        new User({uid: 1})
+          .roles()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('works with eager loaded many-to-many', function(ok) {
+        new User({uid: 1})
+          .fetch({withRelated: ['roles']})
+          .then(handler(this, ok), ok);
+      });
+
+    });
+
 
   });
 
