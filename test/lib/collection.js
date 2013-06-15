@@ -14,7 +14,7 @@ module.exports = function(Bookshelf, handler) {
     }, {
       classMethod: function() { return 'test'; }
     });
-    
+
     var SubUsers = Users.extend({
       otherMethod: function() { return this.getData(); }
     }, {
@@ -58,7 +58,7 @@ module.exports = function(Bookshelf, handler) {
   });
 
   describe('model', function() {
-    
+
     it('does not permit polymorphic models', function(ok) {
       var Collection = Bookshelf.Collection.extend({
         model: function() { return new Bookshelf.Model(); }
@@ -97,14 +97,14 @@ module.exports = function(Bookshelf, handler) {
   });
 
   describe('fetch', function() {
-    
+
     it ('fetches the models in a collection', function (ok) {
       Bookshelf.Collection.extend({tableName: 'posts'})
         .forge()
         .fetch()
-        .then(handler(ok), ok);
+        .then(handler(this, ok), ok);
     });
-  
+
   });
 
   describe('sync', function() {

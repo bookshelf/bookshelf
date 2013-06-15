@@ -1,6 +1,6 @@
 module.exports = {
   db: {
-    'collection.1': {
+    'collection.1 - fetches the models in a collection': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -95,7 +95,7 @@ module.exports = {
         content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
       }]
     },
-    'relations.1': {
+    'relations.1 - handles belongsTo': {
       mysql: [{
         blog: {
           id: 4,
@@ -133,7 +133,7 @@ module.exports = {
         }
       }]
     },
-    'relations.2': {
+    'relations.2 - handles hasMany': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -174,24 +174,24 @@ module.exports = {
         content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
       }]
     },
-    'relations.3': {
+    'relations.3 - handles hasOne': {
       mysql: {
-        id: 1,
         site_id: 1,
+        id: 1,
         description: 'This is a description for the Knexjs Site'
       },
       postgres: {
-        id: 1,
         site_id: 1,
+        id: 1,
         description: 'This is a description for the Knexjs Site'
       },
       sqlite3: {
-        id: 1,
         site_id: 1,
+        id: 1,
         description: 'This is a description for the Knexjs Site'
       }
     },
-    'relations.4': {
+    'relations.4 - handles belongsToMany': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -220,7 +220,7 @@ module.exports = {
         _pivot_post_id: 1
       }]
     },
-    'relations.5': {
+    'relations.5 - eager loads "hasOne" relationships correctly': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -249,7 +249,7 @@ module.exports = {
         }
       }
     },
-    'relations.6': {
+    'relations.6 - eager loads "hasMany" relationships correctly': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -323,7 +323,7 @@ module.exports = {
         }]
       }
     },
-    'relations.7': {
+    'relations.7 - eager loads "belongsTo" relationships correctly': {
       mysql: {
         id: 3,
         site_id: 2,
@@ -352,7 +352,7 @@ module.exports = {
         }
       }
     },
-    'relations.8': {
+    'relations.8 - eager loads "belongsToMany" models correctly': {
       mysql: {
         id: 1,
         owner_id: 1,
@@ -423,7 +423,7 @@ module.exports = {
         }]
       }
     },
-    'relations.9': {
+    'relations.9 - eager loads "hasOne" models correctly': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -452,7 +452,7 @@ module.exports = {
         admins: []
       }]
     },
-    'relations.10': {
+    'relations.10 - eager loads "belongsTo" models correctly': {
       mysql: [{
         id: 1,
         site_id: 1,
@@ -553,7 +553,7 @@ module.exports = {
         }
       }]
     },
-    'relations.11': {
+    'relations.11 - eager loads "hasMany" models correctly': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -594,7 +594,7 @@ module.exports = {
         }]
       }
     },
-    'relations.12': {
+    'relations.12 - eager loads "belongsToMany" models correctly': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -686,7 +686,7 @@ module.exports = {
         tags: []
       }]
     },
-    'relations.13': {
+    'relations.13 - eager loads "hasMany" -> "hasMany"': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -793,7 +793,7 @@ module.exports = {
         }]
       }
     },
-    'relations.14': {
+    'relations.14 - eager loads "hasMany" -> "belongsToMany"': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -918,7 +918,7 @@ module.exports = {
         }]
       }
     },
-    'relations.15': {
+    'relations.15 - does multi deep eager loads': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -1136,7 +1136,7 @@ module.exports = {
         }]
       }
     },
-    'relations.16': {
+    'relations.16 - eager loads "hasMany" -> "hasMany"': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1327,7 +1327,7 @@ module.exports = {
         }]
       }]
     },
-    'relations.17': {
+    'relations.17 - eager loads relations on a populated model': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -1425,7 +1425,7 @@ module.exports = {
         }]
       }
     },
-    'relations.18': {
+    'relations.18 - eager loads attributes on a collection': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
