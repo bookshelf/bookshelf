@@ -584,12 +584,12 @@
         var relation      = handled[name];
         var relatedData   = relation.relatedData;
         var type          = relatedData.type;
-        var relatedModels = new RelatedModels(relation.models);
 
         // If the parent is a collection, we need to loop over each of the
         // models and attach the appropriate sub-models, since they are
         // fetched eagerly. We will re-use the same models for each association level.
         if (parent instanceof Collection) {
+          var relatedModels = new RelatedModels(relation.models);
           var models = parent.models;
 
           // Attach the appropriate related items onto the parent model.
@@ -915,13 +915,19 @@
     // Helper for handling either the `attach` or `detach` call on
     // the `belongsToMany` relationship.
     _handler: function(method, ids, options) {
-      if (ids == void 0 && method === 'insert') return when.resolve();
-      if (!_.isArray(ids)) ids = ids ? [ids] : [];
       var pending = [];
+      if (ids == void 0) {
+        if (method === 'insert') return when.resolve(this);
+        if (method === 'delete') pending.push(this._processPivot(method, null, options));
+      }
+      if (!_.isArray(ids)) ids = ids ? [ids] : [];
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      return when.all(pending);
+      var collection = this;
+      return when.all(pending).then(function() {
+        return collection;
+      });
     },
 
     // Handles setting the appropriate constraints and shelling out
@@ -949,7 +955,10 @@
         builder.transacting(options.transacting);
       }
       if (method === 'delete') return builder.where(data).del();
-      return builder.insert(data);
+      var collection = this;
+      return builder.insert(data).then(function() {
+        return collection;
+      });
     }
 
   };
