@@ -955,10 +955,7 @@
         builder.transacting(options.transacting);
       }
       if (method === 'delete') return builder.where(data).del();
-      var collection = this;
-      return builder.insert(data).then(function() {
-        return collection;
-      });
+      return builder.insert(data);
     }
 
   };
