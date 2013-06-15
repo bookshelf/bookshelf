@@ -1615,6 +1615,43 @@ module.exports = {
           }
         }]
       }]
+    },
+    'relations.19 - works with many-to-many': {
+      mysql: [{
+        rid: 1,
+        name: 'admin',
+        _pivot_uid: 1,
+        _pivot_rid: 1
+      }],
+      postgres: [{
+        rid: 1,
+        name: 'admin',
+        _pivot_uid: 1,
+        _pivot_rid: 1
+      }],
+      sqlite3: [{
+        rid: 1,
+        name: 'admin',
+        _pivot_uid: 1,
+        _pivot_rid: 1
+      }]
+    },
+    'relations.20 - works with eager loaded many-to-many': {
+      mysql: {
+        uid: 1,
+        username: 'root',
+        roles: []
+      },
+      postgres: {
+        uid: 1,
+        username: 'root',
+        roles: []
+      },
+      sqlite3: {
+        uid: 1,
+        username: 'root',
+        roles: []
+      }
     }
   }
 }

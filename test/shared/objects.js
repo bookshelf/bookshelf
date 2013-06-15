@@ -18,8 +18,8 @@ module.exports = function(Shelf) {
     authors: function() {
       return this.hasMany(Author);
     },
-    blogs: function() { 
-      return this.hasMany(Blog); 
+    blogs: function() {
+      return this.hasMany(Blog);
     },
     meta: function() {
       return this.hasOne(SiteMeta);
@@ -46,14 +46,14 @@ module.exports = function(Shelf) {
   // Author of a blog post.
   var Author = Shelf.Model.extend({
     tableName: 'authors',
-    site: function() { 
-      return this.belongsTo(Site); 
+    site: function() {
+      return this.belongsTo(Site);
     },
-    posts: function() { 
-      return this.belongsToMany(Post); 
+    posts: function() {
+      return this.belongsToMany(Post);
     },
-    ownPosts: function() { 
-      return this.hasMany(Post, 'owner_id'); 
+    ownPosts: function() {
+      return this.hasMany(Post, 'owner_id');
     }
   });
 
@@ -64,7 +64,7 @@ module.exports = function(Shelf) {
       title: ''
     },
     site: function() {
-      return this.belongsTo(Site); 
+      return this.belongsTo(Site);
     },
     posts: function() {
       return this.hasMany(Post);
@@ -88,17 +88,17 @@ module.exports = function(Shelf) {
       published: false
     },
     hasTimestamps: true,
-    blog: function() { 
-      return this.belongsTo(Blog); 
+    blog: function() {
+      return this.belongsTo(Blog);
     },
-    authors: function() { 
+    authors: function() {
       return this.belongsToMany(Author);
     },
-    tags: function() { 
-      return this.belongsToMany(Tag); 
+    tags: function() {
+      return this.belongsToMany(Tag);
     },
-    comments: function() { 
-      return this.hasMany(Comment); 
+    comments: function() {
+      return this.hasMany(Comment);
     }
   });
 
@@ -123,8 +123,24 @@ module.exports = function(Shelf) {
 
   var Tag = Shelf.Model.extend({
     tableName: 'tags',
-    posts: function() { 
-      return this.belongsToMany(Post); 
+    posts: function() {
+      return this.belongsToMany(Post);
+    }
+  });
+
+  var User = Shelf.Model.extend({
+    tableName: 'users',
+    idAttribute: 'uid',
+    roles: function() {
+      return this.belongsToMany(Role, 'users_roles', 'rid', 'uid');
+    }
+  });
+
+  var Role = Shelf.Model.extend({
+    tableName: 'roles',
+    idAttribute: 'rid',
+    users: function(){
+      return this.belongsToMany(User, 'users_roles', 'uid', 'rid');
     }
   });
 
@@ -137,7 +153,9 @@ module.exports = function(Shelf) {
       Blog: Blog,
       Post: Post,
       Comment: Comment,
-      Tag: Tag
+      Tag: Tag,
+      User: User,
+      Role: Role
     },
     Collections: {
       Sites: Sites,

@@ -4,7 +4,8 @@ var When = require('when');
 var drops = [
   'sites', 'sitesmeta', 'admins',
   'admins_sites', 'authors', 'authors_posts',
-  'blogs', 'posts', 'tags', 'posts_tags', 'comments'
+  'blogs', 'posts', 'tags', 'posts_tags', 'comments',
+  'users', 'roles', 'users_roles'
 ];
 
 module.exports = function(Bookshelf) {
@@ -86,8 +87,23 @@ module.exports = function(Bookshelf) {
         table.string('name');
         table.string('email');
         table.text('comment');
+      }),
+
+      Schema.createTable('users', function(table) {
+        table.increments('uid');
+        table.string('username');
+      }),
+
+      Schema.createTable('roles', function(table) {
+        table.increments('rid');
+        table.string('name');
+      }),
+
+      Schema.createTable('users_roles', function(table) {
+        table.integer('rid');
+        table.integer('uid');
       })
-    
+
     ]);
 
   });

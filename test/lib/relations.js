@@ -17,6 +17,8 @@ module.exports = function(Bookshelf, handler) {
   var Post     = Models.Post;
   var Comment  = Models.Comment;
   var Tag      = Models.Tag;
+  var User     = Models.User;
+  var Role     = Models.Role;
 
   // Collections
   var Sites    = Collections.Sites;
@@ -230,6 +232,24 @@ module.exports = function(Bookshelf, handler) {
       });
 
     });
+
+    describe('Custom foreignKey & otherKey', function() {
+
+      it('works with many-to-many', function(ok) {
+        new User({uid: 1})
+          .roles()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('works with eager loaded many-to-many', function(ok) {
+        new User({uid: 1})
+          .fetch({withRelated: ['roles']})
+          .then(handler(this, ok), ok);
+      });
+
+    });
+
 
   });
 
