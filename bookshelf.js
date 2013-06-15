@@ -384,11 +384,12 @@
       // the correct object once the eager matching is finished.
       // Otherwise, just grab the `foreignKey` value for building the query.
       if (this._isEager) {
+        options.eager = {};
         if (multi) {
-          options.modelCtor = Target.prototype.model;
-          options.collectionCtor = Target;
+          options.eager.ModelCtor = Target.prototype.model;
+          options.eager.CollectionCtor = Target;
         } else {
-          options.modelCtor = Target;
+          options.eager.ModelCtor = Target;
         }
         options.parentIdAttr = (type === 'belongsTo' ? options.otherKey : _.result(this, 'idAttribute'));
       } else {
@@ -600,9 +601,9 @@
           // If this is a hasOne or belongsTo, we only choose a single item from
           // the relation.
           if (type === 'hasOne' || type === 'belongsTo') {
-            parent.relations[name] = relation.models[0] || new relatedData.modelCtor();
+            parent.relations[name] = relation.models[0] || new relatedData.eager.ModelCtor();
           } else {
-            parent.relations[name] = new relatedData.collectionCtor(relation.models, {parse: true});
+            parent.relations[name] = new relatedData.eager.CollectionCtor(relation.models, {parse: true});
           }
         }
       }
@@ -624,13 +625,13 @@
     var where = {};
     if (type === 'hasOne' || type === 'belongsTo') {
       where[relatedData.foreignKey] = id;
-      return eager.findWhere(where) || new relatedData.modelCtor();
+      return eager.findWhere(where) || new relatedData.eager.ModelCtor();
     } else if (type === 'hasMany') {
       where[relatedData.foreignKey] = id;
-      return new relatedData.collectionCtor(eager.where(where), {parse: true});
+      return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
     } else {
       where['_pivot_' + relatedData.otherKey] = id;
-      return new relatedData.collectionCtor(eager.where(where), {parse: true});
+      return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
     }
   };
 
@@ -700,11 +701,11 @@
 
         // We can just push the models onto the collection, rather than resetting.
         for (var i = 0, l = resp.length; i < l; i++) {
-          models.push(new relatedData.modelCtor(resp[i], {parse: true})._reset());
+          models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
         }
 
         if (options.withRelated) {
-          var model = new relatedData.modelCtor();
+          var model = new relatedData.eager.ModelCtor();
           return new EagerRelation(related, model, resp).processRelated(options);
         }
       }
