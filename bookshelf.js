@@ -101,11 +101,94 @@
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
         if (relatedData.type !== 'belongsToMany') {
-          constraints(this, resp);
+          this._constraints(resp);
         } else {
-          belongsToMany(this, resp);
+          this._belongsToManyConstraints(resp);
         }
       }
+    },
+
+    // Standard constraints for regular or eager loaded relations.
+    // If the model isn't an eager load or a collection, it doesn't need
+    // to be populated with the additional `where` clause, as that's already taken
+    // care of during model creation.
+    _constraints: function(resp) {
+      var relatedData = this.relatedData;
+      if (resp) {
+        this.query('whereIn', relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
+      } else if (this instanceof Collection) {
+        this.query('where', relatedData.foreignKey, '=', relatedData.fkValue);
+      }
+    },
+
+    // Helper method for adding the constraints needed on a regular or eager loaded
+    // `belongsToMany` relationship.
+    _belongsToManyConstraints: function(resp) {
+      var
+      relatedData   = this.relatedData,
+      columns       = relatedData.columns || (relatedData.columns = []),
+      builder       = this.query(),
+      tableName     = _.result(this, 'tableName'),
+
+      otherKey      = relatedData.otherKey,
+      foreignKey    = relatedData.foreignKey,
+      pivotColumns  = relatedData.pivotColumns,
+      joinTableName = relatedData.joinTableName;
+
+      if (builder.columns.length === 0 && columns.length === 0) {
+        columns.push(tableName + '.*');
+      }
+
+      columns.push(
+        joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
+        joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
+      );
+
+      if (pivotColumns) push.apply(columns, pivotColumns);
+
+      builder.join(joinTableName, tableName + '.' + _.result(this, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
+
+      if (resp) {
+        builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
+      } else {
+        builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
+      }
+    },
+
+    // Called from `EagerRelation.processRelated` with the context
+    // of an eager-loading model or collection, this function
+    // fetches the nested related items, and returns a deferred object,
+    // with the cumulative handling of multiple (potentially nested) relations.
+    _eagerFetch: function(options) {
+      var base = this;
+      var models = this.models = [];
+      var relatedData = this.relatedData;
+
+      return when(this._addConstraints(relatedData.eager.parentResponse)).then(function() {
+        return base.query().select(relatedData.columns);
+      })
+      .then(function(resp) {
+
+        // Only find additional related items & process if
+        // there is a response from the query.
+        if (resp && resp.length > 0) {
+
+          // We can just push the models onto the collection, rather than resetting.
+          for (var i = 0, l = resp.length; i < l; i++) {
+            models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+          }
+
+          if (options.withRelated) {
+            var model = new relatedData.eager.ModelCtor();
+            return new EagerRelation(base, model, resp).processRelated(options);
+          }
+        }
+
+        return models;
+
+      }).ensure(function() {
+        base.resetQuery();
+      });
     }
 
   };
@@ -410,7 +493,7 @@
 
       // Extend the relation with relation-specific methods.
       if (type === 'belongsToMany') {
-        _.extend(target, pivotHelpers);
+        _.extend(target, Bookshelf.pivotHelpers);
       }
 
       return target;
@@ -558,7 +641,7 @@
       var pendingNames = this.pendingNames = [];
       for (name in handled) {
         pendingNames.push(name);
-        pendingDeferred.push(eagerFetch(handled[name], {
+        pendingDeferred.push(handled[name]._eagerFetch({
           transacting: options.transacting,
           withRelated: subRelated[name]
         }));
@@ -596,7 +679,7 @@
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m  = models[i2];
             var id = (type === 'belongsTo' ? m.get(relatedData.otherKey) : m.id);
-            var result = eagerRelated(type, relation, relatedModels, id);
+            var result = this.eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
         } else {
@@ -611,7 +694,24 @@
       }
 
       return this.parentResponse;
+    },
+
+    // Handles the "eager related" relationship matching.
+    eagerRelated: function(type, target, eager, id) {
+      var relatedData = target.relatedData;
+      var where = {};
+      if (type === 'hasOne' || type === 'belongsTo') {
+        where[relatedData.foreignKey] = id;
+        return eager.findWhere(where) || new relatedData.eager.ModelCtor();
+      } else if (type === 'hasMany') {
+        where[relatedData.foreignKey] = id;
+        return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
+      } else {
+        where['_pivot_' + relatedData.otherKey] = id;
+        return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
+      }
     }
+
   });
 
   // Temporary helper object for handling the response of an `EagerRelation` load.
@@ -620,103 +720,6 @@
     this.length = this.models.length;
   };
   _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
-
-  // Handles the "eager related" relationship matching.
-  var eagerRelated = function(type, target, eager, id) {
-    var relatedData = target.relatedData;
-    var where = {};
-    if (type === 'hasOne' || type === 'belongsTo') {
-      where[relatedData.foreignKey] = id;
-      return eager.findWhere(where) || new relatedData.eager.ModelCtor();
-    } else if (type === 'hasMany') {
-      where[relatedData.foreignKey] = id;
-      return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
-    } else {
-      where['_pivot_' + relatedData.otherKey] = id;
-      return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
-    }
-  };
-
-  // Standard constraints for regular or eager loaded relations.
-  // If the model isn't an eager load or a collection, it doesn't need
-  // to be populated with the additional `where` clause, as that's already taken
-  // care of during model creation.
-  var constraints = function(target, resp) {
-    var relatedData = target.relatedData;
-    if (resp) {
-      target.query('whereIn', relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
-    } else if (target instanceof Collection) {
-      target.query('where', relatedData.foreignKey, '=', relatedData.fkValue);
-    }
-  };
-
-  // Helper function for adding the constraints needed on a eager load.
-  var belongsToMany = function(target, resp) {
-    var
-    relatedData   = target.relatedData,
-    columns       = relatedData.columns || (relatedData.columns = []),
-    builder       = target.query(),
-    tableName     = _.result(target, 'tableName'),
-
-    otherKey      = relatedData.otherKey,
-    foreignKey    = relatedData.foreignKey,
-    pivotColumns  = relatedData.pivotColumns,
-    joinTableName = relatedData.joinTableName;
-
-    if (builder.columns.length === 0 && columns.length === 0) {
-      columns.push(tableName + '.*');
-    }
-
-    columns.push(
-      joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
-      joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
-    );
-
-    if (pivotColumns) push.apply(columns, pivotColumns);
-
-    builder.join(joinTableName, tableName + '.' + _.result(target, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
-
-    if (resp) {
-      builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
-    } else {
-      builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
-    }
-  };
-
-  // Called from `EagerRelation.processRelated` with the context
-  // of an eager-loading model or collection, this function
-  // fetches the nested related items, and returns a deferred object,
-  // with the cumulative handling of multiple (potentially nested) relations.
-  var eagerFetch = function(related, options) {
-    var models   = related.models = [];
-    var relatedData = related.relatedData;
-
-    return when(related._addConstraints(relatedData.eager.parentResponse)).then(function() {
-      return related.query().select(relatedData.columns);
-    })
-    .then(function(resp) {
-
-      // Only find additional related items & process if
-      // there is a response from the query.
-      if (resp && resp.length > 0) {
-
-        // We can just push the models onto the collection, rather than resetting.
-        for (var i = 0, l = resp.length; i < l; i++) {
-          models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
-        }
-
-        if (options.withRelated) {
-          var model = new relatedData.eager.ModelCtor();
-          return new EagerRelation(related, model, resp).processRelated(options);
-        }
-      }
-
-      return models;
-
-    }).ensure(function() {
-      related.resetQuery();
-    });
-  };
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
@@ -872,7 +875,7 @@
   // Specific to many-to-many relationships, these methods are mixed
   // into the `belongsToMany` relationships when they are created,
   // providing helpers for attaching and detaching related models.
-  var pivotHelpers = {
+  Bookshelf.pivotHelpers = {
 
     // Attach one or more "ids" from a foreign
     // table to the current. Creates & saves a new model
