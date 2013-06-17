@@ -80,7 +80,7 @@
       }
       var model = this;
       return new EagerRelation(this, data)
-        .processRelated(options)
+        .fetch(options)
         .then(function() {
           return model;
         });
@@ -154,7 +154,7 @@
       }
     },
 
-    // Called from `EagerRelation.processRelated` with the context
+    // Called from `EagerRelation.fetch` with the context
     // of an eager-loading model or collection, this function
     // fetches the nested related items, and returns a deferred object,
     // with the cumulative handling of multiple (potentially nested) relations.
@@ -175,7 +175,7 @@
             }
 
             if (options.withRelated) {
-              return new EagerRelation(base, resp).processRelated(options).then(function() {
+              return new EagerRelation(base, resp).fetch(options).then(function() {
                 return models;
               });
             }
@@ -325,7 +325,7 @@
             model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
             if (!options.withRelated) return resp;
             return new EagerRelation(model, resp)
-              .processRelated(_.extend({isEager: true}, options))
+              .fetch(_.extend({isEager: true}, options))
               .then(function() { return resp; });
           } else {
             if (options.require) return when.reject(new Error('EmptyResponse'));
@@ -575,7 +575,7 @@
           }
           if (!options.withRelated) return resp;
             return new EagerRelation(collection, resp)
-              .processRelated(_.extend({isEager: true}, options))
+              .fetch(_.extend({isEager: true}, options))
               .then(function() { return resp; });
         })
         .then(function(resp) {
@@ -630,7 +630,7 @@
 
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
-    processRelated: function(options) {
+    fetch: function(options) {
       var name, related, relation;
       var target = this.target;
       var handled = this.handled = {};
@@ -748,7 +748,7 @@
     this.models = models;
     this.length = this.models.length;
   };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'find', 'where', 'filter', 'findWhere'));
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
