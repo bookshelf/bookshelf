@@ -94,8 +94,7 @@
 
     // Helper for attaching query constraints on related
     // `models` or `collections` as necessary.
-    _addConstraints: function(resp) {
-      var relatedData = this.relatedData;
+    _addConstraints: function(relatedData, resp) {
       if (relatedData) {
         if (!relatedData.fkValue && !resp) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
@@ -106,6 +105,7 @@
           this._belongsToManyConstraints(resp);
         }
       }
+      return true;
     },
 
     // Standard constraints for regular or eager loaded relations.
@@ -160,36 +160,40 @@
     // fetches the nested related items, and returns a deferred object,
     // with the cumulative handling of multiple (potentially nested) relations.
     _eagerFetch: function(options) {
-      var base = this;
+      var addConstraints, base = this;
       var models = this.models = [];
       var relatedData = this.relatedData;
 
-      return when(this._addConstraints(relatedData.eager.parentResponse)).then(function() {
-        if (options.transacting) base.query('transacting', options.transacting);
-        return base.query().select(relatedData.columns);
-      })
-      .then(function(resp) {
+      if ((addConstraints = this._addConstraints(relatedData, options.parentResponse)) !== true) {
+        return addConstraints;
+      }
 
-        // Only find additional related items & process if
-        // there is a response from the query.
-        if (resp && resp.length > 0) {
+      if (options.transacting) base.query('transacting', options.transacting);
 
-          // We can just push the models onto the collection, rather than resetting.
-          for (var i = 0, l = resp.length; i < l; i++) {
-            models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+      return base.query()
+        .select(relatedData.columns)
+        .then(function(resp) {
+
+          // Only find additional related items & process if
+          // there is a response from the query.
+          if (resp && resp.length > 0) {
+
+            // We can just push the models onto the collection, rather than resetting.
+            for (var i = 0, l = resp.length; i < l; i++) {
+              models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+            }
+
+            if (options.withRelated) {
+              var model = new relatedData.eager.ModelCtor();
+              return new EagerRelation(base, model, resp).processRelated(options);
+            }
           }
 
-          if (options.withRelated) {
-            var model = new relatedData.eager.ModelCtor();
-            return new EagerRelation(base, model, resp).processRelated(options);
-          }
-        }
+          return models;
 
-        return models;
-
-      }).ensure(function() {
-        base.resetQuery();
-      });
+        }).ensure(function() {
+          base.resetQuery();
+        });
     }
 
   };
@@ -626,12 +630,7 @@
         relation = target[name]();
         delete target['_isEager'];
 
-        // Set the parent's response, for purposes of setting query constraints.
-        relation.relatedData.eager.parentResponse = this.parentResponse;
-
-        if (!relation) {
-          throw new Error(name + ' is not defined on the model.');
-        }
+        if (!relation) throw new Error(name + ' is not defined on the model.');
 
         handled[name] = relation;
       }
@@ -644,6 +643,7 @@
       for (name in handled) {
         pendingNames.push(name);
         pendingDeferred.push(handled[name]._eagerFetch({
+          parentResponse: this.parentResponse,
           transacting: options.transacting,
           withRelated: subRelated[name]
         }));
@@ -764,23 +764,25 @@
     // the promise is resolved. Any `success` handler passed in the
     // options will be called - used by both models & collections.
     select: function() {
-      var sync = this;
+      var addConstraints, sync = this;
       var options = sync.options;
       var model = this.model;
       var relatedData = model.relatedData;
 
-      return when(model._addConstraints()).then(function() {
-        var columns = options.columns;
+      if ((addConstraints = model._addConstraints(relatedData)) !== true) {
+        return addConstraints;
+      }
 
-        if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
+      var columns = options.columns;
 
-        if (relatedData && relatedData.columns) {
-          columns = relatedData.columns;
-        }
+      if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
 
-        return model.triggerThen('fetching', model, columns, options).then(function() {
-          return sync.query.select(columns);
-        });
+      if (relatedData && relatedData.columns) {
+        columns = relatedData.columns;
+      }
+
+      return model.triggerThen('fetching', model, columns, options).then(function() {
+        return sync.query.select(columns);
       })
       .then(function(resp) {
 
