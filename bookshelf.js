@@ -159,38 +159,29 @@
     // fetches the nested related items, and returns a deferred object,
     // with the cumulative handling of multiple (potentially nested) relations.
     _eagerFetch: function(options) {
-      var addConstraints;
-      var models      = this.models = [];
-      var relatedData = this.relatedData;
-
-      if ((addConstraints = this._addConstraints(relatedData, options.parentResponse)) !== true) {
-        return addConstraints;
-      }
-
-      if (options.transacting) this.query('transacting', options.transacting);
-
-      var base = this;
-      return this.query()
-        .select(relatedData.columns)
+      var models = this.models = [];
+      var base   = this;
+      return this.sync(options)
+        .select()
         .then(function(resp) {
 
           // Only find additional related items & process if
-          // there is a response from the query.
+          // there is a response from the query. We can just push the models
+          // onto the current temporary object's model array.
           if (resp && resp.length > 0) {
 
-            // We can just push the models onto the collection, rather than resetting.
             for (var i = 0, l = resp.length; i < l; i++) {
-              models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+              models.push(new base.relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
             }
 
             if (options.withRelated) {
-              return new EagerRelation(base, resp).processRelated(options);
+              return new EagerRelation(base, resp).processRelated(options).then(function() {
+                return models;
+              });
             }
           }
 
           return models;
-        }).ensure(function() {
-          base.resetQuery();
         });
     }
 
@@ -679,11 +670,11 @@
       var pendingNames = this.pendingNames = [];
       for (name in handled) {
         pendingNames.push(name);
-        pendingDeferred.push(handled[name]._eagerFetch({
+        pendingDeferred.push(handled[name]._eagerFetch(_.extend({}, options, {
           parentResponse: this.parentResponse,
           transacting: options.transacting,
           withRelated: subRelated[name]
-        }));
+        })));
       }
 
       // Return a deferred handler for all of the nested object sync
@@ -807,7 +798,7 @@
       var columns = options.columns;
       var relatedData = model.relatedData;
 
-      if ((addConstraints = model._addConstraints(relatedData)) !== true) {
+      if ((addConstraints = model._addConstraints(relatedData, options.parentResponse)) !== true) {
         return addConstraints;
       }
 
