@@ -88,8 +88,8 @@
     },
 
     // Creates and returns a new `Bookshelf.Sync` instance.
-    sync: function(model, options) {
-      return new Bookshelf.Sync(model, options);
+    sync: function(options) {
+      return new Bookshelf.Sync(this, options);
     },
 
     // Helper for attaching query constraints on related
@@ -165,6 +165,7 @@
       var relatedData = this.relatedData;
 
       return when(this._addConstraints(relatedData.eager.parentResponse)).then(function() {
+        if (options.transacting) base.query('transacting', options.transacting);
         return base.query().select(relatedData.columns);
       })
       .then(function(resp) {
@@ -320,7 +321,7 @@
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
     fetch: function(options) {
-      return this.sync(this, options).first().then(function(model) {
+      return this.sync(options).first().then(function(model) {
         return model._reset();
       });
     },
@@ -364,7 +365,7 @@
 
       // Set the attributes on the model, and maintain a reference to use below.
       var model  = this.set(vals, {silent: true});
-      var sync   = model.sync(model, options);
+      var sync   = this.sync(options);
 
       return when.all([
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
@@ -392,7 +393,7 @@
       options || (options = {});
       var model = this;
       return model.triggerThen('destroying', model, options)
-      .then(function() { return model.sync(model, options).del(options); })
+      .then(function() { return model.sync(options).del(options); })
       .then(function(resp) {
         model.clear();
         model.trigger('destroyed', model, resp, options);
@@ -548,7 +549,7 @@
     // Fetch the models for this collection, resetting the models for the query
     // when they arrive.
     fetch: function(options) {
-      return this.sync(this, options).select();
+      return this.sync(options).select();
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.
@@ -590,6 +591,7 @@
     this.parent = parent;
     this.target = target;
     this.parentResponse = parentResponse;
+    _.bindAll(this, 'matchResponses');
   };
 
   _.extend(EagerRelation.prototype, Shared, {
@@ -649,17 +651,16 @@
 
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs are complete.
-      return when.all(pendingDeferred).spread(_.bind(this.matchResponses, this));
+      return when.all(pendingDeferred).then(this.matchResponses);
     },
 
     // Handles the matching against an eager loaded relation.
-    matchResponses: function() {
-      var args = _.toArray(arguments);
+    matchResponses: function(responses) {
       var parent  = this.parent;
       var handled = this.handled;
 
       // Pair each of the query responses with the parent models.
-      for (var i = 0, l = args.length; i < l; i++) {
+      for (var i = 0, l = responses.length; i < l; i++) {
 
         // Get the current relation this response matches up with, based
         // on the pendingNames array.
@@ -679,7 +680,7 @@
           for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
             var m  = models[i2];
             var id = (type === 'belongsTo' ? m.get(relatedData.otherKey) : m.id);
-            var result = this.eagerRelated(type, relation, relatedModels, id);
+            var result = this._eagerRelated(type, relation, relatedModels, id);
             m.relations[name] = result;
           }
         } else {
@@ -697,8 +698,8 @@
     },
 
     // Handles the "eager related" relationship matching.
-    eagerRelated: function(type, target, eager, id) {
-      var relatedData = target.relatedData;
+    _eagerRelated: function(type, relation, eager, id) {
+      var relatedData = relation.relatedData;
       var where = {};
       if (type === 'hasOne' || type === 'belongsTo') {
         where[relatedData.foreignKey] = id;
@@ -743,9 +744,9 @@
   // part of a transaction, and this information is passed along to `Knex`.
   var Sync = Bookshelf.Sync = function(model, options) {
     options || (options = {});
-    this.model = model;
+    this.model   = model;
     this.options = options;
-    this.query = model.query();
+    this.query   = model.query();
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
@@ -822,10 +823,13 @@
         return [];
 
       }).then(function(resp) {
-        if (resp.length > 0) {
+
+        if (!_.isEmpty(resp)) {
           model.trigger('fetched', model, resp, options);
         }
+
         return model;
+
       }).ensure(function() {
         model.resetQuery();
       });
