@@ -632,10 +632,10 @@
     // are necessary for fetching based on the `model.load` or `withRelated` option.
     fetch: function(options) {
       var name, related, relation;
-      var target = this.target;
-      var handled = this.handled = {};
+      var target      = this.target;
+      var handled     = this.handled = {};
       var withRelated = options.withRelated;
-      var subRelated = {};
+      var subRelated  = {};
       if (!_.isArray(withRelated)) withRelated = withRelated ? [withRelated] : [];
 
       // Eager load each of the `withRelated` relation item, splitting on '.'
@@ -671,9 +671,10 @@
       for (name in handled) {
         pendingNames.push(name);
         pendingDeferred.push(handled[name]._eagerFetch(_.extend({}, options, {
-          parentResponse: this.parentResponse,
-          transacting: options.transacting,
-          withRelated: subRelated[name]
+          target:         target,
+          eagerName:      name,
+          withRelated:    subRelated[name],
+          parentResponse: this.parentResponse
         })));
       }
 
@@ -683,6 +684,9 @@
     },
 
     // Handles the matching against an eager loaded relation.
+    // Each response object in the responses array should be an "instanceof"
+    // `RelatedCollection`, which has the name of the current relation,
+    // as well as the
     matchResponses: function(responses) {
       var parent  = this.parent;
       var handled = this.handled;
@@ -692,6 +696,7 @@
 
         // Get the current relation this response matches up with, based
         // on the `pendingNames` array.
+        var response      = responses[i];
         var name          = this.pendingNames[i];
         var relation      = handled[name];
         var relatedData   = relation.relatedData;
@@ -701,7 +706,7 @@
         // models and attach the appropriate sub-models, since they are
         // fetched eagerly. We will re-use the same models for each association level.
         if (parent instanceof Collection) {
-          var relatedModels = new RelatedModels(relation.models);
+          var relatedModels = new RelatedCollection(relation.models);
           var models = parent.models;
 
           // Attach the appropriate related items onto the parent model.
@@ -744,11 +749,11 @@
   });
 
   // Temporary helper object for handling the response of an `EagerRelation` load.
-  var RelatedModels = function(models) {
+  var RelatedCollection = function(models) {
     this.models = models;
     this.length = this.models.length;
   };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
+  _.extend(RelatedCollection.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
