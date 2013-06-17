@@ -170,7 +170,7 @@ module.exports = function(Bookshelf, handler) {
         .then(function(model) {
           equal(model.get('name').indexOf('Test: '), 0);
           ok();
-        });
+        }, ok);
     });
 
     it('parses the model attributes on creation if {parse: true} is passed', function() {

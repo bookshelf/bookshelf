@@ -69,18 +69,17 @@
       var target, data;
       if (!_.isArray(relations)) relations = relations ? [relations] : [];
       options = _.extend({}, options, {
+        isEager: true,
         shallow: true,
         withRelated: relations
       });
       if (this instanceof Collection) {
-        target = new this.model();
         data = this.toJSON(options);
       } else {
-        target = this;
         data = [this.toJSON(options)];
       }
       var model = this;
-      return new EagerRelation(this, target, data)
+      return new EagerRelation(this, data)
         .processRelated(options)
         .then(function() {
           return model;
@@ -160,17 +159,18 @@
     // fetches the nested related items, and returns a deferred object,
     // with the cumulative handling of multiple (potentially nested) relations.
     _eagerFetch: function(options) {
-      var addConstraints, base = this;
-      var models = this.models = [];
+      var addConstraints;
+      var models      = this.models = [];
       var relatedData = this.relatedData;
 
       if ((addConstraints = this._addConstraints(relatedData, options.parentResponse)) !== true) {
         return addConstraints;
       }
 
-      if (options.transacting) base.query('transacting', options.transacting);
+      if (options.transacting) this.query('transacting', options.transacting);
 
-      return base.query()
+      var base = this;
+      return this.query()
         .select(relatedData.columns)
         .then(function(resp) {
 
@@ -184,13 +184,11 @@
             }
 
             if (options.withRelated) {
-              var model = new relatedData.eager.ModelCtor();
-              return new EagerRelation(base, model, resp).processRelated(options);
+              return new EagerRelation(base, resp).processRelated(options);
             }
           }
 
           return models;
-
         }).ensure(function() {
           base.resetQuery();
         });
@@ -324,10 +322,30 @@
     // Fetch a model based on the currently set attributes,
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
+    // If `{require: true}` is set as an option, the fetch is considered
+    // a failure if the model comes up blank.
     fetch: function(options) {
-      return this.sync(options).first().then(function(model) {
-        return model._reset();
-      });
+      var model = this;
+      options || (options = {});
+      return this.sync(options)
+        .first()
+        .then(function(resp) {
+          if (resp && resp.length > 0) {
+            model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
+            if (!options.withRelated) return resp;
+            return new EagerRelation(model, resp)
+              .processRelated(_.extend({isEager: true}, options))
+              .then(function() { return resp; });
+          } else {
+            if (options.require) return when.reject(new Error('EmptyResponse'));
+            model.clear({silent: true})._reset();
+            return {};
+          }
+        })
+        .then(function(resp) {
+          model.trigger('fetched', model, resp, options);
+          return model;
+        });
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -553,7 +571,26 @@
     // Fetch the models for this collection, resetting the models for the query
     // when they arrive.
     fetch: function(options) {
-      return this.sync(options).select();
+      var collection = this;
+      options || (options = {});
+      return this.sync(options)
+        .select()
+        .then(function(resp) {
+          if (resp && resp.length > 0) {
+            collection.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
+          } else {
+            collection.reset([], {silent: true});
+            return [];
+          }
+          if (!options.withRelated) return resp;
+            return new EagerRelation(collection, resp)
+              .processRelated(_.extend({isEager: true}, options))
+              .then(function() { return resp; });
+        })
+        .then(function(resp) {
+          collection.trigger('fetched', collection, resp, options);
+          return collection;
+        });
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.
@@ -591,9 +628,9 @@
 
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s).
-  var EagerRelation = Bookshelf.EagerRelation = function(parent, target, parentResponse) {
+  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse) {
     this.parent = parent;
-    this.target = target;
+    this.target = (parent instanceof Collection ? new parent.model() : parent);
     this.parentResponse = parentResponse;
     _.bindAll(this, 'matchResponses');
   };
@@ -663,7 +700,7 @@
       for (var i = 0, l = responses.length; i < l; i++) {
 
         // Get the current relation this response matches up with, based
-        // on the pendingNames array.
+        // on the `pendingNames` array.
         var name          = this.pendingNames[i];
         var relation      = handled[name];
         var relatedData   = relation.relatedData;
@@ -764,16 +801,15 @@
     // the promise is resolved. Any `success` handler passed in the
     // options will be called - used by both models & collections.
     select: function() {
-      var addConstraints, sync = this;
-      var options = sync.options;
-      var model = this.model;
+      var addConstraints;
+      var model   = this.model;
+      var options = this.options;
+      var columns = options.columns;
       var relatedData = model.relatedData;
 
       if ((addConstraints = model._addConstraints(relatedData)) !== true) {
         return addConstraints;
       }
-
-      var columns = options.columns;
 
       if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
 
@@ -781,57 +817,14 @@
         columns = relatedData.columns;
       }
 
-      return model.triggerThen('fetching', model, columns, options).then(function() {
+      var sync = this;
+
+      // Create the deferred object, triggering a `fetching` event if the model
+      // isn't an eager load.
+      return when(function(){
+        if (!options.isEager) return model.triggerThen('fetching', model, columns, options);
+      }()).then(function() {
         return sync.query.select(columns);
-      })
-      .then(function(resp) {
-
-        if (resp && resp.length > 0) {
-
-          // If this is a model fetch, then we set the parsed attributes
-          // on the model, otherwise, we reset the collection.
-          if (model instanceof Model) {
-            model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
-          } else {
-            model.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
-          }
-
-          // If the `withRelated` property is specified on the options hash, we dive
-          // into the `EagerRelation`. If the current querying object is a collection,
-          // we find the associated `model` to determine necessary eager relations.
-          // Once the `EagerRelation` is complete, we return the original response from the query.
-          if (options.withRelated) {
-            var target = (model instanceof Collection ? new model.model() : model);
-            return new EagerRelation(model, target, resp)
-              .processRelated(options)
-              .then(function() {
-                return resp;
-              });
-          }
-
-          return resp;
-        }
-
-        // If `{require: true}` is set as an option, the fetch is considered
-        // a failure if the model comes up blank.
-        if (options.require) return when.reject(new Error('EmptyResponse'));
-
-        if (model instanceof Model) {
-          model.clear({silent: true})._reset();
-          return {};
-        }
-
-        model.reset([], {silent: true});
-        return [];
-
-      }).then(function(resp) {
-
-        if (!_.isEmpty(resp)) {
-          model.trigger('fetched', model, resp, options);
-        }
-
-        return model;
-
       }).ensure(function() {
         model.resetQuery();
       });
