@@ -766,15 +766,15 @@
   // -------------------
 
   // Sync is the dispatcher for any database queries,
-  // taking the `model` or `collection` being queried, along with
+  // taking the "syncing" `model` or `collection` being queried, along with
   // a hash of options that are used in the various query methods.
   // If the `transacting` option is set, the query is assumed to be
   // part of a transaction, and this information is passed along to `Knex`.
-  var Sync = Bookshelf.Sync = function(model, options) {
+  var Sync = Bookshelf.Sync = function(syncing, options) {
     options || (options = {});
-    this.model   = model;
+    this.syncing = syncing;
     this.options = options;
-    this.query   = model.query();
+    this.query   = syncing.query();
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
@@ -782,7 +782,7 @@
 
     // Select the first item from the database - only used by models.
     first: function() {
-      this.query.where(extendNull(this.model.attributes)).limit(1);
+      this.query.where(extendNull(this.syncing.attributes)).limit(1);
       return this.select();
     },
 
@@ -793,12 +793,12 @@
     // options will be called - used by both models & collections.
     select: function() {
       var addConstraints;
-      var model   = this.model;
-      var options = this.options;
-      var columns = options.columns;
-      var relatedData = model.relatedData;
+      var syncing     = this.syncing;
+      var options     = this.options;
+      var columns     = options.columns;
+      var relatedData = syncing.relatedData;
 
-      if ((addConstraints = model._addConstraints(relatedData, options.parentResponse)) !== true) {
+      if ((addConstraints = syncing._addConstraints(relatedData, options.parentResponse)) !== true) {
         return addConstraints;
       }
 
@@ -813,44 +813,44 @@
       // Create the deferred object, triggering a `fetching` event if the model
       // isn't an eager load.
       return when(function(){
-        if (!options.isEager) return model.triggerThen('fetching', model, columns, options);
+        if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
       }()).then(function() {
         return sync.query.select(columns);
       }).ensure(function() {
-        model.resetQuery();
+        syncing.resetQuery();
       });
     },
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
-      var model = this.model;
+      var syncing = this.syncing;
       return this.query
-        .idAttribute(model.idAttribute)
-        .insert(model.format(extendNull(model.attributes)))
+        .idAttribute(syncing.idAttribute)
+        .insert(syncing.format(extendNull(syncing.attributes)))
         .then(function(resp) {
-          model._previousAttributes = extendNull(model.attributes);
+          syncing._previousAttributes = extendNull(syncing.attributes);
           return resp;
         });
     },
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      var model = this.model;
+      var syncing = this.syncing;
       return this.query
-        .where(model.idAttribute, model.id)
-        .update(model.format(extendNull(model.attributes)))
+        .where(syncing.idAttribute, syncing.id)
+        .update(syncing.format(extendNull(syncing.attributes)))
         .then(function(resp) {
-          model._previousAttributes = extendNull(model.attributes);
+          syncing._previousAttributes = extendNull(syncing.attributes);
           return resp;
         });
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres, model = this.model;
-      if (this.model.id != null) {
+      var wheres, syncing = this.syncing;
+      if (this.syncing.id != null) {
         wheres = {};
-        wheres[this.model.idAttribute] = this.model.id;
+        wheres[this.syncing.idAttribute] = this.syncing.id;
       }
       if (!wheres && this.query.wheres.length === 0) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
