@@ -101,6 +101,7 @@
       } else if (this instanceof Collection) {
         this.query('where', relatedData.foreignKey, '=', relatedData.fkValue);
       }
+      if (relatedData.type === 'morphMany') this.query('where', relatedData.morphKey, relatedData.morphValue);
     },
 
     // Helper method for adding the constraints needed on a regular or eager loaded
@@ -179,10 +180,7 @@
     // to be the singular of this object's `tableName` with an `_id` suffix, but a custom `foreignKey`
     // attribute may also be specified.
     hasOne: function(Target, foreignKey) {
-      return this._relatesTo(Target, {
-        type: 'hasOne',
-        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
-      });
+      return this._hasOneOrMany(Target, foreignKey, 'hasOne');
     },
 
     // The `hasMany` relation specifies that this object has one or
@@ -190,10 +188,7 @@
     // to be the singular of this object's `tableName` with an `_id` suffix, but a custom `foreignKey`
     // attribute may also be specified.
     hasMany: function(Target, foreignKey) {
-      return this._relatesTo(Target, {
-        type: 'hasMany',
-        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
-      });
+      return this._hasOneOrMany(Target, foreignKey, 'hasMany');
     },
 
     // A reverse `hasOne` relation, the `belongsTo`, where the specified key in this table
@@ -218,6 +213,72 @@
           _.result(this, 'tableName'),
           _.result(Target.prototype, 'tableName')
         ].sort().join('_')
+      });
+    },
+
+    // A `morphOne` relation is a one-to-one polymorphic association from this model
+    // to another model.
+    morphOne: function(Target, name) {
+     return this._morphOneOrMany(Target, name, 'morphOne');
+    },
+
+    // A `morphMany` relation is a polymorphic many-to-one relation from this model
+    // to many of another model.
+    morphMany: function(Target, name) {
+     return this._morphOneOrMany(Target, name, 'morphMany');
+    },
+
+    // Defines the opposite end of a `morphOne` or `morphMany` relationship, where
+    // the alternate end of the polymorphic model is defined.
+    morphTo: function(name) {
+      var foreignTable = this.get(name + '_type');
+      var foreignKey = this.get(name + '_id');
+
+      // Get the rest of the potential constructors, and filter them based on the foreign
+      // table provided.
+      var candidates = _.rest(arguments);
+
+      // Only allow these to be `morphTo` fetched if we know the constraints, otherwise
+      // if this is an eager load, we handle it a bit differently.
+      if (!this._isEager) {
+        if (!foreignTable || !foreignKey) {
+          throw new Error('The ' + name + ' constraints (type and id) must be supplied for morphTo');
+        }
+        var Target = morphCandidate(candidates, foreignTable);
+        return this._relatesTo(Target, {
+          type: 'morphTo',
+          name: name,
+          foreignKey: _.result(Target.prototype, 'idAttribute'),
+          otherKey: name + '_id'
+        });
+      }
+
+      // Return an object we'll use to put together the potential eager fetched `morphTo`
+      // objects.
+      return {
+        type: 'morphTo',
+        name: name,
+        candidates: candidates
+      };
+    },
+
+    // Helper for setting up the `hasOne` or `hasMany` relations.
+    _hasOneOrMany: function(Target, foreignKey, type) {
+      return this._relatesTo(Target, {
+        type: type,
+        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
+      });
+    },
+
+    // Helper for setting up the `morphOne` or `morphMany` relations.
+    _morphOneOrMany: function(Target, name, type) {
+      if (!name) throw new Error('The polymorphic `name` is required.');
+      return this._relatesTo(Target, {
+        type: type,
+        name: name,
+        foreignKey: name + '_id',
+        morphKey: name + '_type',
+        morphValue: _.result(this, 'tableName')
       });
     },
 
@@ -416,7 +477,8 @@
     _relatesTo: function(Target, options) {
       var target, data;
       var type = options.type;
-      var multi = (type === 'hasMany' || type === 'belongsToMany');
+      var multi  = (type === 'hasMany' || type === 'belongsToMany' || type === 'morphMany');
+      var single = (type === 'belongsTo' || type === 'morphOne' || type === 'morphTo');
 
       if (!multi) {
         data = {};
@@ -442,14 +504,17 @@
         } else {
           options.eager.ModelCtor = Target;
         }
-        options.parentIdAttr = (type === 'belongsTo' ? options.otherKey : _.result(this, 'idAttribute'));
+        options.parentIdAttr = (single ? options.otherKey : _.result(this, 'idAttribute'));
       } else {
-        if (type === 'belongsTo') {
+        if (type === 'belongsTo' || type === 'morphTo') {
           options.fkValue = this.get(options.otherKey);
         } else {
           options.fkValue = this.id;
         }
-        if (!multi) data[options.foreignKey] = options.fkValue;
+        if (!multi) {
+          data[options.foreignKey] = options.fkValue;
+          if (options.morphKey) data[options.morphKey] = options.morphValue;
+        }
       }
 
       // Create a new instance of the `Model` or `Collection`, and set the
@@ -622,7 +687,7 @@
         // Internal flag to determine whether to set the ctor(s) on the relatedData hash.
         target._isEager = true;
         relation = target[name]();
-        delete target['_isEager'];
+        delete target._isEager;
 
         if (!relation) throw new Error(name + ' is not defined on the model.');
 
@@ -651,14 +716,17 @@
     // Handles an eagerFetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
     eagerFetch: function(name, handled, options) {
+      if (handled.type === 'morphTo') {
+        return this.morphToFetch(name, handled, options);
+      }
       var that = this;
       return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
           if (resp && resp.length > 0) {
-            var relatedModels = that.pushModels(name, handled, resp);
             // If there are additional related items, fetch them and figure out the latest
+            var relatedModels = that.pushModels(name, handled, resp);
             if (options.withRelated) {
               return new EagerRelation(relatedModels, resp, {
                 tempModel: new handled.relatedData.eager.ModelCtor()
@@ -671,35 +739,77 @@
         });
     },
 
+    // Special handler for the eager loaded morph-to relations, this handles
+    // the fact that there are several potential models that we need to be fetching against.
+    // pairing them up onto a single response for the eager loading.
+    morphToFetch: function(name, settings, options) {
+      var pending = [], group;
+      var groups = this.parent.groupBy(function(m) {
+        return m.get(name + '_type');
+      });
+      for (group in groups) {
+        var Target = morphCandidate(settings.candidates, group);
+        var target = new Target();
+        pending.push(target
+          .query('whereIn', _.result(target, 'idAttribute'), _.uniq(_.invoke(groups[group], 'get', name + '_id')))
+          .sync(options)
+          .select()
+          .then(this.morphToHandler(name, settings, Target)));
+      }
+      return when.all(pending).then(function(resps) {
+        return _.flatten(resps);
+      });
+    },
+
+    // Handler for the individual `morphTo` fetches.
+    morphToHandler: function(name, settings, Target) {
+      var that = this;
+      return function(resp) {
+        // If there are additional related items, fetch them and figure out the latest
+        var relatedModels = that.pushModels(name, {
+          relatedData: {
+            type: 'morphTo',
+            foreignKey: Target.prototype.idAttribute,
+            otherKey: name + '_id',
+            morphKey: name + '_type',
+            morphValue: _.result(Target.prototype, 'tableName'),
+            eager: {
+              ModelCtor: Target
+            }
+          }
+        }, resp);
+      };
+    },
+
     // Pushes each of the incoming models onto a new `RelatedModels` object, which is set on the
     // `eagerModels hash with the current fetch value, so we can attach the correct models &
     // collections onto their parent objects.
     pushModels: function(name, handled, resp) {
-      var related     = new RelatedModels([]);
       var parent      = this.parent;
-      var relatedData = handled.relatedData;
-      var eagerData   = relatedData.eager;
+      var related     = new RelatedModels([]);
       var models      = related.models;
+      var relatedData = handled.relatedData;
+      var type        = relatedData.type;
       for (var i = 0, l = resp.length; i < l; i++) {
-        models.push(new eagerData.ModelCtor(resp[i], {parse: true})._reset());
+        models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
       }
       // Attach the appropriate related items onto the parent model.
       for (i = 0, l = parent.models.length; i < l; i++) {
         var model = parent.models[i];
-        var id = (relatedData.type === 'belongsTo' ? model.get(relatedData.otherKey) : model.id);
-        model.relations[name] = this._eagerRelated(relatedData, related, id);
+        if (type === 'morphTo' && model.get(relatedData.morphKey) !== relatedData.morphValue) continue;
+        var id = (type === 'belongsTo' || type === 'morphTo' ? model.get(relatedData.otherKey) : model.id);
+        model.relations[name] = this._eagerRelated(type, relatedData, related, id);
       }
       return related;
     },
 
     // Handles the "eager related" relationship matching.
-    _eagerRelated: function(relatedData, models, id) {
+    _eagerRelated: function(type, relatedData, models, id) {
       var where = {};
-      var type  = relatedData.type;
-      if (type === 'hasOne' || type === 'belongsTo') {
+      if (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') {
         where[relatedData.foreignKey] = id;
         return models.findWhere(where) || new relatedData.eager.ModelCtor();
-      } else if (type === 'hasMany') {
+      } else if (type === 'hasMany' || type === 'morphMany') {
         where[relatedData.foreignKey] = id;
         return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
       } else {
@@ -715,7 +825,7 @@
     this.models = models;
     this.length = this.models.length;
   };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'));
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
@@ -759,7 +869,6 @@
     // the promise is resolved. Any `success` handler passed in the
     // options will be called - used by both models & collections.
     select: function() {
-      var addConstraints;
       var syncing     = this.syncing;
       var options     = this.options;
       var columns     = options.columns;
@@ -932,6 +1041,18 @@
   // does not inherit the `Object.prototype`.
   var extendNull = function(target) {
     return _.extend(Object.create(null), target);
+  };
+
+  // Finds the specific `morphTo` table we should be working with, or throws
+  // an error if none is matched.
+  var morphCandidate = function(candidates, foreignTable) {
+    var Target = _.find(candidates, function(Candidate) {
+      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
+    });
+    if (!Target) {
+      throw new Error('The target polymorphic model was not found');
+    }
+    return Target;
   };
 
   // Simple memoization of the singularize call.
