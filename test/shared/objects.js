@@ -18,6 +18,9 @@ module.exports = function(Shelf) {
     authors: function() {
       return this.hasMany(Author);
     },
+    photos: function() {
+      return this.morphMany(Photo, 'imageable');
+    },
     blogs: function() {
       return this.hasMany(Blog);
     },
@@ -48,6 +51,9 @@ module.exports = function(Shelf) {
     tableName: 'authors',
     site: function() {
       return this.belongsTo(Site);
+    },
+    photo: function() {
+      return this.morphOne(Photo, 'imageable');
     },
     posts: function() {
       return this.belongsToMany(Post);
@@ -144,6 +150,17 @@ module.exports = function(Shelf) {
     }
   });
 
+  var Photo = Shelf.Model.extend({
+    tableName: 'photos',
+    imageable: function() {
+      return this.morphTo('imageable', Site, Author);
+     }
+   });
+
+  var Photos = Shelf.Collection.extend({
+    model: Photo
+  });
+
   return {
     Models: {
       Site: Site,
@@ -155,14 +172,16 @@ module.exports = function(Shelf) {
       Comment: Comment,
       Tag: Tag,
       User: User,
-      Role: Role
+      Role: Role,
+      Photo: Photo
     },
     Collections: {
       Sites: Sites,
       Admins: Admins,
       Posts: Posts,
       Blogs: Blogs,
-      Comments: Comments
+      Comments: Comments,
+      Photos: Photos
     }
   };
 

@@ -19,6 +19,7 @@ module.exports = function(Bookshelf, handler) {
   var Tag      = Models.Tag;
   var User     = Models.User;
   var Role     = Models.Role;
+  var Photo    = Models.Photo;
 
   // Collections
   var Sites    = Collections.Sites;
@@ -26,6 +27,7 @@ module.exports = function(Bookshelf, handler) {
   var Blogs    = Collections.Blogs;
   var Posts    = Collections.Posts;
   var Comments = Collections.Comment;
+  var Photos   = Collections.Photos;
 
   describe('Bookshelf Relations', function() {
 
@@ -254,6 +256,45 @@ module.exports = function(Bookshelf, handler) {
 
     });
 
+    describe('Polymorphic associations', function() {
+
+      it('handles morphOne', function(ok) {
+        new Author({id: 1})
+          .photo()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('handles morphMany', function(ok) {
+        new Site({id: 1})
+          .photos()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('handles morphTo (authors)', function(ok) {
+        new Photo({imageable_id: 1, imageable_type: 'authors'})
+          .imageable()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('handles morphTo (sites)', function(ok) {
+        new Photo({imageable_id: 1, imageable_type: 'sites'})
+          .imageable()
+          .fetch()
+          .then(handler(this, ok), ok);
+      });
+
+      it('eager loads morphMany', function(ok) {
+        new Sites().fetch({withRelated: ['photos']}).then(handler(this, ok), ok);
+      });
+
+      it('eager loads morphTo', function(ok) {
+        new Photos().fetch({withRelated: ['imageable']}).then(handler(this, ok), ok);
+      });
+
+    });
 
   });
 

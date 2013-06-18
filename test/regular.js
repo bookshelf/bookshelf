@@ -21,15 +21,15 @@ module.exports = function(Bookshelf, type) {
     });
 
     describe('Bookshelf.Model - ' + type, function() {
-      require('./lib/model')(Bookshelf, handler(type, 'model'), 'DB');
+      require('./lib/model')(Bookshelf, handler(Bookshelf, type, 'model'), 'DB');
     });
 
     describe('Bookshelf.Collection - ' + type, function() {
-      require('./lib/collection')(Bookshelf, handler(type, 'collection'), 'DB');
+      require('./lib/collection')(Bookshelf, handler(Bookshelf, type, 'collection'), 'DB');
     });
 
     describe('Bookshelf.Relations - ' + type, function() {
-      require('./lib/relations')(Bookshelf, handler(type, 'relations'), 'DB');
+      require('./lib/relations')(Bookshelf, handler(Bookshelf, type, 'relations'), 'DB');
     });
 
     after(function(ok) {
@@ -40,10 +40,20 @@ module.exports = function(Bookshelf, type) {
   });
 };
 
-var handler = function(instance, section) {
+var handler = function(Shelf, instance, section) {
   var item = 1;
   return function(test, resolver, isAll) {
     var fn = function(data) {
+
+      if (data instanceof Shelf.Model) {
+        if (_.isArray(data.models)) {
+          setTimeout(function() {
+            throw new Error('Models are still hanging around from the eager load');
+          }, 1);
+        }
+      }
+
+
       data = JSON.parse(JSON.stringify(data));
       var label = '' + section + '.' + item + ' - ' + test.test.title;
       if (dev) {

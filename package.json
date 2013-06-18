@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A lightweight ORM for Postgres, MySQL, and SQLite3 with some Backbone",
   "main": "bookshelf.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "database",
     "object relational mapper",
     "datamapper",
-    "active record"
+    "active record",
+    "polymorphic associations"
   ],
   "repository":{
     "type": "git",

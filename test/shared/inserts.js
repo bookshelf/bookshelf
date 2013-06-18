@@ -138,6 +138,38 @@ module.exports = function(Bookshelf) {
       comment: 'this is neat.'
     }]),
 
+    Knex('photos').insert([{
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 1,
+      imageable_type: 'authors'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 2,
+      imageable_type: 'authors'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 1,
+      imageable_type: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 1,
+      imageable_type: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 2,
+      imageable_type: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      imageable_id: 2,
+      imageable_type: 'sites'
+    }]),
+
     Knex('users').idAttribute('uid').insert({uid: 1, username: 'root'}),
 
     Knex('roles').idAttribute('rid').insert({rid: 1, name: 'admin'}),
