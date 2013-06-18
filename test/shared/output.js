@@ -95,7 +95,7 @@ module.exports = {
         content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
       }]
     },
-    'relations.1 - handles belongsTo': {
+    'relations.1 - handles belongsTo (blog, site)': {
       mysql: [{
         blog: {
           id: 4,
@@ -133,7 +133,7 @@ module.exports = {
         }
       }]
     },
-    'relations.2 - handles hasMany': {
+    'relations.2 - handles hasMany (posts)': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -174,7 +174,7 @@ module.exports = {
         content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
       }]
     },
-    'relations.3 - handles hasOne': {
+    'relations.3 - handles hasOne (meta)': {
       mysql: {
         site_id: 1,
         id: 1,
@@ -191,7 +191,7 @@ module.exports = {
         description: 'This is a description for the Knexjs Site'
       }
     },
-    'relations.4 - handles belongsToMany': {
+    'relations.4 - handles belongsToMany (posts)': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -220,7 +220,7 @@ module.exports = {
         _pivot_post_id: 1
       }]
     },
-    'relations.5 - eager loads "hasOne" relationships correctly': {
+    'relations.5 - eager loads "hasOne" relationships correctly (site -> meta)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -249,7 +249,7 @@ module.exports = {
         }
       }
     },
-    'relations.6 - eager loads "hasMany" relationships correctly': {
+    'relations.6 - eager loads "hasMany" relationships correctly (site -> authors, blogs)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -323,7 +323,7 @@ module.exports = {
         }]
       }
     },
-    'relations.7 - eager loads "belongsTo" relationships correctly': {
+    'relations.7 - eager loads "belongsTo" relationships correctly (blog -> site)': {
       mysql: {
         id: 3,
         site_id: 2,
@@ -352,7 +352,7 @@ module.exports = {
         }
       }
     },
-    'relations.8 - eager loads "belongsToMany" models correctly': {
+    'relations.8 - eager loads "belongsToMany" models correctly (post -> tags)': {
       mysql: {
         id: 1,
         owner_id: 1,
@@ -423,7 +423,7 @@ module.exports = {
         }]
       }
     },
-    'relations.9 - eager loads "hasOne" models correctly': {
+    'relations.9 - eager loads "hasOne" models correctly (sites -> meta)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -476,7 +476,7 @@ module.exports = {
         }
       }]
     },
-    'relations.10 - eager loads "belongsTo" models correctly': {
+    'relations.10 - eager loads "belongsTo" models correctly (blogs -> site)': {
       mysql: [{
         id: 1,
         site_id: 1,
@@ -577,7 +577,7 @@ module.exports = {
         }
       }]
     },
-    'relations.11 - eager loads "hasMany" models correctly': {
+    'relations.11 - eager loads "hasMany" models correctly (site -> blogs)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -618,7 +618,7 @@ module.exports = {
         }]
       }
     },
-    'relations.12 - eager loads "belongsToMany" models correctly': {
+    'relations.12 - eager loads "belongsToMany" models correctly (posts -> tags)': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -710,7 +710,7 @@ module.exports = {
         tags: []
       }]
     },
-    'relations.13 - eager loads "hasMany" -> "hasMany"': {
+    'relations.13 - eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -817,7 +817,7 @@ module.exports = {
         }]
       }
     },
-    'relations.14 - eager loads "hasMany" -> "belongsToMany"': {
+    'relations.14 - eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -942,7 +942,7 @@ module.exports = {
         }]
       }
     },
-    'relations.15 - does multi deep eager loads': {
+    'relations.15 - does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -1160,7 +1160,7 @@ module.exports = {
         }]
       }
     },
-    'relations.16 - eager loads "hasMany" -> "hasMany"': {
+    'relations.16 - eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1351,10 +1351,19 @@ module.exports = {
         }]
       }]
     },
-    'relations.17 - eager loads relations on a populated model': {
+    'relations.17 - eager loads relations on a populated model (site -> blogs, authors.site)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1373,15 +1382,6 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
@@ -1449,10 +1449,19 @@ module.exports = {
         }]
       }
     },
-    'relations.18 - eager loads attributes on a collection': {
+    'relations.18 - eager loads attributes on a collection (sites -> blogs, authors.site)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1471,19 +1480,19 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },{
         id: 2,
         name: 'bookshelfjs.org',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog'
+        },{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 3,
           site_id: 2,
@@ -1502,15 +1511,6 @@ module.exports = {
             id: 2,
             name: 'bookshelfjs.org'
           }
-        }],
-        blogs: [{
-          id: 3,
-          site_id: 2,
-          name: 'Main Site Blog'
-        },{
-          id: 4,
-          site_id: 2,
-          name: 'Alternate Site Blog'
         }]
       }],
       postgres: [{
@@ -1640,7 +1640,7 @@ module.exports = {
         }]
       }]
     },
-    'relations.19 - works with many-to-many': {
+    'relations.19 - works with many-to-many (user -> roles)': {
       mysql: [{
         rid: 1,
         name: 'admin',
@@ -1660,7 +1660,7 @@ module.exports = {
         _pivot_rid: 1
       }]
     },
-    'relations.20 - works with eager loaded many-to-many': {
+    'relations.20 - works with eager loaded many-to-many (user -> roles)': {
       mysql: {
         uid: 1,
         username: 'root',
@@ -1692,7 +1692,7 @@ module.exports = {
         }]
       }
     },
-    'relations.21 - handles morphOne': {
+    'relations.21 - handles morphOne (photo)': {
       mysql: {
         imageable_id: 1,
         imageable_type: 'authors',
@@ -1715,7 +1715,7 @@ module.exports = {
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
       }
     },
-    'relations.22 - handles morphMany': {
+    'relations.22 - handles morphMany (photo)': {
       mysql: [{
         id: 3,
         url: 'https://www.google.com/images/srpr/logo4w.png',
@@ -1756,7 +1756,7 @@ module.exports = {
         imageable_type: 'sites'
       }]
     },
-    'relations.23 - handles morphTo (authors)': {
+    'relations.23 - handles morphTo (imageable "authors")': {
       mysql: {
         id: 1,
         site_id: 1,
@@ -1776,7 +1776,7 @@ module.exports = {
         last_name: 'Griesser'
       }
     },
-    'relations.24 - handles morphTo (sites)': {
+    'relations.24 - handles morphTo (imageable "sites")': {
       mysql: {
         id: 1,
         name: 'knexjs.org'
@@ -1790,7 +1790,7 @@ module.exports = {
         name: 'knexjs.org'
       }
     },
-    'relations.25 - eager loads morphMany': {
+    'relations.25 - eager loads morphMany (sites -> photos)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1891,7 +1891,7 @@ module.exports = {
         }]
       }]
     },
-    'relations.26 - eager loads morphTo': {
+    'relations.26 - eager loads morphTo (photos -> imageable)': {
       mysql: [{
         id: 1,
         url: 'https://www.google.com/images/srpr/logo4w.png',

@@ -33,7 +33,7 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Standard Relations - Models', function() {
 
-      it('handles belongsTo', function(ok) {
+      it('handles belongsTo (blog, site)', function(ok) {
 
         var responses = [];
 
@@ -50,7 +50,7 @@ module.exports = function(Bookshelf, handler) {
           .then(handler(this, ok), ok);
       });
 
-      it('handles hasMany', function(ok) {
+      it('handles hasMany (posts)', function(ok) {
         new Blog({id: 1})
           .fetch()
           .then(function(model) {
@@ -59,14 +59,14 @@ module.exports = function(Bookshelf, handler) {
           .then(handler(this, ok), ok);
       });
 
-      it('handles hasOne', function(ok) {
+      it('handles hasOne (meta)', function(ok) {
         new Site({id: 1})
           .meta()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('handles belongsToMany', function(ok) {
+      it('handles belongsToMany (posts)', function(ok) {
         new Author({id: 1})
           .posts()
           .fetch()
@@ -77,19 +77,19 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Eager Loading - Models', function() {
 
-      it('eager loads "hasOne" relationships correctly', function(ok) {
+      it('eager loads "hasOne" relationships correctly (site -> meta)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['meta']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "hasMany" relationships correctly', function(ok) {
+      it('eager loads "hasMany" relationships correctly (site -> authors, blogs)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors', 'blogs']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "belongsTo" relationships correctly', function(ok) {
+      it('eager loads "belongsTo" relationships correctly (blog -> site)', function(ok) {
         new Blog({id: 3}).fetch({
           withRelated: ['site']
         }).then(handler(this, ok), ok);
@@ -101,7 +101,7 @@ module.exports = function(Bookshelf, handler) {
         });
       });
 
-      it('eager loads "belongsToMany" models correctly', function(ok) {
+      it('eager loads "belongsToMany" models correctly (post -> tags)', function(ok) {
         new Post({id: 1}).fetch({
           withRelated: ['tags']
         }).then(handler(this, ok), ok);
@@ -111,25 +111,25 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Eager Loading - Collections', function() {
 
-      it('eager loads "hasOne" models correctly', function(ok) {
+      it('eager loads "hasOne" models correctly (sites -> meta)', function(ok) {
         new Sites().fetch({
           withRelated: ['meta']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "belongsTo" models correctly', function(ok) {
+      it('eager loads "belongsTo" models correctly (blogs -> site)', function(ok) {
         new Blogs().fetch({
           withRelated: ['site']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "hasMany" models correctly', function(ok) {
+      it('eager loads "hasMany" models correctly (site -> blogs)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['blogs']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "belongsToMany" models correctly', function(ok) {
+      it('eager loads "belongsToMany" models correctly (posts -> tags)', function(ok) {
         new Posts()
           .query('where', 'blog_id', '=', 1)
           .fetch({
@@ -142,19 +142,19 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Nested Eager Loading - Models', function() {
 
-      it('eager loads "hasMany" -> "hasMany"', function(ok) {
+      it('eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.ownPosts']
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads "hasMany" -> "belongsToMany"', function(ok) {
+      it('eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.posts']
         }).then(handler(this, ok), ok);
       });
 
-      it('does multi deep eager loads', function(ok) {
+      it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function(ok) {
         new Site({id: 1}).fetch({
           withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
         }).then(handler(this, ok), ok);
@@ -164,9 +164,9 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Nested Eager Loading - Collections', function() {
 
-      it('eager loads "hasMany" -> "hasMany"', function(ok) {
-        var site = new Sites();
-        site.fetch({
+      it('eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)', function(ok) {
+        var sites = new Sites();
+        sites.fetch({
           withRelated: ['authors.ownPosts']
         }).then(handler(this, ok), ok);
       });
@@ -175,13 +175,13 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Model & Collection - load', function() {
 
-      it('eager loads relations on a populated model', function(ok) {
+      it('eager loads relations on a populated model (site -> blogs, authors.site)', function(ok) {
         new Site({id: 1}).fetch().then(function(m) {
           return m.load(['blogs', 'authors.site']);
         }).then(handler(this, ok), ok);
       });
 
-      it('eager loads attributes on a collection', function(ok) {
+      it('eager loads attributes on a collection (sites -> blogs, authors.site)', function(ok) {
         new Sites().fetch().then(function(c) {
           return c.load(['blogs', 'authors.site']);
         }).then(handler(this, ok), ok);
@@ -241,14 +241,14 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Custom foreignKey & otherKey', function() {
 
-      it('works with many-to-many', function(ok) {
+      it('works with many-to-many (user -> roles)', function(ok) {
         new User({uid: 1})
           .roles()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('works with eager loaded many-to-many', function(ok) {
+      it('works with eager loaded many-to-many (user -> roles)', function(ok) {
         new User({uid: 1})
           .fetch({withRelated: ['roles']})
           .then(handler(this, ok), ok);
@@ -258,39 +258,39 @@ module.exports = function(Bookshelf, handler) {
 
     describe('Polymorphic associations', function() {
 
-      it('handles morphOne', function(ok) {
+      it('handles morphOne (photo)', function(ok) {
         new Author({id: 1})
           .photo()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('handles morphMany', function(ok) {
+      it('handles morphMany (photo)', function(ok) {
         new Site({id: 1})
           .photos()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('handles morphTo (authors)', function(ok) {
+      it('handles morphTo (imageable "authors")', function(ok) {
         new Photo({imageable_id: 1, imageable_type: 'authors'})
           .imageable()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('handles morphTo (sites)', function(ok) {
+      it('handles morphTo (imageable "sites")', function(ok) {
         new Photo({imageable_id: 1, imageable_type: 'sites'})
           .imageable()
           .fetch()
           .then(handler(this, ok), ok);
       });
 
-      it('eager loads morphMany', function(ok) {
+      it('eager loads morphMany (sites -> photos)', function(ok) {
         new Sites().fetch({withRelated: ['photos']}).then(handler(this, ok), ok);
       });
 
-      it('eager loads morphTo', function(ok) {
+      it('eager loads morphTo (photos -> imageable)', function(ok) {
         new Photos().fetch({withRelated: ['imageable']}).then(handler(this, ok), ok);
       });
 

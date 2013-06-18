@@ -322,9 +322,9 @@
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
       <li><b><a href="#Model-polymorphic-associations">Polymorphic Associations:</a></b></li>
-      <li>– <a href="#Model-morphOne">morphOne</a></li>
-      <li>– <a href="#Model-morphMany">morphMany</a></li>
-      <li>– <a href="#Model-morphTo">morphTo</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphOne">morphOne</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphMany">morphMany</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphTo">morphTo</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related</a></li>
       <li>– <a href="#Model-save">save</a></li>
@@ -457,6 +457,12 @@
       for promise flow control, <a href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
+    </p>
+
+    <p>
+      Special thanks to <a href="https://twitter.com/taylorotwell">Taylor Otwell</a> and his work
+      on the <a href="http://laravel.com/docs/eloquent">Eloquent ORM</a>, which has heavily
+      influenced the library's design.
     </p>
 
     <h2 id="introduction">Introduction</h2>
@@ -1097,15 +1103,24 @@ var Photo = Bookshelf.Model.extend({
       polymorphic relation.
     </p>
 
+<pre>
+var Photo = Bookshelf.Model.extend({
+  tableName: 'photos',
+  imageable: function() {
+    return this.morphTo('imageable', Site, Author);
+  }
+});
+</pre>
+
     <p class="warning">
       Note: a morphTo may not have a nested eager relation underneath it. From the example above, you could
       not do something like:
     </p>
 
 <pre>
-  new Photos().fetch({
-    withRelated: ['imageable.otherRelation']
-  });
+new Photos().fetch({
+  withRelated: ['imageable.otherRelation']
+});
 </pre>
 
     <p class="warning">The <tt>otherRelation</tt> in this case would be ignored.</p>
