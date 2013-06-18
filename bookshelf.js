@@ -589,7 +589,7 @@
     // Set the appropriate target for getting the eager relation data.
     this.target = options.tempModel || (parent instanceof Collection ? new parent.model() : parent);
     this.parentResponse = parentResponse;
-    _.bindAll(this, 'pushModels', 'eagerFetch', 'matchToParent');
+    _.bindAll(this, 'pushModels', 'eagerFetch');
   };
 
   _.extend(EagerRelation.prototype, Shared, {
@@ -690,10 +690,6 @@
         model.relations[name] = this._eagerRelated(relatedData, related, id);
       }
       return related;
-    },
-
-    matchToParent: function(name, resp) {
-
     },
 
     // Handles the "eager related" relationship matching.
