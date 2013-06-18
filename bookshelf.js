@@ -589,7 +589,6 @@
     // Set the appropriate target for getting the eager relation data.
     this.target = options.tempModel || (parent instanceof Collection ? new parent.model() : parent);
     this.parentResponse = parentResponse;
-    this.eagerModels    = {};
     _.bindAll(this, 'pushModels', 'eagerFetch', 'matchToParent');
   };
 
@@ -635,7 +634,7 @@
       // all necessary pairing with parent objects, etc.
       var pendingDeferred = [];
       for (name in handled) {
-        pendingDeferred.push(this.eagerFetch(name, _.extend({}, options, {
+        pendingDeferred.push(this.eagerFetch(name, handled[name], _.extend({}, options, {
           isEager: true,
           withRelated: subRelated[name]
         })));
@@ -651,19 +650,18 @@
 
     // Handles an eagerFetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
-    eagerFetch: function(name, options) {
+    eagerFetch: function(name, handled, options) {
       var that = this;
-      return this.handled[name]
+      return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
           if (resp && resp.length > 0) {
-            var relatedModels = that.pushModels(name, resp);
-
+            var relatedModels = that.pushModels(name, handled, resp);
             // If there are additional related items, fetch them and figure out the latest
             if (options.withRelated) {
               return new EagerRelation(relatedModels, resp, {
-                tempModel: new that.handled[name].relatedData.eager.ModelCtor()
+                tempModel: new handled.relatedData.eager.ModelCtor()
               }).fetch(options).then(function() {
                 return resp;
               });
@@ -676,12 +674,12 @@
     // Pushes each of the incoming models onto a new `RelatedModels` object, which is set on the
     // `eagerModels hash with the current fetch value, so we can attach the correct models &
     // collections onto their parent objects.
-    pushModels: function(name, resp) {
-      var related     = this.eagerModels[name] = new RelatedModels([]);
+    pushModels: function(name, handled, resp) {
+      var related     = new RelatedModels([]);
       var parent      = this.parent;
-      var relatedData = this.handled[name].relatedData;
+      var relatedData = handled.relatedData;
       var eagerData   = relatedData.eager;
-      var models = related.models;
+      var models      = related.models;
       for (var i = 0, l = resp.length; i < l; i++) {
         models.push(new eagerData.ModelCtor(resp[i], {parse: true})._reset());
       }
@@ -689,7 +687,7 @@
       for (i = 0, l = parent.models.length; i < l; i++) {
         var model = parent.models[i];
         var id = (relatedData.type === 'belongsTo' ? model.get(relatedData.otherKey) : model.id);
-        model.relations[name] = this._eagerRelated(relatedData, this.eagerModels[name], id);
+        model.relations[name] = this._eagerRelated(relatedData, related, id);
       }
       return related;
     },
