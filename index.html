@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.7)</span>
+      Bookshelf.js <span class="version">(0.1.8)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -321,6 +321,10 @@
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
+      <li><b><a href="#Model-polymorphic-associations">Polymorphic Associations:</a></b></li>
+      <li>– <a href="#Model-morphOne">morphOne</a></li>
+      <li>– <a href="#Model-morphMany">morphMany</a></li>
+      <li>– <a href="#Model-morphTo">morphTo</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related</a></li>
       <li>– <a href="#Model-save">save</a></li>
@@ -411,7 +415,8 @@
       <b>Bookshelf</b> is a <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> ORM for Node.js,
       built on <a href="http://knexjs.org">Knex</a> query builder.
       It extends the Model &amp; Collection foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>,
-      eager/nested-eager relation loading, and support for one-to-one, one-to-many, and many-to-many relations.
+      eager/nested-eager relation loading, <a href="#Model-polymorphic-associations">polymorphic associations</a>, and support for
+      one-to-one, one-to-many, and many-to-many relations.
     </p>
 
     <p>
@@ -424,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.7</h3>
+    <h3>Latest Release: 0.1.8</h3>
 
     <p>
       Current Develop &mdash;
@@ -1036,6 +1041,74 @@ new Tag({id: 1}).comments().fetch().then(function(model) {
   // ];
 });
 </pre>
+
+    <h3 id="Model-polymorphic-associations">Polymorphic Associations:</h3>
+
+    <p>
+      With <b>polymorphic associations</b>, a model can belong to more than one other model,
+      on a single association. For example, you might have a photo model that belongs
+      to either a <tt>Site</tt> model or a <tt>Post</tt> model. Here’s how this could be declared:
+    </p>
+
+<pre>
+var Site = Bookshelf.Model.extend({
+  tableName: 'sites',
+  photo: function() {
+    return this.morphOne(Photo, 'imageable');
+  }
+});
+
+var Post = Bookshelf.Model.extend({
+  tableName: 'posts',
+  photos: function() {
+    return this.morphMany(Photo, 'imageable');
+  }
+});
+
+var Photo = Bookshelf.Model.extend({
+  tableName: 'photos',
+  imageable: function() {
+    return this.morphTo('imageable', Site, Author);
+  }
+});
+</pre>
+
+    <p id="Model-morphOne">
+      <b class="header">morphOne</b><code>model.morphOne(Target, name)</code>
+      <br />
+      The <b>morphOne</b> is used to signify a polymorphic relation with another <b>Target</b> model,
+      where the <b>name</b> of the model is used to determine which database table keys are used.
+      The naming convention requires the <tt>name</tt> prefix an <tt>_id</tt> and <tt>_type</tt> field in
+      the database. So for the case above the table names would be <tt>imageable_type</tt> and <tt>imageable_id</tt>.
+    </p>
+
+    <p id="Model-morphMany">
+      <b class="header">morphMany</b><code>model.morphMany(Target, name)</code>
+      <br />
+      The <b>morphMany</b> property is essentially the same as a morphOne, but creating a collection rather than a
+      model (similar to a hasOne vs. hasMany relation).
+    </p>
+
+    <p id="Model-morphTo">
+      <b class="header">morphTo</b><code>model.morphTo(name, targets*)</code>
+      <br />
+      The <b>morphTo</b> relation is used to specify the inverse of the "morphOne" or "morphMany" relations,
+      where the <b>targets</b> must be passed to signify which models are the potential opposite end of the
+      polymorphic relation.
+    </p>
+
+    <p class="warning">
+      Note: a morphTo may not have a nested eager relation underneath it. From the example above, you could
+      not do something like:
+    </p>
+
+<pre>
+  new Photos().fetch({
+    withRelated: ['imageable.otherRelation']
+  });
+</pre>
+
+    <p class="warning">The <tt>otherRelation</tt> in this case would be ignored.</p>
 
     <p id="Model-relations">
       <b class="header">relations</b><code>model.relations</code>
@@ -1794,6 +1867,12 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.8</b> &mdash; <small><i>June 18, 2013</i></small><br />
+      Added support for polymorphic associations, with <tt>morphOne</tt>, <tt>morphMany</tt>, and
+      <tt>morphTo</tt> model methods.
+    </p>
 
     <p>
       <b class="header">0.1.7</b> &mdash; <small><i>June 15, 2013</i></small><br />

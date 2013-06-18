@@ -1355,15 +1355,6 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1382,11 +1373,29 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1405,15 +1414,6 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },
       sqlite3: {
@@ -1453,15 +1453,6 @@ module.exports = {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1480,19 +1471,19 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
         }]
       },{
         id: 2,
         name: 'bookshelfjs.org',
-        blogs: [{
-          id: 3,
-          site_id: 2,
-          name: 'Main Site Blog'
-        },{
-          id: 4,
-          site_id: 2,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 3,
           site_id: 2,
@@ -1511,6 +1502,15 @@ module.exports = {
             id: 2,
             name: 'bookshelfjs.org'
           }
+        }],
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog'
+        },{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog'
         }]
       }],
       postgres: [{
