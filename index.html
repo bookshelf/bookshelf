@@ -322,9 +322,9 @@
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
       <li><b><a href="#Model-polymorphic-associations">Polymorphic Associations:</a></b></li>
-      <li>– <a href="#Model-morphOne">morphOne</a></li>
-      <li>– <a href="#Model-morphMany">morphMany</a></li>
-      <li>– <a href="#Model-morphTo">morphTo</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphOne">morphOne</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphMany">morphMany</a></li>
+      <li>&nbsp;&nbsp;– <a href="#Model-morphTo">morphTo</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related</a></li>
       <li>– <a href="#Model-save">save</a></li>
@@ -1103,15 +1103,24 @@ var Photo = Bookshelf.Model.extend({
       polymorphic relation.
     </p>
 
+<pre>
+var Photo = Bookshelf.Model.extend({
+  tableName: 'photos',
+  imageable: function() {
+    return this.morphTo('imageable', Site, Author);
+  }
+});
+</pre>
+
     <p class="warning">
       Note: a morphTo may not have a nested eager relation underneath it. From the example above, you could
       not do something like:
     </p>
 
 <pre>
-  new Photos().fetch({
-    withRelated: ['imageable.otherRelation']
-  });
+new Photos().fetch({
+  withRelated: ['imageable.otherRelation']
+});
 </pre>
 
     <p class="warning">The <tt>otherRelation</tt> in this case would be ignored.</p>
