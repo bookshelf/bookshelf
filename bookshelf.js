@@ -69,7 +69,6 @@
       var target, data;
       if (!_.isArray(relations)) relations = relations ? [relations] : [];
       options = _.extend({}, options, {
-        isEager: true,
         shallow: true,
         withRelated: relations
       });
@@ -89,22 +88,6 @@
     // Creates and returns a new `Bookshelf.Sync` instance.
     sync: function(options) {
       return new Bookshelf.Sync(this, options);
-    },
-
-    // Helper for attaching query constraints on related
-    // `models` or `collections` as necessary.
-    _addConstraints: function(relatedData, resp) {
-      if (relatedData) {
-        if (!relatedData.fkValue && !resp) {
-          return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
-        }
-        if (relatedData.type !== 'belongsToMany') {
-          this._constraints(resp);
-        } else {
-          this._belongsToManyConstraints(resp);
-        }
-      }
-      return true;
     },
 
     // Standard constraints for regular or eager loaded relations.
@@ -152,37 +135,6 @@
       } else {
         builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
       }
-    },
-
-    // Called from `EagerRelation.fetch` with the context
-    // of an eager-loading model or collection, this function
-    // fetches the nested related items, and returns a deferred object,
-    // with the cumulative handling of multiple (potentially nested) relations.
-    _eagerFetch: function(options) {
-      var models = this.models = [];
-      var base   = this;
-      return this.sync(options)
-        .select()
-        .then(function(resp) {
-
-          // Only find additional related items & process if
-          // there is a response from the query. We can just push the models
-          // onto the current temporary object's model array.
-          if (resp && resp.length > 0) {
-
-            for (var i = 0, l = resp.length; i < l; i++) {
-              models.push(new base.relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
-            }
-
-            if (options.withRelated) {
-              return new EagerRelation(base, resp).fetch(options).then(function() {
-                return models;
-              });
-            }
-          }
-
-          return models;
-        });
     }
 
   };
@@ -325,7 +277,7 @@
             model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
             if (!options.withRelated) return resp;
             return new EagerRelation(model, resp)
-              .fetch(_.extend({isEager: true}, options))
+              .fetch(options)
               .then(function() { return resp; });
           } else {
             if (options.require) return when.reject(new Error('EmptyResponse'));
@@ -575,7 +527,7 @@
           }
           if (!options.withRelated) return resp;
             return new EagerRelation(collection, resp)
-              .fetch(_.extend({isEager: true}, options))
+              .fetch(options)
               .then(function() { return resp; });
         })
         .then(function(resp) {
@@ -618,12 +570,27 @@
   // ---------------
 
   // An `EagerRelation` object temporarily stores the models from an eager load,
-  // and handles matching eager loaded objects with their parent(s).
-  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse) {
-    this.parent = parent;
-    this.target = (parent instanceof Collection ? new parent.model() : parent);
+  // and handles matching eager loaded objects with their parent(s). The `tempModel`
+  // is only used to retrieve the value of the relation method, to know the constrains
+  // for the eager query.
+  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse, options) {
+    options || (options = {});
+
+    // Convert a `Model` or `Collection` to a `RelatedModel` instance for consistency when
+    // fetching & pairing the nested relation objects.
+    if (parent instanceof Model) {
+      this.parent = new RelatedModels([parent]);
+    } else if (parent instanceof Collection) {
+      this.parent = new RelatedModels(parent.models);
+    } else {
+      this.parent = parent;
+    }
+
+    // Set the appropriate target for getting the eager relation data.
+    this.target = options.tempModel || (parent instanceof Collection ? new parent.model() : parent);
     this.parentResponse = parentResponse;
-    _.bindAll(this, 'matchResponses');
+    this.eagerModels    = {};
+    _.bindAll(this, 'pushModels', 'eagerFetch', 'matchToParent');
   };
 
   _.extend(EagerRelation.prototype, Shared, {
@@ -642,7 +609,7 @@
       // which indicates a nested eager load.
       for (var i = 0, l = options.withRelated.length; i < l; i++) {
         related = options.withRelated[i].split('.');
-        name = related[0];
+        name    = related[0];
 
         // Add additional eager items to an array, to load at the next level in the query.
         if (related.length > 1) {
@@ -664,96 +631,97 @@
       }
 
       // Fetch all eager loaded models, loading them onto
-      // an array of pending deferred objects, so we easily
-      // re-organize the responses once all of the queries complete.
+      // an array of pending deferred objects, which will handle
+      // all necessary pairing with parent objects, etc.
       var pendingDeferred = [];
-      var pendingNames = this.pendingNames = [];
       for (name in handled) {
-        pendingNames.push(name);
-        pendingDeferred.push(handled[name]._eagerFetch(_.extend({}, options, {
-          target:         target,
-          eagerName:      name,
-          withRelated:    subRelated[name],
-          parentResponse: this.parentResponse
+        pendingDeferred.push(this.eagerFetch(name, _.extend({}, options, {
+          isEager: true,
+          withRelated: subRelated[name]
         })));
       }
 
       // Return a deferred handler for all of the nested object sync
-      // returning the original response when these syncs are complete.
-      return when.all(pendingDeferred).then(this.matchResponses);
+      // returning the original response when these syncs & pairings are complete.
+      var eagerHandler = this;
+      return when.all(pendingDeferred).then(function() {
+        return eagerHandler.parentResponse;
+      });
     },
 
-    // Handles the matching against an eager loaded relation.
-    // Each response object in the responses array should be an "instanceof"
-    // `RelatedCollection`, which has the name of the current relation,
-    // as well as the
-    matchResponses: function(responses) {
-      var parent  = this.parent;
-      var handled = this.handled;
+    // Handles an eagerFetch, passing the name of the item we're fetching for,
+    // and any options needed for the current fetch.
+    eagerFetch: function(name, options) {
+      var that = this;
+      return this.handled[name]
+        .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
+        .select()
+        .then(function(resp) {
+          if (resp && resp.length > 0) {
+            var relatedModels = that.pushModels(name, resp);
 
-      // Pair each of the query responses with the parent models.
-      for (var i = 0, l = responses.length; i < l; i++) {
-
-        // Get the current relation this response matches up with, based
-        // on the `pendingNames` array.
-        var response      = responses[i];
-        var name          = this.pendingNames[i];
-        var relation      = handled[name];
-        var relatedData   = relation.relatedData;
-        var type          = relatedData.type;
-
-        // If the parent is a collection, we need to loop over each of the
-        // models and attach the appropriate sub-models, since they are
-        // fetched eagerly. We will re-use the same models for each association level.
-        if (parent instanceof Collection) {
-          var relatedModels = new RelatedCollection(relation.models);
-          var models = parent.models;
-
-          // Attach the appropriate related items onto the parent model.
-          for (var i2 = 0, l2 = models.length; i2 < l2; i2++) {
-            var m  = models[i2];
-            var id = (type === 'belongsTo' ? m.get(relatedData.otherKey) : m.id);
-            var result = this._eagerRelated(type, relation, relatedModels, id);
-            m.relations[name] = result;
+            // If there are additional related items, fetch them and figure out the latest
+            if (options.withRelated) {
+              return new EagerRelation(relatedModels, resp, {
+                tempModel: new that.handled[name].relatedData.eager.ModelCtor()
+              }).fetch(options).then(function() {
+                return resp;
+              });
+            }
+            return resp;
           }
-        } else {
-          // If this is a hasOne or belongsTo, we only choose a single item from
-          // the relation.
-          if (type === 'hasOne' || type === 'belongsTo') {
-            parent.relations[name] = relation.models[0] || new relatedData.eager.ModelCtor();
-          } else {
-            parent.relations[name] = new relatedData.eager.CollectionCtor(relation.models, {parse: true});
-          }
-        }
+        });
+    },
+
+    // Pushes each of the incoming models onto a new `RelatedModels` object, which is set on the
+    // `eagerModels hash with the current fetch value, so we can attach the correct models &
+    // collections onto their parent objects.
+    pushModels: function(name, resp) {
+      var related     = this.eagerModels[name] = new RelatedModels([]);
+      var parent      = this.parent;
+      var relatedData = this.handled[name].relatedData;
+      var eagerData   = relatedData.eager;
+      var models = related.models;
+      for (var i = 0, l = resp.length; i < l; i++) {
+        models.push(new eagerData.ModelCtor(resp[i], {parse: true})._reset());
       }
+      // Attach the appropriate related items onto the parent model.
+      for (i = 0, l = parent.models.length; i < l; i++) {
+        var model = parent.models[i];
+        var id = (relatedData.type === 'belongsTo' ? model.get(relatedData.otherKey) : model.id);
+        model.relations[name] = this._eagerRelated(relatedData, this.eagerModels[name], id);
+      }
+      return related;
+    },
 
-      return this.parentResponse;
+    matchToParent: function(name, resp) {
+
     },
 
     // Handles the "eager related" relationship matching.
-    _eagerRelated: function(type, relation, eager, id) {
-      var relatedData = relation.relatedData;
+    _eagerRelated: function(relatedData, models, id) {
       var where = {};
+      var type  = relatedData.type;
       if (type === 'hasOne' || type === 'belongsTo') {
         where[relatedData.foreignKey] = id;
-        return eager.findWhere(where) || new relatedData.eager.ModelCtor();
+        return models.findWhere(where) || new relatedData.eager.ModelCtor();
       } else if (type === 'hasMany') {
         where[relatedData.foreignKey] = id;
-        return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
+        return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
       } else {
         where['_pivot_' + relatedData.otherKey] = id;
-        return new relatedData.eager.CollectionCtor(eager.where(where), {parse: true});
+        return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
       }
     }
 
   });
 
   // Temporary helper object for handling the response of an `EagerRelation` load.
-  var RelatedCollection = function(models) {
+  var RelatedModels = function(models) {
     this.models = models;
     this.length = this.models.length;
   };
-  _.extend(RelatedCollection.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere'));
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
@@ -803,8 +771,16 @@
       var columns     = options.columns;
       var relatedData = syncing.relatedData;
 
-      if ((addConstraints = syncing._addConstraints(relatedData, options.parentResponse)) !== true) {
-        return addConstraints;
+      // Check that the constraints are set properly if this model is set as a relation to another.
+      if (relatedData) {
+        if (!relatedData.fkValue && !options.parentResponse) {
+          return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
+        }
+        if (relatedData.type !== 'belongsToMany') {
+          syncing._constraints(options.parentResponse);
+        } else {
+          syncing._belongsToManyConstraints(options.parentResponse);
+        }
       }
 
       if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
