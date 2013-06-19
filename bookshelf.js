@@ -859,7 +859,8 @@
 
     // Select the first item from the database - only used by models.
     first: function() {
-      this.query.where(extendNull(this.syncing.attributes)).limit(1);
+      var syncing = this.syncing;
+      this.query.where(syncing.format(extendNull(syncing.attributes))).limit(1);
       return this.select();
     },
 
