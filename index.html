@@ -1336,8 +1336,10 @@ model
     <p id="Model-hasTimestamps">
       <b class="header">hasTimestamps</b><code>model.hasTimestamps</code>
       <br />
-      A boolean property on the model, determining whether the <a href="#Model-timestamp">timestamp</a> method will
-      be called on a <tt>model.save()</tt> call &mdash; the default value is false.
+      If this value is set, the <a href="#Model-timestamp">timestamp</a> method will
+      be called on a <tt>model.save()</tt> to set the <tt>created_at</tt> and <tt>updated_at</tt>
+      values on save. If this value is an array, the first value will be used as the model's
+      key for the "created at" value and the second for the "updated at" value.
     </p>
 
     <p id="Model-timestamp">

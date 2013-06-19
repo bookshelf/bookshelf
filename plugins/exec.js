@@ -5,9 +5,8 @@ var _         = require('underscore');
 Bookshelf.wrapExec = function(target, method) {
   var targetMethod = target[method];
   target[method] = function() {
-    var args = arguments;
+    var result, args = arguments;
     var ctx = this;
-    var result;
     return {
       then: function(onFulfilled, onRejected) {
         result || (result = targetMethod.apply(ctx, args));

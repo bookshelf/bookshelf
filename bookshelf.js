@@ -451,9 +451,10 @@
     // Sets the timestamps before saving the model.
     timestamp: function(options) {
       var d = new Date();
+      var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
       var vals = {};
-      vals.updated_at = d;
-      if (this.isNew(options)) vals.created_at = d;
+      vals[keys[1]] = d;
+      if (this.isNew(options)) vals[keys[0]] = d;
       return vals;
     },
 
