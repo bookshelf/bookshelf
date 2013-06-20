@@ -113,11 +113,21 @@ module.exports = function(Bookshelf, handler) {
 
     it('passes along additional arguments to the Knex method in the first argument', function() {
       var qb = model.resetQuery().query();
-      equal(qb.wheres.length, (0));
+      equal(qb.wheres.length, 0);
       var q = model.query('where', {id:1});
       equal(q, (model));
-      equal(qb.wheres.length, (1));
+      equal(qb.wheres.length, 1);
     });
+
+    it('allows passing an object to query', function() {
+      var qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      var q = model.query({where: {id: 1}, orWhere: ['id', '>', '10']});
+      equal(q, model);
+      console.log(qb.wheres);
+      equal(qb.wheres.length, 2);
+    });
+
 
   });
 

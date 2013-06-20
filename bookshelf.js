@@ -48,11 +48,21 @@
     // If there are no arguments, return the current object's
     // query builder (or create and return a new one). If there are arguments,
     // call the query builder with the first argument, applying the rest.
+    // If the first argument is an object, assume the keys are query builder
+    // methods, and the values are the arguments for the query.
     query: function() {
       this._builder || (this._builder = this.builder(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
       if (args.length === 0) return this._builder;
-      this._builder[args[0]].apply(this._builder, args.slice(1));
+      var method = args[0];
+      if (_.isObject(method)) {
+        for (var key in method) {
+          var target = _.isArray(method[key]) ?  method[key] : [method[key]];
+          this._builder[key].apply(this._builder, target);
+        }
+        return this;
+      }
+      this._builder[method].apply(this._builder, args.slice(1));
       return this;
     },
 
