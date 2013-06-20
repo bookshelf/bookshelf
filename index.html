@@ -1000,6 +1000,28 @@ var User = Bookshelf.Model.extend({
       Creates &amp; saves a new model and attaches the model with the related model.
     </p>
 
+<pre>
+new Site({id: 1}).admins().attach([1, 2]);
+</pre>
+
+  <p>
+    The attach function may also take one or more models to attach to the current
+    model:
+  </p>
+
+<pre>
+var admin1 = new Admin({username: 'user1', password: 'test'});
+var admin2 = new Admin({username: 'user2', password: 'test'});
+
+When.all([admin1.save(), admin2.save()])
+  .then(function() {
+    return When.all([
+      new Site({id: 1}).admins().attach([admin1, admin2]),
+      new Site({id: 2}).admins().attach(admin2)
+    ]);
+  })
+</pre>
+
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
       <br />
