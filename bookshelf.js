@@ -348,6 +348,7 @@
             model.trigger('fetched', model, resp, options);
             return model;
           }
+          return null;
         });
     },
 
