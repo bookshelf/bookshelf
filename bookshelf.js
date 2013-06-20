@@ -347,8 +347,10 @@
           }
         })
         .then(function(resp) {
-          model.trigger('fetched', model, resp, options);
-          return model;
+          if (resp && resp.length > 0) {
+            model.trigger('fetched', model, resp, options);
+            return model;
+          }
         });
     },
 

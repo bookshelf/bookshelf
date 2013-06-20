@@ -718,7 +718,7 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
-      or <tt>null</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
+      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
       is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
       event will be fired when a record is successfully retrieved.
     </p>
