@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.8
+//     Bookshelf.js 0.1.9
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.8';
+  Bookshelf.VERSION = '0.1.9';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -340,15 +340,14 @@
             return new EagerRelation(model, resp)
               .fetch(options)
               .then(function() { return resp; });
-          } else {
-            if (options.require) return when.reject(new Error('EmptyResponse'));
-            model.clear({silent: true})._reset();
-            return {};
           }
+          if (options.require) return when.reject(new Error('EmptyResponse'));
         })
         .then(function(resp) {
-          model.trigger('fetched', model, resp, options);
-          return model;
+          if (resp && resp.length > 0) {
+            model.trigger('fetched', model, resp, options);
+            return model;
+          }
         });
     },
 
@@ -451,9 +450,10 @@
     // Sets the timestamps before saving the model.
     timestamp: function(options) {
       var d = new Date();
+      var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
       var vals = {};
-      vals.updated_at = d;
-      if (this.isNew(options)) vals.created_at = d;
+      vals[keys[1]] = d;
+      if (this.isNew(options)) vals[keys[0]] = d;
       return vals;
     },
 
@@ -859,7 +859,8 @@
 
     // Select the first item from the database - only used by models.
     first: function() {
-      this.query.where(extendNull(this.syncing.attributes)).limit(1);
+      var syncing = this.syncing;
+      this.query.where(syncing.format(extendNull(syncing.attributes))).limit(1);
       return this.select();
     },
 

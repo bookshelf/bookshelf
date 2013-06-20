@@ -382,6 +382,19 @@ module.exports = function(Bookshelf, handler) {
       };
       m.save({item: 'test'});
     });
+
+    it('allows custom keys for the created at & update at values', function(ok) {
+      var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', 'updatedAt']});
+      m.sync = function() {
+        equal(this.get('item'), 'test');
+        equal(_.isDate(this.get('createdAt')), true);
+        equal(_.isDate(this.get('updatedAt')), true);
+        ok();
+        return stubSync;
+      };
+      m.save({item: 'test'});
+    });
+
   });
 
   describe('timestamp', function() {

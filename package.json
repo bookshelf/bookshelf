@@ -1,7 +1,7 @@
 {
   "name": "bookshelf",
-  "version": "0.1.8",
-  "description": "A lightweight ORM for Postgres, MySQL, and SQLite3 with some Backbone",
+  "version": "0.1.9",
+  "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -b -R spec test/index.js"

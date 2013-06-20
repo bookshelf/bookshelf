@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.8)</span>
+      Bookshelf.js <span class="version">(0.1.9)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.8</h3>
+    <h3>Latest Release: 0.1.9</h3>
 
     <p>
       Current Develop &mdash;
@@ -718,7 +718,7 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
-      or <tt>null</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
+      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
       is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
       event will be fired when a record is successfully retrieved.
     </p>
@@ -1315,15 +1315,15 @@ chapters.keys().join(', ');
     </p>
 
 <pre>
-var qb = model.query();
-    qb.where({id: 1}).select().then(function(resp) {...
-
 model
   .query('where', 'other_id', '=', '5')
   .fetch()
   .then(function(model) {
     ...
   });
+
+var qb = model.query();
+    qb.where({id: 1}).select().then(function(resp) {...
 </pre>
 
     <p id="Model-resetQuery">
@@ -1336,9 +1336,17 @@ model
     <p id="Model-hasTimestamps">
       <b class="header">hasTimestamps</b><code>model.hasTimestamps</code>
       <br />
-      A boolean property on the model, determining whether the <a href="#Model-timestamp">timestamp</a> method will
-      be called on a <tt>model.save()</tt> call &mdash; the default value is false.
+      If this value is set, the <a href="#Model-timestamp">timestamp</a> method will
+      be called on a <tt>model.save()</tt> to set the <tt>created_at</tt> and <tt>updated_at</tt>
+      values on save. If this value is an array, the first value will be used as the model's
+      key for the "created at" value and the second for the "updated at" value.
     </p>
+
+<pre>
+var PostModel = Bookshelf.Model.extend({
+  hasTimestamps: ['createdAt', 'updatedAt']
+});
+</pre>
 
     <p id="Model-timestamp">
       <b class="header">timestamp</b><code>model.timestamp(options)</code>
@@ -1832,6 +1840,14 @@ Bookshelf.Transaction(function(t) {
     <h2 id="faq">F.A.Q.</h2>
 
     <p id="faq-debug">
+      <b class="header">Can I use standard node.js style callbacks.</b><br />
+      Yes - you can call <tt>require('bookshelf/plugins/exec')</tt> after loading Bookshelf, and
+      any models/collections created from that point forward will contain both <tt>then</tt> and
+      <tt>exec</tt> methods, where the <tt>exec</tt> method takes the standard <tt>(err, result)</tt>
+      callback interface.
+    </p>
+
+    <p id="faq-debug">
       <b class="header">How do I debug?</b><br />
       If you pass <tt>{debug: true}</tt> as one of the options in your initialize settings, you can see
       all of the query calls being made. Sometimes you need to dive a bit further into
@@ -1867,6 +1883,14 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.9</b> &mdash; <small><i>June 19, 2013</i></small><br />
+      Resolve Model's <tt>fetch</tt> promise with <tt>undefined</tt> if no model was returned. An array of
+      "created at" and "updated at" values may be used for <tt>hasTimestamps</tt>. Format is called on the
+      <tt>Model#fetch</tt> method. Added an <tt>exec</tt> plugin to provide a node callback style interface
+      for any of the promise methods.
+    </p>
 
     <p>
       <b class="header">0.1.8</b> &mdash; <small><i>June 18, 2013</i></small><br />
