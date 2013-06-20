@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.8)</span>
+      Bookshelf.js <span class="version">(0.1.9)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.8</h3>
+    <h3>Latest Release: 0.1.9</h3>
 
     <p>
       Current Develop &mdash;
@@ -1315,15 +1315,15 @@ chapters.keys().join(', ');
     </p>
 
 <pre>
-var qb = model.query();
-    qb.where({id: 1}).select().then(function(resp) {...
-
 model
   .query('where', 'other_id', '=', '5')
   .fetch()
   .then(function(model) {
     ...
   });
+
+var qb = model.query();
+    qb.where({id: 1}).select().then(function(resp) {...
 </pre>
 
     <p id="Model-resetQuery">
@@ -1341,6 +1341,12 @@ model
       values on save. If this value is an array, the first value will be used as the model's
       key for the "created at" value and the second for the "updated at" value.
     </p>
+
+<pre>
+var PostModel = Bookshelf.Model.extend({
+  hasTimestamps: ['createdAt', 'updatedAt']
+});
+</pre>
 
     <p id="Model-timestamp">
       <b class="header">timestamp</b><code>model.timestamp(options)</code>
@@ -1877,6 +1883,14 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.1.9</b> &mdash; <small><i>June 19, 2013</i></small><br />
+      Resolve Model's <tt>fetch</tt> promise with <tt>undefined</tt> if no model was returned. An array of
+      "created at" and "updated at" values may be used for <tt>hasTimestamps</tt>. Format is called on the
+      <tt>Model#fetch</tt> method. Added an <tt>exec</tt> plugin to provide a node callback style interface
+      for any of the promise methods.
+    </p>
 
     <p>
       <b class="header">0.1.8</b> &mdash; <small><i>June 18, 2013</i></small><br />

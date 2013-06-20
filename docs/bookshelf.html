@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.1.8
+              <pre><code>Bookshelf.js 0.1.9
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -128,7 +128,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.8'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.1.9'</span>;</pre></div></div>
             
         </li>
         
@@ -824,15 +824,14 @@ a failure if the model comes up blank.</p>
             <span class="keyword">return</span> <span class="keyword">new</span> EagerRelation(model, resp)
               .fetch(options)
               .then(<span class="keyword">function</span>() { <span class="keyword">return</span> resp; });
-          } <span class="keyword">else</span> {
-            <span class="keyword">if</span> (options.require) <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'EmptyResponse'</span>));
-            model.clear({silent: <span class="literal">true</span>})._reset();
-            <span class="keyword">return</span> {};
           }
+          <span class="keyword">if</span> (options.require) <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'EmptyResponse'</span>));
         })
         .then(<span class="keyword">function</span>(resp) {
-          model.trigger(<span class="string">'fetched'</span>, model, resp, options);
-          <span class="keyword">return</span> model;
+          <span class="keyword">if</span> (resp &amp;&amp; resp.length &gt; <span class="number">0</span>) {
+            model.trigger(<span class="string">'fetched'</span>, model, resp, options);
+            <span class="keyword">return</span> model;
+          }
         });
     },</pre></div></div>
             
@@ -1067,9 +1066,10 @@ unless <code>{shallow: true}</code> is passed in the <code>options</code>.</p>
             
             <div class="content"><div class='highlight'><pre>    timestamp: <span class="keyword">function</span>(options) {
       <span class="keyword">var</span> d = <span class="keyword">new</span> Date();
+      <span class="keyword">var</span> keys = (_.isArray(<span class="keyword">this</span>.hasTimestamps) ? <span class="keyword">this</span>.hasTimestamps : [<span class="string">'created_at'</span>, <span class="string">'updated_at'</span>]);
       <span class="keyword">var</span> vals = {};
-      vals.updated_at = d;
-      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options)) vals.created_at = d;
+      vals[keys[<span class="number">1</span>]] = d;
+      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options)) vals[keys[<span class="number">0</span>]] = d;
       <span class="keyword">return</span> vals;
     },</pre></div></div>
             
@@ -1976,7 +1976,8 @@ part of a transaction, and this information is passed along to <code>Knex</code>
             </div>
             
             <div class="content"><div class='highlight'><pre>    first: <span class="keyword">function</span>() {
-      <span class="keyword">this</span>.query.where(extendNull(<span class="keyword">this</span>.syncing.attributes)).limit(<span class="number">1</span>);
+      <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing;
+      <span class="keyword">this</span>.query.where(syncing.format(extendNull(syncing.attributes))).limit(<span class="number">1</span>);
       <span class="keyword">return</span> <span class="keyword">this</span>.select();
     },</pre></div></div>
             
