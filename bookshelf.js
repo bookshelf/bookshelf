@@ -724,7 +724,7 @@
       });
     },
 
-    // Handles an eagerFetch, passing the name of the item we're fetching for,
+    // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
     eagerFetch: function(name, handled, options) {
       if (handled.type === 'morphTo') {
