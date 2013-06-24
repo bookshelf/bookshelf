@@ -107,6 +107,12 @@ module.exports = function(Bookshelf, handler) {
         }).then(handler(this, ok), ok);
       });
 
+      it('Attaches an empty related model or collection if the `EagerRelation` comes back blank', function(ok) {
+        new Site({id: 3}).fetch({
+          withRelated: ['meta', 'blogs', 'authors.posts']
+        }).then(handler(this, ok), ok);
+      });
+
     });
 
     describe('Eager Loading - Collections', function() {

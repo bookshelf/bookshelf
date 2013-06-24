@@ -423,7 +423,36 @@ module.exports = {
         }]
       }
     },
-    'relations.9 - eager loads "hasOne" models correctly (sites -> meta)': {
+    'relations.9 - Attaches an empty related model or collection if the `EagerRelation` comes back blank': {
+      mysql: {
+        id: 3,
+        name: 'backbonejs.org',
+        blogs: [],
+        meta: {
+        
+        },
+        authors: []
+      },
+      postgres: {
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+        
+        },
+        authors: [],
+        blogs: []
+      },
+      sqlite3: {
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+        
+        },
+        blogs: [],
+        authors: []
+      }
+    },
+    'relations.10 - eager loads "hasOne" models correctly (sites -> meta)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -439,6 +468,12 @@ module.exports = {
           id: 2,
           site_id: 2,
           description: 'This is a description for the Bookshelfjs Site'
+        }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+        
         }
       }],
       postgres: [{
@@ -457,6 +492,12 @@ module.exports = {
           site_id: 2,
           description: 'This is a description for the Bookshelfjs Site'
         }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+        
+        }
       }],
       sqlite3: [{
         id: 1,
@@ -474,9 +515,15 @@ module.exports = {
           site_id: 2,
           description: 'This is a description for the Bookshelfjs Site'
         }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+        
+        }
       }]
     },
-    'relations.10 - eager loads "belongsTo" models correctly (blogs -> site)': {
+    'relations.11 - eager loads "belongsTo" models correctly (blogs -> site)': {
       mysql: [{
         id: 1,
         site_id: 1,
@@ -577,7 +624,7 @@ module.exports = {
         }
       }]
     },
-    'relations.11 - eager loads "hasMany" models correctly (site -> blogs)': {
+    'relations.12 - eager loads "hasMany" models correctly (site -> blogs)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -618,7 +665,7 @@ module.exports = {
         }]
       }
     },
-    'relations.12 - eager loads "belongsToMany" models correctly (posts -> tags)': {
+    'relations.13 - eager loads "belongsToMany" models correctly (posts -> tags)': {
       mysql: [{
         id: 1,
         owner_id: 1,
@@ -710,7 +757,7 @@ module.exports = {
         tags: []
       }]
     },
-    'relations.13 - eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)': {
+    'relations.14 - eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -817,7 +864,7 @@ module.exports = {
         }]
       }
     },
-    'relations.14 - eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)': {
+    'relations.15 - eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -942,49 +989,10 @@ module.exports = {
         }]
       }
     },
-    'relations.15 - does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)': {
+    'relations.16 - does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
-        authors: [{
-          id: 1,
-          site_id: 1,
-          first_name: 'Tim',
-          last_name: 'Griesser',
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          },
-          ownPosts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          }]
-        },{
-          id: 2,
-          site_id: 1,
-          first_name: 'Bazooka',
-          last_name: 'Joe',
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          },
-          ownPosts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
-          },{
-            id: 3,
-            owner_id: 2,
-            blog_id: 1,
-            name: 'This is a new Title 3!',
-            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }]
-        }],
         blogs: [{
           id: 1,
           site_id: 1,
@@ -1012,6 +1020,45 @@ module.exports = {
             blog_id: 2,
             name: 'This is a new Title 2!',
             content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
+          }]
+        }],
+        authors: [{
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser',
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          },
+          ownPosts: [{
+            id: 1,
+            owner_id: 1,
+            blog_id: 1,
+            name: 'This is a new Title!',
+            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
+          }]
+        },{
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe',
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          },
+          ownPosts: [{
+            id: 2,
+            owner_id: 2,
+            blog_id: 2,
+            name: 'This is a new Title 2!',
+            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
+          },{
+            id: 3,
+            owner_id: 2,
+            blog_id: 1,
+            name: 'This is a new Title 3!',
+            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
           }]
         }]
       },
@@ -1160,7 +1207,7 @@ module.exports = {
         }]
       }
     },
-    'relations.16 - eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)': {
+    'relations.17 - eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1223,6 +1270,10 @@ module.exports = {
             content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
           }]
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        authors: []
       }],
       postgres: [{
         id: 1,
@@ -1286,6 +1337,10 @@ module.exports = {
             content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
           }]
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        authors: []
       }],
       sqlite3: [{
         id: 1,
@@ -1349,9 +1404,13 @@ module.exports = {
             content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
           }]
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        authors: []
       }]
     },
-    'relations.17 - eager loads relations on a populated model (site -> blogs, authors.site)': {
+    'relations.18 - eager loads relations on a populated model (site -> blogs, authors.site)': {
       mysql: {
         id: 1,
         name: 'knexjs.org',
@@ -1449,7 +1508,7 @@ module.exports = {
         }]
       }
     },
-    'relations.18 - eager loads attributes on a collection (sites -> blogs, authors.site)': {
+    'relations.19 - eager loads attributes on a collection (sites -> blogs, authors.site)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1512,6 +1571,11 @@ module.exports = {
             name: 'bookshelfjs.org'
           }
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        blogs: [],
+        authors: []
       }],
       postgres: [{
         id: 1,
@@ -1575,6 +1639,11 @@ module.exports = {
           site_id: 2,
           name: 'Alternate Site Blog'
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        authors: [],
+        blogs: []
       }],
       sqlite3: [{
         id: 1,
@@ -1638,9 +1707,14 @@ module.exports = {
             name: 'bookshelfjs.org'
           }
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        blogs: [],
+        authors: []
       }]
     },
-    'relations.19 - works with many-to-many (user -> roles)': {
+    'relations.20 - works with many-to-many (user -> roles)': {
       mysql: [{
         rid: 1,
         name: 'admin',
@@ -1660,7 +1734,7 @@ module.exports = {
         _pivot_rid: 1
       }]
     },
-    'relations.20 - works with eager loaded many-to-many (user -> roles)': {
+    'relations.21 - works with eager loaded many-to-many (user -> roles)': {
       mysql: {
         uid: 1,
         username: 'root',
@@ -1692,7 +1766,7 @@ module.exports = {
         }]
       }
     },
-    'relations.21 - handles morphOne (photo)': {
+    'relations.22 - handles morphOne (photo)': {
       mysql: {
         imageable_id: 1,
         imageable_type: 'authors',
@@ -1715,7 +1789,7 @@ module.exports = {
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
       }
     },
-    'relations.22 - handles morphMany (photo)': {
+    'relations.23 - handles morphMany (photo)': {
       mysql: [{
         id: 3,
         url: 'https://www.google.com/images/srpr/logo4w.png',
@@ -1756,7 +1830,7 @@ module.exports = {
         imageable_type: 'sites'
       }]
     },
-    'relations.23 - handles morphTo (imageable "authors")': {
+    'relations.24 - handles morphTo (imageable "authors")': {
       mysql: {
         id: 1,
         site_id: 1,
@@ -1776,7 +1850,7 @@ module.exports = {
         last_name: 'Griesser'
       }
     },
-    'relations.24 - handles morphTo (imageable "sites")': {
+    'relations.25 - handles morphTo (imageable "sites")': {
       mysql: {
         id: 1,
         name: 'knexjs.org'
@@ -1790,7 +1864,7 @@ module.exports = {
         name: 'knexjs.org'
       }
     },
-    'relations.25 - eager loads morphMany (sites -> photos)': {
+    'relations.26 - eager loads morphMany (sites -> photos)': {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
@@ -1823,6 +1897,10 @@ module.exports = {
           imageable_id: 2,
           imageable_type: 'sites'
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        photos: []
       }],
       postgres: [{
         id: 1,
@@ -1856,6 +1934,10 @@ module.exports = {
           imageable_id: 2,
           imageable_type: 'sites'
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        photos: []
       }],
       sqlite3: [{
         id: 1,
@@ -1889,9 +1971,13 @@ module.exports = {
           imageable_id: 2,
           imageable_type: 'sites'
         }]
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        photos: []
       }]
     },
-    'relations.26 - eager loads morphTo (photos -> imageable)': {
+    'relations.27 - eager loads morphTo (photos -> imageable)': {
       mysql: [{
         id: 1,
         url: 'https://www.google.com/images/srpr/logo4w.png',

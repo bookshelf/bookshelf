@@ -735,18 +735,16 @@
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
-          if (resp && resp.length > 0) {
-            // If there are additional related items, fetch them and figure out the latest
-            var relatedModels = that.pushModels(name, handled, resp);
-            if (options.withRelated) {
-              return new EagerRelation(relatedModels, resp, {
-                tempModel: new handled.relatedData.eager.ModelCtor()
-              }).fetch(options).then(function() {
-                return resp;
-              });
-            }
-            return resp;
+          var relatedModels = that.pushModels(name, handled, resp);
+          // If there is a response, fetch additional nested eager relations, if any.
+          if (resp.length > 0 && options.withRelated) {
+            return new EagerRelation(relatedModels, resp, {
+              tempModel: new handled.relatedData.eager.ModelCtor()
+            }).fetch(options).then(function() {
+              return resp;
+            });
           }
+          return resp;
         });
     },
 
