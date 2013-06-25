@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.1.9)</span>
+      Bookshelf.js <span class="version">(0.2.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.1.9</h3>
+    <h3>Latest Release: 0.2.0</h3>
 
     <p>
       Current Develop &mdash;
@@ -451,17 +451,17 @@
 
     <p>
       Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
-      <a href="http://backbonejs.org">Backbone.js</a> <small>(1.0.x)</small>,
-      <a href="http://underscorejs.org/">Underscore.js</a> <small>(1.4.x)</small>,
-      <a href="https://github.com/cujojs/when">when.js</a> <small>(2.1.x)</small>
-      for promise flow control, <a href="http://knexjs.org">Knex.js.</a> as the query
-      builder foundation, and <a href="https://github.com/dreamerslab/node.inflection">inflection</a>
+      <a target="_blank" href="http://backbonejs.org">Backbone.js</a> <small>(1.0.x)</small>,
+      <a target="_blank" href="http://underscorejs.org/">Underscore.js</a> <small>(1.4.x)</small>,
+      <a target="_blank" href="https://github.com/cujojs/when">when.js</a> <small>(2.1.x)</small>
+      for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
+      builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
     </p>
 
     <p>
-      Special thanks to <a href="https://twitter.com/taylorotwell">Taylor Otwell</a> and his work
-      on the <a href="http://laravel.com/docs/eloquent">Eloquent ORM</a>, which has heavily
+      Special thanks to <a target="_blank" href="https://twitter.com/taylorotwell">Taylor Otwell</a> and his work
+      on the <a target="_blank" href="http://laravel.com/docs/eloquent">Eloquent ORM</a>, which has heavily
       influenced the library's design.
     </p>
 
@@ -1000,6 +1000,28 @@ var User = Bookshelf.Model.extend({
       Creates &amp; saves a new model and attaches the model with the related model.
     </p>
 
+<pre>
+new Site({id: 1}).admins().attach([1, 2]);
+</pre>
+
+  <p>
+    The attach function may also take one or more models to attach to the current
+    model:
+  </p>
+
+<pre>
+var admin1 = new Admin({username: 'user1', password: 'test'});
+var admin2 = new Admin({username: 'user2', password: 'test'});
+
+When.all([admin1.save(), admin2.save()])
+  .then(function() {
+    return When.all([
+      new Site({id: 1}).admins().attach([admin1, admin2]),
+      new Site({id: 2}).admins().attach(admin2)
+    ]);
+  })
+</pre>
+
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
       <br />
@@ -1024,7 +1046,7 @@ var Tag = Bookshelf.Model.extend({
 </pre>
 
   <p>
-    By default, the pivot attributes are defined with the <tt>pivot_</tt> prefix. If you would
+    By default, the pivot attributes are defined with the <tt>_pivot_</tt> prefix. If you would
     like to specify how they are named on the related models, pass an object with the key/value pairs
     to <tt>withPivot</tt>.
   </p>
@@ -1472,7 +1494,7 @@ var Trilogy = Bookshelf.Collection.extend({
       <b class="header">constructor / initialize</b><code>new Collection([models], [options])</code>
       <br />
       When creating a Collection, you may choose to pass in the initial array
-      of <b>models</b>.  The collection's <a href="#Collection-comparator">comparator</a>
+      of <b>models</b>.  The collection's <a target="_blank" href="http://backbonejs.org/#Collection-comparator">comparator</a>
       may be included as an option. Passing <tt>false</tt> as the
       comparator option will prevent sorting. If you define an
       <b>initialize</b> function, it will be invoked when the collection is
@@ -1492,13 +1514,13 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       is desired.
     </p>
 
-    <p id="Model-parse">
-      <b class="header">parse</b><code>model.parse(response, [options])</code>
+    <p id="Collection-parse">
+      <b class="header">parse</b><code>collection.parse(response, [options])</code>
       <br />
       The <b>parse</b> method is called whenever a collection's data is returned in a
       <a href="#Collection-fetch">fetch</a> call. The function is passed
       the raw database <tt>response</tt> array, and should return an array
-      to be <a href="#Collection-set">set</a> on the collection. The default implementation
+      to be set on the collection. The default implementation
       is a no-op, simply passing through the JSON response.
     </p>
 
@@ -1589,24 +1611,24 @@ collection
     </p>
 
     <ul>
-      <li><a href="http://backbonejs.org/#Collection-add">add</a></li>
-      <li><a href="http://backbonejs.org/#Collection-remove">remove</a></li>
-      <li><a href="http://backbonejs.org/#Collection-reset">reset</a></li>
-      <li><a href="http://backbonejs.org/#Collection-set">set</a></li>
-      <li><a href="http://backbonejs.org/#Collection-get">get</a></li>
-      <li><a href="http://backbonejs.org/#Collection-at">at</a></li>
-      <li><a href="http://backbonejs.org/#Collection-push">push</a></li>
-      <li><a href="http://backbonejs.org/#Collection-pop">pop</a></li>
-      <li><a href="http://backbonejs.org/#Collection-unshift">unshift</a></li>
-      <li><a href="http://backbonejs.org/#Collection-shift">shift</a></li>
-      <li><a href="http://backbonejs.org/#Collection-slice">slice</a></li>
-      <li><a href="http://backbonejs.org/#Collection-length">length</a></li>
-      <li><a href="http://backbonejs.org/#Collection-comparator">comparator</a></li>
-      <li><a href="http://backbonejs.org/#Collection-sort">sort</a></li>
-      <li><a href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
-      <li><a href="http://backbonejs.org/#Collection-where">where</a></li>
-      <li><a href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
-      <li><a href="http://backbonejs.org/#Collection-clone">clone</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-add">add</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-remove">remove</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-reset">reset</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-set">set</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-get">get</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-at">at</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-push">push</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-pop">pop</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-unshift">unshift</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-shift">shift</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-slice">slice</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-length">length</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-comparator">comparator</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-sort">sort</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-pluck">pluck</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-where">where</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-findWhere">findWhere</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Collection-clone">clone</a></li>
     </ul>
 
     <p id="Collection-Underscore-Methods">
@@ -1711,13 +1733,13 @@ collection
     </p>
 
     <ul>
-      <li><a href="http://backbonejs.org/#Events-on">on</a></li>
-      <li><a href="http://backbonejs.org/#Events-off">off</a></li>
-      <li><a href="http://backbonejs.org/#Events-trigger">trigger</a></li>
-      <li><a href="http://backbonejs.org/#Events-once">once</a></li>
-      <li><a href="http://backbonejs.org/#Events-listenTo">listenTo</a></li>
-      <li><a href="http://backbonejs.org/#Events-stopListening">stopListnening</a></li>
-      <li><a href="http://backbonejs.org/#Events-listenToOnce">listenToOnce</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-on">on</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-off">off</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-trigger">trigger</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-once">once</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-listenTo">listenTo</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-stopListening">stopListnening</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Events-listenToOnce">listenToOnce</a></li>
     </ul>
 
     <p id="Events-triggerThen">
@@ -1883,6 +1905,14 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.0</b> &mdash; <small><i>June 24, 2013</i></small><br />
+      Resolve Model's <tt>fetch</tt> promise with <tt>null</tt> rather than undefined. An object of <tt>query</tt>.
+      constraints (e.g. <tt>{where: {...}, orWhere: {...}}</tt>may be passed to the query method (#30). Fix for empty
+      eager relation responses not providing an empty model or collection instance on the
+      <tt>model.relations</tt> object.
+    </p>
 
     <p>
       <b class="header">0.1.9</b> &mdash; <small><i>June 19, 2013</i></small><br />

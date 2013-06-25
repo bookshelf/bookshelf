@@ -12,6 +12,8 @@ module.exports = function(Bookshelf) {
       name: 'knexjs.org'
     }, {
       name: 'bookshelfjs.org'
+    }, {
+      name: 'backbonejs.org'
     }]),
 
     Knex('sitesmeta').insert([{

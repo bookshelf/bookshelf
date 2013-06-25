@@ -14,7 +14,7 @@ Bookshelf.wrapExec = function(target, method) {
       },
       exec: function(callback) {
         result || (result = targetMethod.apply(ctx, args));
-        return targetMethod.apply(ctx, args).then(function(resp) {
+        return result.then(function(resp) {
           callback(null, resp);
         }, function(err) {
           callback(err, null);

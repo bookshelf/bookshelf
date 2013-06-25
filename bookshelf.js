@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.1.9
+//     Bookshelf.js 0.2.0
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.1.9';
+  Bookshelf.VERSION = '0.2.0';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -48,11 +48,21 @@
     // If there are no arguments, return the current object's
     // query builder (or create and return a new one). If there are arguments,
     // call the query builder with the first argument, applying the rest.
+    // If the first argument is an object, assume the keys are query builder
+    // methods, and the values are the arguments for the query.
     query: function() {
       this._builder || (this._builder = this.builder(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
       if (args.length === 0) return this._builder;
-      this._builder[args[0]].apply(this._builder, args.slice(1));
+      var method = args[0];
+      if (_.isObject(method)) {
+        for (var key in method) {
+          var target = _.isArray(method[key]) ?  method[key] : [method[key]];
+          this._builder[key].apply(this._builder, target);
+        }
+        return this;
+      }
+      this._builder[method].apply(this._builder, args.slice(1));
       return this;
     },
 
@@ -348,6 +358,7 @@
             model.trigger('fetched', model, resp, options);
             return model;
           }
+          return null;
         });
     },
 
@@ -374,9 +385,8 @@
         _.extend(attrs, this.timestamp(options));
       }
 
-      // Determine whether the model is new, typically based on whether the model has
-      // an `idAttribute` or not.
-      var method = options.method || (this.isNew(options) ? 'insert' : 'update');
+      // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
+      var method = options.method || (options.method = this.isNew(options) ? 'insert' : 'update');
       var vals = attrs;
 
       // If the object is being created, we merge any defaults here
@@ -591,9 +601,9 @@
             return [];
           }
           if (!options.withRelated) return resp;
-            return new EagerRelation(collection, resp)
-              .fetch(options)
-              .then(function() { return resp; });
+          return new EagerRelation(collection, resp)
+            .fetch(options)
+            .then(function() { return resp; });
         })
         .then(function(resp) {
           collection.trigger('fetched', collection, resp, options);
@@ -713,7 +723,7 @@
       });
     },
 
-    // Handles an eagerFetch, passing the name of the item we're fetching for,
+    // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
     eagerFetch: function(name, handled, options) {
       if (handled.type === 'morphTo') {
@@ -724,18 +734,16 @@
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
-          if (resp && resp.length > 0) {
-            // If there are additional related items, fetch them and figure out the latest
-            var relatedModels = that.pushModels(name, handled, resp);
-            if (options.withRelated) {
-              return new EagerRelation(relatedModels, resp, {
-                tempModel: new handled.relatedData.eager.ModelCtor()
-              }).fetch(options).then(function() {
-                return resp;
-              });
-            }
-            return resp;
+          var relatedModels = that.pushModels(name, handled, resp);
+          // If there is a response, fetch additional nested eager relations, if any.
+          if (resp.length > 0 && options.withRelated) {
+            return new EagerRelation(relatedModels, resp, {
+              tempModel: new handled.relatedData.eager.ModelCtor()
+            }).fetch(options).then(function() {
+              return resp;
+            });
           }
+          return resp;
         });
     },
 
@@ -761,12 +769,13 @@
       });
     },
 
-    // Handler for the individual `morphTo` fetches.
+    // Handler for the individual `morphTo` fetches,
+    // attaching any of the related models onto the parent objects,
+    // stopping at this level of the eager relation loading.
     morphToHandler: function(name, settings, Target) {
       var that = this;
       return function(resp) {
-        // If there are additional related items, fetch them and figure out the latest
-        var relatedModels = that.pushModels(name, {
+        that.pushModels(name, {
           relatedData: {
             type: 'morphTo',
             foreignKey: Target.prototype.idAttribute,
@@ -781,9 +790,8 @@
       };
     },
 
-    // Pushes each of the incoming models onto a new `RelatedModels` object, which is set on the
-    // `eagerModels hash with the current fetch value, so we can attach the correct models &
-    // collections onto their parent objects.
+    // Pushes each of the incoming models onto a new `RelatedModels` object, which is used to
+    // correcly pair additional nested relations.
     pushModels: function(name, handled, resp) {
       var parent      = this.parent;
       var related     = new RelatedModels([]);

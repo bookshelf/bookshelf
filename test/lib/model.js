@@ -113,11 +113,20 @@ module.exports = function(Bookshelf, handler) {
 
     it('passes along additional arguments to the Knex method in the first argument', function() {
       var qb = model.resetQuery().query();
-      equal(qb.wheres.length, (0));
+      equal(qb.wheres.length, 0);
       var q = model.query('where', {id:1});
       equal(q, (model));
-      equal(qb.wheres.length, (1));
+      equal(qb.wheres.length, 1);
     });
+
+    it('allows passing an object to query', function() {
+      var qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      var q = model.query({where: {id: 1}, orWhere: ['id', '>', '10']});
+      equal(q, model);
+      equal(qb.wheres.length, 2);
+    });
+
 
   });
 
@@ -249,43 +258,43 @@ module.exports = function(Bookshelf, handler) {
 
     var Site = Models.Site;
 
-    it('saves an new object', function(ok) {
-      new Site({name: 'Third Site'}).save().then(function(m) {
-        equal(m.get('id'), 3);
+    it('saves a new object', function(ok) {
+      new Site({name: 'Fourth Site'}).save().then(function(m) {
+        equal(m.get('id'), 4);
         return new Bookshelf.Collection(null, {model: Site}).fetch();
       })
       .then(function(c) {
-        equal(c.last().id, 3);
-        equal(c.last().get('name'), 'Third Site');
-        equal(c.length, 3);
+        equal(c.last().id, 4);
+        equal(c.last().get('name'), 'Fourth Site');
+        equal(c.length, 4);
         ok();
       }).then(null, ok);
     });
 
     it('updates an existing object', function(ok) {
-      new Site({id: 3, name: 'Third Site Updated'}).save()
-      .then(function() {
-        return new Bookshelf.Collection(null, {model: Site}).fetch();
-      })
-      .then(function(c) {
-        equal(c.last().id, 3);
-        equal(c.last().get('name'), 'Third Site Updated');
-        equal(c.length, 3);
-        ok();
-      });
+      new Site({id: 4, name: 'Fourth Site Updated'}).save()
+        .then(function() {
+          return new Bookshelf.Collection(null, {model: Site}).fetch();
+        })
+        .then(function(c) {
+          equal(c.last().id, 4);
+          equal(c.last().get('name'), 'Fourth Site Updated');
+          equal(c.length, 4);
+          ok();
+        }).then(null, ok);
     });
 
     it('allows passing a method to save, to call insert or update explicitly', function(ok) {
-      new Site({id: 4, name: 'Fourth site, explicity created'}).save(null, {method: 'insert'})
+      new Site({id: 5, name: 'Fifth site, explicity created'}).save(null, {method: 'insert'})
       .then(function() {
         return new Bookshelf.Collection(null, {model: Site}).fetch();
       })
       .then(function(c) {
-        equal(c.length, 4);
-        equal(c.last().id, 4);
-        equal(c.last().get('name'), 'Fourth site, explicity created');
+        equal(c.length, 5);
+        equal(c.last().id, 5);
+        equal(c.last().get('name'), 'Fifth site, explicity created');
         ok();
-      });
+      }).then(null, ok);
     });
 
   });
@@ -295,11 +304,11 @@ module.exports = function(Bookshelf, handler) {
     var Site = Models.Site;
 
     it('issues a delete to the Knex, returning a promise', function(ok) {
-      new Site({id:4}).destroy().then(function() {
+      new Site({id: 5}).destroy().then(function() {
         return new Bookshelf.Collection(null, {model: Site}).fetch();
       })
       .then(function(c) {
-        equal(c.length, 3);
+        equal(c.length, 4);
         ok();
       })
       ;
@@ -313,7 +322,7 @@ module.exports = function(Bookshelf, handler) {
     });
 
     it('triggers a destroying event on the model', function(ok) {
-      var m = new Site({id: 3});
+      var m = new Site({id: 4});
       m.on('destroying', function() {
         m.off();
         ok();
@@ -471,6 +480,7 @@ module.exports = function(Bookshelf, handler) {
       delete model.id;
       equal(model.isNew(), true);
     });
+
   });
 
   describe('previous, previousAttributes', function() {
