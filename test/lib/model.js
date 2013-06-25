@@ -480,6 +480,7 @@ module.exports = function(Bookshelf, handler) {
       delete model.id;
       equal(model.isNew(), true);
     });
+
   });
 
   describe('previous, previousAttributes', function() {

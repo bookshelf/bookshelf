@@ -385,9 +385,8 @@
         _.extend(attrs, this.timestamp(options));
       }
 
-      // Determine whether the model is new, typically based on whether the model has
-      // an `idAttribute` or not.
-      var method = options.method || (this.isNew(options) ? 'insert' : 'update');
+      // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
+      var method = options.method || (options.method = this.isNew(options) ? 'insert' : 'update');
       var vals = attrs;
 
       // If the object is being created, we merge any defaults here
@@ -602,9 +601,9 @@
             return [];
           }
           if (!options.withRelated) return resp;
-            return new EagerRelation(collection, resp)
-              .fetch(options)
-              .then(function() { return resp; });
+          return new EagerRelation(collection, resp)
+            .fetch(options)
+            .then(function() { return resp; });
         })
         .then(function(resp) {
           collection.trigger('fetched', collection, resp, options);
@@ -770,12 +769,13 @@
       });
     },
 
-    // Handler for the individual `morphTo` fetches.
+    // Handler for the individual `morphTo` fetches,
+    // attaching any of the related models onto the parent objects,
+    // stopping at this level of the eager relation loading.
     morphToHandler: function(name, settings, Target) {
       var that = this;
       return function(resp) {
-        // If there are additional related items, fetch them and figure out the latest
-        var relatedModels = that.pushModels(name, {
+        that.pushModels(name, {
           relatedData: {
             type: 'morphTo',
             foreignKey: Target.prototype.idAttribute,
@@ -790,9 +790,8 @@
       };
     },
 
-    // Pushes each of the incoming models onto a new `RelatedModels` object, which is set on the
-    // `eagerModels hash with the current fetch value, so we can attach the correct models &
-    // collections onto their parent objects.
+    // Pushes each of the incoming models onto a new `RelatedModels` object, which is used to
+    // correcly pair additional nested relations.
     pushModels: function(name, handled, resp) {
       var parent      = this.parent;
       var related     = new RelatedModels([]);
