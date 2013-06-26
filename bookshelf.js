@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.0
+//     Bookshelf.js 0.2.1
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.0';
+  Bookshelf.VERSION = '0.2.1';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -355,8 +355,9 @@
         })
         .then(function(resp) {
           if (resp && resp.length > 0) {
-            model.trigger('fetched', model, resp, options);
-            return model;
+            return model.triggerThen('fetched', model, resp, options).then(function() {
+              return model;
+            });
           }
           return null;
         });
@@ -413,9 +414,16 @@
         if (method === 'insert' && resp) {
           model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
         }
-        model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options);
-        model.trigger('saved', model, resp, options);
-        return model._reset();
+
+        // Reset the model's `previousAttributes` and `changed` values.
+        model._reset();
+
+        return when.all([
+          model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options),
+          model.trigger('saved', model, resp, options)
+        ]).then(function() {
+          return model;
+        });
       })
       .ensure(function() { model.resetQuery(); });
     },
@@ -431,8 +439,10 @@
       .then(function() { return model.sync(options).del(options); })
       .then(function(resp) {
         model.clear();
-        model.trigger('destroyed', model, resp, options);
-        return model._reset();
+        model._reset();
+        return model.triggerThen('destroyed', model, resp, options).then(function() {
+          return model;
+        });
       }).ensure(function() {
         model.resetQuery();
       });
@@ -606,8 +616,9 @@
             .then(function() { return resp; });
         })
         .then(function(resp) {
-          collection.trigger('fetched', collection, resp, options);
-          return collection;
+          return collection.triggerThen('fetched', collection, resp, options).then(function() {
+            return collection;
+          });
         });
     },
 
