@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.2.0)</span>
+      Bookshelf.js <span class="version">(0.2.1)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.2.0</h3>
+    <h3>Latest Release: 0.2.1</h3>
 
     <p>
       Current Develop &mdash;
@@ -1767,19 +1767,20 @@ collection
       <li class="ul-header"><b>triggerThen</b> - a thrown Error or returned rejected promise cancels the next action
       <ul class="small">
         <li>   <b>"fetching"</b> (model, columns, options) &mdash; before a model is fetched. </li>
+        <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a model is fetched. </li>
         <li>   <b>"creating"</b> (model, attrs, options) &mdash; before a model is inserted. </li>
+        <li>   <b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
         <li>   <b>"updating"</b> (model, attrs, options) &mdash; before a model is updating. </li>
+        <li>   <b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
         <li>   <b>"saving"</b> (model, attrs, options) &mdash; called both on creating &amp; updating. </li>
+        <li>   <b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
         <li>   <b>"destroying"</b> (model, options) &mdash; before a model is destroyed. </li>
+        <li>   <b>"destroyed"</b> (model, resp, options) &mdash; after a model is destroyed. </li>
       </ul>
       </li>
       <li class="ul-header"><b>trigger</b>
         <ul class="small">
-          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a model is fetched. </li>
-          <li>   <b>"created"</b> (model, resp, options) &mdash; after a model is created. </li>
-          <li>   <b>"updated"</b> (model, resp, options) &mdash; after a model is updated. </li>
-          <li>   <b>"saved"</b> (model, resp, options) &mdash; after a model is created or updated. </li>
-          <li>   <b>"destroyed"</b> (model, resp, options) &mdash; after a model is destroyed. </li>
+          <li>   <b>"change"</b> (model, options) &mdash; when a model is changed from the last sync'ed state. </li>
         </ul>
       </li>
     </ul>
@@ -1789,11 +1790,12 @@ collection
       <li class="ul-header"><b>triggerThen</b> - a thrown Error or returned rejected promise cancels the next action
         <ul class="small">
           <li>  <b>"fetching"</b> (model, columns, options) &mdash; before a collection is fetched. </li>
+          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
         </ul>
       </li>
       <li class="ul-header"><b>trigger</b>
         <ul class="small">
-          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
+
         </ul>
       </li>
     </ul>
@@ -1905,6 +1907,13 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.1</b> &mdash; <small><i>June 26, 2013</i></small><br />
+      Using <tt>triggerThen</tt> instead of <tt>trigger</tt> for "created", "updated", "saved", "destroyed",
+      and "fetched" events - if any async operations are needed <i>after</i> the model is created but before
+      resolving the original promise.
+    </p>
 
     <p>
       <b class="header">0.2.0</b> &mdash; <small><i>June 24, 2013</i></small><br />
