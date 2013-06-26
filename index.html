@@ -197,7 +197,7 @@
       pre {
         font-size: 12px;
         padding: 2px 0 2px 15px;
-        border: 4px solid #bbb; border-top: 0; border-bottom: 0;
+        border-left: 4px solid #bbb; border-top: 0; border-bottom: 0;
         margin: 0px 0 25px;
       }
       img.example_image {
@@ -1778,7 +1778,7 @@ collection
         <li>   <b>"destroyed"</b> (model, resp, options) &mdash; after a model is destroyed. </li>
       </ul>
       </li>
-      <li class="ul-header"><b>trigger</b>
+      <li class="ul-header"><b>trigger</b> - standard sync event trigger
         <ul class="small">
           <li>   <b>"change"</b> (model, options) &mdash; when a model is changed from the last sync'ed state. </li>
         </ul>
@@ -1790,12 +1790,7 @@ collection
       <li class="ul-header"><b>triggerThen</b> - a thrown Error or returned rejected promise cancels the next action
         <ul class="small">
           <li>  <b>"fetching"</b> (model, columns, options) &mdash; before a collection is fetched. </li>
-          <li>   <b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
-        </ul>
-      </li>
-      <li class="ul-header"><b>trigger</b>
-        <ul class="small">
-
+          <li>  <b>"fetched"</b> (model, resp, options) &mdash; after a collection is fetched. </li>
         </ul>
       </li>
     </ul>
