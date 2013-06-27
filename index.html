@@ -1859,6 +1859,16 @@ Bookshelf.Transaction(function(t) {
     <h2 id="faq">F.A.Q.</h2>
 
     <p id="faq-debug">
+      <b class="header">My relations don't seem to be loading, what's up?</b><br />
+      Make sure you check that the type is correct for the initial parameters passed to the initial model
+      being fetched. For example new <tt>Model({id: '1'}).load([relations...])</tt> will not return the same as
+      <tt>Model({id: 1}).load([relations...])</tt> - notice that the <tt>id</tt> is a string in one case and a
+      number in the other. This can be a common mistake if retrieving the id from a url parameter.<p>
+      <p>This is only an issue if you're eager loading data with <tt>load</tt> without first fetching the original model.
+      <tt>Model({id: '1'}).fetch({withRelated: [relations...]})</tt> should work just fine.
+    </p>
+
+    <p id="faq-debug">
       <b class="header">Can I use standard node.js style callbacks.</b><br />
       Yes - you can call <tt>require('bookshelf/plugins/exec')</tt> after loading Bookshelf, and
       any models/collections created from that point forward will contain both <tt>then</tt> and

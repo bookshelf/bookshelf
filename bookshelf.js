@@ -806,11 +806,10 @@
     pushModels: function(name, handled, resp) {
       var parent      = this.parent;
       var related     = new RelatedModels([]);
-      var models      = related.models;
       var relatedData = handled.relatedData;
       var type        = relatedData.type;
       for (var i = 0, l = resp.length; i < l; i++) {
-        models.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+        related.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
       }
       // Attach the appropriate related items onto the parent model.
       for (i = 0, l = parent.models.length; i < l; i++) {
@@ -844,7 +843,15 @@
     this.models = models;
     this.length = this.models.length;
   };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'));
+  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'), {
+
+    // Pushes a model onto the `RelatedModels` object, updates the length of the models array, and returns the added model.
+    push: function(model) {
+      this.length = this.models.push(model);
+      return model;
+    }
+
+  });
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
