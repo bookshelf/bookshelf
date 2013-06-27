@@ -10,17 +10,11 @@
   "repository": "https://github.com/tgriesser/bookshelf",
   "keywords": [
     "orm",
-    "query",
     "mysql",
-    "postgres",
+    "postgresql",
     "sqlite",
-    "sqlite3",
-    "knex",
-    "database",
-    "object relational mapper",
     "datamapper",
-    "active record",
-    "polymorphic associations"
+    "active record"
   ],
   "repository":{
     "type": "git",
