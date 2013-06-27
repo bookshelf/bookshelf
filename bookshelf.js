@@ -553,7 +553,7 @@
     // Returns the related item, or creates a new
     // related item by creating a new model or collection.
     related: function(name) {
-      return this.relations[name] || (this.relations[name] = this[name]());
+      return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
     },
 
     // Called after a `sync` action (save, fetch, delete) -
