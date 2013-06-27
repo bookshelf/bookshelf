@@ -415,14 +415,11 @@
           model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
         }
 
-        // Reset the model's `previousAttributes` and `changed` values.
-        model._reset();
-
         return when.all([
           model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options),
           model.trigger('saved', model, resp, options)
         ]).then(function() {
-          return model;
+          return model._reset();
         });
       })
       .ensure(function() { model.resetQuery(); });
@@ -439,9 +436,8 @@
       .then(function() { return model.sync(options).del(options); })
       .then(function(resp) {
         model.clear();
-        model._reset();
         return model.triggerThen('destroyed', model, resp, options).then(function() {
-          return model;
+          return model._reset();
         });
       }).ensure(function() {
         model.resetQuery();
