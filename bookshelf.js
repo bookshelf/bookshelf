@@ -679,23 +679,25 @@
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
     fetch: function(options) {
-      var name, related, relation;
+      var key, relatedObj, name, related, relation;
       var target      = this.target;
       var handled     = this.handled = {};
-      var withRelated = options.withRelated;
+      var withRelated = this.prepWithRelated(options.withRelated);
       var subRelated  = {};
-      if (!_.isArray(withRelated)) withRelated = withRelated ? [withRelated] : [];
 
       // Eager load each of the `withRelated` relation item, splitting on '.'
       // which indicates a nested eager load.
-      for (var i = 0, l = options.withRelated.length; i < l; i++) {
-        related = options.withRelated[i].split('.');
+      for (key in withRelated) {
+
+        related = key.split('.');
         name    = related[0];
 
         // Add additional eager items to an array, to load at the next level in the query.
         if (related.length > 1) {
           subRelated[name] || (subRelated[name] = []);
-          subRelated[name].push(related.slice(1).join('.'));
+          relatedObj = {};
+          relatedObj[related.slice(1).join('.')] = withRelated[key];
+          subRelated[name].push(relatedObj);
         }
 
         // Only allow one of a certain nested type per-level.
@@ -716,7 +718,7 @@
       // all necessary pairing with parent objects, etc.
       var pendingDeferred = [];
       for (name in handled) {
-        pendingDeferred.push(this.eagerFetch(name, handled[name], _.extend({}, options, {
+        pendingDeferred.push(this.eagerFetch(name, handled[name], withRelated[name], _.extend({}, options, {
           isEager: true,
           withRelated: subRelated[name]
         })));
@@ -730,13 +732,32 @@
       });
     },
 
+    // Prep the `withRelated` object, to normalize into an object where each
+    // has a function that is called when running the query.
+    prepWithRelated: function(withRelated) {
+      if (!_.isArray(withRelated)) withRelated = withRelated ? [withRelated] : [];
+      var withRelatedObj = {};
+      for (var i = 0, l = withRelated.length; i < l; i++) {
+        if (_.isObject(withRelated[i])) {
+          _.extend(withRelatedObj, withRelated[i]);
+          continue;
+        }
+        withRelatedObj[withRelated[i]] = null;
+      }
+      return withRelatedObj;
+    },
+
     // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
-    eagerFetch: function(name, handled, options) {
+    eagerFetch: function(name, handled, beforeFn, options) {
       if (handled.type === 'morphTo') {
         return this.morphToFetch(name, handled, options);
       }
       var that = this;
+
+      // Call the function, if one exists, to constrain the eager loaded query.
+      if (beforeFn) beforeFn(handled.query());
+
       return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
