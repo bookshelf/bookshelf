@@ -1109,12 +1109,30 @@ var Photo = Bookshelf.Model.extend({
       the database. So for the case above the table names would be <tt>imageable_type</tt> and <tt>imageable_id</tt>.
     </p>
 
+<pre>
+var Site = Bookshelf.Model.extend({
+  tableName: 'sites',
+  photo: function() {
+    return this.morphOne(Photo, 'imageable');
+  }
+});
+</pre>
+
     <p id="Model-morphMany">
       <b class="header">morphMany</b><code>model.morphMany(Target, name)</code>
       <br />
       The <b>morphMany</b> property is essentially the same as a morphOne, but creating a collection rather than a
       model (similar to a hasOne vs. hasMany relation).
     </p>
+
+<pre>
+var Post = Bookshelf.Model.extend({
+  tableName: 'posts',
+  photos: function() {
+    return this.morphMany(Photo, 'imageable');
+  }
+});
+</pre>
 
     <p id="Model-morphTo">
       <b class="header">morphTo</b><code>model.morphTo(name, targets*)</code>
