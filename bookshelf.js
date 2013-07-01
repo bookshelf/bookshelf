@@ -753,16 +753,16 @@
       if (handled.type === 'morphTo') {
         return this.morphToFetch(name, handled, options);
       }
-      var that = this;
 
       // Call the function, if one exists, to constrain the eager loaded query.
-      if (beforeFn) beforeFn(handled.query());
+      if (beforeFn) beforeFn.call(handled, handled.query());
 
+      var _this = this;
       return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
-          var relatedModels = that.pushModels(name, handled, resp);
+          var relatedModels = _this.pushModels(name, handled, resp);
           // If there is a response, fetch additional nested eager relations, if any.
           if (resp.length > 0 && options.withRelated) {
             return new EagerRelation(relatedModels, resp, {
