@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.2.1)</span>
+      Bookshelf.js <span class="version">(0.2.2)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.2.1</h3>
+    <h3>Latest Release: 0.2.2</h3>
 
     <p>
       Current Develop &mdash;
@@ -887,7 +887,22 @@ new Story({id: 2}).fetch({
     {tags: [...], author: {...}}
   ]
 }
+</pre>
 
+    <p>
+      An object may be passed as a relation, where the first argument is the key and the second a function
+      which constraints the relation, called with the context of the current related model and accepting the
+      Knex query builder object as the first argument.
+    </p>
+
+<pre>
+new Story({id: 2}).fetch({
+  withRelated: ['comments.tags', 'comments.author', {
+    'author': function(qb) {
+      qb.where('status', 'active')
+    }
+  }]
+}).then(...
 </pre>
 
     <p id="Model-hasOne">
@@ -1929,6 +1944,22 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.2</b> &mdash; <small><i>July 2, 2013</i></small><br />
+      The Model's <tt>related</tt> method is now a no-op if the model doesn't have the related method. Any
+      <tt>withPivot</tt> columns on many-to-many relations are now prefixed with <tt>_pivot</tt> rather than <tt>pivot</tt>
+      unless named otherwise, for consistency. The <tt>_reset</tt> is not called until after all triggered
+      events so that <tt>hasChanged</tt> can be used on the current model state in the
+      "created", "updated", "saved", and "destroyed" events. Eager queries may be specified as an object
+      with a function, to constrain the eager queries:
+    </p>
+
+<pre>
+user.fetch({withRelated: ['accounts', {
+  'accounts.settings': function(qb) { qb.where('status', 'enabled'); }
+}, 'other_data']}).then(...
+</pre>
 
     <p>
       <b class="header">0.2.1</b> &mdash; <small><i>June 26, 2013</i></small><br />

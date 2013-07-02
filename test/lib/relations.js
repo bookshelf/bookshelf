@@ -214,7 +214,7 @@ module.exports = function(Bookshelf, handler) {
                 c.each(function(m) {
                   equal(m.hasChanged(), false);
                 });
-                equal(c.at(0).has('pivot_item'), true);
+                equal(c.at(0).has('_pivot_item'), true);
                 equal(c.length, 2);
               }),
               new Site({id: 2}).admins().fetch().then(function(c) {
