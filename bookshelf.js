@@ -874,7 +874,7 @@
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
 
   // The `forge` function properly instantiates a new Model or Collection
-  // without needing the "new" keyword... to make object creation cleaner
+  // without needing the "new" operator... to make object creation cleaner
   // and more chainable.
   Model.forge = Collection.forge = function() {
     var inst = Object.create(this.prototype);
@@ -1023,7 +1023,7 @@
       for (var i = 0, l = columns.length; i < l; i++) {
         var column = columns[i];
         if (_.isString(column)) {
-          relatedData.pivotColumns.push(relatedData.joinTableName + '.' + column + ' as pivot_' + column);
+          relatedData.pivotColumns.push(relatedData.joinTableName + '.' + column + ' as _pivot_' + column);
         } else {
           for (var key in column) {
             relatedData.pivotColumns.push(relatedData.joinTableName + '.' + key + ' as ' + column[key]);
