@@ -1493,15 +1493,18 @@ modelB.isNew(); // false
     </p>
 
 <pre>
+var when = require('when');
 var Accounts = Bookshelf.Collection.extend({
   model: Account
 });
 
-Accounts.forge([
+var accounts = Accounts.forge([
   {name: 'Person1'},
   {name: 'Person2'}
-]).save().then(function() {
-  // ...
+])
+
+when.all(accounts.invoke('save')).then(function() {
+  // collection models should now be saved...
 });
 </pre>
 
