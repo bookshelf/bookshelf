@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.2.2
+              <pre><code>Bookshelf.js 0.2.3
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -128,7 +128,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.2'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.3'</span>;</pre></div></div>
             
         </li>
         
@@ -984,8 +984,8 @@ rather than during object creation.</p>
         }
 
         <span class="keyword">return</span> when.all([
-          model.trigger((method === <span class="string">'insert'</span> ? <span class="string">'created'</span> : <span class="string">'updated'</span>), model, resp, options),
-          model.trigger(<span class="string">'saved'</span>, model, resp, options)
+          model.triggerThen((method === <span class="string">'insert'</span> ? <span class="string">'created'</span> : <span class="string">'updated'</span>), model, resp, options),
+          model.triggerThen(<span class="string">'saved'</span>, model, resp, options)
         ]).then(<span class="keyword">function</span>() {
           <span class="keyword">return</span> model._reset();
         });

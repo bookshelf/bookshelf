@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "backbone": "1.0.x",
-    "knex": "0.1.x",
+    "knex": ">=0.1.8",
     "underscore": "~1.4.4",
     "inflection": "~1.2.x",
     "when": "~2.1.0",

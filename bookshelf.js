@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.2
+//     Bookshelf.js 0.2.3
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.2';
+  Bookshelf.VERSION = '0.2.3';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -416,8 +416,8 @@
         }
 
         return when.all([
-          model.trigger((method === 'insert' ? 'created' : 'updated'), model, resp, options),
-          model.trigger('saved', model, resp, options)
+          model.triggerThen((method === 'insert' ? 'created' : 'updated'), model, resp, options),
+          model.triggerThen('saved', model, resp, options)
         ]).then(function() {
           return model._reset();
         });
