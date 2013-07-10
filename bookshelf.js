@@ -458,7 +458,8 @@
       if (options && options.shallow) return attrs;
       var relations = this.relations;
       for (var key in relations) {
-        attrs[key] = relations[key].toJSON();
+        var relation = relations[key];
+        attrs[key] = relation.toJSON ? relation.toJSON() : relation;
       }
       return attrs;
     },
