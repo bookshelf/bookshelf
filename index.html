@@ -1406,7 +1406,7 @@ var PostModel = Bookshelf.Model.extend({
       <b class="header">timestamp</b><code>model.timestamp(options)</code>
       <br />
       Sets the timestamp attributes on the model, if <tt>hasTimestamps</tt> is set to true.
-      The default implementation is to check if the model <a href="Model-isNew">isNew</a> and
+      The default implementation is to check if the model <a href="#Model-isNew">isNew</a> and
       set the <tt>created_at</tt> and <tt>updated_at</tt> attributes to the current date if it is new,
       and just the <tt>updated_at</tt> attribute if it isn't. You may override this method if you
       wish to use different column names or types for the timestamps.
