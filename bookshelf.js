@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.3
+//     Bookshelf.js 0.2.4
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -25,7 +25,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.3';
+  Bookshelf.VERSION = '0.2.4';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -415,14 +415,20 @@
           model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
         }
 
+        // In case we need to reference the `previousAttributes` for the model
+        // in the following event handlers.
+        options.previousAttributes = model._previousAttributes;
+
+        model._reset();
+
         return when.all([
           model.triggerThen((method === 'insert' ? 'created' : 'updated'), model, resp, options),
           model.triggerThen('saved', model, resp, options)
-        ]).then(function() {
-          return model._reset();
-        });
-      })
-      .ensure(function() { model.resetQuery(); });
+        ]);
+
+      }).then(function() {
+        return model;
+      });
     },
 
     // Destroy a model, calling a "delete" based on its `idAttribute`.
@@ -439,8 +445,6 @@
         return model.triggerThen('destroyed', model, resp, options).then(function() {
           return model._reset();
         });
-      }).ensure(function() {
-        model.resetQuery();
       });
     },
 
@@ -944,42 +948,33 @@
       return when(function(){
         if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
       }()).then(function() {
-        return sync.query.select(columns);
-      }).ensure(function() {
         syncing.resetQuery();
+        return sync.query.select(columns);
       });
     },
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
-      var syncing = this.syncing;
+      var syncing = this.syncing.resetQuery();
       return this.query
         .idAttribute(syncing.idAttribute)
-        .insert(syncing.format(extendNull(syncing.attributes)))
-        .then(function(resp) {
-          syncing._previousAttributes = extendNull(syncing.attributes);
-          return resp;
-        });
+        .insert(syncing.format(extendNull(syncing.attributes)));
     },
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      var syncing = this.syncing;
+      var syncing = this.syncing.resetQuery();
       return this.query
         .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(syncing.attributes)))
-        .then(function(resp) {
-          syncing._previousAttributes = extendNull(syncing.attributes);
-          return resp;
-        });
+        .update(syncing.format(extendNull(syncing.attributes)));
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres, syncing = this.syncing;
-      if (this.syncing.id != null) {
+      var wheres, syncing = this.syncing.resetQuery();
+      if (syncing.id != null) {
         wheres = {};
-        wheres[this.syncing.idAttribute] = this.syncing.id;
+        wheres[syncing.idAttribute] = syncing.id;
       }
       if (!wheres && this.query.wheres.length === 0) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
