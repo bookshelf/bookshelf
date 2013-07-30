@@ -1,13 +1,16 @@
 {
   "name": "bookshelf",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -b -R spec test/index.js"
   },
   "homepage": "http://bookshelfjs.org",
-  "repository": "https://github.com/tgriesser/bookshelf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tgriesser/bookshelf.git"
+  },
   "keywords": [
     "orm",
     "mysql",
@@ -16,29 +19,25 @@
     "datamapper",
     "active record"
   ],
-  "repository":{
-    "type": "git",
-    "url": "https://github.com/tgriesser/bookshelf.git"
-  },
   "dependencies": {
-    "backbone": "1.0.x",
-    "knex": ">=0.1.8",
-    "underscore": "~1.4.4",
+    "backbone": "~1.0.0",
     "inflection": "~1.2.x",
-    "when": "~2.1.0",
-    "trigger-then": ">=0.1.1"
+    "when": "~2.2.1",
+    "trigger-then": "~0.1.1",
+    "underscore": "~1.5.1",
+    "knex": "~0.1.8"
   },
   "devDependencies": {
-    "mocha": "1.7.x",
+    "mocha": "~1.12.0",
     "mysql": "~2.0.0-alpha7",
-    "pg": "~0.15.1",
+    "pg": "~2.3.0",
     "sqlite3": "~2.1.7",
     "objectdump": "~0.3.0",
     "underscore.string": "~2.3.1"
   },
   "author": {
     "name": "Tim Griesser",
-    "web":  "https://github.com/tgriesser"
+    "web": "https://github.com/tgriesser"
   },
   "license": "MIT",
   "readmeFilename": "README.md"

@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.2.3)</span>
+      Bookshelf.js <span class="version">(0.2.4)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.2.3</h3>
+    <h3>Latest Release: 0.2.4</h3>
 
     <p>
       Current Develop &mdash;
@@ -1189,13 +1189,26 @@ new Photos().fetch({
     </p>
 
     <p id="Model-related">
-      <b class="header">related</b><code>model.related()</code>
+      <b class="header">related</b><code>model.related([relation])</code>
       <br />
-      The <b>relations</b> property is the internal hash containing each of the relations
-      (models or collections) loaded on the model with <a href="#Model-load">load</a> or with
-      the <tt>withRelated</tt> property during <a href="#Model-fetch">fetch</a>. You can access
-      the relation using the <a href="#Model-related">related</a> method on the model.
+      The <b>related</b> method returns a specified <b>relation</b> loaded on the <a href="#Model-relations">relations</a>
+      hash on the model, or calls the associated relation method and adds it to the <tt>relations</tt> hash if one exists
+      and has not yet been loaded. Returns undefined if the specified relation does not exist.
     </p>
+
+<pre>
+new Photo({id: 1}).fetch({
+  withRelated: ['accounts']
+}).then(function(photo) {
+  if (photo) {
+    var account = photo.related('account');
+    if (account.id) {
+      return account.related('trips').fetch();
+    }
+  }
+});
+</pre>
+
 
     <p id="Model-save">
       <b class="header">save</b><code>model.save([params], [options]).then(function(model) {...</code>
@@ -1947,6 +1960,13 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.4</b> &mdash; <small><i>July 30, 2013</i></small><br />
+      More consistent query resetting, fixing query issues on post-query event handlers. The <tt>toJSON</tt> is only
+      called on a related model if the method exists, allowing for objects or arrays to be manually specified on the
+      <tt>relations</tt> hash and serialized properly on the parent's <tt>toJSON</tt>.
+    </p>
 
     <p>
       <b class="header">0.2.3</b> &mdash; <small><i>July 7, 2013</i></small><br />
