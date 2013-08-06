@@ -6,6 +6,8 @@
 //     http://bookshelfjs.org
 (function() {
 
+  "use strict";
+
   // Initial Setup
   // -------------
   var Bookshelf = {};
