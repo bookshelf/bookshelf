@@ -172,11 +172,11 @@ module.exports = function(Bookshelf) {
       imageable_type: 'sites'
     }]),
 
-    Knex('users').idAttribute('uid').insert({uid: 1, username: 'root'}),
+    Knex('users').insert({uid: 1, username: 'root'}),
 
-    Knex('roles').idAttribute('rid').insert({rid: 1, name: 'admin'}),
+    Knex('roles').insert({rid: 1, name: 'admin'}),
 
-    Knex('users_roles').idAttribute(null).insert({uid: 1, rid: 1})
+    Knex('users_roles').insert({uid: 1, rid: 1})
 
   ]).then(null, function(e) {
     console.log(e.stack);

@@ -959,8 +959,7 @@
     insert: function() {
       var syncing = this.syncing.resetQuery();
       return this.query
-        .idAttribute(syncing.idAttribute)
-        .insert(syncing.format(extendNull(syncing.attributes)));
+        .insert(syncing.format(extendNull(syncing.attributes)), syncing.idAttribute);
     },
 
     // Issues an `update` command on the query - only used by models.
