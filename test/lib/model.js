@@ -297,6 +297,8 @@ module.exports = function(Bookshelf, handler) {
       }).then(null, ok);
     });
 
+    it('allows for partial updates, with `patch: true`');
+
   });
 
   describe('destroy', function() {

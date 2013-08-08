@@ -383,7 +383,7 @@
 
       // If the model has timestamp columns,
       // set them as attributes on the model, even
-      // if the "partial" option is specified.
+      // if the "patch" option is specified.
       if (this.hasTimestamps) {
         _.extend(attrs, this.timestamp(options));
       }
@@ -409,7 +409,7 @@
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
         model.triggerThen('saving', model, attrs, options)
       ])
-      .then(function() { return sync[method](attrs, options); })
+      .then(function() { return sync[options.method](attrs, options); })
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
@@ -965,9 +965,10 @@
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
       var syncing = this.syncing.resetQuery();
+      attrs = (attrs && options.patch ? attrs : syncing.attributes);
       return this.query
         .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(syncing.attributes)));
+        .update(syncing.format(extendNull(attrs)));
     },
 
     // Issues a `delete` command on the query.
