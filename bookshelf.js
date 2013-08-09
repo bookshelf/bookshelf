@@ -627,11 +627,20 @@
 
     // Shortcut for creating a new model, saving, and adding to the collection.
     // Returns a promise which will resolve with the model added to the collection.
+    // If the model is a relation, put the `foreignKey` and `fkValue` from the `relatedData`
+    // hash into the inserted model. Also, if the model is a `manyToMany` relation,
+    // automatically create the joining model upon insertion.
     create: function(model, options) {
       options || (options = {});
-      model = this._prepareModel(model, options);
       var collection = this;
+      var relatedData = this.relatedData;
+      if (relatedData) model[relatedData.foreginKey] = relatedData.fkValue;
+      model = this._prepareModel(model, options);
       return model.save(null, options).then(function() {
+        if (relatedData && relatedData.type === 'belongsToMany') {
+          return collection.attach(model, options);
+        }
+      }).then(function() {
         collection.add(model, options);
         return model;
       });
