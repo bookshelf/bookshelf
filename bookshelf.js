@@ -625,6 +625,13 @@
         });
     },
 
+    // Fetches a single model from the collection, useful on related collections.
+    fetchOne: function(options) {
+      var model = new this.model;
+      if (this.relatedData) model.relatedData = this.relatedData;
+      return model.fetch(options);
+    },
+
     // Shortcut for creating a new model, saving, and adding to the collection.
     // Returns a promise which will resolve with the model added to the collection.
     // If the model is a relation, put the `foreignKey` and `fkValue` from the `relatedData`
@@ -890,7 +897,7 @@
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
 
   // The `forge` function properly instantiates a new Model or Collection
-  // without needing the "new" operator... to make object creation cleaner
+  // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
   Model.forge = Collection.forge = function() {
     var inst = Object.create(this.prototype);

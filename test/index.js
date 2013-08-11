@@ -1,7 +1,7 @@
 var _         = require('underscore');
 
 var Bookshelf = require('../bookshelf');
-var conn = require(process.env.BOOKSHELF_TEST || './shared/config');
+var conn      = require(process.env.BOOKSHELF_TEST || './shared/config');
 
 // The output goes here.
 exports.output = {};
