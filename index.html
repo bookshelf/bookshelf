@@ -327,6 +327,7 @@
       <li>&nbsp;&nbsp;– <a href="#Model-morphTo">morphTo</a></li>
       <li>– <a href="#Model-relations">relations</a></li>
       <li>– <a href="#Model-related">related</a></li>
+      <li>– <a href="#Model-relatedData">relatedData</a></li>
       <li>– <a href="#Model-save">save</a></li>
       <li>– <a href="#Model-destroy">destroy</a></li>
       <li>– <a href="#Model-format">format</a></li>
@@ -1209,6 +1210,13 @@ new Photo({id: 1}).fetch({
 });
 </pre>
 
+    <p id="Model-relatedData">
+      <b class="header">relatedData</b><code>model.relatedData</code>
+      <br />
+      The <b>relatedData</b> is a hash of information about the current model's relation, including the
+      <tt>type</tt>, <tt>foreignKey</tt>, <tt>fkValue</tt>, and other relationship information depending
+      on the relation type.
+    </p>
 
     <p id="Model-save">
       <b class="header">save</b><code>model.save([params], [options]).then(function(model) {...</code>
