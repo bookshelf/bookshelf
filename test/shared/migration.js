@@ -5,7 +5,7 @@ var drops = [
   'sites', 'sitesmeta', 'admins',
   'admins_sites', 'authors', 'authors_posts',
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
-  'users', 'roles', 'photos', 'users_roles'
+  'users', 'roles', 'photos', 'users_roles', 'info'
 ];
 
 module.exports = function(Bookshelf) {
@@ -27,6 +27,12 @@ module.exports = function(Bookshelf) {
         table.increments('id');
         table.integer('site_id');
         table.text('description');
+      }),
+
+      Schema.createTable('info', function(table) {
+        table.increments('id');
+        table.integer('meta_id');
+        table.text('other_description');
       }),
 
       Schema.createTable('admins', function(table) {

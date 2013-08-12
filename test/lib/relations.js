@@ -305,16 +305,20 @@ module.exports = function(Bookshelf, handler) {
     describe('`through` relations', function() {
 
       it('handles hasMany `through`', function(ok) {
-        ok();
+        new Blog({id: 1}).comments().fetch().then(handler(this, ok), ok);
       });
 
       it('eager loads hasMany `through`', function(ok) {
-        new Blogs().fetch({withRelated: 'comments'}).then(handler(this, ok), ok);
+        new Blogs().query({where: {site_id: 1}}).fetch({withRelated: 'comments'}).then(handler(this, ok), ok);
       });
 
-      it('handles hasOne `through`');
+      it('handles hasOne `through`', function(ok) {
+        new Site({id: 1}).info().fetch().then(handler(this, ok), ok);
+      });
 
-      it('eager loads hasOne `through`');
+      it('eager loads hasOne `through`', function(ok) {
+        new Sites().query('where', 'id', '<', 3).fetch({withRelated: 'info'}).then(handler(this, ok), ok);
+      });
 
     });
 

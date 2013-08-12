@@ -103,6 +103,9 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       if (relatedData.type !== 'hasOne' && relatedData.type !== 'hasMany') {
         throw new Error('`through` is only chainable from a `hasOne` or `hasMany` relation');
       }
+      // If it's a hasOne and not an eager loaded query, be sure to unset the
+      // value set in the `_relatesTo` block.
+      if (!this._isEager && relatedData.type === 'hasOne') this.unset(relatedData.foreignKey);
       var tableName = _.result(Target.prototype, 'tableName');
       var originalFk = relatedData.foreignKey;
       _.extend(relatedData, {
@@ -359,11 +362,15 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     fetch: function(options) {
       var model = this;
       options || (options = {});
+      var relatedData = this.relatedData || {};
       return this.sync(options)
         .first()
         .then(function(resp) {
           if (resp && resp.length > 0) {
-            model.set(model.parse(resp[0], options), _.extend({silent: true}, options))._reset();
+            var tmpModel;
+            if (relatedData.through) tmpModel = prepThroughPivot(relatedData, [new model.constructor(resp[0])])[0];
+            model.set(model.parse(tmpModel ? tmpModel.attributes : resp[0], options), _.extend({silent: true}, options))._reset();
+            if (tmpModel) model.pivot = tmpModel.pivot;
             if (!options.withRelated) return resp;
             return new EagerRelation(model, resp)
               .fetch(options)
@@ -619,12 +626,19 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // when they arrive.
     fetch: function(options) {
       var collection = this;
+      var relatedData = this.relatedData || {};
       options || (options = {});
       return this.sync(options)
         .select()
         .then(function(resp) {
+          var models;
           if (resp && resp.length > 0) {
-            collection.reset(resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
+            if (relatedData.through) {
+              models = prepThroughPivot(relatedData, _.map(resp, function(model) {
+                return collection._prepareModel(model);
+              }));
+            }
+            collection.reset(models || resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
           } else {
             collection.reset([], {silent: true});
             return [];
@@ -870,7 +884,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       }
 
       // Prep the `pivot` on the `through` models.
-      if (relatedData.through) this._prepThroughPivot(relatedData, related);
+      if (relatedData.through) prepThroughPivot(relatedData, related.models);
 
       // Attach the appropriate related items onto the parent model.
       for (i = 0, l = parent.models.length; i < l; i++) {
@@ -907,23 +921,6 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
         return filtered[0] || new relatedData.eager.ModelCtor();
       }
       return new relatedData.eager.CollectionCtor(filtered, {parse: true});
-    },
-
-    // Preps the `pivot` table on the `through` model, and cleans up the extra "pivot"
-    // data that isn't needed anymore.
-    _prepThroughPivot: function(relatedData, models) {
-      for (var i = 0, l = models.length; i < l; i++) {
-        var key, model = models.at(i);
-        var data = {};
-        var through = new relatedData.through();
-        data[relatedData.otherKey] = model.get('_pivot_' + relatedData.otherKey);
-        data[through.idAttribute] = model.get('_pivot_' + through.idAttribute);
-        model.pivot = through.set(data, {silent: true});
-        var attrs = model.attributes;
-        for (key in attrs) if (key.indexOf('_pivot_') === 0) delete attrs[key];
-        model._reset();
-      }
-      return models;
     }
 
   });
@@ -1143,6 +1140,23 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       return builder.insert(data);
     }
 
+  };
+
+  // Preps the `pivot` table on the `through` model, and
+  // cleans up the extra "pivot" data that is no longer needed.
+  var prepThroughPivot = function(relatedData, models) {
+    for (var i = 0, l = models.length; i < l; i++) {
+      var key, model = models[i];
+      var data = {};
+      var through = new relatedData.through();
+      data[relatedData.otherKey] = model.get('_pivot_' + relatedData.otherKey);
+      data[through.idAttribute] = model.get('_pivot_' + through.idAttribute);
+      model.pivot = through.set(data, {silent: true});
+      var attrs = model.attributes;
+      for (key in attrs) if (key.indexOf('_pivot_') === 0) delete attrs[key];
+      model._reset();
+    }
+    return models;
   };
 
   // Creates a new object, extending an object that

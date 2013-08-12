@@ -24,6 +24,14 @@ module.exports = function(Bookshelf) {
       description: 'This is a description for the Bookshelfjs Site'
     }]),
 
+    Knex('info').insert([{
+      meta_id: 1,
+      other_description: 'This is an info block for hasOne -> through test'
+    }, {
+      meta_id: 2,
+      other_description: 'This is an info block for an eager hasOne -> through test'
+    }]),
+
     Knex('admins').insert([{
       username: 'test1',
       password: 'testpwd1',

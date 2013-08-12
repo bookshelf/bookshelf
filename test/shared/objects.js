@@ -3,10 +3,17 @@
 // (sort of mimics a simple multi-site blogging engine)
 module.exports = function(Shelf) {
 
+  var Info = Shelf.Model.extend({
+    tableName: 'info'
+  });
+
   var SiteMeta = Shelf.Model.extend({
     tableName: 'sitesmeta',
     site: function() {
       return this.belongsTo(Site);
+    },
+    info: function() {
+      return this.hasOne(Info);
     }
   });
 
@@ -26,6 +33,9 @@ module.exports = function(Shelf) {
     },
     meta: function() {
       return this.hasOne(SiteMeta);
+    },
+    info: function() {
+      return this.hasOne(Info).through(SiteMeta, 'meta_id');
     },
     admins: function() {
       return this.belongsToMany(Admin).withPivot('item');
