@@ -4,9 +4,9 @@
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
-(function() {
+(function(define) { "use strict";
 
-  "use strict";
+define(function(Backbone, _, when, Knex, Inflection, triggerThen) {
 
   // Initial Setup
   // -------------
@@ -14,17 +14,11 @@
 
   // Keep a reference to our own copy of Backbone, in case we want to use
   // this specific instance elsewhere in the application.
-  var Backbone = Bookshelf.Backbone = require('backbone');
-
-  // Local dependency references.
-  var _      = require('underscore');
-  var when   = require('when');
-  var Knex   = require('knex');
-  var Inflection = require('inflection');
+  Bookshelf.Backbone = Backbone;
 
   // Mixin the `triggerThen` function into all relevant Backbone objects,
   // so we can have event driven async validations, functions, etc.
-  require('trigger-then')(Backbone, when);
+  triggerThen(Backbone, when);
 
   // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.2.4';
@@ -1211,6 +1205,22 @@
   // after `Knex` has been initialized, for consistency.
   Bookshelf.instanceName = 'main';
 
-  module.exports = Bookshelf;
+  return Bookshelf;
+});
 
-}).call(this);
+// Boilerplate UMD Block...
+})(function(Shelf) {
+  var root = this, deps = ['backbone', 'underscore', 'when', 'knex', 'inflection', 'trigger-then'];
+  if (typeof exports === 'object') {
+    module.exports = Shelf.apply(root, deps.map(function(name) { return require(name); }));
+  } else if (typeof define === "function" && define.amd) {
+    define('bookshelf', deps, Shelf);
+  } else {
+    var lastBookshelf = root.Bookshelf;
+    var Bookshelf     = root.Bookshelf = Shelf.apply(root, deps.map(function(name) { return root[name]; }));
+    Bookshelf.noConflict = function() {
+      root.Bookshelf = lastBookshelf;
+      return Bookshelf;
+    };
+  }
+});
