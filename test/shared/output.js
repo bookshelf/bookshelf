@@ -436,10 +436,10 @@ module.exports = {
       postgres: {
         id: 3,
         name: 'backbonejs.org',
-        blogs: [],
         meta: {
         
         },
+        blogs: [],
         authors: []
       },
       sqlite3: {
@@ -1512,6 +1512,15 @@ module.exports = {
       mysql: [{
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1530,19 +1539,19 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },{
         id: 2,
         name: 'bookshelfjs.org',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog'
+        },{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 3,
           site_id: 2,
@@ -1561,21 +1570,12 @@ module.exports = {
             id: 2,
             name: 'bookshelfjs.org'
           }
-        }],
-        blogs: [{
-          id: 3,
-          site_id: 2,
-          name: 'Main Site Blog'
-        },{
-          id: 4,
-          site_id: 2,
-          name: 'Alternate Site Blog'
         }]
       },{
         id: 3,
         name: 'backbonejs.org',
-        authors: [],
-        blogs: []
+        blogs: [],
+        authors: []
       }],
       postgres: [{
         id: 1,
@@ -2184,9 +2184,7 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.',
-          _pivot_blog_id: 1,
-          _pivot_id: 1
+          comment: 'this is neat.'
         }]
       },{
         id: 2,
@@ -2213,9 +2211,7 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.',
-          _pivot_blog_id: 1,
-          _pivot_id: 1
+          comment: 'this is neat.'
         }]
       },{
         id: 2,
@@ -2242,9 +2238,7 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.',
-          _pivot_blog_id: 1,
-          _pivot_id: 1
+          comment: 'this is neat.'
         }]
       },{
         id: 2,

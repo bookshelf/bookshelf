@@ -577,7 +577,8 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
     // Called after a `sync` action (save, fetch, delete) -
     // resets the `_previousAttributes` and `changed` hash for the model.
-    _reset: function() {
+    _reset: function(attrs) {
+      if (attrs) this.attributes = attrs;
       this._previousAttributes = extendNull(this.attributes);
       this.changed = extendNull();
       return this;
@@ -864,9 +865,14 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       var related     = new RelatedModels([]);
       var relatedData = handled.relatedData;
       var type        = relatedData.type;
+
       for (var i = 0, l = resp.length; i < l; i++) {
         related.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
       }
+
+      // Prep the `pivot` on the `through` models.
+      if (relatedData.through) this._prepThroughPivot(relatedData, related);
+
       // Attach the appropriate related items onto the parent model.
       for (i = 0, l = parent.models.length; i < l; i++) {
         var model = parent.models[i];
@@ -895,19 +901,30 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
     // Filter for the "eager related" through relationship matching.
     _throughRelated: function(type, relatedData, models, id) {
-      var filtered = _.map(models.filter(function(model) {
-        model['_pivot_' + relatedData.otherKey] = id;
-      }), function(item) {
-        var out = {}, key;
-        for (key in item) {
-          if (key.indexOf('_pivot_') !== 0) out[key] = item;
-        }
-        return out;
+      var filtered = models.filter(function(model) {
+        return model.pivot.get(relatedData.otherKey) === id;
       });
       if (type === 'hasOne') {
         return filtered[0] || new relatedData.eager.ModelCtor();
       }
       return new relatedData.eager.CollectionCtor(filtered, {parse: true});
+    },
+
+    // Preps the `pivot` table on the `through` model, and cleans up the extra "pivot"
+    // data that isn't needed anymore.
+    _prepThroughPivot: function(relatedData, models) {
+      for (var i = 0, l = models.length; i < l; i++) {
+        var key, model = models.at(i);
+        var data = {};
+        var through = new relatedData.through();
+        data[relatedData.otherKey] = model.get('_pivot_' + relatedData.otherKey);
+        data[through.idAttribute] = model.get('_pivot_' + through.idAttribute);
+        model.pivot = through.set(data, {silent: true});
+        var attrs = model.attributes;
+        for (key in attrs) if (key.indexOf('_pivot_') === 0) delete attrs[key];
+        model._reset();
+      }
+      return models;
     }
 
   });
