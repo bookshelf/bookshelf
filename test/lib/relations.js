@@ -302,6 +302,26 @@ module.exports = function(Bookshelf, handler) {
 
     });
 
+    describe('`through` relations', function() {
+
+      it('handles hasMany `through`', function(ok) {
+        ok();
+      });
+
+      it('eager loads hasMany `through`', function(ok) {
+        new Blogs().fetch({withRelated: {
+          comments: function(qb) {
+            qb.debug();
+          }
+        }}).then(handler(this, ok), ok);
+      });
+
+      it('handles hasOne `through`');
+
+      it('eager loads hasOne `through`');
+
+    });
+
   });
 
 };

@@ -316,6 +316,7 @@
       <li><b><a href="#Model-relation-types">Relation Types:</a></b></li>
       <li>– <a href="#Model-hasOne">hasOne</a></li>
       <li>– <a href="#Model-hasMany">hasMany</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-through">through</a></li>
       <li>– <a href="#Model-belongsTo">belongsTo</a></li>
       <li>– <a href="#Model-belongsToMany">belongsToMany</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
@@ -944,6 +945,14 @@ new Patient({id: 1}).record().fetch().then(function(model) {
       has a "one-to-many" relationship with the <b>Target</b> model or collection. The
       <b>model</b> is referenced by a <b>foreignKey</b>, which defaults to the
       <a href="#Model-tableName">tableName</a> of the current model.
+    </p>
+
+    <p id="Model-through">
+      <b class="header">through</b><code>model.hasMany(Target).through(JoinModel)</code>
+      <br />
+      An alternative to a <a href="#Model-belongsToMany">belongsToMany</a> relationship, the <tt>through</tt>
+      method may be chained on a <a href="#Model-hasOne">hasOne</a> or <a href="#Model-hasMany">hasMany</a> relation,
+      where the chaining.
     </p>
 
     <p id="Model-belongsTo">

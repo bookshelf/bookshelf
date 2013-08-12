@@ -359,22 +359,7 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       },
       postgres: {
         id: 1,
@@ -382,22 +367,7 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       },
       sqlite3: {
         id: 1,
@@ -405,32 +375,17 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       }
     },
     'relations.9 - Attaches an empty related model or collection if the `EagerRelation` comes back blank': {
       mysql: {
         id: 3,
         name: 'backbonejs.org',
-        blogs: [],
         meta: {
         
         },
+        blogs: [],
         authors: []
       },
       postgres: {
@@ -672,22 +627,7 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       },{
         id: 3,
         owner_id: 2,
@@ -702,22 +642,7 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       },{
         id: 3,
         owner_id: 2,
@@ -732,22 +657,7 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        tags: [{
-          id: 1,
-          name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
-        },{
-          id: 2,
-          name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
-        },{
-          id: 3,
-          name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
-        }]
+        tags: []
       },{
         id: 3,
         owner_id: 2,
@@ -873,37 +783,13 @@ module.exports = {
           site_id: 1,
           first_name: 'Tim',
           last_name: 'Griesser',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
-          }]
+          posts: []
         },{
           id: 2,
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
-          },{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
-          }]
+          posts: []
         }]
       },
       postgres: {
@@ -914,37 +800,13 @@ module.exports = {
           site_id: 1,
           first_name: 'Tim',
           last_name: 'Griesser',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
-          }]
+          posts: []
         },{
           id: 2,
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
-          },{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
-          }]
+          posts: []
         }]
       },
       sqlite3: {
@@ -955,37 +817,13 @@ module.exports = {
           site_id: 1,
           first_name: 'Tim',
           last_name: 'Griesser',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
-          }]
+          posts: []
         },{
           id: 2,
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe',
-          posts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
-          },{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
-          }]
+          posts: []
         }]
       }
     },
@@ -993,35 +831,6 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          },{
-            id: 3,
-            owner_id: 2,
-            blog_id: 1,
-            name: 'This is a new Title 3!',
-            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }]
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog',
-          posts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
-          }]
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1059,41 +868,41 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title 3!',
             content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          posts: [{
+            id: 1,
+            owner_id: 1,
+            blog_id: 1,
+            name: 'This is a new Title!',
+            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
+          },{
+            id: 3,
+            owner_id: 2,
+            blog_id: 1,
+            name: 'This is a new Title 3!',
+            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          posts: [{
+            id: 2,
+            owner_id: 2,
+            blog_id: 2,
+            name: 'This is a new Title 2!',
+            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
           }]
         }]
       },
       postgres: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          },{
-            id: 3,
-            owner_id: 2,
-            blog_id: 1,
-            name: 'This is a new Title 3!',
-            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }]
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog',
-          posts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
-          }]
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1131,6 +940,35 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title 3!',
             content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          posts: [{
+            id: 1,
+            owner_id: 1,
+            blog_id: 1,
+            name: 'This is a new Title!',
+            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
+          },{
+            id: 3,
+            owner_id: 2,
+            blog_id: 1,
+            name: 'This is a new Title 3!',
+            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          posts: [{
+            id: 2,
+            owner_id: 2,
+            blog_id: 2,
+            name: 'This is a new Title 2!',
+            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
           }]
         }]
       },
@@ -1446,15 +1284,6 @@ module.exports = {
       postgres: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1473,6 +1302,15 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
         }]
       },
       sqlite3: {
@@ -1738,32 +1576,17 @@ module.exports = {
       mysql: {
         uid: 1,
         username: 'root',
-        roles: [{
-          rid: 1,
-          name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
-        }]
+        roles: []
       },
       postgres: {
         uid: 1,
         username: 'root',
-        roles: [{
-          rid: 1,
-          name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
-        }]
+        roles: []
       },
       sqlite3: {
         uid: 1,
         username: 'root',
-        roles: [{
-          rid: 1,
-          name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
-        }]
+        roles: []
       }
     },
     'relations.22 - handles morphOne (photo)': {
@@ -2172,6 +1995,95 @@ module.exports = {
           id: 2,
           name: 'bookshelfjs.org'
         }
+      }]
+    },
+    'relations.28 - eager loads hasMany `through`': {
+      mysql: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_blog_id: 1,
+          _pivot_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      },{
+        id: 3,
+        site_id: 2,
+        name: 'Main Site Blog',
+        comments: []
+      },{
+        id: 4,
+        site_id: 2,
+        name: 'Alternate Site Blog',
+        comments: []
+      }],
+      postgres: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_blog_id: 1,
+          _pivot_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      },{
+        id: 3,
+        site_id: 2,
+        name: 'Main Site Blog',
+        comments: []
+      },{
+        id: 4,
+        site_id: 2,
+        name: 'Alternate Site Blog',
+        comments: []
+      }],
+      sqlite3: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_blog_id: 1,
+          _pivot_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      },{
+        id: 3,
+        site_id: 2,
+        name: 'Main Site Blog',
+        comments: []
+      },{
+        id: 4,
+        site_id: 2,
+        name: 'Alternate Site Blog',
+        comments: []
       }]
     }
   }

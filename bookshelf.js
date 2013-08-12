@@ -102,6 +102,24 @@
       return new Bookshelf.Sync(this, options);
     },
 
+    // Used to set up a `hasOne` or `hasMany` :through relationship,
+    // this mixes in any of the `pivotHelper` methods to the current object.
+    through: function(Target, foreignKey) {
+      var relatedData = this.relatedData || {};
+      if (relatedData.type !== 'hasOne' && relatedData.type !== 'hasMany') {
+        throw new Error('`through` is only chainable from a `hasOne` or `hasMany` relation');
+      }
+      var tableName = _.result(Target.prototype, 'tableName');
+
+      relatedData.through = Target;
+      relatedData.otherKey = relatedData.foreignKey;
+      relatedData.foreignKey = foreignKey || singularMemo(tableName) + '_id';
+      relatedData.joinTableName = tableName;
+      relatedData.idAttribute = Target.prototype.idAttribute;
+
+      return _.extend(this, Bookshelf.pivotHelpers);
+    },
+
     // Standard constraints for regular or eager loaded relations.
     // If the model isn't an eager load or a collection, it doesn't need
     // to be populated with the additional `where` clause, as that's already taken
@@ -118,7 +136,7 @@
 
     // Helper method for adding the constraints needed on a regular or eager loaded
     // `belongsToMany` relationship.
-    _belongsToManyConstraints: function(resp) {
+    _belongsToManyConstraints: function(resp, through) {
       var
       relatedData   = this.relatedData,
       columns       = relatedData.columns || (relatedData.columns = []),
@@ -134,14 +152,21 @@
         columns.push(tableName + '.*');
       }
 
-      columns.push(
-        joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
-        joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey
-      );
+      columns.push(joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey);
+
+      if (!through) {
+        columns.push(joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey);
+      } else {
+        columns.push(joinTableName + '.' + relatedData.idAttribute + ' as ' + '_pivot_' + relatedData.idAttribute);
+      }
 
       if (pivotColumns) push.apply(columns, pivotColumns);
 
-      builder.join(joinTableName, tableName + '.' + _.result(this, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
+      if (through) {
+        builder.join(joinTableName, tableName + '.' + foreignKey, '=', joinTableName + '.' + relatedData.idAttribute);
+      } else {
+        builder.join(joinTableName, tableName + '.' + _.result(this, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
+      }
 
       if (resp) {
         builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
@@ -644,7 +669,7 @@
       if (relatedData) model[relatedData.foreginKey] = relatedData.fkValue;
       model = this._prepareModel(model, options);
       return model.save(null, options).then(function() {
-        if (relatedData && relatedData.type === 'belongsToMany') {
+        if (relatedData && relatedData.type === 'belongsToMany' || relatedData.through) {
           return collection.attach(model, options);
         }
       }).then(function() {
@@ -780,12 +805,12 @@
       // Call the function, if one exists, to constrain the eager loaded query.
       if (beforeFn) beforeFn.call(handled, handled.query());
 
-      var _this = this;
+      var relation = this;
       return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
-          var relatedModels = _this.pushModels(name, handled, resp);
+          var relatedModels = relation.pushModels(name, handled, resp);
           // If there is a response, fetch additional nested eager relations, if any.
           if (resp.length > 0 && options.withRelated) {
             return new EagerRelation(relatedModels, resp, {
@@ -864,14 +889,14 @@
     // Handles the "eager related" relationship matching.
     _eagerRelated: function(type, relatedData, models, id) {
       var where = {};
-      if (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') {
+      if ((type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') && !relatedData.through) {
         where[relatedData.foreignKey] = id;
         return models.findWhere(where) || new relatedData.eager.ModelCtor();
       } else if (type === 'hasMany' || type === 'morphMany') {
         where[relatedData.foreignKey] = id;
         return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
-      } else {
-        where['_pivot_' + relatedData.otherKey] = id;
+      } else if (type === 'belongsToMany' || relatedData.through) {
+        if (relatedData.through) where['_pivot_' + relatedData.otherKey] = id;
         return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
       }
     }
@@ -946,10 +971,10 @@
         if (!relatedData.fkValue && !options.parentResponse) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
-        if (relatedData.type !== 'belongsToMany') {
+        if (relatedData.type !== 'belongsToMany' && !relatedData.through) {
           syncing._constraints(options.parentResponse);
         } else {
-          syncing._belongsToManyConstraints(options.parentResponse);
+          syncing._belongsToManyConstraints(options.parentResponse, relatedData.through);
         }
       }
 
@@ -1048,7 +1073,7 @@
     },
 
     // Helper for handling either the `attach` or `detach` call on
-    // the `belongsToMany` relationship.
+    // the `belongsToMany` or `hasOne` / `hasMany` :through relationship.
     _handler: function(method, ids, options) {
       var pending = [];
       if (ids == void 0) {

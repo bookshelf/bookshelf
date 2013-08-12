@@ -117,9 +117,13 @@ module.exports = function(Bookshelf, handler) {
 
   describe('create', function() {
 
+    it('creates and saves a new model instance, saving it to the collection');
+
   });
 
   describe('parse', function() {
+
+    it('parses a new model instance, saving it to the collection');
 
   });
 

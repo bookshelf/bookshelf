@@ -77,6 +77,9 @@ module.exports = function(Shelf) {
     },
     validate: function(attrs) {
       if (!attrs.title) return 'A title is required.';
+    },
+    comments: function() {
+      return this.hasMany(Comments).through(Post);
     }
   });
 
