@@ -577,8 +577,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
     // Called after a `sync` action (save, fetch, delete) -
     // resets the `_previousAttributes` and `changed` hash for the model.
-    _reset: function(attrs) {
-      if (attrs) this.attributes = attrs;
+    _reset: function() {
       this._previousAttributes = extendNull(this.attributes);
       this.changed = extendNull();
       return this;
