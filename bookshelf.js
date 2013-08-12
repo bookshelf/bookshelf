@@ -98,19 +98,21 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
     // Used to set up a `hasOne` or `hasMany` :through relationship,
     // this mixes in any of the `pivotHelper` methods to the current object.
-    through: function(Target, foreignKey) {
+    through: function(Target, foreignKey, otherKey) {
       var relatedData = this.relatedData || {};
       if (relatedData.type !== 'hasOne' && relatedData.type !== 'hasMany') {
         throw new Error('`through` is only chainable from a `hasOne` or `hasMany` relation');
       }
       var tableName = _.result(Target.prototype, 'tableName');
-
-      relatedData.through = Target;
-      relatedData.otherKey = relatedData.foreignKey;
-      relatedData.foreignKey = foreignKey || singularMemo(tableName) + '_id';
-      relatedData.joinTableName = tableName;
-      relatedData.idAttribute = Target.prototype.idAttribute;
-
+      var originalFk = relatedData.foreignKey;
+      _.extend(relatedData, {
+        through: Target,
+        otherKey: otherKey || originalFk,
+        foreignKey: foreignKey || singularMemo(tableName) + '_id',
+        joinTableName: tableName,
+        joinKey: _.result(Target.prototype, 'idAttribute')
+      });
+      relatedData.throughId = relatedData.foreignKey;
       return _.extend(this, Bookshelf.pivotHelpers);
     },
 
@@ -129,7 +131,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     },
 
     // Helper method for adding the constraints needed on a regular or eager loaded
-    // `belongsToMany` relationship.
+    // `belongsToMany` or `hasOne` / `hasMany` `:through` relationship.
     _belongsToManyConstraints: function(resp, through) {
       var
       relatedData   = this.relatedData,
@@ -139,28 +141,24 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
       otherKey      = relatedData.otherKey,
       foreignKey    = relatedData.foreignKey,
-      pivotColumns  = relatedData.pivotColumns,
       joinTableName = relatedData.joinTableName;
+
+      // Helpers for `through` relationship types.
+      var joinKey   = relatedData.joinKey   || foreignKey;
+      var throughId = relatedData.throughId || _.result(this, 'idAttribute');
 
       if (builder.columns.length === 0 && columns.length === 0) {
         columns.push(tableName + '.*');
       }
 
-      columns.push(joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey);
+      columns.push(
+        joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
+        joinTableName + '.' + joinKey + ' as ' + '_pivot_' + joinKey
+      );
 
-      if (!through) {
-        columns.push(joinTableName + '.' + foreignKey + ' as ' + '_pivot_' + foreignKey);
-      } else {
-        columns.push(joinTableName + '.' + relatedData.idAttribute + ' as ' + '_pivot_' + relatedData.idAttribute);
-      }
+      if (relatedData.pivotColumns) push.apply(columns, relatedData.pivotColumns);
 
-      if (pivotColumns) push.apply(columns, pivotColumns);
-
-      if (through) {
-        builder.join(joinTableName, tableName + '.' + foreignKey, '=', joinTableName + '.' + relatedData.idAttribute);
-      } else {
-        builder.join(joinTableName, tableName + '.' + _.result(this, 'idAttribute'), '=', joinTableName + '.' + foreignKey);
-      }
+      builder.join(joinTableName, tableName + '.' + throughId, '=', joinTableName + '.' + joinKey);
 
       if (resp) {
         builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
@@ -168,7 +166,6 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
         builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
       }
     }
-
   };
 
   // Bookshelf.Model
@@ -883,16 +880,34 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Handles the "eager related" relationship matching.
     _eagerRelated: function(type, relatedData, models, id) {
       var where = {};
-      if ((type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') && !relatedData.through) {
+      if (relatedData.through) return this._throughRelated(type, relatedData, models, id);
+      if (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') {
         where[relatedData.foreignKey] = id;
         return models.findWhere(where) || new relatedData.eager.ModelCtor();
       } else if (type === 'hasMany' || type === 'morphMany') {
         where[relatedData.foreignKey] = id;
         return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
-      } else if (type === 'belongsToMany' || relatedData.through) {
-        if (relatedData.through) where['_pivot_' + relatedData.otherKey] = id;
+      } else {
+        where['_pivot_' + relatedData.otherKey] = id;
         return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
       }
+    },
+
+    // Filter for the "eager related" through relationship matching.
+    _throughRelated: function(type, relatedData, models, id) {
+      var filtered = _.map(models.filter(function(model) {
+        model['_pivot_' + relatedData.otherKey] = id;
+      }), function(item) {
+        var out = {}, key;
+        for (key in item) {
+          if (key.indexOf('_pivot_') !== 0) out[key] = item;
+        }
+        return out;
+      });
+      if (type === 'hasOne') {
+        return filtered[0] || new relatedData.eager.ModelCtor();
+      }
+      return new relatedData.eager.CollectionCtor(filtered, {parse: true});
     }
 
   });

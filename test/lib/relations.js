@@ -309,11 +309,7 @@ module.exports = function(Bookshelf, handler) {
       });
 
       it('eager loads hasMany `through`', function(ok) {
-        new Blogs().fetch({withRelated: {
-          comments: function(qb) {
-            qb.debug();
-          }
-        }}).then(handler(this, ok), ok);
+        new Blogs().fetch({withRelated: 'comments'}).then(handler(this, ok), ok);
       });
 
       it('handles hasOne `through`');
