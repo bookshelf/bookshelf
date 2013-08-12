@@ -6,7 +6,7 @@
 //     http://bookshelfjs.org
 (function(define) { "use strict";
 
-define(function(Backbone, _, when, Knex, Inflection, triggerThen) {
+define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
   // Initial Setup
   // -------------
@@ -1139,7 +1139,7 @@ define(function(Backbone, _, when, Knex, Inflection, triggerThen) {
       if (arg in cache) {
         return cache[arg];
       } else {
-        return cache[arg] = Inflection.singularize(arg);
+        return cache[arg] = inflection.singularize(arg);
       }
     };
   }());
