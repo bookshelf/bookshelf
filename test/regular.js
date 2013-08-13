@@ -8,27 +8,32 @@ module.exports = function(Bookshelf, type) {
 
   describe('DB Tests ' + type, function() {
 
-    // Load all of the tables and
-    // data for the tests.
-    before(function(ok) {
-      require('./shared/migration')(Bookshelf)
-        .then(function() {
-          return require('./shared/inserts')(Bookshelf);
-        })
-        .then(function() {
-          ok();
-        }, ok);
-    });
+    var dropAll = function() {
+      // Load all of the tables and
+      // data for the tests.
+      before(function(ok) {
+        require('./shared/migration')(Bookshelf)
+          .then(function() {
+            return require('./shared/inserts')(Bookshelf);
+          })
+          .then(function() {
+            ok();
+          }, ok);
+      });
+    };
 
     describe('Bookshelf.Model - ' + type, function() {
+      dropAll();
       require('./lib/model')(Bookshelf, handler(Bookshelf, type, 'model'), 'DB');
     });
 
     describe('Bookshelf.Collection - ' + type, function() {
+      dropAll();
       require('./lib/collection')(Bookshelf, handler(Bookshelf, type, 'collection'), 'DB');
     });
 
     describe('Bookshelf.Relations - ' + type, function() {
+      dropAll();
       require('./lib/relations')(Bookshelf, handler(Bookshelf, type, 'relations'), 'DB');
     });
 

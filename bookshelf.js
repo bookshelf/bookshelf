@@ -516,6 +516,12 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       return model;
     },
 
+    // Returns the related item, or creates a new
+    // related item by creating a new model or collection.
+    related: function(name) {
+      return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
+    },
+
     // Creates a new relation, from the current object to the
     // 'target' object (collection or model), passing a hash of
     // options which can include the `type` of relation.
@@ -576,10 +582,14 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       return target;
     },
 
-    // Returns the related item, or creates a new
-    // related item by creating a new model or collection.
-    related: function(name) {
-      return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
+    // Sets the constraints necessary during a `create` call from an associated collection.
+    _createConstraints: function(type, relatedData) {
+      var data = {};
+      if (type === 'hasMany' || type === 'morphMany' || relatedData.through) {
+        data[relatedData.foreignKey] = relatedData.fkValue;
+        if (relatedData.morphKey) data[relatedData.morphKey] = relatedData.morphValue;
+      }
+      return this.set(data);
     },
 
     // Called after a `sync` action (save, fetch, delete) -
@@ -670,11 +680,11 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     create: function(model, options) {
       options || (options = {});
       var collection = this;
-      var relatedData = this.relatedData;
-      if (relatedData) model[relatedData.foreginKey] = relatedData.fkValue;
+      var relatedData = this.relatedData || {};
+      var type        = relatedData.type;
       model = this._prepareModel(model, options);
-      return model.save(null, options).then(function() {
-        if (relatedData && relatedData.type === 'belongsToMany' || relatedData.through) {
+      return model._createConstraints(type, relatedData).save(null, options).then(function() {
+        if (type && (type === 'belongsToMany' || relatedData.through)) {
           return collection.attach(model, options);
         }
       }).then(function() {
@@ -803,9 +813,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
     eagerFetch: function(name, handled, beforeFn, options) {
-      if (handled.type === 'morphTo') {
-        return this.morphToFetch(name, handled, options);
-      }
+      if (handled.type === 'morphTo') return this.morphToFetch(name, handled, options);
 
       // Call the function, if one exists, to constrain the eager loaded query.
       if (beforeFn) beforeFn.call(handled, handled.query());
@@ -1139,7 +1147,6 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       if (method === 'delete') return builder.where(data).del();
       return builder.insert(data);
     }
-
   };
 
   // Preps the `pivot` table on the `through` model, and

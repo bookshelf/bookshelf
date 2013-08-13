@@ -1,11 +1,37 @@
 var _ = require('underscore');
 
+var ok        = require('assert').ok;
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
 module.exports = function(Bookshelf, handler) {
 
   var Backbone = Bookshelf.Backbone;
+
+  var Models      = require('../shared/objects')(Bookshelf).Models;
+  var Collections = require('../shared/objects')(Bookshelf).Collections;
+
+  // Models
+  var Site     = Models.Site;
+  var SiteMeta = Models.SiteMeta;
+  var Admin    = Models.Admin;
+  var Author   = Models.Author;
+  var Blog     = Models.Blog;
+  var Post     = Models.Post;
+  var Comment  = Models.Comment;
+  var Tag      = Models.Tag;
+  var User     = Models.User;
+  var Role     = Models.Role;
+  var Photo    = Models.Photo;
+
+  // Collections
+  var Sites    = Collections.Sites;
+  var Admins   = Collections.Admins;
+  var Blogs    = Collections.Blogs;
+  var Posts    = Collections.Posts;
+  var Comments = Collections.Comment;
+  var Photos   = Collections.Photos;
+
 
   describe('extend/constructor/initialize', function() {
 
@@ -117,7 +143,60 @@ module.exports = function(Bookshelf, handler) {
 
   describe('create', function() {
 
-    it('creates and saves a new model instance, saving it to the collection');
+    it('creates and saves a new model instance, saving it to the collection', function (ok) {
+
+      new Sites().create({name: 'google.com'}).then(function(model) {
+        equal(model.get('name'), 'google.com');
+        return model.destroy().then(function() {
+          ok();
+        });
+      }, ok);
+
+    });
+
+    it('should populate a `hasMany` or `morphMany` with the proper keys', function(ok) {
+
+      new Site({id: 10})
+        .authors()
+        .create({first_name: 'test', last_name: 'tester'})
+        .then(function(author) {
+          equal(author.get('first_name'), 'test');
+          equal(author.get('last_name'), 'tester');
+          equal(author.get('site_id'), 10);
+          return author.destroy();
+        })
+        .then(function() {
+          return new Site({id: 10})
+            .photos()
+            .create({
+              url: 'http://image.dev',
+              caption: 'this is a test image'
+            })
+            .then(function(photo) {
+              equal(photo.get('imageable_id'), 10);
+              equal(photo.get('imageable_type'), 'sites');
+              equal(photo.get('url'), 'http://image.dev');
+            });
+        })
+        .then(function() {
+          ok();
+        }, ok);
+    });
+
+    it('should automatically create a join model when joining a belongsToMany', function (ok) {
+
+      new Site({id: 1})
+        .admins()
+        .create({username: 'test', password: 'test'})
+        .then(function(admin) {
+          equal(admin.get('username'), 'test');
+          ok();
+        }, function(e) {
+          console.log(e);
+          ok();
+        });
+
+    });
 
   });
 
