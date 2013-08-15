@@ -57,14 +57,16 @@
       var args = _.toArray(arguments);
       if (args.length === 0) return this._builder;
       var method = args[0];
-      if (_.isObject(method)) {
+      if (_.isFunction(method)) {
+        method.apply(this._builder, args.slice(1));
+      } else if (_.isObject(method)) {
         for (var key in method) {
           var target = _.isArray(method[key]) ?  method[key] : [method[key]];
           this._builder[key].apply(this._builder, target);
         }
-        return this;
+      } else {
+        this._builder[method].apply(this._builder, args.slice(1));
       }
-      this._builder[method].apply(this._builder, args.slice(1));
       return this;
     },
 
