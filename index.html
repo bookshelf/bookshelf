@@ -1875,7 +1875,7 @@ var When = require('when');
 Bookshelf.Transaction(function(t) {
 
   new Library({name: 'Old Books'})
-    .save({transacting: t})
+    .save(null, {transacting: t})
     .then(function(model) {
 
       return When.all(_.map([
