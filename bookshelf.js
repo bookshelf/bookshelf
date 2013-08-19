@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.4
+//     Bookshelf.js 0.2.5
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -27,7 +27,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.4';
+  Bookshelf.VERSION = '0.2.5';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -929,7 +929,7 @@
 
       // Check that the constraints are set properly if this model is set as a relation to another.
       if (relatedData) {
-        if (!_.has(relatedData, 'fkValue') && !options.parentResponse) {
+        if (relatedData.fkValue == null && !options.parentResponse) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
         if (relatedData.type !== 'belongsToMany') {

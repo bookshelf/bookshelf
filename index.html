@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.2.4)</span>
+      Bookshelf.js <span class="version">(0.2.5)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -429,7 +429,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.2.4</h3>
+    <h3>Latest Release: 0.2.5</h3>
 
     <p>
       Current Develop &mdash;
@@ -1378,7 +1378,9 @@ chapters.keys().join(', ');
       The <tt>query</tt> method is used to tap into the underlying <a href="http://knexjs.org">Knex</a>
       query builder instance for the current model. If called with no arguments, it will return the query
       builder directly. Otherwise, it will call the specified <tt>method</tt> on the query builder, applying
-      any additional arguments from the <tt>model.query</tt> call.
+      any additional arguments from the <tt>model.query</tt> call. If the <tt>method</tt> argument is a function,
+      it will be called with the Knex query builder as the context and the first argument, returning the current
+      model.
     </p>
 
 <pre>
@@ -1388,6 +1390,11 @@ model
   .then(function(model) {
     ...
   });
+
+model.query(function(qb) {
+  qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
+}).fetch()
+  .then(function(model) {...
 
 var qb = model.query();
     qb.where({id: 1}).select().then(function(resp) {...
@@ -1622,12 +1629,19 @@ new Story({id: 2}).fetch({
       The <tt>query</tt> method is used to tap into the underlying <a href="http://knexjs.org">Knex</a>
       query builder instance for the current collection. If called with no arguments, it will return the query
       builder directly. Otherwise, it will call the specified <tt>method</tt> on the query builder, applying
-      any additional arguments from the <tt>collection.query</tt> call.
+      any additional arguments from the <tt>collection.query</tt> call. If the <tt>method</tt> argument is a function,
+      it will be called with the Knex query builder as the context and the first argument, returning the current
+      model.
     </p>
 
 <pre>
 var qb = collection.query();
     qb.where({id: 1}).select().then(function(resp) {...
+
+collection.query(function(qb) {
+  qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
+}).fetch()
+  .then(function(collection) {...
 
 collection
   .query('where', 'other_id', '=', '5')
@@ -1960,6 +1974,12 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.5</b> &mdash; <small><i>August 19, 2013</i></small><br />
+      The <a href="#Model-query">query</a> method may now accept a function, for even more dynamic
+      query building (#45). Fix for relations not allowing "0" as a valid foreign key value (#49).
+    </p>
 
     <p>
       <b class="header">0.2.4</b> &mdash; <small><i>July 30, 2013</i></small><br />
