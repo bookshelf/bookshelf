@@ -927,7 +927,7 @@
 
       // Check that the constraints are set properly if this model is set as a relation to another.
       if (relatedData) {
-        if (!relatedData.fkValue && !options.parentResponse) {
+        if (!_.has(relatedData, 'fkValue') && !options.parentResponse) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
         if (relatedData.type !== 'belongsToMany') {
