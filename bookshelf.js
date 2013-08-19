@@ -58,7 +58,7 @@
       if (args.length === 0) return this._builder;
       var method = args[0];
       if (_.isFunction(method)) {
-        method.apply(this._builder, args.slice(1));
+        method.apply(this._builder, this._builder);
       } else if (_.isObject(method)) {
         for (var key in method) {
           var target = _.isArray(method[key]) ?  method[key] : [method[key]];
