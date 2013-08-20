@@ -22,6 +22,7 @@ var Sqlite3 = Bookshelf.Initialize('sqlite', {
 });
 
 describe('Bookshelf', function() {
+  require('./lib/relation');
 
   require('./regular')(Bookshelf, 'mysql');
   require('./regular')(Postgres, 'postgres');

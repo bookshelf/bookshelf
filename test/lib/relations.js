@@ -5,6 +5,7 @@ var deepEqual = require('assert').deepEqual;
 // Data
 module.exports = function(Bookshelf, handler) {
 
+  var Relation    = require('../shared/objects')(Bookshelf).Relation;
   var Models      = require('../shared/objects')(Bookshelf).Models;
   var Collections = require('../shared/objects')(Bookshelf).Collections;
 
@@ -36,12 +37,12 @@ module.exports = function(Bookshelf, handler) {
       it('handles belongsTo (blog, site)', function(ok) {
 
         var responses = [];
-
         new Blog({id: 4})
           .fetch()
           .then(function(model) {
             responses.push({blog: model.toJSON()});
-            return model.site().fetch();
+            var site = model.site();
+            return site.fetch();
           })
           .then(function(site) {
             responses.push({site: site.toJSON()});
@@ -95,11 +96,11 @@ module.exports = function(Bookshelf, handler) {
         }).then(handler(this, ok), ok);
       });
 
-      it('Throws an error if you try to fetch a related object without the necessary key', function(ok) {
-        new Blog({id: 1}).site().fetch().then(null, function() {
-          ok();
-        });
-      });
+      // it('Throws an error if you try to fetch a related object without the necessary key', function(ok) {
+      //   new Blog({id: 1}).site().fetch().then(null, function() {
+      //     ok();
+      //   });
+      // });
 
       it('eager loads "belongsToMany" models correctly (post -> tags)', function(ok) {
         new Post({id: 1}).fetch({
@@ -214,7 +215,7 @@ module.exports = function(Bookshelf, handler) {
                 c.each(function(m) {
                   equal(m.hasChanged(), false);
                 });
-                equal(c.at(0).has('_pivot_item'), true);
+                equal(c.at(0).pivot.get('item'), 'test');
                 equal(c.length, 2);
               }),
               new Site({id: 2}).admins().fetch().then(function(c) {

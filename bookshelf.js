@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.5
+//     Bookshelf.js 0.3.0
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -6,7 +6,9 @@
 //     http://bookshelfjs.org
 (function(define) { "use strict";
 
-define(function(Backbone, _, when, Knex, inflection, triggerThen) {
+// Inject all dependencies, from whichever loading mechanism we've
+// decided to use.
+define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
   // Initial Setup
   // -------------
@@ -21,7 +23,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   triggerThen(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.5';
+  Bookshelf.VERSION = '0.3.0';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -30,15 +32,13 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
 
-  var push = Array.prototype.push;
-
   // Shared functions which are mixed-in to the
   // `Model`, `Collection`, and `EagerRelation` prototypes.
   var Shared = {
 
     // Returns an instance of the query builder.
     builder: function(table) {
-      return Knex(table);
+      return knex(table);
     },
 
     // If there are no arguments, return the current object's
@@ -47,19 +47,18 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // If the first argument is an object, assume the keys are query builder
     // methods, and the values are the arguments for the query.
     query: function() {
-      this._builder || (this._builder = this.builder(_.result(this, 'tableName')));
       var args = _.toArray(arguments);
-      if (args.length === 0) return this._builder;
+      if (args.length === 0) return this._knex;
       var method = args[0];
       if (_.isFunction(method)) {
-        method.apply(this._builder, this._builder);
+        method.apply(this._knex, this._knex);
       } else if (_.isObject(method)) {
         for (var key in method) {
           var target = _.isArray(method[key]) ?  method[key] : [method[key]];
-          this._builder[key].apply(this._builder, target);
+          this._knex[key].apply(this._knex, target);
         }
       } else {
-        this._builder[method].apply(this._builder, args.slice(1));
+        this._knex[method].apply(this._knex, args.slice(1));
       }
       return this;
     },
@@ -67,110 +66,37 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Reset the query builder, called internally
     // each time a query is run.
     resetQuery: function() {
-      delete this._builder;
+      this._knex = this.builder(_.result(this, 'tableName'));
       return this;
     },
 
     // Eager loads relationships onto an already populated
     // `Model` or `Collection` instance.
     load: function(relations, options) {
-      var target, data;
-      if (!_.isArray(relations)) relations = relations ? [relations] : [];
-      options = _.extend({}, options, {
-        shallow: true,
-        withRelated: relations
-      });
+      var data, target = this;
+      _.isArray(relations) || (relations = [relations]);
+      options = _.extend({}, options, {shallow: true, withRelated: relations});
       if (this instanceof Collection) {
         data = this.toJSON(options);
       } else {
         data = [this.toJSON(options)];
       }
-      var model = this;
       return new EagerRelation(this, data)
         .fetch(options)
-        .then(function() {
-          return model;
-        });
+        .then(function() { return target; });
+    },
+
+    // Used to define passthrough relationships a `hasOne`
+    // `hasMany`, `belongsTo` or `belongsToMany`, through a `Interim` model.
+    through: function(Interim, foreignKey, otherKey) {
+      return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
     },
 
     // Creates and returns a new `Bookshelf.Sync` instance.
     sync: function(options) {
       return new Bookshelf.Sync(this, options);
-    },
-
-    // Used to set up a `hasOne` or `hasMany` :through relationship,
-    // this mixes in any of the `pivotHelper` methods to the current object.
-    through: function(Target, foreignKey, otherKey) {
-      var relatedData = this.relatedData || {};
-      if (relatedData.type !== 'hasOne' && relatedData.type !== 'hasMany') {
-        throw new Error('`through` is only chainable from a `hasOne` or `hasMany` relation');
-      }
-      // If it's a hasOne and not an eager loaded query, be sure to unset the
-      // value set in the `_relatesTo` block.
-      if (!this._isEager && relatedData.type === 'hasOne') this.unset(relatedData.foreignKey);
-      var tableName = _.result(Target.prototype, 'tableName');
-      var originalFk = relatedData.foreignKey;
-      _.extend(relatedData, {
-        through: Target,
-        otherKey: otherKey || originalFk,
-        foreignKey: foreignKey || singularMemo(tableName) + '_id',
-        joinTableName: tableName,
-        joinKey: _.result(Target.prototype, 'idAttribute')
-      });
-      relatedData.throughId = relatedData.foreignKey;
-      return _.extend(this, Bookshelf.pivotHelpers);
-    },
-
-    // Standard constraints for regular or eager loaded relations.
-    // If the model isn't an eager load or a collection, it doesn't need
-    // to be populated with the additional `where` clause, as that's already taken
-    // care of during model creation.
-    _constraints: function(resp) {
-      var relatedData = this.relatedData;
-      if (resp) {
-        this.query('whereIn', relatedData.foreignKey, _.uniq(_.pluck(resp, relatedData.parentIdAttr)));
-      } else if (this instanceof Collection) {
-        this.query('where', relatedData.foreignKey, '=', relatedData.fkValue);
-      }
-      if (relatedData.type === 'morphMany') this.query('where', relatedData.morphKey, relatedData.morphValue);
-    },
-
-    // Helper method for adding the constraints needed on a regular or eager loaded
-    // `belongsToMany` or `hasOne` / `hasMany` `:through` relationship.
-    _belongsToManyConstraints: function(resp, through) {
-      var
-      relatedData   = this.relatedData,
-      columns       = relatedData.columns || (relatedData.columns = []),
-      builder       = this.query(),
-      tableName     = _.result(this, 'tableName'),
-
-      otherKey      = relatedData.otherKey,
-      foreignKey    = relatedData.foreignKey,
-      joinTableName = relatedData.joinTableName;
-
-      // Helpers for `through` relationship types.
-      var joinKey   = relatedData.joinKey   || foreignKey;
-      var throughId = relatedData.throughId || _.result(this, 'idAttribute');
-
-      if (builder.columns.length === 0 && columns.length === 0) {
-        columns.push(tableName + '.*');
-      }
-
-      columns.push(
-        joinTableName + '.' + otherKey + ' as ' + '_pivot_' + otherKey,
-        joinTableName + '.' + joinKey + ' as ' + '_pivot_' + joinKey
-      );
-
-      if (relatedData.pivotColumns) push.apply(columns, relatedData.pivotColumns);
-
-      builder.join(joinTableName, tableName + '.' + throughId, '=', joinTableName + '.' + joinKey);
-
-      if (resp) {
-        builder.whereIn(joinTableName + '.' + otherKey, _.pluck(resp, relatedData.parentIdAttr));
-      } else {
-        builder.where(joinTableName + '.' + otherKey, '=', relatedData.fkValue);
-      }
     }
+
   };
 
   // Bookshelf.Model
@@ -189,11 +115,12 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     this.attributes = Object.create(null);
     this._reset();
     this.relations = {};
-    this.cid = _.uniqueId('c');
+    this.cid  = _.uniqueId('c');
     if (options) {
       _.extend(this, _.pick(options, modelProps));
       if (options.parse) attrs = this.parse(attrs, options) || {};
     }
+    this._knex = this.builder(_.result(this, 'tableName'));
     this.set(attrs, options);
     this.initialize.apply(this, arguments);
   };
@@ -201,7 +128,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
   // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop these
   // specific methods.
-  var modelOmitted = ['isValid', 'validationError', 'changedAttributes'];
+  var modelOmitted = ['changedAttributes', 'isValid', 'validationError', '_validate'];
 
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
@@ -213,106 +140,78 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // to be the singular of this object's `tableName` with an `_id` suffix, but a custom `foreignKey`
     // attribute may also be specified.
     hasOne: function(Target, foreignKey) {
-      return this._hasOneOrMany(Target, foreignKey, 'hasOne');
+      return new Relation('hasOne', Target, {foreignKey: foreignKey}).init(this);
     },
 
-    // The `hasMany` relation specifies that this object has one or
-    // more rows in another table which match on this object's primary key. The foreign key is assumed
-    // to be the singular of this object's `tableName` with an `_id` suffix, but a custom `foreignKey`
-    // attribute may also be specified.
+    // The `hasMany` relation specifies that this object has one or more rows in another table which
+    // match on this object's primary key. The foreign key is assumed to be the singular of this object's
+    // `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
     hasMany: function(Target, foreignKey) {
-      return this._hasOneOrMany(Target, foreignKey, 'hasMany');
+      return new Relation('hasMany', Target, {foreignKey: foreignKey}).init(this);
     },
 
     // A reverse `hasOne` relation, the `belongsTo`, where the specified key in this table
     // matches the primary `idAttribute` of another table.
     belongsTo: function(Target, otherKey) {
-      return this._relatesTo(Target, {
-        type: 'belongsTo',
-        foreignKey: Target.prototype.idAttribute,
-        otherKey: otherKey || singularMemo(_.result(Target.prototype, 'tableName')) + '_id'
-      });
+      return new Relation('belongsTo', Target, {otherKey: otherKey}).init(this);
     },
 
     // A `belongsToMany` relation is when there are many-to-many relation
-    // between two models, with a joining table. The joinTableName may be replaced with another
-    // object, will serve as the joining model.
+    // between two models, with a joining table.
     belongsToMany: function(Target, joinTableName, foreignKey, otherKey) {
-      return this._relatesTo(Target, {
-        type: 'belongsToMany',
-        otherKey: otherKey     || singularMemo(_.result(this, 'tableName')) + '_id',
-        foreignKey: foreignKey || singularMemo(_.result(Target.prototype, 'tableName')) + '_id',
-        joinTableName: joinTableName || [
-          _.result(this, 'tableName'),
-          _.result(Target.prototype, 'tableName')
-        ].sort().join('_')
-      });
+      return new Relation('belongsToMany', Target, {
+        joinTableName: joinTableName, foreignKey: foreignKey, otherKey: otherKey
+      }).init(this);
     },
 
     // A `morphOne` relation is a one-to-one polymorphic association from this model
     // to another model.
-    morphOne: function(Target, name) {
-     return this._morphOneOrMany(Target, name, 'morphOne');
+    morphOne: function(name, Target, morphValue) {
+      return this._morphOneOrMany(name, Target, morphValue, 'morphOne');
     },
 
     // A `morphMany` relation is a polymorphic many-to-one relation from this model
-    // to many of another model.
-    morphMany: function(Target, name) {
-     return this._morphOneOrMany(Target, name, 'morphMany');
+    // to many another models.
+    morphMany: function(name, Target, morphValue) {
+      return this._morphOneOrMany(name, Target, morphValue, 'morphMany');
     },
 
     // Defines the opposite end of a `morphOne` or `morphMany` relationship, where
     // the alternate end of the polymorphic model is defined.
-    morphTo: function(name) {
-      var foreignTable = this.get(name + '_type');
-      var foreignKey = this.get(name + '_id');
+    morphTo: function(morphName) {
+      if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
+      return new Relation('morphTo', null, {morphName: morphName, candidates: _.rest(arguments)}).init(this);
+    },
 
-      // Get the rest of the potential constructors, and filter them based on the foreign
-      // table provided.
-      var candidates = _.rest(arguments);
-
-      // Only allow these to be `morphTo` fetched if we know the constraints, otherwise
-      // if this is an eager load, we handle it a bit differently.
-      if (!this._isEager) {
-        if (!foreignTable || !foreignKey) {
-          throw new Error('The ' + name + ' constraints (type and id) must be supplied for morphTo');
-        }
-        var Target = morphCandidate(candidates, foreignTable);
-        return this._relatesTo(Target, {
-          type: 'morphTo',
-          name: name,
-          foreignKey: _.result(Target.prototype, 'idAttribute'),
-          otherKey: name + '_id'
+    // Fetch a model based on the currently set attributes,
+    // returning a model to the callback, along with any options.
+    // Returns a deferred promise through the Bookshelf.sync.
+    // If `{require: true}` is set as an option, the fetch is considered
+    // a failure if the model comes up blank.
+    fetch: function(options) {
+      options || (options = {});
+      var model = this;
+      var relatedData = this.relatedData || new Relation();
+      return this.sync(options)
+        .first()
+        .then(function(resp) {
+          if (resp && resp.length > 0) {
+            model = relatedData.fetchedModel(model, resp, options);
+            if (!options.withRelated) return resp;
+            return new EagerRelation(model, resp)
+              .fetch(options)
+              .then(function() { return resp; });
+          }
+          if (options.require) return when.reject(new Error('EmptyResponse'));
+        })
+        .then(function(resp) {
+          if (resp && resp.length > 0) {
+            return model.triggerThen('fetched', model, resp, options).then(function() {
+              return model;
+            });
+          }
+          return null;
         });
-      }
-
-      // Return an object we'll use to put together the potential eager fetched `morphTo`
-      // objects.
-      return {
-        type: 'morphTo',
-        name: name,
-        candidates: candidates
-      };
-    },
-
-    // Helper for setting up the `hasOne` or `hasMany` relations.
-    _hasOneOrMany: function(Target, foreignKey, type) {
-      return this._relatesTo(Target, {
-        type: type,
-        foreignKey: foreignKey || singularMemo(_.result(this, 'tableName')) + '_id'
-      });
-    },
-
-    // Helper for setting up the `morphOne` or `morphMany` relations.
-    _morphOneOrMany: function(Target, name, type) {
-      if (!name) throw new Error('The polymorphic `name` is required.');
-      return this._relatesTo(Target, {
-        type: type,
-        name: name,
-        foreignKey: name + '_id',
-        morphKey: name + '_type',
-        morphValue: _.result(this, 'tableName')
-      });
     },
 
     // Similar to the standard `Backbone` set method, but without individual
@@ -320,7 +219,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // defined as the last "sync"'ed state of the model.
     set: function(key, val, options) {
       if (key == null) return this;
-      var attr, attrs, changing;
+      var attrs, changing;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (typeof key === 'object') {
@@ -341,7 +240,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
 
       // For each `set` attribute, update or delete the current value.
-      for (attr in attrs) {
+      for (var attr in attrs) {
         val = attrs[attr];
         if (!_.isEqual(prev[attr], val)) {
           this.changed[attr] = val;
@@ -354,40 +253,6 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
       if (hasChanged && !options.silent) this.trigger('change', this, options);
       return this;
-    },
-
-    // Fetch a model based on the currently set attributes,
-    // returning a model to the callback, along with any options.
-    // Returns a deferred promise through the Bookshelf.sync.
-    // If `{require: true}` is set as an option, the fetch is considered
-    // a failure if the model comes up blank.
-    fetch: function(options) {
-      var model = this;
-      options || (options = {});
-      var relatedData = this.relatedData || {};
-      return this.sync(options)
-        .first()
-        .then(function(resp) {
-          if (resp && resp.length > 0) {
-            var tmpModel;
-            if (relatedData.through) tmpModel = prepThroughPivot(relatedData, [new model.constructor(resp[0])])[0];
-            model.set(model.parse(tmpModel ? tmpModel.attributes : resp[0], options), _.extend({silent: true}, options))._reset();
-            if (tmpModel) model.pivot = tmpModel.pivot;
-            if (!options.withRelated) return resp;
-            return new EagerRelation(model, resp)
-              .fetch(options)
-              .then(function() { return resp; });
-          }
-          if (options.require) return when.reject(new Error('EmptyResponse'));
-        })
-        .then(function(resp) {
-          if (resp && resp.length > 0) {
-            return model.triggerThen('fetched', model, resp, options).then(function() {
-              return model;
-            });
-          }
-          return null;
-        });
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -409,9 +274,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       // If the model has timestamp columns,
       // set them as attributes on the model, even
       // if the "patch" option is specified.
-      if (this.hasTimestamps) {
-        _.extend(attrs, this.timestamp(options));
-      }
+      if (this.hasTimestamps) _.extend(attrs, this.timestamp(options));
 
       // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
       var method = options.method || (options.method = this.isNew(options) ? 'insert' : 'update');
@@ -492,6 +355,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
         var relation = relations[key];
         attrs[key] = relation.toJSON ? relation.toJSON() : relation;
       }
+      if (this.pivot) attrs.pivot = this.pivot.toJSON();
       return attrs;
     },
 
@@ -524,74 +388,10 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
     },
 
-    // Creates a new relation, from the current object to the
-    // 'target' object (collection or model), passing a hash of
-    // options which can include the `type` of relation.
-    // The `hasOne` and `belongsTo` relations may only "target" a `Model`.
-    _relatesTo: function(Target, options) {
-      var target, data;
-      var type = options.type;
-      var multi  = (type === 'hasMany' || type === 'belongsToMany' || type === 'morphMany');
-      var single = (type === 'belongsTo' || type === 'morphOne' || type === 'morphTo');
-
-      if (!multi) {
-        data = {};
-        if (!Target.prototype instanceof Model) {
-          throw new Error('The `'+type+'` related object must be a Bookshelf.Model');
-        }
-      } else if (Target.prototype instanceof Model) {
-        Target = Bookshelf.Collection.extend({
-          model: Target,
-          builder: Target.prototype.builder
-        });
-      }
-
-      // If we're handling an eager loaded related model,
-      // keep a reference to the original constructor to assemble
-      // the correct object once the eager matching is finished.
-      // Otherwise, just grab the `foreignKey` value for building the query.
-      if (this._isEager) {
-        options.eager = {};
-        if (multi) {
-          options.eager.ModelCtor = Target.prototype.model;
-          options.eager.CollectionCtor = Target;
-        } else {
-          options.eager.ModelCtor = Target;
-        }
-        options.parentIdAttr = (single ? options.otherKey : _.result(this, 'idAttribute'));
-      } else {
-        if (type === 'belongsTo' || type === 'morphTo') {
-          options.fkValue = this.get(options.otherKey);
-        } else {
-          options.fkValue = this.id;
-        }
-        if (!multi) {
-          data[options.foreignKey] = options.fkValue;
-          if (options.morphKey) data[options.morphKey] = options.morphValue;
-        }
-      }
-
-      // Create a new instance of the `Model` or `Collection`, and set the
-      // `relatedData` options as a property on the instance.
-      target = new Target(data);
-      target.relatedData = options;
-
-      // Extend the relation with relation-specific methods.
-      if (type === 'belongsToMany') {
-        _.extend(target, Bookshelf.pivotHelpers);
-      }
-
-      return target;
-    },
-
-    // Sets the constraints necessary during a `create` call from an associated collection.
-    _createConstraints: function(type, relatedData) {
-      var data = {};
-      if (type === 'hasMany' || type === 'morphMany' || relatedData.through) {
-        data[relatedData.foreignKey] = relatedData.fkValue;
-        if (relatedData.morphKey) data[relatedData.morphKey] = relatedData.morphValue;
-      }
-      return this.set(data);
+    // Helper for setting up the `morphOne` or `morphMany` relations.
+    _morphOneOrMany: function(morphName, Target, morphValue, type) {
+      if (!morphName || !Target) throw new Error('The polymorphic `name` and `Target` are required.');
+      return new Relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
     },
 
     // Called after a `sync` action (save, fetch, delete) -
@@ -600,12 +400,6 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       this._previousAttributes = extendNull(this.attributes);
       this.changed = extendNull();
       return this;
-    },
-
-    // Validation can be complicated, and is better handled
-    // on its own and not mixed in with database logic.
-    _validate: function() {
-      return true;
     }
 
   });
@@ -622,6 +416,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       throw new Error('Only Bookshelf Model constructors are allowed as the Collection#model attribute.');
     }
     this._reset();
+    this._knex = this.builder(_.result(this, 'tableName'));
     this.initialize.apply(this, arguments);
     if (models) this.reset(models, _.extend({silent: true}, options));
   };
@@ -629,28 +424,105 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   // List of attributes attached directly from the constructor's options object.
   var collectionProps = ['model', 'comparator'];
 
+  // Copied over from Backbone.
+  var setOptions = {add: true, remove: true, merge: true};
+
   // Extend the Collection's prototype with the base methods
   _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Shared, {
 
     model: Model,
 
-    // Fetch the models for this collection, resetting the models for the query
-    // when they arrive.
+    // A simplified version of Backbone's `Collection#set` method,
+    // removing the comparator, and getting rid of the temporary model creation,
+    // since there's *no way* we'll be getting the data in an inconsistent
+    // form from the database.
+    set: function(models, options) {
+      options = _.defaults({}, options, setOptions);
+      if (options.parse) models = this.parse(models, options);
+      if (!_.isArray(models)) models = models ? [models] : [];
+      var i, l, id, model, attrs, existing;
+      var at = options.at;
+      var targetModel = this.model;
+      var toAdd = [], toRemove = [], modelMap = {};
+      var add = options.add, merge = options.merge, remove = options.remove;
+      var order = add && remove ? [] : false;
+
+      // Turn bare objects into model references, and prevent invalid models
+      // from being added.
+      for (i = 0, l = models.length; i < l; i++) {
+        attrs = models[i];
+        if (attrs instanceof Model) {
+          id = model = attrs;
+        } else {
+          id = attrs[targetModel.prototype.idAttribute];
+        }
+
+        // If a duplicate is found, prevent it from being added and
+        // optionally merge it into the existing model.
+        if (existing = this.get(id)) {
+          if (remove) {
+            modelMap[existing.cid] = true;
+            continue;
+          }
+          if (merge) {
+            attrs = attrs === model ? model.attributes : attrs;
+            if (options.parse) attrs = existing.parse(attrs, options);
+            existing.set(attrs, options);
+          }
+
+          // This is a new model, push it to the `toAdd` list.
+        } else if (add) {
+          if (!(model = this._prepareModel(attrs, options))) continue;
+          toAdd.push(model);
+
+          // Listen to added models' events, and index models for lookup by
+          // `id` and by `cid`.
+          model.on('all', this._onModelEvent, this);
+          this._byId[model.cid] = model;
+          if (model.id != null) this._byId[model.id] = model;
+        }
+        if (order) order.push(existing || model);
+      }
+
+      // Remove nonexistent models if appropriate.
+      if (remove) {
+        for (i = 0, l = this.length; i < l; ++i) {
+          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
+        }
+        if (toRemove.length) this.remove(toRemove, options);
+      }
+
+      // See if sorting is needed, update `length` and splice in new models.
+      if (toAdd.length || (order && order.length)) {
+        this.length += toAdd.length;
+        if (at != null) {
+          splice.apply(this.models, [at, 0].concat(toAdd));
+        } else {
+          if (order) this.models.length = 0;
+          push.apply(this.models, order || toAdd);
+        }
+      }
+
+      if (options.silent) return this;
+
+      // Trigger `add` events.
+      for (i = 0, l = toAdd.length; i < l; i++) {
+        (model = toAdd[i]).trigger('add', model, this, options);
+      }
+      return this;
+    },
+
+    // Fetch the models for this collection, resetting the models
+    // for the query when they arrive.
     fetch: function(options) {
-      var collection = this;
-      var relatedData = this.relatedData || {};
       options || (options = {});
+      var collection = this;
+      var relatedData = this.relatedData || new Relation();
       return this.sync(options)
         .select()
         .then(function(resp) {
-          var models;
           if (resp && resp.length > 0) {
-            if (relatedData.through) {
-              models = prepThroughPivot(relatedData, _.map(resp, function(model) {
-                return collection._prepareModel(model);
-              }));
-            }
-            collection.reset(models || resp, {silent: true, parse: true}).each(function(m) { m._reset(); });
+            collection = relatedData.fetchedCollection(collection, resp, options);
           } else {
             collection.reset([], {silent: true});
             return [];
@@ -681,18 +553,25 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // automatically create the joining model upon insertion.
     create: function(model, options) {
       options || (options = {});
-      var collection = this;
-      var relatedData = this.relatedData || {};
+
+      var collection  = this;
+      var relatedData = this.relatedData || new Relation();
       var type        = relatedData.type;
+
       model = this._prepareModel(model, options);
-      return model._createConstraints(type, relatedData).save(null, options).then(function() {
-        if (type && (type === 'belongsToMany' || relatedData.through)) {
-          return collection.attach(model, options);
-        }
-      }).then(function() {
-        collection.add(model, options);
-        return model;
-      });
+
+      return relatedData
+        .saveConstraints(model, this)
+        .save(null, options)
+        .then(function() {
+          if (type && (type === 'belongsToMany' || relatedData.isThrough())) {
+            return collection.attach(model, options);
+          }
+        })
+        .then(function() {
+          collection.add(model, options);
+          return model;
+        });
     },
 
     // The `tableName` on the associated Model, used in relation building.
@@ -713,6 +592,22 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
   });
 
+  // Temporary helper object for handling the response of an `EagerRelation` load.
+  var RelatedStore = function(models) {
+    if (models instanceof RelatedStore) return models;
+    this.models = models;
+    this.length = this.models.length;
+  };
+  _.extend(RelatedStore.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'), {
+
+    // Pushes a model onto the `RelatedStore` object, updates the length of the models array, and returns the added model.
+    push: function(model) {
+      this.length = this.models.push(model);
+      return model;
+    }
+
+  });
+
   // Bookshelf.EagerRelation
   // ---------------
 
@@ -720,22 +615,20 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   // and handles matching eager loaded objects with their parent(s). The `tempModel`
   // is only used to retrieve the value of the relation method, to know the constrains
   // for the eager query.
-  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse, options) {
-    options || (options = {});
+  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse, target) {
 
-    // Convert a `Model` or `Collection` to a `RelatedModel` instance for consistency when
-    // fetching & pairing the nested relation objects.
+    // Convert a `Model` or `Collection` to a `RelatedModel` instance
+    // for consistency when fetching & pairing nested relation objects.
     if (parent instanceof Model) {
-      this.parent = new RelatedModels([parent]);
-    } else if (parent instanceof Collection) {
-      this.parent = new RelatedModels(parent.models);
+      this.parent = new RelatedStore([parent]);
     } else {
-      this.parent = parent;
+      this.parent = new RelatedStore(parent.models);
     }
 
     // Set the appropriate target for getting the eager relation data.
-    this.target = options.tempModel || (parent instanceof Collection ? new parent.model() : parent);
+    this.target = target || (parent instanceof Collection ? new parent.model() : parent);
     this.parentResponse = parentResponse;
+
     _.bindAll(this, 'pushModels', 'eagerFetch');
   };
 
@@ -744,48 +637,52 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
     fetch: function(options) {
-      var key, relatedObj, name, related, relation;
+      var relationName, related, relation;
       var target      = this.target;
       var handled     = this.handled = {};
       var withRelated = this.prepWithRelated(options.withRelated);
       var subRelated  = {};
 
+      // Internal flag to determine whether to set the ctor(s) on the `Relation` object.
+      target._isEager = true;
+
       // Eager load each of the `withRelated` relation item, splitting on '.'
       // which indicates a nested eager load.
-      for (key in withRelated) {
+      for (var key in withRelated) {
 
         related = key.split('.');
-        name    = related[0];
+        relationName = related[0];
 
         // Add additional eager items to an array, to load at the next level in the query.
         if (related.length > 1) {
-          subRelated[name] || (subRelated[name] = []);
-          relatedObj = {};
+          var relatedObj = {};
+          subRelated[relationName] || (subRelated[relationName] = []);
           relatedObj[related.slice(1).join('.')] = withRelated[key];
-          subRelated[name].push(relatedObj);
+          subRelated[relationName].push(relatedObj);
         }
 
         // Only allow one of a certain nested type per-level.
-        if (handled[name]) continue;
+        if (handled[relationName]) continue;
 
-        // Internal flag to determine whether to set the ctor(s) on the relatedData hash.
-        target._isEager = true;
-        relation = target[name]();
-        delete target._isEager;
+        relation = target[relationName]();
 
-        if (!relation) throw new Error(name + ' is not defined on the model.');
+        if (!relation) throw new Error(relationName + ' is not defined on the model.');
 
-        handled[name] = relation;
+        handled[relationName] = relation;
       }
+
+      // Delete the internal flag from the model.
+      delete target._isEager;
 
       // Fetch all eager loaded models, loading them onto
       // an array of pending deferred objects, which will handle
       // all necessary pairing with parent objects, etc.
       var pendingDeferred = [];
-      for (name in handled) {
-        pendingDeferred.push(this.eagerFetch(name, handled[name], withRelated[name], _.extend({}, options, {
+      for (relationName in handled) {
+        pendingDeferred.push(this.eagerFetch(relationName, handled[relationName], _.extend({}, options, {
           isEager: true,
-          withRelated: subRelated[name]
+          withRelated: subRelated[relationName],
+          beforeFn: withRelated[relationName] || noop
         })));
       }
 
@@ -800,39 +697,35 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Prep the `withRelated` object, to normalize into an object where each
     // has a function that is called when running the query.
     prepWithRelated: function(withRelated) {
-      if (!_.isArray(withRelated)) withRelated = withRelated ? [withRelated] : [];
-      var withRelatedObj = {};
-      for (var i = 0, l = withRelated.length; i < l; i++) {
-        if (_.isObject(withRelated[i])) {
-          _.extend(withRelatedObj, withRelated[i]);
-          continue;
-        }
-        withRelatedObj[withRelated[i]] = null;
-      }
-      return withRelatedObj;
+      if (!_.isArray(withRelated)) withRelated = [withRelated];
+      return _.reduce(withRelated, function(memo, item) {
+        _.isString(item) ? memo[item] = noop : _.extend(memo, item);
+        return memo;
+      }, {});
     },
 
     // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
-    eagerFetch: function(name, handled, beforeFn, options) {
-      if (handled.type === 'morphTo') return this.morphToFetch(name, handled, options);
+    eagerFetch: function(relationName, handled, options) {
+      var relatedData = handled.relatedData;
 
       // Call the function, if one exists, to constrain the eager loaded query.
-      if (beforeFn) beforeFn.call(handled, handled.query());
+      options.beforeFn.call(handled, handled._knex);
+
+      if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
 
       var relation = this;
       return handled
         .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
         .select()
         .then(function(resp) {
-          var relatedModels = relation.pushModels(name, handled, resp);
+          var relatedModels = relation.pushModels(relationName, handled, resp);
+
           // If there is a response, fetch additional nested eager relations, if any.
           if (resp.length > 0 && options.withRelated) {
-            return new EagerRelation(relatedModels, resp, {
-              tempModel: new handled.relatedData.eager.ModelCtor()
-            }).fetch(options).then(function() {
-              return resp;
-            });
+            return new EagerRelation(relatedModels, resp, relatedData.createModel())
+              .fetch(options)
+              .then(function() { return resp; });
           }
           return resp;
         });
@@ -841,19 +734,21 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Special handler for the eager loaded morph-to relations, this handles
     // the fact that there are several potential models that we need to be fetching against.
     // pairing them up onto a single response for the eager loading.
-    morphToFetch: function(name, settings, options) {
-      var pending = [], group;
+    morphToFetch: function(relationName, relatedData, options) {
+      var pending = [];
       var groups = this.parent.groupBy(function(m) {
-        return m.get(name + '_type');
+        return m.get(relationName + '_type');
       });
-      for (group in groups) {
-        var Target = morphCandidate(settings.candidates, group);
+      for (var group in groups) {
+        var Target = morphCandidate(relatedData.candidates, group);
         var target = new Target();
         pending.push(target
-          .query('whereIn', _.result(target, 'idAttribute'), _.uniq(_.invoke(groups[group], 'get', name + '_id')))
+          .query('whereIn',
+            _.result(target, 'idAttribute'), _.uniq(_.invoke(groups[group], 'get', relationName + '_id'))
+          )
           .sync(options)
           .select()
-          .then(this.morphToHandler(name, settings, Target)));
+          .then(this.morphToHandler(relationName, relatedData, Target)));
       }
       return when.all(pending).then(function(resps) {
         return _.flatten(resps);
@@ -863,91 +758,28 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Handler for the individual `morphTo` fetches,
     // attaching any of the related models onto the parent objects,
     // stopping at this level of the eager relation loading.
-    morphToHandler: function(name, settings, Target) {
-      var that = this;
+    morphToHandler: function(relationName, settings, Target) {
+      var eager = this;
       return function(resp) {
-        that.pushModels(name, {
-          relatedData: {
-            type: 'morphTo',
-            foreignKey: Target.prototype.idAttribute,
-            otherKey: name + '_id',
-            morphKey: name + '_type',
-            morphValue: _.result(Target.prototype, 'tableName'),
-            eager: {
-              ModelCtor: Target
-            }
-          }
-        }, resp);
+        eager.pushModels(relationName, {relatedData: new Relation('morphTo', Target, {morphName: relationName})}, resp);
       };
     },
 
-    // Pushes each of the incoming models onto a new `RelatedModels` object, which is used to
-    // correcly pair additional nested relations.
-    pushModels: function(name, handled, resp) {
-      var parent      = this.parent;
-      var related     = new RelatedModels([]);
+    // Pushes each of the incoming models onto a new `RelatedStore` object,
+    // which is used to correcly pair additional nested relations.
+    pushModels: function(relationName, handled, resp) {
+      var models      = this.parent.models;
       var relatedData = handled.relatedData;
-      var type        = relatedData.type;
-
+      var related     = new RelatedStore([]);
       for (var i = 0, l = resp.length; i < l; i++) {
-        related.push(new relatedData.eager.ModelCtor(resp[i], {parse: true})._reset());
+        related.push(relatedData.createModel(resp[i]));
       }
-
-      // Prep the `pivot` on the `through` models.
-      if (relatedData.through) prepThroughPivot(relatedData, related.models);
-
-      // Attach the appropriate related items onto the parent model.
-      for (i = 0, l = parent.models.length; i < l; i++) {
-        var model = parent.models[i];
-        if (type === 'morphTo' && model.get(relatedData.morphKey) !== relatedData.morphValue) continue;
-        var id = (type === 'belongsTo' || type === 'morphTo' ? model.get(relatedData.otherKey) : model.id);
-        model.relations[name] = this._eagerRelated(type, relatedData, related, id);
+      // If this is a morphTo, we only want to pair on the morphValue for the current relation.
+      if (relatedData.type === 'morphTo') {
+        models = models.filter(function(model) { return model.get(relatedData.key('morphKey')) === relatedData.key('morphValue'); });
       }
-      return related;
-    },
-
-    // Handles the "eager related" relationship matching.
-    _eagerRelated: function(type, relatedData, models, id) {
-      var where = {};
-      if (relatedData.through) return this._throughRelated(type, relatedData, models, id);
-      if (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo') {
-        where[relatedData.foreignKey] = id;
-        return models.findWhere(where) || new relatedData.eager.ModelCtor();
-      } else if (type === 'hasMany' || type === 'morphMany') {
-        where[relatedData.foreignKey] = id;
-        return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
-      } else {
-        where['_pivot_' + relatedData.otherKey] = id;
-        return new relatedData.eager.CollectionCtor(models.where(where), {parse: true});
-      }
-    },
-
-    // Filter for the "eager related" through relationship matching.
-    _throughRelated: function(type, relatedData, models, id) {
-      var filtered = models.filter(function(model) {
-        return model.pivot.get(relatedData.otherKey) === id;
-      });
-      if (type === 'hasOne') {
-        return filtered[0] || new relatedData.eager.ModelCtor();
-      }
-      return new relatedData.eager.CollectionCtor(filtered, {parse: true});
+      return relatedData.eagerPair(relationName, related, models);
     }
-
-  });
-
-  // Temporary helper object for handling the response of an `EagerRelation` load.
-  var RelatedModels = function(models) {
-    this.models = models;
-    this.length = this.models.length;
-  };
-  _.extend(RelatedModels.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'), {
-
-    // Pushes a model onto the `RelatedModels` object, updates the length of the models array, and returns the added model.
-    push: function(model) {
-      this.length = this.models.push(model);
-      return model;
-    }
-
   });
 
   // Set up inheritance for the model and collection.
@@ -974,8 +806,8 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     options || (options = {});
     this.syncing = syncing;
     this.options = options;
-    this.query   = syncing.query();
-    if (options.transacting) this.query.transacting(options.transacting);
+    this._knex    = syncing.query();
+    if (options.transacting) this._knex.transacting(options.transacting);
   };
 
   _.extend(Sync.prototype, {
@@ -983,7 +815,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // Select the first item from the database - only used by models.
     first: function() {
       var syncing = this.syncing;
-      this.query.where(syncing.format(extendNull(syncing.attributes))).limit(1);
+      this._knex.where(syncing.format(extendNull(syncing.attributes))).limit(1);
       return this.select();
     },
 
@@ -993,30 +825,17 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // the promise is resolved. Any `success` handler passed in the
     // options will be called - used by both models & collections.
     select: function() {
-      var syncing     = this.syncing;
-      var options     = this.options;
-      var columns     = options.columns;
-      var relatedData = syncing.relatedData;
+      var columns, sync = this, syncing = this.syncing,
+        options = this.options, relatedData = syncing.relatedData;
 
-      // Check that the constraints are set properly if this model is set as a relation to another.
+      // Inject all appropriate select costraints dealing with the relation
+      // into the `knex` query builder for the current instance.
       if (relatedData) {
-        if (relatedData.fkValue == null && !options.parentResponse) {
-          return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
-        }
-        if (relatedData.type !== 'belongsToMany' && !relatedData.through) {
-          syncing._constraints(options.parentResponse);
-        } else {
-          syncing._belongsToManyConstraints(options.parentResponse, relatedData.through);
-        }
+        relatedData.selectConstraints(this._knex, options);
+      } else {
+        columns = options.columns;
+        if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
       }
-
-      if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
-
-      if (relatedData && relatedData.columns) {
-        columns = relatedData.columns;
-      }
-
-      var sync = this;
 
       // Create the deferred object, triggering a `fetching` event if the model
       // isn't an eager load.
@@ -1024,14 +843,14 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
         if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
       }()).then(function() {
         syncing.resetQuery();
-        return sync.query.select(columns);
+        return sync._knex.select(columns);
       });
     },
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
       var syncing = this.syncing.resetQuery();
-      return this.query
+      return this._knex
         .insert(syncing.format(extendNull(syncing.attributes)), syncing.idAttribute);
     },
 
@@ -1039,7 +858,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     update: function(attrs, options) {
       var syncing = this.syncing.resetQuery();
       attrs = (attrs && options.patch ? attrs : syncing.attributes);
-      return this.query
+      return this._knex
         .where(syncing.idAttribute, syncing.id)
         .update(syncing.format(extendNull(attrs)));
     },
@@ -1051,10 +870,10 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
         wheres = {};
         wheres[syncing.idAttribute] = syncing.id;
       }
-      if (!wheres && this.query.wheres.length === 0) {
+      if (!wheres && this._knex.wheres.length === 0) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
-      return this.query.where(wheres).del();
+      return this._knex.where(wheres).del();
     }
   });
 
@@ -1088,19 +907,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     // column name, and the value the column should take on the
     // output to the model attributes.
     withPivot: function(columns) {
-      if (!_.isArray(columns)) columns = columns ? [columns] : [];
-      var relatedData = this.relatedData;
-      relatedData.pivotColumns || (relatedData.pivotColumns = []);
-      for (var i = 0, l = columns.length; i < l; i++) {
-        var column = columns[i];
-        if (_.isString(column)) {
-          relatedData.pivotColumns.push(relatedData.joinTableName + '.' + column + ' as _pivot_' + column);
-        } else {
-          for (var key in column) {
-            relatedData.pivotColumns.push(relatedData.joinTableName + '.' + key + ' as ' + column[key]);
-          }
-        }
-      }
+      this.relatedData.withPivot(columns);
       return this;
     },
 
@@ -1128,21 +935,21 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     _processPivot: function(method, item, options) {
       var data = {};
       var relatedData = this.relatedData;
-      data[relatedData.otherKey] = relatedData.fkValue;
+      data[relatedData.key('foreignKey')] = relatedData.parentFk;
 
       // If the item is an object, it's either a model
       // that we're looking to attach to this model, or
       // a hash of attributes to set in the relation.
       if (_.isObject(item)) {
         if (item instanceof Model) {
-          data[relatedData.foreignKey] = item.id;
+          data[relatedData.key('otherKey')] = item.id;
         } else {
           _.extend(data, item);
         }
       } else if (item) {
-        data[relatedData.foreignKey] = item;
+        data[relatedData.key('otherKey')] = item;
       }
-      var builder = this.builder(relatedData.joinTableName);
+      var builder = this.builder(relatedData.joinTable());
       if (options && options.transacting) {
         builder.transacting(options.transacting);
       }
@@ -1151,39 +958,341 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     }
   };
 
-  // Preps the `pivot` table on the `through` model, and
-  // cleans up the extra "pivot" data that is no longer needed.
-  var prepThroughPivot = function(relatedData, models) {
-    for (var i = 0, l = models.length; i < l; i++) {
-      var key, model = models[i];
-      var data = {};
-      var through = new relatedData.through();
-      data[relatedData.otherKey] = model.get('_pivot_' + relatedData.otherKey);
-      data[through.idAttribute] = model.get('_pivot_' + through.idAttribute);
-      model.pivot = through.set(data, {silent: true});
-      var attrs = model.attributes;
-      for (key in attrs) if (key.indexOf('_pivot_') === 0) delete attrs[key];
-      model._reset();
+  // Used internally, the `Relation` helps in simplifying the relationship building,
+  // centralizing all logic dealing with type & option handling.
+  var Relation = Bookshelf.Relation = function(type, Target, options) {
+    this.type = type;
+    if (this.target = Target) {
+      this.targetTableName = _.result(Target.prototype, 'tableName');
+      this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
     }
-    return models;
+    _.extend(this, options);
+    _.bindAll(this, 'createModel');
   };
+
+  Relation.prototype = {
+
+    // Assembles the new model or collection we're creating an instance of,
+    // gathering any relevant primitives from the parent object,
+    // without keeping any hard references.
+    init: function(parent) {
+      this.parentId = parent.id;
+      this.parentTableName   = _.result(parent, 'tableName');
+      this.parentIdAttribute = _.result(parent, 'idAttribute');
+
+      // If the parent object is eager loading, we don't need the
+      // id attribute, because we'll just be creating a `whereIn` from the
+      // previous response anyway.
+      if (!parent._isEager) {
+        if (this.isInverse()) {
+          if (this.type === 'morphTo') {
+            this.target = morphCandidate(this.candidates, parent.get(this.key('morphKey')));
+          }
+          this.parentFk = parent.get(this.key('otherKey'));
+        } else {
+          this.parentFk = parent.id;
+        }
+      }
+
+      var target = this.target ? this.relatedInstance() : {};
+          target.relatedData = this;
+
+      if (this.type === 'belongsToMany') {
+        _.extend(target, Bookshelf.pivotHelpers);
+      }
+
+      return target;
+    },
+
+    // Initializes a `through` relation, setting the `Target` model and `options`,
+    // which includes any additional keys for the relation.
+    through: function(source, Target, options) {
+      var type = this.type;
+      if (type !== 'hasOne' && type !== 'hasMany' && type !== 'belongsToMany' && type !== 'belongsTo') {
+        throw new Error('`through` is only chainable from `hasOne`, `belongsTo`, `hasMany`, or `belongsToMany`');
+      }
+
+      this.throughTarget = Target;
+      this.throughTableName = _.result(Target.prototype, 'tableName');
+      this.throughIdAttribute = _.result(Target.prototype, 'idAttribute');
+
+      // Set the parentFk as appropriate now.
+      if (this.type === 'belongsTo') {
+        this.parentFk = this.parentId;
+      }
+
+      // Set the appropriate foreign & other keys if we're doing a belongsToMany,
+      // for convenience.
+      if (this.type === 'belongsToMany') {
+        this.foreignKey = this.throughForeignKey;
+      }
+      _.extend(this, options);
+      _.extend(source, Bookshelf.pivotHelpers);
+      return source;
+    },
+
+    // Generates and returns a specified key, for convenience... one of
+    // `foreignKey`, `otherKey`, `throughForeignKey`.
+    key: function(keyName) {
+      if (this[keyName]) return this[keyName];
+      if (keyName === 'otherKey') {
+        if (this.type === 'morphTo') return this[keyName] = this.morphName + '_id';
+        return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
+      }
+      if (keyName === 'throughForeignKey') {
+        return this[keyName] = singularMemo(this.joinTable()) + '_' + this.throughIdAttribute;
+      }
+      if (keyName === 'foreignKey') {
+        if (this.isMorph()) return this[keyName] = this.morphName + '_id';
+        return this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
+      }
+      if (keyName === 'morphKey') return this[keyName] = this.morphName + '_type';
+      if (keyName === 'morphValue') return this[keyName] = this.parentTableName || this.targetTableName;
+    },
+
+    // Injects the necessary `select` constraints into a `knex` query builder.
+    selectConstraints: function(knex, options) {
+      var resp = options.parentResponse;
+
+      // The base select column
+      if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
+        knex.columns.push(this.isJoined() ? this.targetTableName + '.*' : '*');
+      } else {
+        // TODO
+      }
+
+      // The `belongsToMany` and `through` relations have joins & pivot columns.
+      if (this.isJoined()) {
+        this.joinClauses(knex);
+        this.joinColumns(knex);
+      }
+
+      // Finally, add (and validate) the where conditions, necessary for constraining the relation.
+      this.whereClauses(knex, resp);
+    },
+
+    // Inject & validates necessary `through` constraints for the current model.
+    joinColumns: function(knex) {
+      var columns = [];
+      var joinTable = this.joinTable();
+      if (this.isThrough()) {
+        columns.push(this.throughIdAttribute, this.type === 'belongsTo' ? this.key('otherKey') : this.key('foreignKey'));
+        if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
+      } else {
+        columns.push(this.key('foreignKey'));
+        if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
+      }
+      push.apply(columns, this.pivotColumns);
+      push.apply(knex.columns, _.map(columns, function(col) {
+        return joinTable + '.' + col + ' as _pivot_' + col;
+      }));
+    },
+
+    // Generates the join clauses necessary for the current relation.
+    joinClauses: function(knex) {
+      var joinTable = this.joinTable();
+
+      if (this.type === 'belongsTo' || this.type === 'belongsToMany') {
+        knex.join(
+          joinTable,
+          joinTable + '.' + this.key('otherKey'), '=',
+          this.targetTableName + '.' + this.targetIdAttribute
+        );
+
+        // A `belongsTo` -> `through` is currently the only relation with two joins.
+        if (this.type === 'belongsTo') {
+          knex.join(
+            this.parentTableName,
+            joinTable + '.' + this.throughIdAttribute, '=',
+            this.parentTableName + '.' + this.key('throughForeignKey')
+          );
+        }
+      } else {
+        knex.join(
+          joinTable,
+          joinTable + '.' + this.throughIdAttribute, '=',
+          this.targetTableName + '.' + this.key('throughForeignKey')
+        );
+      }
+    },
+
+    // Check that there isn't an incorrect foreign key set, vs. the one
+    // passed in when the relation was formed.
+    whereClauses: function(knex, resp) {
+      var key, keyed;
+
+      if (this.isJoined()) {
+        var targetTable = this.type === 'belongsTo' ? this.parentTableName : this.joinTable();
+        key = targetTable + '.' + (this.type === 'belongsTo' ? this.parentIdAttribute : this.key('foreignKey'));
+      } else {
+        key = this.isInverse() ? this.parentIdAttribute : this.key('foreignKey');
+      }
+
+      knex[resp ? 'whereIn' : 'where'](key, resp ? this.eagerKeys(resp) : this.parentFk);
+
+      if (this.isMorph()) {
+        knex.where(this.key('morphKey'), this.key('morphValue'));
+      }
+    },
+
+    // Fetches all `eagerKeys` from the current relation.
+    eagerKeys: function(resp) {
+      return _.uniq(_.pluck(resp, this.isInverse() ? this.key('otherKey') : this.parentIdAttribute));
+    },
+
+    // Generates the appropriate standard join table.
+    joinTable: function() {
+      if (this.isThrough()) return this.throughTableName;
+      return this.joinTableName || [
+        this.parentTableName,
+        this.targetTableName
+      ].sort().join('_');
+    },
+
+    // Sets the constraints necessary during a `model.save` call.
+    saveConstraints: function(model, collection) {
+      var data = {};
+      var type = this.type;
+      if (type && type !== 'belongsToMany') {
+        data[this.key('foreignKey')] = this.parentFk;
+        if (this.isMorph()) data[this.key('morphKey')] = this.key('morphValue');
+      }
+      return model.set(data);
+    },
+
+    // Handles the fetched `model`, parsing and setting the related data
+    // appropriately on the existing model instance.
+    fetchedModel: function(model, response, options) {
+
+      // Todo: {silent: true, parse: true}, for parity with collection#set
+      // need to check on Backbone's status there, ticket #2636
+      model.set(model.parse(response[0]), {silent: true})._reset();
+      if (this.isJoined()) this.parsePivot([model]);
+      return model;
+    },
+
+    // Forms a collection with the attribtues fetched by the last call.
+    fetchedCollection: function(collection, response, options) {
+      collection.set(response, {silent: true, parse: true}).invoke('_reset');
+      if (this.isJoined()) this.parsePivot(collection.models);
+      return collection;
+    },
+
+    // Creates a new model or collection instance, depending on
+    // the `relatedData` settings and the models passed in.
+    relatedInstance: function(models) {
+      models = _.toArray(models);
+
+      var Target = this.target;
+      if (this.isSingle()) {
+        if (!Target.prototype instanceof Model) {
+          throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
+        }
+        return ((models[0] && models[0] instanceof Model) ? models[0] : new Target());
+      }
+
+      // Allows us to just use a model, but create a temporary collection for
+      // a many relation.
+      if (Target.prototype instanceof Model) {
+        Target = Bookshelf.Collection.extend({
+          model: Target,
+          builder: Target.prototype.builder
+        });
+      }
+      return new Target(models, {parse: true});
+    },
+
+    // Creates a new model, used internally in the eager fetch helper methods.
+    createModel: function(data) {
+      if (this.target.prototype instanceof Collection) {
+        return new this.target.prototype.model(data);
+      }
+      return new this.target(data);
+    },
+
+    // Groups the related response according to the type of relationship
+    // we're handling, for easy attachment to the parent models.
+    eagerPair: function(relationName, related, models) {
+
+      // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
+      if (this.isJoined()) related.models = this.parsePivot(related.models);
+
+      var grouped = related.groupBy(function(model) {
+        return this.isSingle() ? model.id : (model.pivot
+          ? model.pivot.get(this.key('foreignKey')) : model.get(this.key('foreignKey')));
+      }, this);
+
+      // The `models` in this case, are coming from a `RelatedStore` object.
+      for (var i = 0, l = models.length; i < l; i++) {
+        var model = models[i];
+        var groupedKey = this.isInverse() ? model.get(this.key('otherKey')) : model.id;
+        model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+      }
+      return related;
+    },
+
+    // The `models` is an array of models returned from the fetch,
+    // after they're `set`... parsing out any of the `_pivot_` items from the
+    // join table and assigning them on the pivot model or object as appropriate.
+    parsePivot: function(models) {
+      var Through = this.throughTarget;
+      return _.map(models, function(model) {
+        var data = {}, attrs = model.attributes, through;
+        if (Through) through = new Through();
+        for (var key in attrs) {
+          if (key.indexOf('_pivot_') === 0) {
+            data[key.slice(7)] = attrs[key];
+            delete attrs[key];
+          }
+        }
+        if (!_.isEmpty(data)) {
+          model.pivot = through ? through.set(data, {silent: true}) : new Model(data, {
+            tableName: this.joinTable()
+          });
+        }
+        return model;
+      }, this);
+    },
+
+    isThrough: function() {
+      return (this.throughTarget != null);
+    },
+
+    isJoined: function() {
+      return (this.type === 'belongsToMany' || this.isThrough());
+    },
+
+    isMorph: function() {
+      return (this.type === 'morphOne' || this.type === 'morphMany');
+    },
+
+    isSingle: function() {
+      var type = this.type;
+      return (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo');
+    },
+
+    isInverse: function() {
+      var type = this.type;
+      return (type === 'belongsTo' || type === 'morphTo');
+    },
+
+    withPivot: function(columns) {
+      if (!_.isArray(columns)) columns = [columns];
+      this.pivotColumns || (this.pivotColumns = []);
+      push.apply(this.pivotColumns, columns);
+    }
+
+  };
+
+  var array = [];
+  var push = array.push;
+  var splice = array.splice;
+  var noop = function() {};
 
   // Creates a new object, extending an object that
   // does not inherit the `Object.prototype`.
   var extendNull = function(target) {
     return _.extend(Object.create(null), target);
-  };
-
-  // Finds the specific `morphTo` table we should be working with, or throws
-  // an error if none is matched.
-  var morphCandidate = function(candidates, foreignTable) {
-    var Target = _.find(candidates, function(Candidate) {
-      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
-    });
-    if (!Target) {
-      throw new Error('The target polymorphic model was not found');
-    }
-    return Target;
   };
 
   // Simple memoization of the singularize call.
@@ -1198,10 +1307,22 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
     };
   }());
 
+  // Finds the specific `morphTo` table we should be working with, or throws
+  // an error if none is matched.
+  var morphCandidate = function(candidates, foreignTable) {
+    var Target = _.find(candidates, function(Candidate) {
+      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
+    });
+    if (!Target) {
+      throw new Error('The target polymorphic model was not found');
+    }
+    return Target;
+  };
+
   // References to the default `Knex` and `Knex.Transaction`, overwritten
   // when a new database connection is created in `Initialize` below.
-  Bookshelf.Knex = Knex;
-  Bookshelf.Transaction = Knex.Transaction;
+  Bookshelf.Knex = knex;
+  Bookshelf.Transaction = knex.Transaction;
 
   // Bookshelf.Initialize
   // -------------------
@@ -1220,7 +1341,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
     // If an object with this name already exists in `Knex.Instances`, we will
     // use that copy of `Knex` without trying to re-initialize.
-    var Builder = (Knex[name] || Knex.Initialize(name, options));
+    var Builder = (knex[name] || knex.Initialize(name, options));
 
     if (name === 'main') {
       Target = Bookshelf.Instances['main'] = Bookshelf;
@@ -1262,19 +1383,15 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   return Bookshelf;
 });
 
-// Boilerplate UMD Block...
+// Boilerplate UMD Block... will refine this further in coming releases.
 })(function(Shelf) {
-  var root = this, deps = ['backbone', 'underscore', 'when', 'knex', 'inflection', 'trigger-then'];
+
+  var root = this, deps = ['knex', 'underscore', 'backbone', 'when', 'inflection', 'trigger-then'];
+
   if (typeof exports === 'object') {
     module.exports = Shelf.apply(root, deps.map(function(name) { return require(name); }));
   } else if (typeof define === "function" && define.amd) {
     define('bookshelf', deps, Shelf);
-  } else {
-    var lastBookshelf = root.Bookshelf;
-    var Bookshelf     = root.Bookshelf = Shelf.apply(root, deps.map(function(name) { return root[name]; }));
-    Bookshelf.noConflict = function() {
-      root.Bookshelf = lastBookshelf;
-      return Bookshelf;
-    };
   }
+
 });

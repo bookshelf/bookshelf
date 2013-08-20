@@ -176,18 +176,18 @@ module.exports = {
     },
     'relations.3 - handles hasOne (meta)': {
       mysql: {
-        site_id: 1,
         id: 1,
+        site_id: 1,
         description: 'This is a description for the Knexjs Site'
       },
       postgres: {
-        site_id: 1,
         id: 1,
+        site_id: 1,
         description: 'This is a description for the Knexjs Site'
       },
       sqlite3: {
-        site_id: 1,
         id: 1,
+        site_id: 1,
         description: 'This is a description for the Knexjs Site'
       }
     },
@@ -198,8 +198,10 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        _pivot_author_id: 1,
-        _pivot_post_id: 1
+        pivot: {
+          author_id: 1,
+          post_id: 1
+        }
       }],
       postgres: [{
         id: 1,
@@ -207,8 +209,10 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        _pivot_author_id: 1,
-        _pivot_post_id: 1
+        pivot: {
+          author_id: 1,
+          post_id: 1
+        }
       }],
       sqlite3: [{
         id: 1,
@@ -216,8 +220,10 @@ module.exports = {
         blog_id: 1,
         name: 'This is a new Title!',
         content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-        _pivot_author_id: 1,
-        _pivot_post_id: 1
+        pivot: {
+          author_id: 1,
+          post_id: 1
+        }
       }]
     },
     'relations.5 - eager loads "hasOne" relationships correctly (site -> meta)': {
@@ -253,6 +259,15 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -263,15 +278,6 @@ module.exports = {
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe'
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
@@ -362,18 +368,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       },
       postgres: {
@@ -385,18 +397,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       },
       sqlite3: {
@@ -408,18 +426,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       }
     },
@@ -427,26 +451,26 @@ module.exports = {
       mysql: {
         id: 3,
         name: 'backbonejs.org',
-        blogs: [],
         meta: {
-        
+
         },
+        blogs: [],
         authors: []
       },
       postgres: {
         id: 3,
         name: 'backbonejs.org',
-        blogs: [],
         meta: {
-        
+
         },
-        authors: []
+        authors: [],
+        blogs: []
       },
       sqlite3: {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -473,7 +497,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }],
       postgres: [{
@@ -496,7 +520,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }],
       sqlite3: [{
@@ -519,7 +543,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     },
@@ -675,18 +699,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       },{
         id: 3,
@@ -705,18 +735,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       },{
         id: 3,
@@ -735,18 +771,24 @@ module.exports = {
         tags: [{
           id: 1,
           name: 'cool',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 1
+          pivot: {
+            post_id: 1,
+            tag_id: 1
+          }
         },{
           id: 2,
           name: 'boring',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 2
+          pivot: {
+            post_id: 1,
+            tag_id: 2
+          }
         },{
           id: 3,
           name: 'exciting',
-          _pivot_post_id: 1,
-          _pivot_tag_id: 3
+          pivot: {
+            post_id: 1,
+            tag_id: 3
+          }
         }]
       },{
         id: 3,
@@ -879,8 +921,10 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 1,
+              post_id: 1
+            }
           }]
         },{
           id: 2,
@@ -893,16 +937,20 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 2,
+              post_id: 1
+            }
           },{
             id: 2,
             owner_id: 2,
             blog_id: 2,
             name: 'This is a new Title 2!',
             content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
+            pivot: {
+              author_id: 2,
+              post_id: 2
+            }
           }]
         }]
       },
@@ -920,8 +968,10 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 1,
+              post_id: 1
+            }
           }]
         },{
           id: 2,
@@ -934,16 +984,20 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 2,
+              post_id: 1
+            }
           },{
             id: 2,
             owner_id: 2,
             blog_id: 2,
             name: 'This is a new Title 2!',
             content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
+            pivot: {
+              author_id: 2,
+              post_id: 2
+            }
           }]
         }]
       },
@@ -961,8 +1015,10 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 1,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 1,
+              post_id: 1
+            }
           }]
         },{
           id: 2,
@@ -975,16 +1031,20 @@ module.exports = {
             blog_id: 2,
             name: 'This is a new Title 2!',
             content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 2
+            pivot: {
+              author_id: 2,
+              post_id: 2
+            }
           },{
             id: 1,
             owner_id: 1,
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
-            _pivot_author_id: 2,
-            _pivot_post_id: 1
+            pivot: {
+              author_id: 2,
+              post_id: 1
+            }
           }]
         }]
       }
@@ -1718,20 +1778,26 @@ module.exports = {
       mysql: [{
         rid: 1,
         name: 'admin',
-        _pivot_uid: 1,
-        _pivot_rid: 1
+        pivot: {
+          rid: 1,
+          uid: 1
+        }
       }],
       postgres: [{
         rid: 1,
         name: 'admin',
-        _pivot_uid: 1,
-        _pivot_rid: 1
+        pivot: {
+          rid: 1,
+          uid: 1
+        }
       }],
       sqlite3: [{
         rid: 1,
         name: 'admin',
-        _pivot_uid: 1,
-        _pivot_rid: 1
+        pivot: {
+          rid: 1,
+          uid: 1
+        }
       }]
     },
     'relations.21 - works with eager loaded many-to-many (user -> roles)': {
@@ -1741,8 +1807,10 @@ module.exports = {
         roles: [{
           rid: 1,
           name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
+          pivot: {
+            rid: 1,
+            uid: 1
+          }
         }]
       },
       postgres: {
@@ -1751,8 +1819,10 @@ module.exports = {
         roles: [{
           rid: 1,
           name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
+          pivot: {
+            rid: 1,
+            uid: 1
+          }
         }]
       },
       sqlite3: {
@@ -1761,32 +1831,34 @@ module.exports = {
         roles: [{
           rid: 1,
           name: 'admin',
-          _pivot_uid: 1,
-          _pivot_rid: 1
+          pivot: {
+            rid: 1,
+            uid: 1
+          }
         }]
       }
     },
     'relations.22 - handles morphOne (photo)': {
       mysql: {
-        imageable_id: 1,
-        imageable_type: 'authors',
         id: 1,
         url: 'https://www.google.com/images/srpr/logo4w.png',
-        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors'
       },
       postgres: {
-        imageable_id: 1,
-        imageable_type: 'authors',
         id: 1,
         url: 'https://www.google.com/images/srpr/logo4w.png',
-        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors'
       },
       sqlite3: {
-        imageable_id: 1,
-        imageable_type: 'authors',
         id: 1,
         url: 'https://www.google.com/images/srpr/logo4w.png',
-        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors'
       }
     },
     'relations.23 - handles morphMany (photo)': {
@@ -2180,21 +2252,33 @@ module.exports = {
         post_id: 1,
         name: '(blank)',
         email: 'test@example.com',
-        comment: 'this is neat.'
+        comment: 'this is neat.',
+        pivot: {
+          id: 1,
+          blog_id: 1
+        }
       }],
       postgres: [{
         id: 1,
         post_id: 1,
         name: '(blank)',
         email: 'test@example.com',
-        comment: 'this is neat.'
+        comment: 'this is neat.',
+        pivot: {
+          id: 1,
+          blog_id: 1
+        }
       }],
       sqlite3: [{
         id: 1,
         post_id: 1,
         name: '(blank)',
         email: 'test@example.com',
-        comment: 'this is neat.'
+        comment: 'this is neat.',
+        pivot: {
+          id: 1,
+          blog_id: 1
+        }
       }]
     },
     'relations.29 - eager loads hasMany `through`': {
@@ -2207,7 +2291,11 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.'
+          comment: 'this is neat.',
+          pivot: {
+            id: 1,
+            blog_id: 1
+          }
         }]
       },{
         id: 2,
@@ -2224,7 +2312,11 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.'
+          comment: 'this is neat.',
+          pivot: {
+            id: 1,
+            blog_id: 1
+          }
         }]
       },{
         id: 2,
@@ -2241,7 +2333,11 @@ module.exports = {
           post_id: 1,
           name: '(blank)',
           email: 'test@example.com',
-          comment: 'this is neat.'
+          comment: 'this is neat.',
+          pivot: {
+            id: 1,
+            blog_id: 1
+          }
         }]
       },{
         id: 2,
@@ -2254,17 +2350,29 @@ module.exports = {
       mysql: {
         id: 1,
         meta_id: 1,
-        other_description: 'This is an info block for hasOne -> through test'
+        other_description: 'This is an info block for hasOne -> through test',
+        pivot: {
+          id: 1,
+          site_id: 1
+        }
       },
       postgres: {
         id: 1,
         meta_id: 1,
-        other_description: 'This is an info block for hasOne -> through test'
+        other_description: 'This is an info block for hasOne -> through test',
+        pivot: {
+          id: 1,
+          site_id: 1
+        }
       },
       sqlite3: {
         id: 1,
         meta_id: 1,
-        other_description: 'This is an info block for hasOne -> through test'
+        other_description: 'This is an info block for hasOne -> through test',
+        pivot: {
+          id: 1,
+          site_id: 1
+        }
       }
     },
     'relations.31 - eager loads hasOne `through`': {
@@ -2274,7 +2382,11 @@ module.exports = {
         info: {
           id: 1,
           meta_id: 1,
-          other_description: 'This is an info block for hasOne -> through test'
+          other_description: 'This is an info block for hasOne -> through test',
+          pivot: {
+            id: 1,
+            site_id: 1
+          }
         }
       },{
         id: 2,
@@ -2282,7 +2394,11 @@ module.exports = {
         info: {
           id: 2,
           meta_id: 2,
-          other_description: 'This is an info block for an eager hasOne -> through test'
+          other_description: 'This is an info block for an eager hasOne -> through test',
+          pivot: {
+            id: 2,
+            site_id: 2
+          }
         }
       }],
       postgres: [{
@@ -2291,7 +2407,11 @@ module.exports = {
         info: {
           id: 1,
           meta_id: 1,
-          other_description: 'This is an info block for hasOne -> through test'
+          other_description: 'This is an info block for hasOne -> through test',
+          pivot: {
+            id: 1,
+            site_id: 1
+          }
         }
       },{
         id: 2,
@@ -2299,7 +2419,11 @@ module.exports = {
         info: {
           id: 2,
           meta_id: 2,
-          other_description: 'This is an info block for an eager hasOne -> through test'
+          other_description: 'This is an info block for an eager hasOne -> through test',
+          pivot: {
+            id: 2,
+            site_id: 2
+          }
         }
       }],
       sqlite3: [{
@@ -2308,7 +2432,11 @@ module.exports = {
         info: {
           id: 1,
           meta_id: 1,
-          other_description: 'This is an info block for hasOne -> through test'
+          other_description: 'This is an info block for hasOne -> through test',
+          pivot: {
+            id: 1,
+            site_id: 1
+          }
         }
       },{
         id: 2,
@@ -2316,7 +2444,11 @@ module.exports = {
         info: {
           id: 2,
           meta_id: 2,
-          other_description: 'This is an info block for an eager hasOne -> through test'
+          other_description: 'This is an info block for an eager hasOne -> through test',
+          pivot: {
+            id: 2,
+            site_id: 2
+          }
         }
       }]
     }
