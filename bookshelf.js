@@ -293,6 +293,8 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       var model  = this.set(vals, {silent: true});
       var sync   = this.sync(options);
 
+      if (this.relatedData) this.relatedData.saveConstraints(this);
+
       return when.all([
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
         model.triggerThen('saving', model, attrs, options)
@@ -1155,7 +1157,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     },
 
     // Sets the constraints necessary during a `model.save` call.
-    saveConstraints: function(model, collection) {
+    saveConstraints: function(model) {
       var data = {};
       var type = this.type;
       if (type && type !== 'belongsToMany') {
@@ -1210,9 +1212,9 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Creates a new model, used internally in the eager fetch helper methods.
     createModel: function(data) {
       if (this.target.prototype instanceof Collection) {
-        return new this.target.prototype.model(data);
+        return new this.target.prototype.model(data, {parse: true})._reset();
       }
-      return new this.target(data);
+      return new this.target(data, {parse: true})._reset();
     },
 
     // Groups the related response according to the type of relationship
