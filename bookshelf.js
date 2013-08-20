@@ -72,10 +72,9 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
   _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, {
 
-    // The `hasOne` relation specifies that this table has exactly one of
-    // another type of object, specified by a foreign key in the other table. The foreign key is assumed
-    // to be the singular of this object's `tableName` with an `_id` suffix, but a custom `foreignKey`
-    // attribute may also be specified.
+    // The `hasOne` relation specifies that this table has exactly one of another type of object,
+    // specified by a foreign key in the other table. The foreign key is assumed to be the singular of this
+    // object's `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
     hasOne: function(Target, foreignKey) {
       return new Relation('hasOne', Target, {foreignKey: foreignKey}).init(this);
     },
@@ -128,7 +127,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
     // Fetch a model based on the currently set attributes,
     // returning a model to the callback, along with any options.
-    // Returns a deferred promise through the Bookshelf.sync.
+    // Returns a deferred promise through the `Bookshelf.Sync`.
     // If `{require: true}` is set as an option, the fetch is considered
     // a failure if the model comes up blank.
     fetch: function(options) {
@@ -390,8 +389,8 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Called after a `sync` action (save, fetch, delete) -
     // resets the `_previousAttributes` and `changed` hash for the model.
     _reset: function() {
-      this._previousAttributes = extendNull(this.attributes);
-      this.changed = extendNull();
+      this._previousAttributes = _.extend(Object.create(null), this.attributes);
+      this.changed = Object.create(null);
       return this;
     }
 
@@ -404,10 +403,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // models, so they can be easily sorted, serialized, and manipulated.
   var Collection = Bookshelf.Collection = function(models, options) {
     if (options) _.extend(this, _.pick(options, collectionProps));
-    var model = this.model;
-    if (!_.isEqual(model, Model) && !(model.prototype instanceof Model)) {
-      throw new Error('Only Bookshelf Model constructors are allowed as the Collection#model attribute.');
-    }
     this._reset();
     this.initialize.apply(this, arguments);
     if (models) this.reset(models, _.extend({silent: true}, options));
@@ -819,7 +814,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Select the first item from the database - only used by models.
     first: function() {
       var syncing = this.syncing;
-      this.query.where(syncing.format(extendNull(syncing.attributes))).limit(1);
+      this.query.where(syncing.format(_.extend(Object.create(null), syncing.attributes))).limit(1);
       return this.select();
     },
 
@@ -854,7 +849,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     insert: function() {
       var syncing = this.syncing;
       return this.query
-        .insert(syncing.format(extendNull(syncing.attributes)), syncing.idAttribute);
+        .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
     },
 
     // Issues an `update` command on the query - only used by models.
@@ -863,7 +858,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       attrs = (attrs && options.patch ? attrs : syncing.attributes);
       return this.query
         .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(attrs)));
+        .update(syncing.format(_.extend(Object.create(null), attrs)));
     },
 
     // Issues a `delete` command on the query.
@@ -1163,24 +1158,17 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return model.set(data);
     },
 
-    // Handles the fetched `model`, parsing and setting the related data
-    // appropriately on the existing model instance.
-    fetchedModel: function(model, response, options) {
-
-      return model;
-    },
-
     // Creates a new model or collection instance, depending on
     // the `relatedData` settings and the models passed in.
     relatedInstance: function(models) {
-      models = _.toArray(models);
+      models || (models = []);
 
       var Target = this.target;
       if (this.isSingle()) {
         if (!Target.prototype instanceof Model) {
           throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
         }
-        return ((models[0] && models[0] instanceof Model) ? models[0] : new Target());
+        return models[0] || new Target();
       }
 
       // Allows us to just use a model, but create a temporary collection for
@@ -1245,28 +1233,25 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       }, this);
     },
 
+    // A few predicates to help clarify some of the logic above.
     isThrough: function() {
       return (this.throughTarget != null);
     },
-
     isJoined: function() {
       return (this.type === 'belongsToMany' || this.isThrough());
     },
-
     isMorph: function() {
       return (this.type === 'morphOne' || this.type === 'morphMany');
     },
-
     isSingle: function() {
       var type = this.type;
       return (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo');
     },
-
     isInverse: function() {
-      var type = this.type;
-      return (type === 'belongsTo' || type === 'morphTo');
+      return (this.type === 'belongsTo' || this.type === 'morphTo');
     },
 
+    // Sets the `pivotColumns` to be retrieved along with the current model.
     withPivot: function(columns) {
       if (!_.isArray(columns)) columns = [columns];
       this.pivotColumns || (this.pivotColumns = []);
@@ -1277,12 +1262,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // Helper functions
   // -------------------
   var noop = function() {};
-
-  // Creates a new object, extending an object that
-  // does not inherit the `Object.prototype`.
-  var extendNull = function(target) {
-    return _.extend(Object.create(null), target);
-  };
 
   // If there are no arguments, return the current object's
   // query builder (or create and return a new one). If there are arguments,

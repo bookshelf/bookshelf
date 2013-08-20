@@ -83,21 +83,6 @@ module.exports = function(Bookshelf, handler) {
 
   });
 
-  describe('model', function() {
-
-    it('does not permit polymorphic models', function(ok) {
-      var Collection = Bookshelf.Collection.extend({
-        model: function() { return new Bookshelf.Model(); }
-      });
-      try {
-        new Collection([{id: 1}]);
-      } catch (e) {
-        equal(e.toString(), 'Error: Only Bookshelf Model constructors are allowed as the Collection#model attribute.');
-        ok();
-      }
-    });
-  });
-
   describe('tableName', function() {
 
     it('returns the `tableName` attribute off the `Collection#model` prototype', function() {
