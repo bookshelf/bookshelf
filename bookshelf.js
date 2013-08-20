@@ -965,7 +965,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
     }
     _.extend(this, options);
-    _.bindAll(this, 'createModel');
   };
 
   Relation.prototype = {
