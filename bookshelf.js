@@ -290,10 +290,15 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       }
 
       // Set the attributes on the model, and maintain a reference to use below.
-      var model  = this.set(vals, {silent: true});
-      var sync   = this.sync(options);
+      var model = this.set(vals, {silent: true});
 
+      // If there are any save constraints, set them on the model.
       if (this.relatedData) this.relatedData.saveConstraints(this);
+
+      var sync  = this.sync(options);
+
+      // Gives access to the `query` object in the `options`, in case we need it.
+      options.query = sync.query;
 
       return when.all([
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
@@ -810,9 +815,9 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // part of a transaction, and this information is passed along to `Knex`.
   var Sync = Bookshelf.Sync = function(syncing, options) {
     options || (options = {});
-    this.syncing = syncing;
+    this.query = syncing.query();
+    this.syncing = syncing.resetQuery();
     this.options = options;
-    this.query   = syncing.query();
     if (options.transacting) this.query.transacting(options.transacting);
   };
 
@@ -848,21 +853,20 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return when(function(){
         if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
       }()).then(function() {
-        syncing.resetQuery();
         return sync.query.select(columns);
       });
     },
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
-      var syncing = this.syncing.resetQuery();
+      var syncing = this.syncing;
       return this.query
         .insert(syncing.format(extendNull(syncing.attributes)), syncing.idAttribute);
     },
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      var syncing = this.syncing.resetQuery();
+      var syncing = this.syncing;
       attrs = (attrs && options.patch ? attrs : syncing.attributes);
       return this.query
         .where(syncing.idAttribute, syncing.id)
@@ -871,7 +875,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres, syncing = this.syncing.resetQuery();
+      var wheres, syncing = this.syncing;
       if (syncing.id != null) {
         wheres = {};
         wheres[syncing.idAttribute] = syncing.id;
