@@ -32,57 +32,10 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
 
-  // Shared functions which are mixed-in to the
-  // `Model`, `Collection`, and `EagerRelation` prototypes.
-  var Shared = {
-
-    // Returns an instance of the query builder.
-    builder: function(table) {
-      return knex(table);
-    },
-
-    // If there are no arguments, return the current object's
-    // query builder (or create and return a new one). If there are arguments,
-    // call the query builder with the first argument, applying the rest.
-    // If the first argument is an object, assume the keys are query builder
-    // methods, and the values are the arguments for the query.
-    query: function() {
-      var args = _.toArray(arguments);
-      this._knex || (this._knex = this.builder(_.result(this, 'tableName')));
-      if (args.length === 0) return this._knex;
-      var method = args[0];
-      if (_.isFunction(method)) {
-        method.apply(this._knex, this._knex);
-      } else if (_.isObject(method)) {
-        for (var key in method) {
-          var target = _.isArray(method[key]) ?  method[key] : [method[key]];
-          this._knex[key].apply(this._knex, target);
-        }
-      } else {
-        this._knex[method].apply(this._knex, args.slice(1));
-      }
-      return this;
-    },
-
-    // Reset the query builder, called internally
-    // each time a query is run.
-    resetQuery: function() {
-      delete this._knex;
-      return this;
-    },
-
-    // Used to define passthrough relationships a `hasOne`
-    // `hasMany`, `belongsTo` or `belongsToMany`, through a `Interim` model.
-    through: function(Interim, foreignKey, otherKey) {
-      return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
-    },
-
-    // Creates and returns a new `Bookshelf.Sync` instance.
-    sync: function(options) {
-      return new Bookshelf.Sync(this, options);
-    }
-
-  };
+  // Array helpers used throughout.
+  var array  = [];
+  var push   = array.push;
+  var splice = array.splice;
 
   // Bookshelf.Model
   // -------------------
@@ -117,7 +70,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
 
-  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, Shared, {
+  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, {
 
     // The `hasOne` relation specifies that this table has exactly one of
     // another type of object, specified by a foreign key in the other table. The foreign key is assumed
@@ -167,6 +120,12 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return new Relation('morphTo', null, {morphName: morphName, candidates: _.rest(arguments)}).init(this);
     },
 
+    // Used to define passthrough relationships - `hasOne`, `hasMany`,
+    // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
+    through: function(Interim, foreignKey, otherKey) {
+      return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
+    },
+
     // Fetch a model based on the currently set attributes,
     // returning a model to the callback, along with any options.
     // Returns a deferred promise through the Bookshelf.sync.
@@ -204,8 +163,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
         });
     },
 
-    // Eager loads relationships onto an already populated
-    // `Model` or `Collection` instance.
+    // Eager loads relationships onto an already populated `Model` instance.
     load: function(relations, options) {
       var model = this;
       _.isArray(relations) || (relations = [relations]);
@@ -401,6 +359,28 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
     },
 
+    // Reset the query builder, called internally
+    // each time a query is run.
+    resetQuery: function() {
+      delete this._knex;
+      return this;
+    },
+
+    // Returns an instance of the query builder.
+    query: function() {
+      return query(this, _.toArray(arguments));
+    },
+
+    // Returns a `knex` instance with the specified table name.
+    builder: function(table) {
+      return knex(table);
+    },
+
+    // Creates and returns a new `Bookshelf.Sync` instance.
+    sync: function(options) {
+      return new Bookshelf.Sync(this, options);
+    },
+
     // Helper for setting up the `morphOne` or `morphMany` relations.
     _morphOneOrMany: function(Target, morphName, morphValue, type) {
       if (!morphName || !Target) throw new Error('The polymorphic `name` and `Target` are required.');
@@ -440,9 +420,15 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   var setOptions = {add: true, remove: true, merge: true};
 
   // Extend the Collection's prototype with the base methods
-  _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, Shared, {
+  _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, {
 
     model: Model,
+
+    // Used to define passthrough relationships - `hasOne`, `hasMany`,
+    // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
+    through: function(Interim, foreignKey, otherKey) {
+      return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
+    },
 
     // A simplified version of Backbone's `Collection#set` method,
     // removing the comparator, and getting rid of the temporary model creation,
@@ -606,6 +592,28 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return this.model.prototype.idAttribute;
     },
 
+    // Reset the query builder, called internally
+    // each time a query is run.
+    resetQuery: function() {
+      delete this._knex;
+      return this;
+    },
+
+    // Returns an instance of the query builder.
+    query: function() {
+      return query(this, _.toArray(arguments));
+    },
+
+    // Returns a `knex` instance with the specified table name.
+    builder: function(table) {
+      return knex(table);
+    },
+
+    // Creates and returns a new `Bookshelf.Sync` instance.
+    sync: function(options) {
+      return new Bookshelf.Sync(this, options);
+    },
+
     // Prepare a model or hash of attributes to be added to this collection.
     _prepareModel: function(attrs, options) {
       if (attrs instanceof Model) return attrs;
@@ -628,7 +636,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     _.bindAll(this, 'pushModels', 'eagerFetch');
   };
 
-  _.extend(EagerRelation.prototype, Shared, {
+  EagerRelation.prototype = {
 
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
@@ -776,7 +784,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       }
       return relatedData.eagerPair(relationName, related, models);
     }
-  });
+  };
 
   // Set up inheritance for the model and collection.
   Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
@@ -1264,18 +1272,38 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       this.pivotColumns || (this.pivotColumns = []);
       push.apply(this.pivotColumns, columns);
     }
-
   };
 
-  var array = [];
-  var push = array.push;
-  var splice = array.splice;
+  // Helper functions
+  // -------------------
   var noop = function() {};
 
   // Creates a new object, extending an object that
   // does not inherit the `Object.prototype`.
   var extendNull = function(target) {
     return _.extend(Object.create(null), target);
+  };
+
+  // If there are no arguments, return the current object's
+  // query builder (or create and return a new one). If there are arguments,
+  // call the query builder with the first argument, applying the rest.
+  // If the first argument is an object, assume the keys are query builder
+  // methods, and the values are the arguments for the query.
+  var query = function(obj, args) {
+    obj._knex || (obj._knex = obj.builder(_.result(obj, 'tableName')));
+    if (args.length === 0) return obj._knex;
+    var method = args[0];
+    if (_.isFunction(method)) {
+      method.apply(obj._knex, obj._knex);
+    } else if (_.isObject(method)) {
+      for (var key in method) {
+        var target = _.isArray(method[key]) ?  method[key] : [method[key]];
+        obj._knex[key].apply(obj._knex, target);
+      }
+    } else {
+      obj._knex[method].apply(obj._knex, args.slice(1));
+    }
+    return obj;
   };
 
   // Simple memoization of the singularize call.
