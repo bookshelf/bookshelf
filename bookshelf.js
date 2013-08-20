@@ -74,7 +74,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Eager loads relationships onto an already populated
     // `Model` or `Collection` instance.
     load: function(relations, options) {
-      var data, target = this;
+      var data, loading = this;
       _.isArray(relations) || (relations = [relations]);
       options = _.extend({}, options, {shallow: true, withRelated: relations});
       if (this instanceof Collection) {
@@ -82,9 +82,11 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       } else {
         data = [this.toJSON(options)];
       }
-      return new EagerRelation(this, data)
+      var target = (this instanceof Collection ? new this.model() : this);
+      var parent = (this instanceof Collection ? this.models : [this]);
+      return new EagerRelation(parent, data, target)
         .fetch(options)
-        .then(function() { return target; });
+        .then(function() { return loading; });
     },
 
     // Used to define passthrough relationships a `hasOne`
@@ -204,7 +206,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
             }
 
             if (!options.withRelated) return response;
-            return new EagerRelation(model, response)
+            return new EagerRelation([model], response, model)
               .fetch(options)
               .then(function() { return response; });
           }
@@ -545,7 +547,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
             return [];
           }
           if (!options.withRelated) return response;
-          return new EagerRelation(collection, response)
+          return new EagerRelation(collection.models, response, new collection.model())
             .fetch(options)
             .then(function() { return response; });
         })
@@ -609,22 +611,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
   });
 
-  // Temporary helper object for handling the response of an `EagerRelation` load.
-  var RelatedStore = function(models) {
-    if (models instanceof RelatedStore) return models;
-    this.models = models;
-    this.length = this.models.length;
-  };
-  _.extend(RelatedStore.prototype, _.pick(Collection.prototype, 'at', 'find', 'where', 'filter', 'findWhere', 'groupBy'), {
-
-    // Pushes a model onto the `RelatedStore` object, updates the length of the models array, and returns the added model.
-    push: function(model) {
-      this.length = this.models.push(model);
-      return model;
-    }
-
-  });
-
   // Bookshelf.EagerRelation
   // ---------------
 
@@ -633,19 +619,9 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // is only used to retrieve the value of the relation method, to know the constrains
   // for the eager query.
   var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse, target) {
-
-    // Convert a `Model` or `Collection` to a `RelatedModel` instance
-    // for consistency when fetching & pairing nested relation objects.
-    if (parent instanceof Model) {
-      this.parent = new RelatedStore([parent]);
-    } else {
-      this.parent = new RelatedStore(parent.models);
-    }
-
-    // Set the appropriate target for getting the eager relation data.
-    this.target = target || (parent instanceof Collection ? new parent.model() : parent);
+    this.parent = parent;
+    this.target = target;
     this.parentResponse = parentResponse;
-
     _.bindAll(this, 'pushModels', 'eagerFetch');
   };
 
@@ -753,7 +729,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // pairing them up onto a single response for the eager loading.
     morphToFetch: function(relationName, relatedData, options) {
       var pending = [];
-      var groups = this.parent.groupBy(function(m) {
+      var groups = _.groupBy(this.parent, function(m) {
         return m.get(relationName + '_type');
       });
       for (var group in groups) {
@@ -782,18 +758,18 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       };
     },
 
-    // Pushes each of the incoming models onto a new `RelatedStore` object,
+    // Pushes each of the incoming models onto a new `related` array,
     // which is used to correcly pair additional nested relations.
     pushModels: function(relationName, handled, resp) {
-      var models      = this.parent.models;
+      var models      = this.parent;
       var relatedData = handled.relatedData;
-      var related     = new RelatedStore([]);
+      var related     = [];
       for (var i = 0, l = resp.length; i < l; i++) {
         related.push(relatedData.createModel(resp[i]));
       }
       // If this is a morphTo, we only want to pair on the morphValue for the current relation.
       if (relatedData.type === 'morphTo') {
-        models = models.filter(function(model) { return model.get(relatedData.key('morphKey')) === relatedData.key('morphValue'); });
+        models = _.filter(models, function(model) { return model.get(relatedData.key('morphKey')) === relatedData.key('morphValue'); });
       }
       return relatedData.eagerPair(relationName, related, models);
     }
@@ -1220,14 +1196,13 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     eagerPair: function(relationName, related, models) {
 
       // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
-      if (this.isJoined()) related.models = this.parsePivot(related.models);
+      if (this.isJoined()) related = this.parsePivot(related);
 
-      var grouped = related.groupBy(function(model) {
+      var grouped = _.groupBy(related, function(model) {
         return this.isSingle() ? model.id : (model.pivot
           ? model.pivot.get(this.key('foreignKey')) : model.get(this.key('foreignKey')));
       }, this);
 
-      // The `models` in this case, are coming from a `RelatedStore` object.
       for (var i = 0, l = models.length; i < l; i++) {
         var model = models[i];
         var groupedKey = this.isInverse() ? model.get(this.key('otherKey')) : model.id;
