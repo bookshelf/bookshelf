@@ -71,24 +71,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       return this;
     },
 
-    // Eager loads relationships onto an already populated
-    // `Model` or `Collection` instance.
-    load: function(relations, options) {
-      var data, loading = this;
-      _.isArray(relations) || (relations = [relations]);
-      options = _.extend({}, options, {shallow: true, withRelated: relations});
-      if (this instanceof Collection) {
-        data = this.toJSON(options);
-      } else {
-        data = [this.toJSON(options)];
-      }
-      var target = (this instanceof Collection ? new this.model() : this);
-      var parent = (this instanceof Collection ? this.models : [this]);
-      return new EagerRelation(parent, data, target)
-        .fetch(options)
-        .then(function() { return loading; });
-    },
-
     // Used to define passthrough relationships a `hasOne`
     // `hasMany`, `belongsTo` or `belongsToMany`, through a `Interim` model.
     through: function(Interim, foreignKey, otherKey) {
@@ -220,6 +202,17 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
           }
           return null;
         });
+    },
+
+    // Eager loads relationships onto an already populated
+    // `Model` or `Collection` instance.
+    load: function(relations, options) {
+      var model = this;
+      _.isArray(relations) || (relations = [relations]);
+      options = _.extend({}, options, {shallow: true, withRelated: relations});
+      return new EagerRelation([this], [this.toJSON(options)], this)
+        .fetch(options)
+        .then(function() { return model; });
     },
 
     // Similar to the standard `Backbone` set method, but without individual
@@ -563,6 +556,16 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       var model = new this.model;
       if (this.relatedData) model.relatedData = this.relatedData;
       return model.fetch(options);
+    },
+
+    // Eager loads relationships onto an already populated `Collection` instance.
+    load: function(relations, options) {
+      var collection = this;
+      _.isArray(relations) || (relations = [relations]);
+      options = _.extend({}, options, {shallow: true, withRelated: relations});
+      return new EagerRelation(this.models, this.toJSON(options), new this.model())
+        .fetch(options)
+        .then(function() { return collection; });
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.
