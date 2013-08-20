@@ -190,23 +190,29 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // a failure if the model comes up blank.
     fetch: function(options) {
       options || (options = {});
-      var model = this;
-      var relatedData = this.relatedData || new Relation();
+      var model = this, relatedData = this.relatedData;
       return this.sync(options)
         .first()
-        .then(function(resp) {
-          if (resp && resp.length > 0) {
-            model = relatedData.fetchedModel(model, resp, options);
-            if (!options.withRelated) return resp;
-            return new EagerRelation(model, resp)
+        .then(function(response) {
+          if (response && response.length > 0) {
+            // Todo: {silent: true, parse: true}, for parity with collection#set
+            // need to check on Backbone's status there, ticket #2636
+            model.set(model.parse(response[0]), {silent: true})._reset();
+
+            if (relatedData && relatedData.isJoined()) {
+              relatedData.parsePivot([model]);
+            }
+
+            if (!options.withRelated) return response;
+            return new EagerRelation(model, response)
               .fetch(options)
-              .then(function() { return resp; });
+              .then(function() { return response; });
           }
           if (options.require) return when.reject(new Error('EmptyResponse'));
         })
-        .then(function(resp) {
-          if (resp && resp.length > 0) {
-            return model.triggerThen('fetched', model, resp, options).then(function() {
+        .then(function(response) {
+          if (response && response.length > 0) {
+            return model.triggerThen('fetched', model, response, options).then(function() {
               return model;
             });
           }
@@ -527,24 +533,24 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // for the query when they arrive.
     fetch: function(options) {
       options || (options = {});
-      var collection = this;
-      var relatedData = this.relatedData || new Relation();
+      var collection = this, relatedData = this.relatedData;
       return this.sync(options)
         .select()
-        .then(function(resp) {
-          if (resp && resp.length > 0) {
-            collection = relatedData.fetchedCollection(collection, resp, options);
+        .then(function(response) {
+          if (response && response.length > 0) {
+            collection.set(response, {silent: true, parse: true}).invoke('_reset');
+            if (relatedData && relatedData.isJoined()) relatedData.parsePivot(collection.models);
           } else {
             collection.reset([], {silent: true});
             return [];
           }
-          if (!options.withRelated) return resp;
-          return new EagerRelation(collection, resp)
+          if (!options.withRelated) return response;
+          return new EagerRelation(collection, response)
             .fetch(options)
-            .then(function() { return resp; });
+            .then(function() { return response; });
         })
-        .then(function(resp) {
-          return collection.triggerThen('fetched', collection, resp, options).then(function() {
+        .then(function(response) {
+          return collection.triggerThen('fetched', collection, response, options).then(function() {
             return collection;
           });
         });
@@ -1174,18 +1180,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // appropriately on the existing model instance.
     fetchedModel: function(model, response, options) {
 
-      // Todo: {silent: true, parse: true}, for parity with collection#set
-      // need to check on Backbone's status there, ticket #2636
-      model.set(model.parse(response[0]), {silent: true})._reset();
-      if (this.isJoined()) this.parsePivot([model]);
       return model;
-    },
-
-    // Forms a collection with the attribtues fetched by the last call.
-    fetchedCollection: function(collection, response, options) {
-      collection.set(response, {silent: true, parse: true}).invoke('_reset');
-      if (this.isJoined()) this.parsePivot(collection.models);
-      return collection;
     },
 
     // Creates a new model or collection instance, depending on
