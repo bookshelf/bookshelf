@@ -26,7 +26,7 @@ module.exports = function(Shelf) {
       return this.hasMany(Author);
     },
     photos: function() {
-      return this.morphMany(Photo, 'imageable');
+      return this.morphMany('imageable', Photo);
     },
     blogs: function() {
       return this.hasMany(Blog);
@@ -63,7 +63,7 @@ module.exports = function(Shelf) {
       return this.belongsTo(Site);
     },
     photo: function() {
-      return this.morphOne(Photo, 'imageable');
+      return this.morphOne('imageable', Photo);
     },
     posts: function() {
       return this.belongsToMany(Post);
@@ -186,7 +186,8 @@ module.exports = function(Shelf) {
       Tag: Tag,
       User: User,
       Role: Role,
-      Photo: Photo
+      Photo: Photo,
+      Info: Info
     },
     Collections: {
       Sites: Sites,
