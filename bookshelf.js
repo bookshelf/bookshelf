@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.4
+//     Bookshelf.js 0.2.5
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -21,7 +21,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
   triggerThen(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.4';
+  Bookshelf.VERSION = '0.2.5';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -51,14 +51,16 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
       var args = _.toArray(arguments);
       if (args.length === 0) return this._builder;
       var method = args[0];
-      if (_.isObject(method)) {
+      if (_.isFunction(method)) {
+        method.apply(this._builder, this._builder);
+      } else if (_.isObject(method)) {
         for (var key in method) {
           var target = _.isArray(method[key]) ?  method[key] : [method[key]];
           this._builder[key].apply(this._builder, target);
         }
-        return this;
+      } else {
+        this._builder[method].apply(this._builder, args.slice(1));
       }
-      this._builder[method].apply(this._builder, args.slice(1));
       return this;
     },
 
@@ -998,7 +1000,7 @@ define(function(Backbone, _, when, Knex, inflection, triggerThen) {
 
       // Check that the constraints are set properly if this model is set as a relation to another.
       if (relatedData) {
-        if (!relatedData.fkValue && !options.parentResponse) {
+        if (relatedData.fkValue == null && !options.parentResponse) {
           return when.reject(new Error("The " + relatedData.otherKey + " must be specified."));
         }
         if (relatedData.type !== 'belongsToMany' && !relatedData.through) {
