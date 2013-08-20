@@ -48,6 +48,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // methods, and the values are the arguments for the query.
     query: function() {
       var args = _.toArray(arguments);
+      this._knex || (this._knex = this.builder(_.result(this, 'tableName')));
       if (args.length === 0) return this._knex;
       var method = args[0];
       if (_.isFunction(method)) {
@@ -66,7 +67,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Reset the query builder, called internally
     // each time a query is run.
     resetQuery: function() {
-      this._knex = this.builder(_.result(this, 'tableName'));
+      delete this._knex;
       return this;
     },
 
@@ -120,7 +121,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       _.extend(this, _.pick(options, modelProps));
       if (options.parse) attrs = this.parse(attrs, options) || {};
     }
-    this._knex = this.builder(_.result(this, 'tableName'));
     this.set(attrs, options);
     this.initialize.apply(this, arguments);
   };
@@ -423,7 +423,6 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       throw new Error('Only Bookshelf Model constructors are allowed as the Collection#model attribute.');
     }
     this._reset();
-    this._knex = this.builder(_.result(this, 'tableName'));
     this.initialize.apply(this, arguments);
     if (models) this.reset(models, _.extend({silent: true}, options));
   };
@@ -716,10 +715,10 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     eagerFetch: function(relationName, handled, options) {
       var relatedData = handled.relatedData;
 
-      // Call the function, if one exists, to constrain the eager loaded query.
-      options.beforeFn.call(handled, handled._knex);
-
       if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
+
+      // Call the function, if one exists, to constrain the eager loaded query.
+      options.beforeFn.call(handled, handled.query());
 
       var relation = this;
       return handled
@@ -813,8 +812,8 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     options || (options = {});
     this.syncing = syncing;
     this.options = options;
-    this._knex    = syncing.query();
-    if (options.transacting) this._knex.transacting(options.transacting);
+    this.query   = syncing.query();
+    if (options.transacting) this.query.transacting(options.transacting);
   };
 
   _.extend(Sync.prototype, {
@@ -822,7 +821,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     // Select the first item from the database - only used by models.
     first: function() {
       var syncing = this.syncing;
-      this._knex.where(syncing.format(extendNull(syncing.attributes))).limit(1);
+      this.query.where(syncing.format(extendNull(syncing.attributes))).limit(1);
       return this.select();
     },
 
@@ -838,7 +837,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
       // Inject all appropriate select costraints dealing with the relation
       // into the `knex` query builder for the current instance.
       if (relatedData) {
-        relatedData.selectConstraints(this._knex, options);
+        relatedData.selectConstraints(this.query, options);
       } else {
         columns = options.columns;
         if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
@@ -850,14 +849,14 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
         if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
       }()).then(function() {
         syncing.resetQuery();
-        return sync._knex.select(columns);
+        return sync.query.select(columns);
       });
     },
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
       var syncing = this.syncing.resetQuery();
-      return this._knex
+      return this.query
         .insert(syncing.format(extendNull(syncing.attributes)), syncing.idAttribute);
     },
 
@@ -865,7 +864,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     update: function(attrs, options) {
       var syncing = this.syncing.resetQuery();
       attrs = (attrs && options.patch ? attrs : syncing.attributes);
-      return this._knex
+      return this.query
         .where(syncing.idAttribute, syncing.id)
         .update(syncing.format(extendNull(attrs)));
     },
@@ -877,10 +876,10 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
         wheres = {};
         wheres[syncing.idAttribute] = syncing.id;
       }
-      if (!wheres && this._knex.wheres.length === 0) {
+      if (!wheres && this.query.wheres.length === 0) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
-      return this._knex.where(wheres).del();
+      return this.query.where(wheres).del();
     }
   });
 

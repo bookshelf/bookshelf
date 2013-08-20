@@ -87,6 +87,7 @@ describe('Bookshelf.Relation', function() {
 
     var base = new Doctor({id: 1});
     var relation = base.meta();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -103,14 +104,15 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.parentFk, 1);
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
-    equal(relation._knex.toString(), 'select * from `doctormeta` where `doctoring_id` = 1');
+    equal(_knex.toString(), 'select * from `doctormeta` where `doctoring_id` = 1');
   });
 
   it('should handle a hasOne -> through relation', function() {
     var base = new Supplier({id: 1});
     var relation = base.accountHistory();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -132,16 +134,17 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.throughIdAttribute, 'id');
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
     var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1';
 
-    equal(relation._knex.toString(), sql);
+    equal(_knex.toString(), sql);
   });
 
   it('should handle a belongsTo -> through relation', function() {
     var base = new AccountHistory({id: 1});
     var relation = base.supplier();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -163,16 +166,17 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.throughIdAttribute, 'id');
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
     var sql = 'select `suppliers`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `suppliers` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1';
 
-    equal(relation._knex.toString(), sql);
+    equal(_knex.toString(), sql);
   });
 
   it('should handle a belongsToMany -> through relation', function() {
     var base = new Doctor({id: 1});
     var relation = base.patients();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -194,16 +198,17 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.throughIdAttribute, 'id');
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
     var sql = 'select `patients`.*, `appointments`.`id` as `_pivot_id`, `appointments`.`doctor_id` as `_pivot_doctor_id`, `appointments`.`patient_id` as `_pivot_patient_id` from `patients` inner join `appointments` on `appointments`.`patient_id` = `patients`.`id` where `appointments`.`doctor_id` = 1';
 
-    equal(relation._knex.toString(), sql);
+    equal(_knex.toString(), sql);
   });
 
   it('should handle a standard belongsToMany relation', function() {
     var base = new Doctor({id: 1});
     var relation = base.patientsStd();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -220,16 +225,17 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.parentFk, 1);
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
     var sql = 'select `patients`.*, `doctors_patients`.`doctor_id` as `_pivot_doctor_id`, `doctors_patients`.`patient_id` as `_pivot_patient_id` from `patients` inner join `doctors_patients` on `doctors_patients`.`patient_id` = `patients`.`id` where `doctors_patients`.`doctor_id` = 1';
 
-    equal(relation._knex.toString(), sql);
+    equal(_knex.toString(), sql);
   });
 
   it('should handle polymorphic relations', function() {
     var base = new Doctor({id: 1});
     var relation = base.photos();
+    var _knex    = relation.query();
     var relatedData = relation.relatedData;
 
     // Base
@@ -246,11 +252,11 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.parentFk, 1);
 
     // init the select constraints
-    relatedData.selectConstraints(relation._knex, {});
+    relatedData.selectConstraints(_knex, {});
 
     var sql = 'select * from `photos` where `imageable_id` = 1 and `imageable_type` = doctors';
 
-    equal(relation._knex.toString(), sql);
+    equal(_knex.toString(), sql);
   });
 
 
