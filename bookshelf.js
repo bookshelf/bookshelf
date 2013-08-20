@@ -355,7 +355,12 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
         var relation = relations[key];
         attrs[key] = relation.toJSON ? relation.toJSON() : relation;
       }
-      if (this.pivot) attrs.pivot = this.pivot.toJSON();
+      if (this.pivot) {
+        var pivot = this.pivot.attributes;
+        for (key in pivot) {
+          attrs['_pivot_' + key] = pivot[key];
+        }
+      }
       return attrs;
     },
 
