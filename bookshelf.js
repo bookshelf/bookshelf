@@ -166,14 +166,14 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
 
     // A `morphOne` relation is a one-to-one polymorphic association from this model
     // to another model.
-    morphOne: function(name, Target, morphValue) {
-      return this._morphOneOrMany(name, Target, morphValue, 'morphOne');
+    morphOne: function(Target, name, morphValue) {
+      return this._morphOneOrMany(Target, name, morphValue, 'morphOne');
     },
 
     // A `morphMany` relation is a polymorphic many-to-one relation from this model
     // to many another models.
-    morphMany: function(name, Target, morphValue) {
-      return this._morphOneOrMany(name, Target, morphValue, 'morphMany');
+    morphMany: function(Target, name, morphValue) {
+      return this._morphOneOrMany(Target, name, morphValue, 'morphMany');
     },
 
     // Defines the opposite end of a `morphOne` or `morphMany` relationship, where
@@ -396,7 +396,7 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
     },
 
     // Helper for setting up the `morphOne` or `morphMany` relations.
-    _morphOneOrMany: function(morphName, Target, morphValue, type) {
+    _morphOneOrMany: function(Target, morphName, morphValue, type) {
       if (!morphName || !Target) throw new Error('The polymorphic `name` and `Target` are required.');
       return new Relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
     },

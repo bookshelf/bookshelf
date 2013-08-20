@@ -15,7 +15,7 @@ var Photo = Bookshelf.Model.extend({
 var Doctor = Bookshelf.Model.extend({
   tableName: 'doctors',
   photos: function() {
-    return this.morphMany('imageable', Photo);
+    return this.morphMany(Photo, 'imageable');
   },
   patients: function() {
     return this.belongsToMany(Patient).through(Appointment);
@@ -42,7 +42,7 @@ var Patient = Bookshelf.Model.extend({
     return this.belongsToMany(Doctor).through(Appointment);
   },
   photos: function() {
-    return this.morphMany('imageable', Photo);
+    return this.morphMany(Photo, 'imageable');
   }
 });
 
