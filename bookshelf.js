@@ -6,13 +6,18 @@
 //     http://bookshelfjs.org
 (function(define) { "use strict";
 
-// Inject all dependencies, from whichever loading mechanism we've
-// decided to use.
-define(function(knex, _, Backbone, when, inflection, triggerThen) {
+// UMD Module setup
+define(function(require, exports, module) {
 
   // Initial Setup
   // -------------
-  var Bookshelf = {};
+  var Bookshelf   = exports;
+  var Backbone    = require('backbone');
+  var knex        = require('knex');
+  var _           = require('underscore');
+  var when        = require('when');
+  var inflection  = require('inflection');
+  var triggerThen = require('trigger-then');
 
   // Keep a reference to our own copy of Backbone, in case we want to use
   // this specific instance elsewhere in the application.
@@ -1368,19 +1373,8 @@ define(function(knex, _, Backbone, when, inflection, triggerThen) {
   // The main Bookshelf `instanceName`... incase we're using Bookshelf
   // after `Knex` has been initialized, for consistency.
   Bookshelf.instanceName = 'main';
-
-  return Bookshelf;
 });
 
-// Boilerplate UMD Block... will refine this further in coming releases.
-})(function(Shelf) {
-
-  var root = this, deps = ['knex', 'underscore', 'backbone', 'when', 'inflection', 'trigger-then'];
-
-  if (typeof exports === 'object') {
-    module.exports = Shelf.apply(root, deps.map(function(name) { return require(name); }));
-  } else if (typeof define === "function" && define.amd) {
-    define('bookshelf', deps, Shelf);
-  }
-
-});
+})(
+  typeof define === 'function' && define.amd ? define : function (factory) { factory(require, exports, module); }
+);
