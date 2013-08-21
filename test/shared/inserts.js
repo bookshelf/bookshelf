@@ -4,7 +4,7 @@ var Knex  = require('knex');
 
 module.exports = function(Bookshelf) {
 
-  Knex = Bookshelf.Knex;
+  Knex = Bookshelf.knex;
 
   return When.all([
 

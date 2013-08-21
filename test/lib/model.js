@@ -9,7 +9,7 @@ var deepEqual = require('assert').deepEqual;
 
 module.exports = function(Bookshelf, handler) {
 
-  var Backbone = Bookshelf.Backbone;
+  var Backbone  = require('../../lib/ext/backbone').Backbone;
   var Models    = require('../shared/objects')(Bookshelf).Models;
 
   var stubSync = {
@@ -92,7 +92,7 @@ module.exports = function(Bookshelf, handler) {
     it('should use the same get method as the Backbone library', function() {
       var attached = ['get'];
       _.each(attached, function(item) {
-        deepEqual(Bookshelf.Model.prototype[item], Bookshelf.Backbone.Model.prototype[item]);
+        deepEqual(Bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
       });
     });
 
@@ -103,7 +103,7 @@ module.exports = function(Bookshelf, handler) {
     var model = new Bookshelf.Model();
 
     it('returns the Knex builder when no arguments are passed', function() {
-      equal((model.query() instanceof Bookshelf.Knex.Builder), true);
+      equal((model.query() instanceof Bookshelf.knex.Builder), true);
     });
 
     it('calls Knex builder method with the first argument, returning the model', function() {
@@ -469,7 +469,7 @@ module.exports = function(Bookshelf, handler) {
 
     it('creates a new instance of Bookshelf.Sync', function(){
       var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof Bookshelf.Sync), true);
+      equal((model.sync(model) instanceof require('../../lib/sync').Sync), true);
     });
   });
 

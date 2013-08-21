@@ -10,7 +10,7 @@ var drops = [
 
 module.exports = function(Bookshelf) {
 
-  var Schema = Bookshelf.Knex.Schema;
+  var Schema = Bookshelf.knex.Schema;
 
   return When.all(_.map(drops, function(val) {
     return Schema.dropTableIfExists(val);

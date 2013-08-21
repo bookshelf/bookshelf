@@ -947,14 +947,6 @@ new Patient({id: 1}).record().fetch().then(function(model) {
       <a href="#Model-tableName">tableName</a> of the current model.
     </p>
 
-    <p id="Model-through">
-      <b class="header">through</b><code>model.hasMany(Target).through(JoinModel)</code>
-      <br />
-      An alternative to a <a href="#Model-belongsToMany">belongsToMany</a> relationship, the <tt>through</tt>
-      method may be chained on a <a href="#Model-hasOne">hasOne</a> or <a href="#Model-hasMany">hasMany</a> relation,
-      where the chaining.
-    </p>
-
     <p id="Model-belongsTo">
       <b class="header">belongsTo</b><code>model.belongsTo(Model, [otherKey])</code>
       <br />
@@ -1045,6 +1037,17 @@ When.all([admin1.save(), admin2.save()])
     ]);
   })
 </pre>
+
+    <p id="Model-through">
+      <b class="header">through</b><code>...through(JoinModel)</code>
+      <br />
+      The <tt>through</tt> relation is powerful and flexible, allowing you to define an association. It may be chained on a
+      <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>, <a href="#Model-belongsTo">belongsTo</a>,
+      or <a href="#Model-belongsToMany">belongsToMany</a> relationship, fetching a number of items through a <b>JoinModel</b>.
+      It differs slightly from Rails' <tt>has_many :through</tt> relation in that it applies to all four available
+      simple relations.
+    </p>
+
 
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
@@ -1222,9 +1225,8 @@ new Photo({id: 1}).fetch({
     <p id="Model-relatedData">
       <b class="header">relatedData</b><code>model.relatedData</code>
       <br />
-      The <b>relatedData</b> is a hash of information about the current model's relation, including the
-      <tt>type</tt>, <tt>foreignKey</tt>, <tt>fkValue</tt>, and other relationship information depending
-      on the relation type.
+      The <b>relatedData</b> attribute is an object used internally to store additional
+      context, information, and helper methods for the current relation.
     </p>
 
     <p id="Model-save">
