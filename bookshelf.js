@@ -20,7 +20,7 @@ define(function(require, exports, module) {
   var Eager      = require('./lib/eager').Eager;
 
   // Constructor for a new `Bookshelf` object, it accepts
-  // an active `knex` instance and initializes the appropriate Model,
+  // an active `knex` instance and initializes the appropriate `Model`,
   // `Collection`, and `Eager` constructors for use in the current object.
   var Bookshelf = function(knex) {
 

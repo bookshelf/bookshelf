@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sync.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bookshelf.html">
+                bookshelf.js
+              </a>
+            
+              
+              <a class="source" href="collection.html">
+                collection.js
+              </a>
+            
+              
+              <a class="source" href="eager.html">
+                eager.js
+              </a>
+            
+              
+              <a class="source" href="events.html">
+                events.js
+              </a>
+            
+              
+              <a class="source" href="helpers.html">
+                helpers.js
+              </a>
+            
+              
+              <a class="source" href="model.html">
+                model.js
+              </a>
+            
+              
+              <a class="source" href="relation.html">
+                relation.js
+              </a>
+            
+              
+              <a class="source" href="sync.html">
+                sync.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>sync.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>(define) { <span class="string">"use strict"</span>;
+
+define(<span class="keyword">function</span>(require, exports, module) {
+
+  <span class="keyword">var</span> _    = require(<span class="string">'./ext/underscore'</span>)._;
+  <span class="keyword">var</span> when = require(<span class="string">'./ext/when'</span>).when;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2>Bookshelf.Sync</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Sync is the dispatcher for any database queries,
+taking the &quot;syncing&quot; <code>model</code> or <code>collection</code> being queried, along with
+a hash of options that are used in the various query methods.
+If the <code>transacting</code> option is set, the query is assumed to be
+part of a transaction, and this information is passed along to <code>Knex</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Sync = <span class="keyword">function</span>(syncing, options) {
+    options || (options = {});
+    <span class="keyword">this</span>.query = syncing.query();
+    <span class="keyword">this</span>.syncing = syncing.resetQuery();
+    <span class="keyword">this</span>.options = options;
+    <span class="keyword">if</span> (options.transacting) <span class="keyword">this</span>.query.transacting(options.transacting);
+  };
+
+  _.extend(Sync.prototype, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Select the first item from the database - only used by models.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    first: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing;
+      <span class="keyword">this</span>.query.where(syncing.format(_.extend(Object.create(<span class="literal">null</span>), syncing.attributes))).limit(<span class="number">1</span>);
+      <span class="keyword">return</span> <span class="keyword">this</span>.select();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Runs a <code>select</code> query on the database, adding any necessary relational
+constraints, resetting the query when complete. If there are results and
+eager loaded relations, those are fetched and returned on the model before
+the promise is resolved. Any <code>success</code> handler passed in the
+options will be called - used by both models &amp; collections.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    select: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> columns, sync = <span class="keyword">this</span>, syncing = <span class="keyword">this</span>.syncing,
+        options = <span class="keyword">this</span>.options, relatedData = syncing.relatedData;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Inject all appropriate select costraints dealing with the relation
+into the <code>knex</code> query builder for the current instance.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (relatedData) {
+        relatedData.selectConstraints(<span class="keyword">this</span>.query, options);
+      } <span class="keyword">else</span> {
+        columns = options.columns;
+        <span class="keyword">if</span> (!_.isArray(columns)) columns = columns ? [columns] : [<span class="string">'*'</span>];
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Create the deferred object, triggering a <code>fetching</code> event if the model
+isn&#39;t an eager load.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">return</span> when(<span class="keyword">function</span>(){
+        <span class="keyword">if</span> (!options.isEager) <span class="keyword">return</span> syncing.triggerThen(<span class="string">'fetching'</span>, syncing, columns, options);
+      }()).then(<span class="keyword">function</span>() {
+        <span class="keyword">return</span> sync.query.select(columns);
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Issues an <code>insert</code> command on the query - only used by models.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    insert: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing;
+      <span class="keyword">return</span> <span class="keyword">this</span>.query
+        .insert(syncing.format(_.extend(Object.create(<span class="literal">null</span>), syncing.attributes)), syncing.idAttribute);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Issues an <code>update</code> command on the query - only used by models.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    update: <span class="keyword">function</span>(attrs, options) {
+      <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing, query = <span class="keyword">this</span>.query;
+      attrs = (attrs &amp;&amp; options.patch ? attrs : syncing.attributes);
+      <span class="keyword">if</span> (syncing.id != <span class="literal">null</span>) {
+        query.where(syncing.idAttribute, syncing.id);
+      } <span class="keyword">else</span> <span class="keyword">if</span> (query.wheres.length === <span class="number">0</span>) {
+        <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'At least one where constraint must be specified to update the model.'</span>));
+      }
+      <span class="keyword">return</span> query.update(syncing.format(_.extend(Object.create(<span class="literal">null</span>), attrs)));
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Issues a <code>delete</code> command on the query.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    del: <span class="keyword">function</span>() {
+      <span class="keyword">var</span> wheres, syncing = <span class="keyword">this</span>.syncing;
+      <span class="keyword">if</span> (syncing.id != <span class="literal">null</span>) {
+        wheres = {};
+        wheres[syncing.idAttribute] = syncing.id;
+      }
+      <span class="keyword">if</span> (!wheres &amp;&amp; <span class="keyword">this</span>.query.wheres.length === <span class="number">0</span>) {
+        <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'A model cannot be destroyed without a "where" clause or an idAttribute.'</span>));
+      }
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.where(wheres).del();
+    }
+  });
+
+  exports.Sync = Sync;
+
+});
+
+})(
+  <span class="keyword">typeof</span> define === <span class="string">'function'</span> &amp;&amp; define.amd ? define : <span class="function"><span class="keyword">function</span> <span class="params">(factory)</span> {</span> factory(require, exports, module); }
+);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
