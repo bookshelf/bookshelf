@@ -8,22 +8,31 @@
 
 define(function(require, exports, module) {
 
-  // Initial Setup
-  // -------------
+  // All external dependencies are referenced through a local module,
+  // so that you can modify the `exports` and say... swap out `underscore`
+  // for `lodash` if you really wanted to.
   var Backbone   = require('./lib/ext/backbone').Backbone;
   var _          = require('./lib/ext/underscore')._;
   var Knex       = require('./lib/ext/knex').Knex;
 
-  var Events     = require('./lib/events').Events;
+  // ...as are all local dependencies. These are the main objects that
+  // need to be augmented in the constructor to work properly.
   var Model      = require('./lib/model').Model;
   var Collection = require('./lib/collection').Collection;
   var Relation   = require('./lib/relation').Relation;
 
+  // Finally, the `Events`, which we've supplemented with a `triggerThen`
+  // method to allow for asynchronous event handling via promises. We mix this
+  // into the prototypes of the main objects in the application.
+  var Events     = require('./lib/events').Events;
+
   // Constructor for a new `Bookshelf` object, it accepts
-  // an active `knex` instance and initializes the appropriate `Model`,
-  // `Collection`, and `Eager` constructors for use in the current object.
+  // an active `knex` instance and initializes the appropriate
+  // `Model` and `Collection` constructors for use in the current instance.
   var Bookshelf = function(knex) {
 
+    // Allows you to construct the library with either `Bookshelf(opts)`
+    // or `new Bookshelf(opts)`.
     if (!(this instanceof Bookshelf)) {
       return new Bookshelf(knex);
     }
@@ -34,6 +43,8 @@ define(function(require, exports, module) {
     //   knex = new Knex(knex);
     // }
 
+    // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
+    // mixing in the correct `builder` method, as well as
     var ModelCtor = this.Model = Model.extend({
       builder: function(tableName) {
         return knex(tableName);
@@ -43,17 +54,24 @@ define(function(require, exports, module) {
       }
     });
 
+    // The collection also references the correct `Model`, specified above, for creating
+    // new `Model` instances in the collection. We also extend with the correct builder /
+    // `knex` combo.
     var CollectionCtor = this.Collection = Collection.extend({
-      model: this.Model,
+      model: ModelCtor,
       builder: function(tableName) {
         return knex(tableName);
       }
     });
 
+    // Grab a reference to the `knex` instance passed (or created) in this constructor,
+    // for convenience.
     this.knex = knex;
   };
 
-  // `Bookshelf` may be used as a top-level pub-sub bus.
+  // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
+  // `Events` object. It also contains the version number, and a `Transaction` method
+  // referencing the correct version of `knex` passed into the object.
   _.extend(Bookshelf.prototype, Events, {
 
     // Keep in sync with `package.json`.
@@ -62,14 +80,18 @@ define(function(require, exports, module) {
     // Wrap a series of Bookshelf actions in a `knex` transaction block;
     Transaction: function() {
       return this.knex.transaction.apply(this, arguments);
+    },
+
+    // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
+    // injecting the current instance into the plugin, which should be a module.exports.
+    plugin: function(plugin) {
+      plugin(this);
+      return this;
     }
 
   });
 
-  // Set up inheritance for the model and collection.
-  Model.extend = Collection.extend = Backbone.Model.extend;
-
-  // The `forge` function properly instantiates a new Model or Collection
+  // The `forge` function properly instantiates a new `Model` or `Collection`
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
   Model.forge = Collection.forge = function() {
@@ -78,6 +100,7 @@ define(function(require, exports, module) {
     return (Object(obj) === obj ? obj : inst);
   };
 
+  // Finally, export `Bookshelf` to the world.
   module.exports = Bookshelf;
 
 });

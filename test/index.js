@@ -33,33 +33,34 @@ describe('Bookshelf', function() {
 
 });
 
-// describe('Plugins', function() {
+describe('Plugins', function() {
 
-//   describe('exec', function() {
+  describe('exec', function() {
 
-//     it('adds `then` and `exec` to all sync methods', function() {
+    it('adds `then` and `exec` to all sync methods', function() {
 
-//       require('../plugins/exec');
+      var Main = Bookshelf(MySQL);
+          Main.plugin(require('../plugins/exec'));
 
-//       var model = new Bookshelf.Model();
-//       var collection = new Bookshelf.Collection();
+      var model = new Main.Model();
+      var collection = new Main.Collection();
 
-//       _.each(['load', 'fetch', 'save', 'destroy'], function(method) {
-//         var fn = model[method]();
-//         if (!_.isFunction(fn.then) || !_.isFunction(fn.exec)) {
-//           throw new Error('then and exec are not both defined');
-//         }
-//       });
+      _.each(['load', 'fetch', 'save', 'destroy'], function(method) {
+        var fn = model[method]();
+        if (!_.isFunction(fn.then) || !_.isFunction(fn.exec)) {
+          throw new Error('then and exec are not both defined');
+        }
+      });
 
-//       _.each(['load', 'fetch'], function(method) {
-//         var fn = collection[method]();
-//         if (!_.isFunction(fn.then) || !_.isFunction(fn.exec)) {
-//           throw new Error('then and exec are not both defined');
-//         }
-//       });
+      _.each(['load', 'fetch'], function(method) {
+        var fn = collection[method]();
+        if (!_.isFunction(fn.then) || !_.isFunction(fn.exec)) {
+          throw new Error('then and exec are not both defined');
+        }
+      });
 
-//     });
+    });
 
-//   });
+  });
 
-// });
+});
