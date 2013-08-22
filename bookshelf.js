@@ -17,7 +17,6 @@ define(function(require, exports, module) {
   var Events     = require('./lib/events').Events;
   var Model      = require('./lib/model').Model;
   var Collection = require('./lib/collection').Collection;
-  var Eager      = require('./lib/eager').Eager;
 
   // Constructor for a new `Bookshelf` object, it accepts
   // an active `knex` instance and initializes the appropriate `Model`,
@@ -47,12 +46,6 @@ define(function(require, exports, module) {
       }
     });
 
-    this.Eager = Eager.extend({
-      builder: function(tableName) {
-        return knex(tableName);
-      }
-    });
-
     this.knex = knex;
   };
 
@@ -70,7 +63,7 @@ define(function(require, exports, module) {
   });
 
   // Set up inheritance for the model and collection.
-  Model.extend = Collection.extend = Eager.extend = Backbone.Model.extend;
+  Model.extend = Collection.extend = Backbone.Model.extend;
 
   // The `forge` function properly instantiates a new Model or Collection
   // without needing the `new` operator... to make object creation cleaner
