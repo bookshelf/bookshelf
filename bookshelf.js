@@ -478,7 +478,7 @@
       var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
       var vals = {};
       vals[keys[1]] = d;
-      if (this.isNew(options)) vals[keys[0]] = d;
+      if (this.isNew(options) && (!options || options.method !== 'update')) vals[keys[0]] = d;
       return vals;
     },
 
@@ -968,9 +968,11 @@
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
       var syncing = this.syncing.resetQuery();
-      return this.query
-        .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(syncing.attributes)));
+      var query = this.query;
+      if (syncing.id != null) {
+        query.where(syncing.idAttribute, syncing.id);
+      }
+      return query.update(syncing.format(extendNull(syncing.attributes)));
     },
 
     // Issues a `delete` command on the query.
