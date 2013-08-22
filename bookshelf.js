@@ -1277,7 +1277,7 @@ define(function(require, exports, module) {
     if (args.length === 0) return obj._knex;
     var method = args[0];
     if (_.isFunction(method)) {
-      method.apply(obj._knex, obj._knex);
+      method.call(obj._knex, obj._knex);
     } else if (_.isObject(method)) {
       for (var key in method) {
         var target = _.isArray(method[key]) ?  method[key] : [method[key]];
