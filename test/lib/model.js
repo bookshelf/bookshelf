@@ -127,6 +127,22 @@ module.exports = function(Bookshelf, handler) {
       equal(qb.wheres.length, 2);
     });
 
+    it('allows passing an function to query', function() {
+      var qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      var q = model.query(function(qb) {
+        this.where({id: 1}).orWhere('id', '>', '10');
+      });
+      equal(q, model);
+      equal(qb.wheres.length, 2);
+      qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      q = model.query(function(qb) {
+        qb.where({id: 1}).orWhere('id', '>', '10');
+      });
+      equal(q, model);
+      equal(qb.wheres.length, 2);
+    });
 
   });
 
@@ -297,7 +313,27 @@ module.exports = function(Bookshelf, handler) {
       }).then(null, ok);
     });
 
-    it('allows for partial updates, with `patch: true`');
+    it('does not constrain on the `id` during update unless defined', function(ok) {
+
+      var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
+      var query = m.query();
+      query.update = function() {
+        equal(this.wheres.length, 1);
+        return When.resolve({});
+      };
+      m.save(null, {method: 'update'}).then(function() {
+
+        var m2 = new Bookshelf.Model({id: 1}).query({where: {uuid: 'testing'}});
+        var query2 = m2.query();
+        query2.update = function() {
+          equal(this.wheres.length, 2);
+          ok();
+        };
+        m2.save(null, {method: 'update'});
+
+      });
+
+    });
 
   });
 
@@ -404,6 +440,18 @@ module.exports = function(Bookshelf, handler) {
         return stubSync;
       };
       m.save({item: 'test'});
+    });
+
+    it('does not set created_at when {method: "update"} is passed', function(ok) {
+      var m = new Bookshelf.Model(null, {hasTimestamps: true});
+      m.sync = function() {
+        equal(this.get('item'), 'test');
+        equal(_.isDate(this.get('created_at')), false);
+        equal(_.isDate(this.get('updated_at')), true);
+        ok();
+        return stubSync;
+      };
+      m.save({item: 'test'}, {method: 'update'});
     });
 
   });

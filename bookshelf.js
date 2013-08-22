@@ -340,7 +340,7 @@ define(function(require, exports, module) {
       var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
       var vals = {};
       vals[keys[1]] = d;
-      if (this.isNew(options)) vals[keys[0]] = d;
+      if (this.isNew(options) && (!options || options.method !== 'update')) vals[keys[0]] = d;
       return vals;
     },
 
@@ -859,11 +859,10 @@ define(function(require, exports, module) {
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      var syncing = this.syncing;
+      var syncing = this.syncing, query = this.query;
       attrs = (attrs && options.patch ? attrs : syncing.attributes);
-      return this.query
-        .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(_.extend(Object.create(null), attrs)));
+      if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+      return query.update(syncing.format(_.extend(Object.create(null), attrs)));
     },
 
     // Issues a `delete` command on the query.
