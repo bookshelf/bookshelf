@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.2.5
+              <pre><code>Bookshelf.js 0.2.7
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -130,7 +130,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.5'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.7'</span>;</pre></div></div>
             
         </li>
         
@@ -1106,7 +1106,7 @@ unless <code>{shallow: true}</code> is passed in the <code>options</code>.</p>
       <span class="keyword">var</span> keys = (_.isArray(<span class="keyword">this</span>.hasTimestamps) ? <span class="keyword">this</span>.hasTimestamps : [<span class="string">'created_at'</span>, <span class="string">'updated_at'</span>]);
       <span class="keyword">var</span> vals = {};
       vals[keys[<span class="number">1</span>]] = d;
-      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options)) vals[keys[<span class="number">0</span>]] = d;
+      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options) &amp;&amp; (!options || options.method !== <span class="string">'update'</span>)) vals[keys[<span class="number">0</span>]] = d;
       <span class="keyword">return</span> vals;
     },</pre></div></div>
             
@@ -2180,9 +2180,11 @@ isn&#39;t an eager load.</p>
             
             <div class="content"><div class='highlight'><pre>    update: <span class="keyword">function</span>(attrs, options) {
       <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing.resetQuery();
-      <span class="keyword">return</span> <span class="keyword">this</span>.query
-        .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(syncing.attributes)));
+      <span class="keyword">var</span> query = <span class="keyword">this</span>.query;
+      <span class="keyword">if</span> (syncing.id != <span class="literal">null</span>) {
+        query.where(syncing.idAttribute, syncing.id);
+      }
+      <span class="keyword">return</span> query.update(syncing.format(extendNull(syncing.attributes)));
     },</pre></div></div>
             
         </li>

@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.2.6
+//     Bookshelf.js 0.2.7
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -27,7 +27,7 @@
   require('trigger-then')(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.2.6';
+  Bookshelf.VERSION = '0.2.7';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
