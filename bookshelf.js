@@ -17,6 +17,7 @@ define(function(require, exports, module) {
   var Events     = require('./lib/events').Events;
   var Model      = require('./lib/model').Model;
   var Collection = require('./lib/collection').Collection;
+  var Relation   = require('./lib/relation').Relation;
 
   // Constructor for a new `Bookshelf` object, it accepts
   // an active `knex` instance and initializes the appropriate `Model`,
@@ -33,13 +34,16 @@ define(function(require, exports, module) {
     //   knex = new Knex(knex);
     // }
 
-    this.Model = Model.extend({
+    var ModelCtor = this.Model = Model.extend({
       builder: function(tableName) {
         return knex(tableName);
+      },
+      relation: function(type, Target, options) {
+        return new Relation(type, Target, options, ModelCtor, CollectionCtor);
       }
     });
 
-    this.Collection = Collection.extend({
+    var CollectionCtor = this.Collection = Collection.extend({
       model: this.Model,
       builder: function(tableName) {
         return knex(tableName);
