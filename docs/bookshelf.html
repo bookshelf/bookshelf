@@ -221,7 +221,7 @@ methods, and the values are the arguments for the query.</p>
       <span class="keyword">if</span> (args.length === <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">this</span>._builder;
       <span class="keyword">var</span> method = args[<span class="number">0</span>];
       <span class="keyword">if</span> (_.isFunction(method)) {
-        method.apply(<span class="keyword">this</span>._builder, <span class="keyword">this</span>._builder);
+        method.call(<span class="keyword">this</span>._builder, <span class="keyword">this</span>._builder);
       } <span class="keyword">else</span> <span class="keyword">if</span> (_.isObject(method)) {
         <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> method) {
           <span class="keyword">var</span> target = _.isArray(method[key]) ?  method[key] : [method[key]];
