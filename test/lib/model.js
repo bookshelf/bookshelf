@@ -127,6 +127,23 @@ module.exports = function(Bookshelf, handler) {
       equal(qb.wheres.length, 2);
     });
 
+    it('allows passing an function to query', function() {
+      var qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      var q = model.query(function(qb) {
+        this.where({id: 1}).orWhere('id', '>', '10');
+      });
+      equal(q, model);
+      equal(qb.wheres.length, 2);
+      qb = model.resetQuery().query();
+      equal(qb.wheres.length, 0);
+      q = model.query(function(qb) {
+        qb.where({id: 1}).orWhere('id', '>', '10');
+      });
+      equal(q, model);
+      equal(qb.wheres.length, 2);
+    });
+
 
   });
 
