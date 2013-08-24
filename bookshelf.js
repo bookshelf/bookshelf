@@ -11,7 +11,6 @@ define(function(require, exports, module) {
   // All external dependencies are referenced through a local module,
   // so that you can modify the `exports` and say... swap out `underscore`
   // for `lodash` if you really wanted to.
-  var Backbone   = require('./lib/ext/backbone').Backbone;
   var _          = require('./lib/ext/underscore')._;
   var Knex       = require('./lib/ext/knex').Knex;
 
