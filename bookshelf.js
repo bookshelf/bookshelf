@@ -411,7 +411,10 @@
         model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
         model.triggerThen('saving', model, attrs, options)
       ])
-      .then(function() { return sync[method](attrs, options); })
+      .then(function() {
+        var attrs = model.attributes;
+        return sync[method](attrs, options);
+      })
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
@@ -958,34 +961,35 @@
     },
 
     // Issues an `insert` command on the query - only used by models.
-    insert: function() {
+    insert: function(attrs) {
       var syncing = this.syncing.resetQuery();
       return this.query
         .idAttribute(syncing.idAttribute)
-        .insert(syncing.format(extendNull(syncing.attributes)));
+        .insert(syncing.format(extendNull(attrs)));
     },
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs, options) {
-      var syncing = this.syncing.resetQuery();
-      var query = this.query;
+      var query = this.query, syncing = this.syncing.resetQuery();
       if (syncing.id != null) {
         query.where(syncing.idAttribute, syncing.id);
       }
-      return query.update(syncing.format(extendNull(syncing.attributes)));
+      if (query.wheres.length === 0) {
+        return when.reject(new Error('A model cannot be updated without a "where" clause or an idAttribute.'));
+      }
+      return query.update(syncing.format(extendNull(attrs)));
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var wheres, syncing = this.syncing.resetQuery();
+      var query = this.query, syncing = this.syncing.resetQuery();
       if (syncing.id != null) {
-        wheres = {};
-        wheres[syncing.idAttribute] = syncing.id;
+        query.where(syncing.idAttribute, syncing.id);
       }
-      if (!wheres && this.query.wheres.length === 0) {
+      if (query.wheres.length === 0) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
-      return this.query.where(wheres).del();
+      return this.query.del();
     }
   });
 
