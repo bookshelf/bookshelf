@@ -22,7 +22,7 @@
   "dependencies": {
     "backbone": "~1.0.0",
     "inflection": "~1.2.x",
-    "when": "~2.2.1",
+    "when": "~2.3.0",
     "trigger-then": "~0.1.1",
     "underscore": "~1.5.1",
     "knex": "~0.2.0"
@@ -30,7 +30,7 @@
   "devDependencies": {
     "mocha": "~1.12.0",
     "mysql": "~2.0.0-alpha7",
-    "pg": "~2.3.0",
+    "pg": "~2.4.0",
     "sqlite3": "~2.1.7",
     "objectdump": "~0.3.0",
     "underscore.string": "~2.3.1",
