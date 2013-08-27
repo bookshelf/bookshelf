@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.2.5)</span>
+      Bookshelf.js <span class="version">(0.3.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -357,6 +357,7 @@
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
       <li>– <a href="#Collection-fetch">fetch</a></li>
+      <li>– <a href="#Collection-fetchOne">fetchOne</a></li>
       <li>– <a href="#Collection-load">load</a></li>
       <li>– <a href="#Collection-create">create</a></li>
       <li>– <a href="#Collection-parse">parse</a></li>
@@ -431,7 +432,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.2.5</h3>
+    <h3>Latest Release: 0.3.0</h3>
 
     <p>
       Current Develop &mdash;
@@ -1222,9 +1223,9 @@ new Photo({id: 1}).fetch({
     <p id="Model-relatedData">
       <b class="header">relatedData</b><code>model.relatedData</code>
       <br />
-      The <b>relatedData</b> is a hash of information about the current model's relation, including the
-      <tt>type</tt>, <tt>foreignKey</tt>, <tt>fkValue</tt>, and other relationship information depending
-      on the relation type.
+      The <b>relatedData</b> is an internal "Relation" object of information about the current model's relation,
+      including the <tt>type</tt>, <tt>foreignKey</tt>, <tt>fkValue</tt>, and other data depending
+      on the relation type. Mainly for use internally, but possibly helpful for custom behavior.
     </p>
 
     <p id="Model-save">
@@ -1616,6 +1617,25 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       event will be fired when records are successfully retrieved.
     </p>
 
+    <p id="Collection-fetchOne">
+      <b class="header">fetchOne</b><code>collection.fetchOne([options])</code>
+      <br />
+      Fetch and return a single model from the collection, maintaining any relation data from the collection,
+      and any query parameters that have already been passed to the collection. Especially helpful on relations,
+      where you would only like to return a single model from the associated collection.
+    </p>
+
+<pre>
+// select * from authors where site_id = 1 and id = 2 limit 1;
+new Site({id:1})
+  .authors()
+  .query({where: {id: 2}})
+  .fetchOne()
+  .then(function(model) {
+    ... //
+  });
+</pre>
+
     <p id="Collection-load">
       <b class="header">load</b><code>collection.load(relations, options).then(function(collection) {...</code>
       <br />
@@ -1991,6 +2011,23 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.2.8</b> &mdash; <small><i>August 26, 2013</i></small><br />
+      Some minor fixes to make the <tt>Sync</tt> methods more consistent in their behavior when called
+      directly, (#53).
+    </p>
+
+    <p>
+      <b class="header">0.2.7</b> &mdash; <small><i>August 21, 2013</i></small><br />
+      Timestamp for <tt>created_at</tt> is not set during an "update" query, and the update
+      where clause does not include the <tt>idAttribute</tt> if it isn't present (#51).
+    </p>
+
+    <p>
+      <b class="header">0.2.6</b> &mdash; <small><i>August 21, 2013</i></small><br />
+      Fixes bug with query function feature added in <tt>0.2.5</tt>, mentioned in (#51).
+    </p>
 
     <p>
       <b class="header">0.2.5</b> &mdash; <small><i>August 19, 2013</i></small><br />

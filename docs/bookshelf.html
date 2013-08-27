@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <pre><code>Bookshelf.js 0.2.5
+              <pre><code>Bookshelf.js 0.2.8
 
 (c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
@@ -130,7 +130,7 @@ so we can have event driven async validations, functions, etc.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.5'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  Bookshelf.VERSION = <span class="string">'0.2.8'</span>;</pre></div></div>
             
         </li>
         
@@ -221,7 +221,7 @@ methods, and the values are the arguments for the query.</p>
       <span class="keyword">if</span> (args.length === <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">this</span>._builder;
       <span class="keyword">var</span> method = args[<span class="number">0</span>];
       <span class="keyword">if</span> (_.isFunction(method)) {
-        method.apply(<span class="keyword">this</span>._builder, <span class="keyword">this</span>._builder);
+        method.call(<span class="keyword">this</span>._builder, <span class="keyword">this</span>._builder);
       } <span class="keyword">else</span> <span class="keyword">if</span> (_.isObject(method)) {
         <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> method) {
           <span class="keyword">var</span> target = _.isArray(method[key]) ?  method[key] : [method[key]];
@@ -967,7 +967,10 @@ rather than during object creation.</p>
         model.triggerThen((method === <span class="string">'insert'</span> ? <span class="string">'creating'</span> : <span class="string">'updating'</span>), model, attrs, options),
         model.triggerThen(<span class="string">'saving'</span>, model, attrs, options)
       ])
-      .then(<span class="keyword">function</span>() { <span class="keyword">return</span> sync[method](attrs, options); })
+      .then(<span class="keyword">function</span>() {
+        <span class="keyword">var</span> attrs = model.attributes;
+        <span class="keyword">return</span> sync[method](attrs, options);
+      })
       .then(<span class="keyword">function</span>(resp) {</pre></div></div>
             
         </li>
@@ -1106,7 +1109,7 @@ unless <code>{shallow: true}</code> is passed in the <code>options</code>.</p>
       <span class="keyword">var</span> keys = (_.isArray(<span class="keyword">this</span>.hasTimestamps) ? <span class="keyword">this</span>.hasTimestamps : [<span class="string">'created_at'</span>, <span class="string">'updated_at'</span>]);
       <span class="keyword">var</span> vals = {};
       vals[keys[<span class="number">1</span>]] = d;
-      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options)) vals[keys[<span class="number">0</span>]] = d;
+      <span class="keyword">if</span> (<span class="keyword">this</span>.isNew(options) &amp;&amp; (!options || options.method !== <span class="string">'update'</span>)) vals[keys[<span class="number">0</span>]] = d;
       <span class="keyword">return</span> vals;
     },</pre></div></div>
             
@@ -2158,11 +2161,11 @@ isn&#39;t an eager load.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    insert: <span class="keyword">function</span>() {
+            <div class="content"><div class='highlight'><pre>    insert: <span class="keyword">function</span>(attrs) {
       <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing.resetQuery();
       <span class="keyword">return</span> <span class="keyword">this</span>.query
         .idAttribute(syncing.idAttribute)
-        .insert(syncing.format(extendNull(syncing.attributes)));
+        .insert(syncing.format(extendNull(attrs)));
     },</pre></div></div>
             
         </li>
@@ -2179,10 +2182,14 @@ isn&#39;t an eager load.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    update: <span class="keyword">function</span>(attrs, options) {
-      <span class="keyword">var</span> syncing = <span class="keyword">this</span>.syncing.resetQuery();
-      <span class="keyword">return</span> <span class="keyword">this</span>.query
-        .where(syncing.idAttribute, syncing.id)
-        .update(syncing.format(extendNull(syncing.attributes)));
+      <span class="keyword">var</span> query = <span class="keyword">this</span>.query, syncing = <span class="keyword">this</span>.syncing.resetQuery();
+      <span class="keyword">if</span> (syncing.id != <span class="literal">null</span>) {
+        query.where(syncing.idAttribute, syncing.id);
+      }
+      <span class="keyword">if</span> (query.wheres.length === <span class="number">0</span>) {
+        <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'A model cannot be updated without a "where" clause or an idAttribute.'</span>));
+      }
+      <span class="keyword">return</span> query.update(syncing.format(extendNull(attrs)));
     },</pre></div></div>
             
         </li>
@@ -2199,15 +2206,14 @@ isn&#39;t an eager load.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    del: <span class="keyword">function</span>() {
-      <span class="keyword">var</span> wheres, syncing = <span class="keyword">this</span>.syncing.resetQuery();
+      <span class="keyword">var</span> query = <span class="keyword">this</span>.query, syncing = <span class="keyword">this</span>.syncing.resetQuery();
       <span class="keyword">if</span> (syncing.id != <span class="literal">null</span>) {
-        wheres = {};
-        wheres[syncing.idAttribute] = syncing.id;
+        query.where(syncing.idAttribute, syncing.id);
       }
-      <span class="keyword">if</span> (!wheres &amp;&amp; <span class="keyword">this</span>.query.wheres.length === <span class="number">0</span>) {
+      <span class="keyword">if</span> (query.wheres.length === <span class="number">0</span>) {
         <span class="keyword">return</span> when.reject(<span class="keyword">new</span> Error(<span class="string">'A model cannot be destroyed without a "where" clause or an idAttribute.'</span>));
       }
-      <span class="keyword">return</span> <span class="keyword">this</span>.query.where(wheres).del();
+      <span class="keyword">return</span> <span class="keyword">this</span>.query.del();
     }
   });</pre></div></div>
             

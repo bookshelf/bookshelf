@@ -118,6 +118,45 @@ module.exports = function(Bookshelf, handler) {
 
   });
 
+  describe('fetchOne', function() {
+
+    it ('fetches a single model from the collection', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .fetchOne()
+        .then(function(model) {
+          model.get('site_id', 1);
+          ok();
+        }, ok);
+    });
+
+    it ('maintains a clone of the query builder from the current collection', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .query({where: {id: 40}})
+        .fetchOne()
+        .then(function(model) {
+          if (model === null) {
+            ok();
+          }
+        }, ok);
+    });
+
+    it ('follows the typical model options, like require: true', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .query({where: {id: 40}})
+        .fetchOne({require: true})
+        .then(null, function() {
+          ok();
+        });
+    });
+
+  });
+
   describe('sync', function() {
 
     it('creates a new instance of Bookshelf.Sync', function(){
@@ -182,12 +221,6 @@ module.exports = function(Bookshelf, handler) {
         });
 
     });
-
-  });
-
-  describe('parse', function() {
-
-    it('parses a new model instance, saving it to the collection');
 
   });
 

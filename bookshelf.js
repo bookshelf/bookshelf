@@ -542,6 +542,7 @@ define(function(require, exports, module) {
     // Fetches a single model from the collection, useful on related collections.
     fetchOne: function(options) {
       var model = new this.model;
+      model._knex = this.query().clone();
       if (this.relatedData) model.relatedData = this.relatedData;
       return model.fetch(options);
     },
