@@ -4,10 +4,12 @@
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
-(function(define) { "use strict";
+(function(define) {
+
+"use strict";
 
 // UMD Module setup
-define(function(require, exports, module) {
+define(function(require, exports) {
 
   // Initial Setup
   // -------------
@@ -182,7 +184,7 @@ define(function(require, exports, module) {
     // defined as the last "sync"'ed state of the model.
     set: function(key, val, options) {
       if (key == null) return this;
-      var attrs, changing;
+      var attrs;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (typeof key === 'object') {
@@ -1122,7 +1124,7 @@ define(function(require, exports, module) {
     // Check that there isn't an incorrect foreign key set, vs. the one
     // passed in when the relation was formed.
     whereClauses: function(knex, resp) {
-      var key, keyed;
+      var key;
 
       if (this.isJoined()) {
         var targetTable = this.type === 'belongsTo' ? this.parentTableName : this.joinTable();
@@ -1203,8 +1205,8 @@ define(function(require, exports, module) {
       if (this.isJoined()) related = this.parsePivot(related);
 
       var grouped = _.groupBy(related, function(model) {
-        return this.isSingle() ? model.id : (model.pivot
-          ? model.pivot.get(this.key('foreignKey')) : model.get(this.key('foreignKey')));
+        return this.isSingle() ? model.id : (model.pivot ?
+          model.pivot.get(this.key('foreignKey')) : model.get(this.key('foreignKey')));
       }, this);
 
       for (var i = 0, l = models.length; i < l; i++) {
@@ -1374,8 +1376,9 @@ define(function(require, exports, module) {
   // The main Bookshelf `instanceName`... incase we're using Bookshelf
   // after `Knex` has been initialized, for consistency.
   Bookshelf.instanceName = 'main';
+
 });
 
 })(
-  typeof define === 'function' && define.amd ? define : function (factory) { factory(require, exports, module); }
+  typeof define === 'function' && define.amd ? define : function (factory) { factory(require, exports); }
 );
