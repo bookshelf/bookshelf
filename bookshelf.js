@@ -1033,13 +1033,14 @@ define(function(require, exports) {
         this.parentFk = this.parentId;
       }
 
-      // Set the appropriate foreign & other keys if we're doing a belongsToMany,
-      // for convenience.
+      _.extend(this, options);
+      _.extend(source, Bookshelf.pivotHelpers);
+
+      // Set the appropriate foreign key if we're doing a belongsToMany, for convenience.
       if (this.type === 'belongsToMany') {
         this.foreignKey = this.throughForeignKey;
       }
-      _.extend(this, options);
-      _.extend(source, Bookshelf.pivotHelpers);
+
       return source;
     },
 

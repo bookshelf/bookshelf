@@ -436,10 +436,10 @@ module.exports = {
       postgres: {
         id: 3,
         name: 'backbonejs.org',
-        blogs: [],
         meta: {
         
         },
+        blogs: [],
         authors: []
       },
       sqlite3: {
@@ -1065,35 +1065,6 @@ module.exports = {
       postgres: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog',
-          posts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          },{
-            id: 3,
-            owner_id: 2,
-            blog_id: 1,
-            name: 'This is a new Title 3!',
-            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }]
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog',
-          posts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
-          }]
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1131,6 +1102,35 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title 3!',
             content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          posts: [{
+            id: 1,
+            owner_id: 1,
+            blog_id: 1,
+            name: 'This is a new Title!',
+            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
+          },{
+            id: 3,
+            owner_id: 2,
+            blog_id: 1,
+            name: 'This is a new Title 3!',
+            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }]
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          posts: [{
+            id: 2,
+            owner_id: 2,
+            blog_id: 2,
+            name: 'This is a new Title 2!',
+            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
           }]
         }]
       },
@@ -1414,15 +1414,6 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1441,6 +1432,15 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
@@ -2348,6 +2348,188 @@ module.exports = {
           _pivot_id: 2,
           _pivot_site_id: 2
         }
+      }]
+    },
+    'relations.32 - eager loads belongsToMany `through`': {
+      mysql: [{
+        id: 1,
+        site_id: 1,
+        first_name: 'Tim',
+        last_name: 'Griesser',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 1,
+          _pivot_owner_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        first_name: 'Bazooka',
+        last_name: 'Joe',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 3,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 1
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          _pivot_id: 2,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 2
+        }]
+      },{
+        id: 3,
+        site_id: 2,
+        first_name: 'Charlie',
+        last_name: 'Brown',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog',
+          _pivot_id: 4,
+          _pivot_owner_id: 3,
+          _pivot_blog_id: 3
+        }]
+      },{
+        id: 4,
+        site_id: 2,
+        first_name: 'Ron',
+        last_name: 'Burgundy',
+        blogs: [{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog',
+          _pivot_id: 5,
+          _pivot_owner_id: 4,
+          _pivot_blog_id: 4
+        }]
+      }],
+      postgres: [{
+        id: 1,
+        site_id: 1,
+        first_name: 'Tim',
+        last_name: 'Griesser',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 1,
+          _pivot_owner_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        first_name: 'Bazooka',
+        last_name: 'Joe',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 3,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 1
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          _pivot_id: 2,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 2
+        }]
+      },{
+        id: 3,
+        site_id: 2,
+        first_name: 'Charlie',
+        last_name: 'Brown',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog',
+          _pivot_id: 4,
+          _pivot_owner_id: 3,
+          _pivot_blog_id: 3
+        }]
+      },{
+        id: 4,
+        site_id: 2,
+        first_name: 'Ron',
+        last_name: 'Burgundy',
+        blogs: [{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog',
+          _pivot_id: 5,
+          _pivot_owner_id: 4,
+          _pivot_blog_id: 4
+        }]
+      }],
+      sqlite3: [{
+        id: 1,
+        site_id: 1,
+        first_name: 'Tim',
+        last_name: 'Griesser',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 1,
+          _pivot_owner_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        first_name: 'Bazooka',
+        last_name: 'Joe',
+        blogs: [{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          _pivot_id: 2,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 2
+        },{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog',
+          _pivot_id: 3,
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 3,
+        site_id: 2,
+        first_name: 'Charlie',
+        last_name: 'Brown',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog',
+          _pivot_id: 4,
+          _pivot_owner_id: 3,
+          _pivot_blog_id: 3
+        }]
+      },{
+        id: 4,
+        site_id: 2,
+        first_name: 'Ron',
+        last_name: 'Burgundy',
+        blogs: [{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog',
+          _pivot_id: 5,
+          _pivot_owner_id: 4,
+          _pivot_blog_id: 4
+        }]
       }]
     }
   }
