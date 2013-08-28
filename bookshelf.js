@@ -8,7 +8,6 @@
 
 "use strict";
 
-// UMD Module setup
 define(function(require, exports) {
 
   // Initial Setup
@@ -144,6 +143,7 @@ define(function(require, exports) {
         .first()
         .then(function(response) {
           if (response && response.length > 0) {
+
             // Todo: {silent: true, parse: true}, for parity with collection#set
             // need to check on Backbone's status there, ticket #2636
             model.set(model.parse(response[0]), {silent: true})._reset();
@@ -270,7 +270,7 @@ define(function(require, exports) {
         model.triggerThen('saving', model, attrs, options)
       ])
       .then(function() {
-        return sync[options.method](attrs && options.patch ? attrs : model.attributes);
+        return sync[options.method](method === 'update' && options.patch ? attrs : model.attributes);
       })
       .then(function(resp) {
 
@@ -572,6 +572,13 @@ define(function(require, exports) {
       var type        = relatedData.type;
 
       model = this._prepareModel(model, options);
+
+      // If we've already added things on the query chain,
+      // these are likely intended for the model.
+      if (this._knex) {
+        model._knex = this._knex;
+        this.resetQuery();
+      }
 
       return relatedData
         .saveConstraints(model, this)
@@ -1062,8 +1069,8 @@ define(function(require, exports) {
       // The base select column
       if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
         knex.columns.push(this.isJoined() ? this.targetTableName + '.*' : '*');
-      } else {
-        // TODO
+      } else if (_.isArray(options.columns) && options.columns.length > 0) {
+        push.apply(knex.columns, options.columns);
       }
 
       // The `belongsToMany` and `through` relations have joins & pivot columns.

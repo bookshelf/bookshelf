@@ -1007,15 +1007,52 @@ var User = Bookshelf.Model.extend({
       The default key names in the joining table are the singular version of the table name, followed by <tt>_id</tt>.
       So in the above case, the columns in the joining table would be <tt>account_id</tt>, <tt>user_id</tt>, and
       <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts.
+      If you wish to create a <tt>belongsToMany</tt> association where the joining table has a primary key, and
+      more information about the model, you may create a belongsToMany <a href="#Model-through">through</a> relation:
     </p>
 
+<pre>
+var Doctor = Bookshelf.Model.extend({
+
+  patients: function() {
+    return this.belongsToMany(Patient).through(Appointment);
+  }
+
+});
+
+var Appointment = Bookshelf.Model.extend({
+
+  patient: function() {
+    return this.belongsTo(Patient);
+  },
+
+  doctor: function() {
+    return this.belongsTo(Doctor);
+  }
+
+});
+
+var Patient = Bookshelf.Model.extend({
+
+  doctors: function() {
+    return this.belongsToMany(Doctor).through(Appointment);
+  }
+
+});
+
+</pre>
+
     <p id="Model-through">
-      <b class="header">through</b><code>model.hasMany(Target).through(JoinModel)</code>
+      <b class="header">through</b><code>model.hasMany(Target).through(JoinModel, [foreignKey], [otherKey])</code>
       <br />
       The <tt>through</tt> method helps to create dynamic relations between models &amp; collections, where a
       <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>, <a href="#Model-belongsTo">belongsTo</a>,
-      or <a href="#Model-belongsToMany">belongsToMany</a> relation may run <tt>through</tt> a <b>JoinModel</b>. A good example
-      of where this would be useful is if a book <tt>hasMany</tt> paragraphs <tt>through</tt> chapters. Consider the following examples:
+      or <a href="#Model-belongsToMany">belongsToMany</a> relation may run <tt>through</tt> a <b>JoinModel</b>.
+    </p>
+
+    <p>
+      A good example of where this would be useful is if a book <tt>hasMany</tt> paragraphs <tt>through</tt>
+      chapters. Consider the following examples:
     </p>
 
 <pre>
@@ -1037,12 +1074,6 @@ var Chapter = Bookshelf.Model.extend({
 
   paragraphs: function() {
     return this.hasMany(Paragraph);
-  },
-
-  // keywords are tagged to a paragraph, but may be aggregated
-  // for this chapter.
-  keywords: function() {
-    return this.belongsToMany(Keyword).through(Paragraph);
   }
 
 });
@@ -1053,25 +1084,9 @@ var Paragraph = Bookshelf.Model.extend({
     return this.belongsTo(Chapter);
   },
 
-  keywords: function() {
-    return this.belongsToMany(Keyword);
-  },
-
   // A reverse relation, where we can get the book from the chapter.
   book: function() {
     return this.belongsTo(Book).through(Chapter);
-  }
-
-});
-
-var Keyword = Bookshelf.Model.extend({
-
-  paragraphs: function() {
-    return this.belongsToMany(Paragraph);
-  },
-
-  chapters: function() {
-    return this.belongsToMany(Chapter).through(Paragraph);
   }
 
 });
@@ -1192,12 +1207,14 @@ var Photo = Bookshelf.Model.extend({
 </pre>
 
     <p id="Model-morphOne">
-      <b class="header">morphOne</b><code>model.morphOne(Target, name)</code>
+      <b class="header">morphOne</b><code>model.morphOne(Target, name, [morphValue])</code>
       <br />
       The <b>morphOne</b> is used to signify a polymorphic relation with another <b>Target</b> model,
       where the <b>name</b> of the model is used to determine which database table keys are used.
       The naming convention requires the <tt>name</tt> prefix an <tt>_id</tt> and <tt>_type</tt> field in
       the database. So for the case above the table names would be <tt>imageable_type</tt> and <tt>imageable_id</tt>.
+      The <b>morphValue</b> may be optionally set to store/retrieve a different value in the <tt>_type</tt>
+      column than the <a href="#Model-tableName">tableName</a>.
     </p>
 
 <pre>
@@ -1210,10 +1227,11 @@ var Site = Bookshelf.Model.extend({
 </pre>
 
     <p id="Model-morphMany">
-      <b class="header">morphMany</b><code>model.morphMany(Target, name)</code>
+      <b class="header">morphMany</b><code>model.morphMany(Target, name, [morphValue])</code>
       <br />
       The <b>morphMany</b> property is essentially the same as a morphOne, but creating a collection rather than a
-      model (similar to a hasOne vs. hasMany relation).
+      model (similar to a hasOne vs. hasMany relation). The <b>morphValue</b> may be optionally set to store/retrieve
+      a different value in the <tt>_type</tt> column than the <a href="#Model-tableName">tableName</a>.
     </p>
 
 <pre>
@@ -1229,7 +1247,7 @@ var Post = Bookshelf.Model.extend({
       <b class="header">morphTo</b><code>model.morphTo(name, targets*)</code>
       <br />
       The <b>morphTo</b> relation is used to specify the inverse of the "morphOne" or "morphMany" relations,
-      where the <b>targets</b> must be passed to signify which models are the potential opposite end of the
+      where the <b>targets</b> (constructors) must be passed to signify which models are the potential opposite end of the
       polymorphic relation.
     </p>
 
@@ -1309,6 +1327,20 @@ new Photo({id: 1}).fetch({
 new Post({name: 'New Article'}).save().then(function(model) {
   // ...
 });
+</pre>
+
+    <p>
+      If you only wish to update with the <b>params</b> passed to the <tt>save</tt>, you may pass
+      a <tt>{patch: true}</tt> flag to the database:
+    </p>
+
+<pre>
+// update authors set "bio" = 'Short user bio' where "id" = 1
+new Author({id: 1, first_name: 'User'})
+  .save({bio: 'Short user bio'}, {patch: true})
+  .then(function(model) {
+    // ...
+  });
 </pre>
 
     <p>
@@ -2076,6 +2108,18 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.3.0</b> &mdash; <small><i>August 28, 2013</i></small><br />
+      Support for a <a href="#Model-through">through</a> clause on various model relations.
+      Creating a model from a related collection maintains the appropriate relation data (#35).
+      Support for a <tt>{patch: true}</tt> flag on save, to only update specific saved attributes.
+      Added a <tt>fetchOne</tt> method, for pulling out a single model from a collection, mostly
+      useful for related collection instances. Updated to Knex "0.2.x" syntax for insert / returning,
+      Ability to specify a <tt>morphValue</tt> on <a href="#Model-morphOne">morphOne</a> or
+      <a href="#Model-morphMany">morphMany</a> relations. Internal refactor of relations for more
+      consistent behavior.
+    </p>
 
     <p>
       <b class="header">0.2.8</b> &mdash; <small><i>August 26, 2013</i></small><br />

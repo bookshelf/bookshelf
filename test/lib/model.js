@@ -335,6 +335,28 @@ module.exports = function(Bookshelf, handler) {
 
     });
 
+    it('allows {patch: true} as an option for only updating passed data', function(ok) {
+
+      var user = new Bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
+      var query = user.query();
+
+      query.then = function(onFulfilled, onRejected) {
+        equal(this.bindings.length, 2);
+        equal(this.wheres.length, 1);
+        return When.resolve(this.toString()).then(onFulfilled, onRejected);
+      };
+
+      user
+        .save({bio: 'Short user bio'}, {patch: true})
+        .then(function(model) {
+          equal(model.id, 1);
+          equal(model.get('bio'), 'Short user bio');
+          equal(model.get('first_name'), 'Testing');
+          ok();
+        });
+
+    });
+
   });
 
   describe('destroy', function() {

@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var when = require('when');
 
 var ok        = require('assert').ok;
 var equal     = require('assert').equal;
@@ -221,6 +222,31 @@ module.exports = function(Bookshelf, handler) {
         });
 
     });
+
+    it('should maintain the correct constraints when creating a model from a relation', function(ok) {
+
+      var authors = new Site({id: 1}).authors();
+      var query   = authors.query();
+
+      query.then = function(onFufilled, onRejected) {
+
+        deepEqual(_.object(this.values[0]), {
+          site_id: 1,
+          first_name: 'Test',
+          last_name: 'User'
+        });
+
+        return when.resolve(this.toString()).then(onFufilled, onRejected);
+      };
+
+      authors
+        .create({first_name: 'Test', last_name: 'User'})
+        .then(function(model) {
+          ok();
+        });
+
+    });
+
 
   });
 
