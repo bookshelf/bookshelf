@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var when = require('when');
 
 var ok        = require('assert').ok;
 var equal     = require('assert').equal;
@@ -118,11 +119,50 @@ module.exports = function(Bookshelf, handler) {
 
   });
 
+  describe('fetchOne', function() {
+
+    it ('fetches a single model from the collection', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .fetchOne()
+        .then(function(model) {
+          model.get('site_id', 1);
+          ok();
+        }, ok);
+    });
+
+    it ('maintains a clone of the query builder from the current collection', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .query({where: {id: 40}})
+        .fetchOne()
+        .then(function(model) {
+          if (model === null) {
+            ok();
+          }
+        }, ok);
+    });
+
+    it ('follows the typical model options, like require: true', function (ok) {
+
+      new Site({id:1})
+        .authors()
+        .query({where: {id: 40}})
+        .fetchOne({require: true})
+        .then(null, function() {
+          ok();
+        });
+    });
+
+  });
+
   describe('sync', function() {
 
     it('creates a new instance of Bookshelf.Sync', function(){
       var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof require('../../lib/sync').Sync), true);
+      equal((model.sync(model) instanceof Bookshelf.Sync), true);
     });
   });
 
@@ -183,11 +223,30 @@ module.exports = function(Bookshelf, handler) {
 
     });
 
-  });
+    it('should maintain the correct constraints when creating a model from a relation', function(ok) {
 
-  describe('parse', function() {
+      var authors = new Site({id: 1}).authors();
+      var query   = authors.query();
 
-    it('parses a new model instance, saving it to the collection');
+      query.then = function(onFufilled, onRejected) {
+
+        deepEqual(_.object(this.values[0]), {
+          site_id: 1,
+          first_name: 'Test',
+          last_name: 'User'
+        });
+
+        return when.resolve(this.toString()).then(onFufilled, onRejected);
+      };
+
+      authors
+        .create({first_name: 'Test', last_name: 'User'})
+        .then(function(model) {
+          ok();
+        });
+
+    });
+
 
   });
 

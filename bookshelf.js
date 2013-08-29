@@ -22,7 +22,7 @@ define(function(require, exports, module) {
 
   // Finally, the `Events`, which we've supplemented with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We mix this
-  // into the prototypes of the main objects in the application.
+  // into the prototypes of the main objects in the library.
   var Events     = require('./lib/events').Events;
 
   // Constructor for a new `Bookshelf` object, it accepts
@@ -43,7 +43,8 @@ define(function(require, exports, module) {
     }
 
     // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
-    // mixing in the correct `builder` method, as well as
+    // mixing in the correct `builder` method, as well as the `relation` method,
+    // passing in the correct `Model` & `Collection` constructors for later reference.
     var ModelCtor = this.Model = Model.extend({
       builder: function(tableName) {
         return knex(tableName);
@@ -76,8 +77,8 @@ define(function(require, exports, module) {
     // Keep in sync with `package.json`.
     VERSION: '0.5.0',
 
-    // Wrap a series of Bookshelf actions in a `knex` transaction block;
-    Transaction: function() {
+    // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
+    transaction: function() {
       return this.knex.transaction.apply(this, arguments);
     },
 

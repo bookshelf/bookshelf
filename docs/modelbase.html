@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>events.js</title>
+  <title>modelbase.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -76,7 +76,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>events.js</h1>
+                  <h1>modelbase.js</h1>
               </div>
           </li>
         
@@ -110,9 +110,9 @@ for <code>lodash</code> if you really wanted to.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Backbone    = require(<span class="string">'./ext/backbone'</span>).Backbone;
-  <span class="keyword">var</span> when        = require(<span class="string">'./ext/when'</span>).when;
-  <span class="keyword">var</span> triggerThen = require(<span class="string">'./ext/trigger-then'</span>).triggerThen;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _           = require(<span class="string">'./ext/underscore'</span>)._;
+  <span class="keyword">var</span> Backbone    = require(<span class="string">'./ext/backbone'</span>).Backbone;
+  <span class="keyword">var</span> Events      = require(<span class="string">'./events'</span>).Events;</pre></div></div>
             
         </li>
         
@@ -123,14 +123,61 @@ for <code>lodash</code> if you really wanted to.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Mixin the <code>triggerThen</code> function into all relevant Backbone objects,
-so we can have event driven async validations, functions, etc.</p>
+              <p>A dummy constructor, for setting up an object inherited by the <code>Bookshelf.Model</code>, but providing
+a valid instanceof check in the <code>Relation</code> and <code>Collection</code> modules.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  triggerThen(Backbone, when);
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> ModelBase = <span class="keyword">function</span>() {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>A list of properties that are omitted from the <code>Backbone.Model.prototype</code>, since we&#39;re not
+handling validations, or tracking changes in the same fashion as <code>Backbone</code>, we can drop these
+specific methods.</p>
 
-  exports.Events = Backbone.Events;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> modelOmitted = [<span class="string">'changedAttributes'</span>, <span class="string">'isValid'</span>, <span class="string">'validationError'</span>, <span class="string">'_validate'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Mixin the modified <code>Events</code> and selected <code>Backbone</code> methods into the <code>ModelBase</code> prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Provide a standard <code>extend</code> on the ModelBase, for convenience.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  ModelBase.extend = Backbone.Model.extend;
+
+  exports.ModelBase = ModelBase;
 
 });
 

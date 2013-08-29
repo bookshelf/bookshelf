@@ -70,7 +70,14 @@ module.exports = function(Shelf) {
     },
     ownPosts: function() {
       return this.hasMany(Post, 'owner_id');
+    },
+    blogs: function() {
+      return this.belongsToMany(Blog).through(Post, 'owner_id');
     }
+  });
+
+  var Authors = Shelf.Collection.extend({
+    model: Author
   });
 
   // A blog for a site.
@@ -195,7 +202,8 @@ module.exports = function(Shelf) {
       Posts: Posts,
       Blogs: Blogs,
       Comments: Comments,
-      Photos: Photos
+      Photos: Photos,
+      Authors: Authors
     }
   };
 

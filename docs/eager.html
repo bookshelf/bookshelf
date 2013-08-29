@@ -29,6 +29,11 @@
               </a>
             
               
+              <a class="source" href="collectionbase.html">
+                collectionbase.js
+              </a>
+            
+              
               <a class="source" href="eager.html">
                 eager.js
               </a>
@@ -46,6 +51,11 @@
               
               <a class="source" href="model.html">
                 model.js
+              </a>
+            
+              
+              <a class="source" href="modelbase.html">
+                modelbase.js
               </a>
             
               
@@ -83,13 +93,7 @@
             
             <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>(define) { <span class="string">"use strict"</span>;
 
-define(<span class="keyword">function</span>(require, exports, module) {
-
-  <span class="keyword">var</span> _    = require(<span class="string">'./ext/underscore'</span>)._;
-  <span class="keyword">var</span> when = require(<span class="string">'./ext/when'</span>).when;
-
-  <span class="keyword">var</span> Helpers  = require(<span class="string">'./helpers'</span>).Helpers;
-  <span class="keyword">var</span> Relation = require(<span class="string">'./relation'</span>).Relation;</pre></div></div>
+define(<span class="keyword">function</span>(require, exports, module) {</pre></div></div>
             
         </li>
         
@@ -97,8 +101,28 @@ define(<span class="keyword">function</span>(require, exports, module) {
         <li id="section-2">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
+              <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>All external dependencies are referenced through a local module,
+so that you can modify the <code>exports</code> and say... swap out <code>underscore</code>
+for <code>lodash</code> if you really wanted to.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _    = require(<span class="string">'./ext/underscore'</span>)._;
+  <span class="keyword">var</span> when = require(<span class="string">'./ext/when'</span>).when;
+
+  <span class="keyword">var</span> Helpers  = require(<span class="string">'./helpers'</span>).Helpers;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
               <h2>Bookshelf.Eager</h2>
 
@@ -107,11 +131,11 @@ define(<span class="keyword">function</span>(require, exports, module) {
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>An <code>Eager</code> object temporarily stores the models from an eager load,
 and handles matching eager loaded objects with their parent(s). The <code>tempModel</code>
@@ -132,11 +156,11 @@ for the eager query.</p>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>This helper function is used internally to determine which relations
 are necessary for fetching based on the <code>model.load</code> or <code>withRelated</code> option.</p>
@@ -153,11 +177,11 @@ are necessary for fetching based on the <code>model.load</code> or <code>withRel
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Internal flag to determine whether to set the ctor(s) on the <code>Relation</code> object.</p>
 
@@ -168,11 +192,11 @@ are necessary for fetching based on the <code>model.load</code> or <code>withRel
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Eager load each of the <code>withRelated</code> relation item, splitting on &#39;.&#39;
 which indicates a nested eager load.</p>
@@ -187,11 +211,11 @@ which indicates a nested eager load.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Add additional eager items to an array, to load at the next level in the query.</p>
 
@@ -207,11 +231,11 @@ which indicates a nested eager load.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Only allow one of a certain nested type per-level.</p>
 
@@ -229,11 +253,11 @@ which indicates a nested eager load.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Delete the internal flag from the model.</p>
 
@@ -244,11 +268,11 @@ which indicates a nested eager load.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Fetch all eager loaded models, loading them onto
 an array of pending deferred objects, which will handle
@@ -268,11 +292,11 @@ all necessary pairing with parent objects, etc.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Return a deferred handler for all of the nested object sync
 returning the original response when these syncs &amp; pairings are complete.</p>
@@ -288,11 +312,11 @@ returning the original response when these syncs &amp; pairings are complete.</p
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>Prep the <code>withRelated</code> object, to normalize into an object where each
 has a function that is called when running the query.</p>
@@ -310,11 +334,11 @@ has a function that is called when running the query.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>Handles an eager loaded fetch, passing the name of the item we&#39;re fetching for,
 and any options needed for the current fetch.</p>
@@ -329,11 +353,11 @@ and any options needed for the current fetch.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Call the function, if one exists, to constrain the eager loaded query.</p>
 
@@ -351,11 +375,11 @@ and any options needed for the current fetch.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>If there is a response, fetch additional nested eager relations, if any.</p>
 
@@ -373,11 +397,11 @@ and any options needed for the current fetch.</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>Special handler for the eager loaded morph-to relations, this handles
 the fact that there are several potential models that we need to be fetching against.
@@ -399,33 +423,12 @@ pairing them up onto a single response for the eager loading.</p>
           )
           .sync(options)
           .select()
-          .then(<span class="keyword">this</span>.morphToHandler(relationName, relatedData, Target)));
+          .then(<span class="keyword">this</span>.morphToHandler(relationName,
+            relatedData.instance(<span class="string">'morphTo'</span>, Target, {morphName: relationName}))));
       }
       <span class="keyword">return</span> when.all(pending).then(<span class="keyword">function</span>(resps) {
         <span class="keyword">return</span> _.flatten(resps);
       });
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-17">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
-              </div>
-              <p>Handler for the individual <code>morphTo</code> fetches,
-attaching any of the related models onto the parent objects,
-stopping at this level of the eager relation loading.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    morphToHandler: <span class="keyword">function</span>(relationName, settings, Target) {
-      <span class="keyword">var</span> eager = <span class="keyword">this</span>;
-      <span class="keyword">return</span> <span class="keyword">function</span>(resp) {
-        eager.pushModels(relationName, {relatedData: <span class="keyword">new</span> Relation(<span class="string">'morphTo'</span>, Target, {morphName: relationName})}, resp);
-      };
     },</pre></div></div>
             
         </li>
@@ -436,6 +439,28 @@ stopping at this level of the eager relation loading.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Handler for the individual <code>morphTo</code> fetches,
+attaching any of the related models onto the parent objects,
+stopping at this level of the eager relation loading.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    morphToHandler: <span class="keyword">function</span>(relationName, relatedData) {
+      <span class="keyword">var</span> eager = <span class="keyword">this</span>;
+      <span class="keyword">return</span> <span class="keyword">function</span>(resp) {
+        eager.pushModels(relationName, {relatedData: relatedData}, resp);
+      };
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Pushes each of the incoming models onto a new <code>related</code> array,
 which is used to correcly pair additional nested relations.</p>
@@ -453,11 +478,11 @@ which is used to correcly pair additional nested relations.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>If this is a morphTo, we only want to pair on the morphValue for the current relation.</p>
 

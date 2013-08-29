@@ -29,6 +29,7 @@ module.exports = function(Bookshelf, handler) {
   var Posts    = Collections.Posts;
   var Comments = Collections.Comment;
   var Photos   = Collections.Photos;
+  var Authors  = Collections.Authors;
 
   describe('Bookshelf Relations', function() {
 
@@ -319,6 +320,10 @@ module.exports = function(Bookshelf, handler) {
 
       it('eager loads hasOne `through`', function(ok) {
         new Sites().query('where', 'id', '<', 3).fetch({withRelated: 'info'}).then(handler(this, ok), ok);
+      });
+
+      it('eager loads belongsToMany `through`', function(ok) {
+        new Authors().fetch({withRelated: 'blogs'}).then(handler(this, ok), ok);
       });
 
     });

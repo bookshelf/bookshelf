@@ -29,6 +29,11 @@
               </a>
             
               
+              <a class="source" href="collectionbase.html">
+                collectionbase.js
+              </a>
+            
+              
               <a class="source" href="eager.html">
                 eager.js
               </a>
@@ -46,6 +51,11 @@
               
               <a class="source" href="model.html">
                 model.js
+              </a>
+            
+              
+              <a class="source" href="modelbase.html">
+                modelbase.js
               </a>
             
               
@@ -83,11 +93,7 @@
             
             <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>(define) { <span class="string">"use strict"</span>;
 
-define(<span class="keyword">function</span>(require, exports, module) {
-
-  <span class="keyword">var</span> _ = require(<span class="string">'./ext/underscore'</span>)._;
-
-  exports.Helpers = {</pre></div></div>
+define(<span class="keyword">function</span>(require, exports, module) {</pre></div></div>
             
         </li>
         
@@ -97,6 +103,25 @@ define(<span class="keyword">function</span>(require, exports, module) {
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>All external dependencies are referenced through a local module,
+so that you can modify the <code>exports</code> and say... swap out <code>underscore</code>
+for <code>lodash</code> if you really wanted to.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _ = require(<span class="string">'./ext/underscore'</span>)._;
+
+  exports.Helpers = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
               <p>If there are no arguments, return the current object&#39;s
 query builder (or create and return a new one). If there are arguments,
@@ -126,11 +151,11 @@ methods, and the values are the arguments for the query.</p>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>Finds the specific <code>morphTo</code> table we should be working with, or throws
 an error if none is matched.</p>
@@ -150,11 +175,11 @@ an error if none is matched.</p>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Sets the constraints necessary during a <code>model.save</code> call.</p>
 

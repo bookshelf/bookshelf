@@ -29,6 +29,11 @@
               </a>
             
               
+              <a class="source" href="collectionbase.html">
+                collectionbase.js
+              </a>
+            
+              
               <a class="source" href="eager.html">
                 eager.js
               </a>
@@ -46,6 +51,11 @@
               
               <a class="source" href="model.html">
                 model.js
+              </a>
+            
+              
+              <a class="source" href="modelbase.html">
+                modelbase.js
               </a>
             
               
@@ -97,12 +107,17 @@ define(<span class="keyword">function</span>(require, exports, module) {</pre></
         <li id="section-2">
             <div class="annotation">
               
-              <div class="pilwrap for-h2">
+              <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2>Initial Setup</h2>
+              <p>All external dependencies are referenced through a local module,
+so that you can modify the <code>exports</code> and say... swap out <code>underscore</code>
+for <code>lodash</code> if you really wanted to.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _          = require(<span class="string">'./lib/ext/underscore'</span>)._;
+  <span class="keyword">var</span> Knex       = require(<span class="string">'./lib/ext/knex'</span>).Knex;</pre></div></div>
             
         </li>
         
@@ -113,17 +128,14 @@ define(<span class="keyword">function</span>(require, exports, module) {</pre></
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              
+              <p>...as are all local dependencies. These are the main objects that
+need to be augmented in the constructor to work properly.</p>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Backbone   = require(<span class="string">'./lib/ext/backbone'</span>).Backbone;
-  <span class="keyword">var</span> _          = require(<span class="string">'./lib/ext/underscore'</span>)._;
-  <span class="keyword">var</span> Knex       = require(<span class="string">'./lib/ext/knex'</span>).Knex;
-
-  <span class="keyword">var</span> Events     = require(<span class="string">'./lib/events'</span>).Events;
-  <span class="keyword">var</span> Model      = require(<span class="string">'./lib/model'</span>).Model;
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Model      = require(<span class="string">'./lib/model'</span>).Model;
   <span class="keyword">var</span> Collection = require(<span class="string">'./lib/collection'</span>).Collection;
-  <span class="keyword">var</span> Eager      = require(<span class="string">'./lib/eager'</span>).Eager;</pre></div></div>
+  <span class="keyword">var</span> Relation   = require(<span class="string">'./lib/relation'</span>).Relation;</pre></div></div>
             
         </li>
         
@@ -134,17 +146,13 @@ define(<span class="keyword">function</span>(require, exports, module) {</pre></
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Constructor for a new <code>Bookshelf</code> object, it accepts
-an active <code>knex</code> instance and initializes the appropriate <code>Model</code>,
-<code>Collection</code>, and <code>Eager</code> constructors for use in the current object.</p>
+              <p>Finally, the <code>Events</code>, which we&#39;ve supplemented with a <code>triggerThen</code>
+method to allow for asynchronous event handling via promises. We mix this
+into the prototypes of the main objects in the library.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Bookshelf = <span class="keyword">function</span>(knex) {
-
-    <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> Bookshelf)) {
-      <span class="keyword">return</span> <span class="keyword">new</span> Bookshelf(knex);
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Events     = require(<span class="string">'./lib/events'</span>).Events;</pre></div></div>
             
         </li>
         
@@ -155,35 +163,13 @@ an active <code>knex</code> instance and initializes the appropriate <code>Model
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>If the knex isn&#39;t a <code>Knex</code> instance, we&#39;ll assume it&#39;s
-a compatible config object and pass it through to create a new instance.
-if (!(knex instanceof Knex)) {
-  knex = new Knex(knex);
-}</p>
+              <p>Constructor for a new <code>Bookshelf</code> object, it accepts
+an active <code>knex</code> instance and initializes the appropriate
+<code>Model</code> and <code>Collection</code> constructors for use in the current instance.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.Model = Model.extend({
-      builder: <span class="keyword">function</span>(tableName) {
-        <span class="keyword">return</span> knex(tableName);
-      }
-    });
-
-    <span class="keyword">this</span>.Collection = Collection.extend({
-      model: <span class="keyword">this</span>.Model,
-      builder: <span class="keyword">function</span>(tableName) {
-        <span class="keyword">return</span> knex(tableName);
-      }
-    });
-
-    <span class="keyword">this</span>.Eager = Eager.extend({
-      builder: <span class="keyword">function</span>(tableName) {
-        <span class="keyword">return</span> knex(tableName);
-      }
-    });
-
-    <span class="keyword">this</span>.knex = knex;
-  };</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Bookshelf = <span class="keyword">function</span>(knex) {</pre></div></div>
             
         </li>
         
@@ -194,11 +180,14 @@ if (!(knex instanceof Knex)) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p><code>Bookshelf</code> may be used as a top-level pub-sub bus.</p>
+              <p>Allows you to construct the library with either <code>Bookshelf(opts)</code>
+or <code>new Bookshelf(opts)</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  _.extend(Bookshelf.prototype, Events, {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> Bookshelf)) {
+      <span class="keyword">return</span> <span class="keyword">new</span> Bookshelf(knex);
+    }</pre></div></div>
             
         </li>
         
@@ -209,11 +198,14 @@ if (!(knex instanceof Knex)) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Keep in sync with <code>package.json</code>.</p>
+              <p>If the knex isn&#39;t a <code>Knex</code> instance, we&#39;ll assume it&#39;s
+a compatible config object and pass it through to create a new instance.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    VERSION: <span class="string">'0.5.0'</span>,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!knex.client || !(knex.client <span class="keyword">instanceof</span> Knex.ClientBase)) {
+      knex = <span class="keyword">new</span> Knex(knex);
+    }</pre></div></div>
             
         </li>
         
@@ -224,15 +216,20 @@ if (!(knex instanceof Knex)) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Wrap a series of Bookshelf actions in a <code>knex</code> transaction block;</p>
+              <p>The <code>Model</code> constructor is referenced as a property on the <code>Bookshelf</code> instance,
+mixing in the correct <code>builder</code> method, as well as the <code>relation</code> method,
+passing in the correct <code>Model</code> &amp; <code>Collection</code> constructors for later reference.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    Transaction: <span class="keyword">function</span>() {
-      <span class="keyword">return</span> <span class="keyword">this</span>.knex.transaction.apply(<span class="keyword">this</span>, arguments);
-    }
-
-  });</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ModelCtor = <span class="keyword">this</span>.Model = Model.extend({
+      builder: <span class="keyword">function</span>(tableName) {
+        <span class="keyword">return</span> knex(tableName);
+      },
+      relation: <span class="keyword">function</span>(type, Target, options) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Relation(type, Target, options, ModelCtor, CollectionCtor);
+      }
+    });</pre></div></div>
             
         </li>
         
@@ -243,11 +240,18 @@ if (!(knex instanceof Knex)) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Set up inheritance for the model and collection.</p>
+              <p>The collection also references the correct <code>Model</code>, specified above, for creating
+new <code>Model</code> instances in the collection. We also extend with the correct builder /
+<code>knex</code> combo.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Model.extend = Collection.extend = Eager.extend = Backbone.Model.extend;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> CollectionCtor = <span class="keyword">this</span>.Collection = Collection.extend({
+      model: ModelCtor,
+      builder: <span class="keyword">function</span>(tableName) {
+        <span class="keyword">return</span> knex(tableName);
+      }
+    });</pre></div></div>
             
         </li>
         
@@ -258,7 +262,94 @@ if (!(knex instanceof Knex)) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>The <code>forge</code> function properly instantiates a new Model or Collection
+              <p>Grab a reference to the <code>knex</code> instance passed (or created) in this constructor,
+for convenience.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.knex = knex;
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>A <code>Bookshelf</code> instance may be used as a top-level pub-sub bus, as it mixes in the
+<code>Events</code> object. It also contains the version number, and a <code>Transaction</code> method
+referencing the correct version of <code>knex</code> passed into the object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  _.extend(Bookshelf.prototype, Events, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Keep in sync with <code>package.json</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    VERSION: <span class="string">'0.5.0'</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Wrap a series of Bookshelf actions in a <code>knex</code> transaction block;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Transaction: <span class="keyword">function</span>() {
+      <span class="keyword">return</span> <span class="keyword">this</span>.knex.transaction.apply(<span class="keyword">this</span>, arguments);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Provides a nice, tested, standardized way of adding plugins to a <code>Bookshelf</code> instance,
+injecting the current instance into the plugin, which should be a module.exports.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    plugin: <span class="keyword">function</span>(plugin) {
+      plugin(<span class="keyword">this</span>);
+      <span class="keyword">return</span> <span class="keyword">this</span>;
+    }
+
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>The <code>forge</code> function properly instantiates a new <code>Model</code> or <code>Collection</code>
 without needing the <code>new</code> operator... to make object creation cleaner
 and more chainable.</p>
 
@@ -268,9 +359,22 @@ and more chainable.</p>
     <span class="keyword">var</span> inst = Object.create(<span class="keyword">this</span>.prototype);
     <span class="keyword">var</span> obj = <span class="keyword">this</span>.apply(inst, arguments);
     <span class="keyword">return</span> (Object(obj) === obj ? obj : inst);
-  };
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Finally, export <code>Bookshelf</code> to the world.</p>
 
-  module.exports = Bookshelf;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  module.exports = Bookshelf;
 
 });
 

@@ -9,9 +9,8 @@ var deepEqual = require('assert').deepEqual;
 
 module.exports = function(Bookshelf, handler) {
 
-  var Backbone  = require('../../lib/ext/backbone').Backbone;
-  var Models   = require('../shared/objects')(Bookshelf).Models;
-  var Sync     = require('../../lib/sync').Sync;
+  var Backbone = Bookshelf.Backbone;
+  var Models    = require('../shared/objects')(Bookshelf).Models;
 
   var stubSync = {
     first:  function() { return When.resolve({}); },
@@ -93,7 +92,7 @@ module.exports = function(Bookshelf, handler) {
     it('should use the same get method as the Backbone library', function() {
       var attached = ['get'];
       _.each(attached, function(item) {
-        deepEqual(Bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
+        deepEqual(Bookshelf.Model.prototype[item], Bookshelf.Backbone.Model.prototype[item]);
       });
     });
 
@@ -104,7 +103,7 @@ module.exports = function(Bookshelf, handler) {
     var model = new Bookshelf.Model();
 
     it('returns the Knex builder when no arguments are passed', function() {
-      equal((model.query() instanceof Bookshelf.knex.Builder), true);
+      equal((model.query() instanceof Bookshelf.Knex.Builder), true);
     });
 
     it('calls Knex builder method with the first argument, returning the model', function() {
@@ -314,8 +313,6 @@ module.exports = function(Bookshelf, handler) {
       }).then(null, ok);
     });
 
-    it('allows for partial updates, with `patch: true`');
-
     it('does not constrain on the `id` during update unless defined', function(ok) {
 
       var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
@@ -335,6 +332,28 @@ module.exports = function(Bookshelf, handler) {
         m2.save(null, {method: 'update'});
 
       });
+
+    });
+
+    it('allows {patch: true} as an option for only updating passed data', function(ok) {
+
+      var user = new Bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
+      var query = user.query();
+
+      query.then = function(onFulfilled, onRejected) {
+        equal(this.bindings.length, 2);
+        equal(this.wheres.length, 1);
+        return When.resolve(this.toString()).then(onFulfilled, onRejected);
+      };
+
+      user
+        .save({bio: 'Short user bio'}, {patch: true})
+        .then(function(model) {
+          equal(model.id, 1);
+          equal(model.get('bio'), 'Short user bio');
+          equal(model.get('first_name'), 'Testing');
+          ok();
+        });
 
     });
 
@@ -520,7 +539,7 @@ module.exports = function(Bookshelf, handler) {
 
     it('creates a new instance of Bookshelf.Sync', function(){
       var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof Sync), true);
+      equal((model.sync(model) instanceof Bookshelf.Sync), true);
     });
   });
 
