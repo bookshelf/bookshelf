@@ -106,7 +106,7 @@ describe('Bookshelf.Relation', function() {
     // init the select constraints
     relatedData.selectConstraints(_knex, {});
 
-    equal(_knex.toString(), 'select * from `doctormeta` where `doctoring_id` = 1');
+    equal(_knex.toString(), 'select * from `doctormeta` where `doctoring_id` = 1 limit 1');
   });
 
   it('should handle a hasOne -> through relation', function() {
@@ -136,7 +136,7 @@ describe('Bookshelf.Relation', function() {
     // init the select constraints
     relatedData.selectConstraints(_knex, {});
 
-    var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1';
+    var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1 limit 1';
 
     equal(_knex.toString(), sql);
   });
@@ -168,7 +168,7 @@ describe('Bookshelf.Relation', function() {
     // init the select constraints
     relatedData.selectConstraints(_knex, {});
 
-    var sql = 'select `suppliers`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `suppliers` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1';
+    var sql = 'select `suppliers`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `suppliers` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1 limit 1';
 
     equal(_knex.toString(), sql);
   });
