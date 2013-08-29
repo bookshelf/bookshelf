@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.3.0
+//     Bookshelf.js 0.3.1
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -29,7 +29,7 @@ define(function(require, exports) {
   triggerThen(Backbone, when);
 
   // Keep in sync with `package.json`.
-  Bookshelf.VERSION = '0.3.0';
+  Bookshelf.VERSION = '0.3.1';
 
   // We're using `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
@@ -94,8 +94,8 @@ define(function(require, exports) {
 
     // A reverse `hasOne` relation, the `belongsTo`, where the specified key in this table
     // matches the primary `idAttribute` of another table.
-    belongsTo: function(Target, otherKey) {
-      return new Relation('belongsTo', Target, {otherKey: otherKey}).init(this);
+    belongsTo: function(Target, foreignKey) {
+      return new Relation('belongsTo', Target, {foreignKey: foreignKey}).init(this);
     },
 
     // A `belongsToMany` relation is when there are many-to-many relation
@@ -1000,7 +1000,7 @@ define(function(require, exports) {
           if (this.type === 'morphTo') {
             this.target = morphCandidate(this.candidates, parent.get(this.key('morphKey')));
           }
-          this.parentFk = parent.get(this.key('otherKey'));
+          this.parentFk = parent.get(this.key('foreignKey'));
         } else {
           this.parentFk = parent.id;
         }
@@ -1049,13 +1049,14 @@ define(function(require, exports) {
     key: function(keyName) {
       if (this[keyName]) return this[keyName];
       if (keyName === 'otherKey') {
-        if (this.type === 'morphTo') return this[keyName] = this.morphName + '_id';
         return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
       }
       if (keyName === 'throughForeignKey') {
         return this[keyName] = singularMemo(this.joinTable()) + '_' + this.throughIdAttribute;
       }
       if (keyName === 'foreignKey') {
+        if (this.type === 'morphTo') return this[keyName] = this.morphName + '_id';
+        if (this.type === 'belongsTo') return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
         if (this.isMorph()) return this[keyName] = this.morphName + '_id';
         return this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
       }
@@ -1094,13 +1095,9 @@ define(function(require, exports) {
     joinColumns: function(knex) {
       var columns = [];
       var joinTable = this.joinTable();
-      if (this.isThrough()) {
-        columns.push(this.throughIdAttribute, this.type === 'belongsTo' ? this.key('otherKey') : this.key('foreignKey'));
-        if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
-      } else {
-        columns.push(this.key('foreignKey'));
-        if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
-      }
+      if (this.isThrough()) columns.push(this.throughIdAttribute);
+      columns.push(this.key('foreignKey'));
+      if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
       push.apply(columns, this.pivotColumns);
       push.apply(knex.columns, _.map(columns, function(col) {
         return joinTable + '.' + col + ' as _pivot_' + col;
@@ -1112,9 +1109,12 @@ define(function(require, exports) {
       var joinTable = this.joinTable();
 
       if (this.type === 'belongsTo' || this.type === 'belongsToMany') {
+
+        var targetKey = (this.type === 'belongsTo' ? this.key('foreignKey') : this.key('otherKey'));
+
         knex.join(
           joinTable,
-          joinTable + '.' + this.key('otherKey'), '=',
+          joinTable + '.' + targetKey, '=',
           this.targetTableName + '.' + this.targetIdAttribute
         );
 
@@ -1126,6 +1126,7 @@ define(function(require, exports) {
             this.parentTableName + '.' + this.key('throughForeignKey')
           );
         }
+
       } else {
         knex.join(
           joinTable,
@@ -1156,7 +1157,7 @@ define(function(require, exports) {
 
     // Fetches all `eagerKeys` from the current relation.
     eagerKeys: function(resp) {
-      return _.uniq(_.pluck(resp, this.isInverse() ? this.key('otherKey') : this.parentIdAttribute));
+      return _.uniq(_.pluck(resp, this.isInverse() ? this.key('foreignKey') : this.parentIdAttribute));
     },
 
     // Generates the appropriate standard join table.
@@ -1225,7 +1226,7 @@ define(function(require, exports) {
 
       for (var i = 0, l = models.length; i < l; i++) {
         var model = models[i];
-        var groupedKey = this.isInverse() ? model.get(this.key('otherKey')) : model.id;
+        var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
         model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       }
       return related;

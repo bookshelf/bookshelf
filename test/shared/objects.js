@@ -158,7 +158,7 @@ module.exports = function(Shelf) {
     tableName: 'users',
     idAttribute: 'uid',
     roles: function() {
-      return this.belongsToMany(Role, 'users_roles', 'rid', 'uid');
+      return this.belongsToMany(Role, 'users_roles', 'uid', 'rid');
     }
   });
 
@@ -166,7 +166,7 @@ module.exports = function(Shelf) {
     tableName: 'roles',
     idAttribute: 'rid',
     users: function(){
-      return this.belongsToMany(User, 'users_roles', 'uid', 'rid');
+      return this.belongsToMany(User, 'users_roles', 'rid', 'uid');
     }
   });
 

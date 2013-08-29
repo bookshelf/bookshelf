@@ -152,7 +152,7 @@ describe('Bookshelf.Relation', function() {
     equal(relatedData.target, Supplier);
     equal(relatedData.targetTableName, 'suppliers');
     equal(relatedData.targetIdAttribute, 'id');
-    equal(relatedData.foreignKey, undefined);
+    equal(relatedData.foreignKey, 'supplier_id');
 
     // Init
     equal(relatedData.parentId, 1);

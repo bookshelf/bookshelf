@@ -281,7 +281,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.3.0)</span>
+      Bookshelf.js <span class="version">(0.3.1)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -432,7 +432,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.3.0</h3>
+    <h3>Latest Release: 0.3.1</h3>
 
     <p>
       Current Develop &mdash;
@@ -1005,8 +1005,16 @@ var User = Bookshelf.Model.extend({
 
     <p>
       The default key names in the joining table are the singular version of the table name, followed by <tt>_id</tt>.
-      So in the above case, the columns in the joining table would be <tt>account_id</tt>, <tt>user_id</tt>, and
-      <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts.
+      So in the above case, the columns in the joining table would be <tt>user_id</tt>, <tt>account_id</tt>, and
+      <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts. To
+      customize the keys or <tt>tableName</tt> used in the join table, you may specify them like so:
+    </p>
+
+<pre>
+this.belongsToMany(Account, 'users_accounts', 'userid', 'accountid');
+</pre>
+
+    <p>
       If you wish to create a <tt>belongsToMany</tt> association where the joining table has a primary key, and
       more information about the model, you may create a belongsToMany <a href="#Model-through">through</a> relation:
     </p>
@@ -1039,11 +1047,10 @@ var Patient = Bookshelf.Model.extend({
   }
 
 });
-
 </pre>
 
     <p id="Model-through">
-      <b class="header">through</b><code>model.hasMany(Target).through(JoinModel, [foreignKey], [otherKey])</code>
+      <b class="header">through</b><code>.through(JoinModel, [throughFk], [otherKey])</code>
       <br />
       The <tt>through</tt> method helps to create dynamic relations between models &amp; collections, where a
       <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>, <a href="#Model-belongsTo">belongsTo</a>,
@@ -2108,6 +2115,11 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.3.1</b> &mdash; <small><i>August 29, 2013</i></small><br />
+      Fixed regression in <tt>belongsToMany</tt> custom column name order.
+    </p>
 
     <p>
       <b class="header">0.3.0</b> &mdash; <small><i>August 28, 2013</i></small><br />

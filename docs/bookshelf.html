@@ -302,8 +302,8 @@ matches the primary <code>idAttribute</code> of another table.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    belongsTo: <span class="keyword">function</span>(Target, otherKey) {
-      <span class="keyword">return</span> <span class="keyword">new</span> Relation(<span class="string">'belongsTo'</span>, Target, {otherKey: otherKey}).init(<span class="keyword">this</span>);
+            <div class="content"><div class='highlight'><pre>    belongsTo: <span class="keyword">function</span>(Target, foreignKey) {
+      <span class="keyword">return</span> <span class="keyword">new</span> Relation(<span class="string">'belongsTo'</span>, Target, {foreignKey: foreignKey}).init(<span class="keyword">this</span>);
     },</pre></div></div>
             
         </li>
@@ -2413,7 +2413,7 @@ previous response anyway.</p>
           <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'morphTo'</span>) {
             <span class="keyword">this</span>.target = morphCandidate(<span class="keyword">this</span>.candidates, parent.get(<span class="keyword">this</span>.key(<span class="string">'morphKey'</span>)));
           }
-          <span class="keyword">this</span>.parentFk = parent.get(<span class="keyword">this</span>.key(<span class="string">'otherKey'</span>));
+          <span class="keyword">this</span>.parentFk = parent.get(<span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>));
         } <span class="keyword">else</span> {
           <span class="keyword">this</span>.parentFk = parent.id;
         }
@@ -2510,13 +2510,14 @@ which includes any additional keys for the relation.</p>
             <div class="content"><div class='highlight'><pre>    key: <span class="keyword">function</span>(keyName) {
       <span class="keyword">if</span> (<span class="keyword">this</span>[keyName]) <span class="keyword">return</span> <span class="keyword">this</span>[keyName];
       <span class="keyword">if</span> (keyName === <span class="string">'otherKey'</span>) {
-        <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'morphTo'</span>) <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = <span class="keyword">this</span>.morphName + <span class="string">'_id'</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = singularMemo(<span class="keyword">this</span>.targetTableName) + <span class="string">'_'</span> + <span class="keyword">this</span>.targetIdAttribute;
       }
       <span class="keyword">if</span> (keyName === <span class="string">'throughForeignKey'</span>) {
         <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = singularMemo(<span class="keyword">this</span>.joinTable()) + <span class="string">'_'</span> + <span class="keyword">this</span>.throughIdAttribute;
       }
       <span class="keyword">if</span> (keyName === <span class="string">'foreignKey'</span>) {
+        <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'morphTo'</span>) <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = <span class="keyword">this</span>.morphName + <span class="string">'_id'</span>;
+        <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'belongsTo'</span>) <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = singularMemo(<span class="keyword">this</span>.targetTableName) + <span class="string">'_'</span> + <span class="keyword">this</span>.targetIdAttribute;
         <span class="keyword">if</span> (<span class="keyword">this</span>.isMorph()) <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = <span class="keyword">this</span>.morphName + <span class="string">'_id'</span>;
         <span class="keyword">return</span> <span class="keyword">this</span>[keyName] = singularMemo(<span class="keyword">this</span>.parentTableName) + <span class="string">'_'</span> + <span class="keyword">this</span>.parentIdAttribute;
       }
@@ -2627,13 +2628,9 @@ limit the query to a single item.</p>
             <div class="content"><div class='highlight'><pre>    joinColumns: <span class="keyword">function</span>(knex) {
       <span class="keyword">var</span> columns = [];
       <span class="keyword">var</span> joinTable = <span class="keyword">this</span>.joinTable();
-      <span class="keyword">if</span> (<span class="keyword">this</span>.isThrough()) {
-        columns.push(<span class="keyword">this</span>.throughIdAttribute, <span class="keyword">this</span>.type === <span class="string">'belongsTo'</span> ? <span class="keyword">this</span>.key(<span class="string">'otherKey'</span>) : <span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>));
-        <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'belongsToMany'</span>) columns.push(<span class="keyword">this</span>.key(<span class="string">'otherKey'</span>));
-      } <span class="keyword">else</span> {
-        columns.push(<span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>));
-        <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'belongsToMany'</span>) columns.push(<span class="keyword">this</span>.key(<span class="string">'otherKey'</span>));
-      }
+      <span class="keyword">if</span> (<span class="keyword">this</span>.isThrough()) columns.push(<span class="keyword">this</span>.throughIdAttribute);
+      columns.push(<span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>));
+      <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'belongsToMany'</span>) columns.push(<span class="keyword">this</span>.key(<span class="string">'otherKey'</span>));
       push.apply(columns, <span class="keyword">this</span>.pivotColumns);
       push.apply(knex.columns, _.map(columns, <span class="keyword">function</span>(col) {
         <span class="keyword">return</span> joinTable + <span class="string">'.'</span> + col + <span class="string">' as _pivot_'</span> + col;
@@ -2657,9 +2654,12 @@ limit the query to a single item.</p>
       <span class="keyword">var</span> joinTable = <span class="keyword">this</span>.joinTable();
 
       <span class="keyword">if</span> (<span class="keyword">this</span>.type === <span class="string">'belongsTo'</span> || <span class="keyword">this</span>.type === <span class="string">'belongsToMany'</span>) {
+
+        <span class="keyword">var</span> targetKey = (<span class="keyword">this</span>.type === <span class="string">'belongsTo'</span> ? <span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>) : <span class="keyword">this</span>.key(<span class="string">'otherKey'</span>));
+
         knex.join(
           joinTable,
-          joinTable + <span class="string">'.'</span> + <span class="keyword">this</span>.key(<span class="string">'otherKey'</span>), <span class="string">'='</span>,
+          joinTable + <span class="string">'.'</span> + targetKey, <span class="string">'='</span>,
           <span class="keyword">this</span>.targetTableName + <span class="string">'.'</span> + <span class="keyword">this</span>.targetIdAttribute
         );</pre></div></div>
             
@@ -2683,6 +2683,7 @@ limit the query to a single item.</p>
             <span class="keyword">this</span>.parentTableName + <span class="string">'.'</span> + <span class="keyword">this</span>.key(<span class="string">'throughForeignKey'</span>)
           );
         }
+
       } <span class="keyword">else</span> {
         knex.join(
           joinTable,
@@ -2737,7 +2738,7 @@ passed in when the relation was formed.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    eagerKeys: <span class="keyword">function</span>(resp) {
-      <span class="keyword">return</span> _.uniq(_.pluck(resp, <span class="keyword">this</span>.isInverse() ? <span class="keyword">this</span>.key(<span class="string">'otherKey'</span>) : <span class="keyword">this</span>.parentIdAttribute));
+      <span class="keyword">return</span> _.uniq(_.pluck(resp, <span class="keyword">this</span>.isInverse() ? <span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>) : <span class="keyword">this</span>.parentIdAttribute));
     },</pre></div></div>
             
         </li>
@@ -2890,7 +2891,7 @@ we&#39;re handling, for easy attachment to the parent models.</p>
 
       <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = models.length; i &lt; l; i++) {
         <span class="keyword">var</span> model = models[i];
-        <span class="keyword">var</span> groupedKey = <span class="keyword">this</span>.isInverse() ? model.get(<span class="keyword">this</span>.key(<span class="string">'otherKey'</span>)) : model.id;
+        <span class="keyword">var</span> groupedKey = <span class="keyword">this</span>.isInverse() ? model.get(<span class="keyword">this</span>.key(<span class="string">'foreignKey'</span>)) : model.id;
         model.relations[relationName] = <span class="keyword">this</span>.relatedInstance(grouped[groupedKey]);
       }
       <span class="keyword">return</span> related;
