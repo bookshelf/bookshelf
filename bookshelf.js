@@ -66,6 +66,7 @@ define(function(require, exports) {
     }
     this.set(attrs, options);
     this.initialize.apply(this, arguments);
+    _.bindAll(this, '_handleResponse', '_handleEager');
   };
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
@@ -138,35 +139,34 @@ define(function(require, exports) {
     // a failure if the model comes up blank.
     fetch: function(options) {
       options || (options = {});
-      var model = this, relatedData = this.relatedData;
-      return this.sync(options)
+      var model = this;
+      var sync = this.sync(options)
         .first()
-        .then(function(response) {
-          if (response && response.length > 0) {
 
-            // Todo: {silent: true, parse: true}, for parity with collection#set
-            // need to check on Backbone's status there, ticket #2636
-            model.set(model.parse(response[0]), {silent: true})._reset();
-
-            if (relatedData && relatedData.isJoined()) {
-              relatedData.parsePivot([model]);
-            }
-
-            if (!options.withRelated) return response;
-            return new EagerRelation([model], response, model)
-              .fetch(options)
-              .then(function() { return response; });
+        // Jump the rest of the chain if the response doesn't exist...
+        .tap(function(response) {
+          if (!response || response.length === 0) {
+            if (options.require) throw new Error('EmptyResponse');
+            return when.reject(null);
           }
-          if (options.require) return when.reject(new Error('EmptyResponse'));
         })
-        .then(function(response) {
-          if (response && response.length > 0) {
-            return model.triggerThen('fetched', model, response, options).then(function() {
-              return model;
-            });
-          }
-          return null;
+        .then(this._handleResponse);
+
+      // Only if the "withRelated" is specified, do we need to jump into the `_handleEager` method.
+      if (options.withRelated) {
+        model._eagerOptions = options;
+        sync = sync.then(this._handleEager).tap(function() {
+          delete model._eagerOptions;
         });
+      }
+
+      return sync.then(function(response) {
+        return model.triggerThen('fetched', model, response, options).yield(model);
+      })
+      .otherwise(function(err) {
+        if (err === null) return err;
+        throw err;
+      });
     },
 
     // Eager loads relationships onto an already populated `Model` instance.
@@ -401,6 +401,23 @@ define(function(require, exports) {
       this._previousAttributes = _.extend(Object.create(null), this.attributes);
       this.changed = Object.create(null);
       return this;
+    },
+
+    // Handles the response data for the model, returning from the model's fetch call.
+    // Todo: {silent: true, parse: true}, for parity with collection#set
+    // need to check on Backbone's status there, ticket #2636
+    _handleResponse: function(response) {
+      var relatedData = this.relatedData;
+      this.set(this.parse(response[0]), {silent: true})._reset();
+      if (relatedData && relatedData.isJoined()) {
+        relatedData.parsePivot([this]);
+      }
+      return response;
+    },
+
+    // Handle the related data loading on the model.
+    _handleEager: function(response) {
+      return new EagerRelation([this], response, this).fetch(this._eagerOptions).yield(response);
     }
 
   });
