@@ -140,8 +140,9 @@ define(function(require, exports) {
     fetch: function(options) {
       options || (options = {});
       var model = this;
-      var sync = this.sync(options)
-        .first()
+
+      // Run the `first` call on the `sync` object to fetch a single model.
+      var sync = this.sync(options).first()
 
         // Jump the rest of the chain if the response doesn't exist...
         .tap(function(response) {
@@ -150,19 +151,23 @@ define(function(require, exports) {
             return when.reject(null);
           }
         })
-        .then(this._handleResponse);
 
-      // Only if the "withRelated" is specified, do we need to jump into the `_handleEager` method.
+        // Now, load all of the data into the model as necessary.
+        .tap(this._handleResponse);
+
+      // If the "withRelated" is specified, we also need to eager load all of the
+      // data on the model, as a side-effect, before we ultimately jump into the
+      // next step of the model. For simplicity, we temporarily attach the options
+      // to `_eagerOptions`, which is cleaned up in the `_handleEager` method.
       if (options.withRelated) {
         model._eagerOptions = options;
-        sync = sync.then(this._handleEager).tap(function() {
-          delete model._eagerOptions;
-        });
+        sync = sync.tap(this._handleEager);
       }
 
-      return sync.then(function(response) {
-        return model.triggerThen('fetched', model, response, options).yield(model);
+      return sync.tap(function(response) {
+        return model.triggerThen('fetched', model, response, options);
       })
+      .yield(model)
       .otherwise(function(err) {
         if (err === null) return err;
         throw err;
@@ -171,12 +176,9 @@ define(function(require, exports) {
 
     // Eager loads relationships onto an already populated `Model` instance.
     load: function(relations, options) {
-      var model = this;
       _.isArray(relations) || (relations = [relations]);
-      options = _.extend({}, options, {shallow: true, withRelated: relations});
-      return new EagerRelation([this], [this.toJSON(options)], this)
-        .fetch(options)
-        .then(function() { return model; });
+      this._eagerOptions = _.extend({}, options, {shallow: true, withRelated: relations});
+      return this._handleEager([this.toJSON({shallow: true})]).yield(this);
     },
 
     // Similar to the standard `Backbone` set method, but without individual
@@ -290,9 +292,7 @@ define(function(require, exports) {
           model.triggerThen('saved', model, resp, options)
         ]);
 
-      }).then(function() {
-        return model;
-      });
+      }).yield(this);
     },
 
     // Destroy a model, calling a "delete" based on its `idAttribute`.
@@ -412,12 +412,14 @@ define(function(require, exports) {
       if (relatedData && relatedData.isJoined()) {
         relatedData.parsePivot([this]);
       }
-      return response;
     },
 
     // Handle the related data loading on the model.
     _handleEager: function(response) {
-      return new EagerRelation([this], response, this).fetch(this._eagerOptions).yield(response);
+      var model = this;
+      return new EagerRelation([this], response, this).fetch(this._eagerOptions).then(function() {
+        delete model._eagerOptions;
+      });
     }
 
   });
@@ -721,10 +723,7 @@ define(function(require, exports) {
 
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs & pairings are complete.
-      var eagerHandler = this;
-      return when.all(pendingDeferred).then(function() {
-        return eagerHandler.parentResponse;
-      });
+      return when.all(pendingDeferred).yield(this.parentResponse);
     },
 
     // Prep the `withRelated` object, to normalize into an object where each
@@ -1384,7 +1383,7 @@ define(function(require, exports) {
       });
 
       // Attach a new builder function that references the correct connection.
-      _.each(['Model', 'Collection', 'EagerRelation'], function(item) {
+      _.each(['Model', 'Collection'], function(item) {
         Target[item] = Bookshelf[item].extend({
           builder: function(table) {
             return Builder(table);
