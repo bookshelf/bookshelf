@@ -306,10 +306,9 @@ define(function(require, exports) {
       .then(function() { return model.sync(options).del(); })
       .then(function(resp) {
         model.clear();
-        return model.triggerThen('destroyed', model, resp, options).then(function() {
-          return model._reset();
-        });
-      });
+        return model.triggerThen('destroyed', model, resp, options);
+      })
+      .then(function() { return model._reset(); });
     },
 
     // **format** converts a model into the values that should be saved into
@@ -417,9 +416,9 @@ define(function(require, exports) {
     // Handle the related data loading on the model.
     _handleEager: function(response) {
       var model = this;
-      return new EagerRelation([this], response, this).fetch(this._eagerOptions).then(function() {
-        delete model._eagerOptions;
-      });
+      var options = this._eagerOptions;
+      delete this._eagerOptions;
+      return new EagerRelation([this], response, this).fetch(options);
     }
 
   });
