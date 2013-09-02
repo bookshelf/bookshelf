@@ -648,6 +648,16 @@ define(function(require, exports) {
     _prepareModel: function(attrs, options) {
       if (attrs instanceof Model) return attrs;
       return new this.model(attrs, options);
+    },
+
+    // Convenience method for map, returning a `when.all` promise.
+    mapThen: function(iterator, context) {
+      return when.all(this.map(iterator, context));
+    },
+
+    // Convenience method for invoke, returning a `when.all` promise.
+    invokeThen: function() {
+      return when.all(this.invoke.apply(this, arguments));
     }
 
   });
