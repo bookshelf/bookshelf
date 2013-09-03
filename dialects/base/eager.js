@@ -2,7 +2,7 @@
 
 "use strict";
 
-// EagerBase
+// Base Eager
 // ---------------
 define(function(require, exports) {
 

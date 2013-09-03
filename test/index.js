@@ -3,6 +3,15 @@ var _         = require('underscore');
 var Bookshelf = require('../bookshelf');
 var conn      = require(process.env.BOOKSHELF_TEST || './shared/config');
 
+var base = require('bookshelf-tests-base');
+
+// Unit test all of the abstract base interfaces
+base.Collection();
+base.Model();
+base.Events();
+base.Relation();
+base.Eager();
+
 // The output goes here.
 exports.output = {};
 

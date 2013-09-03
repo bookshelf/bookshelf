@@ -2,6 +2,8 @@
 
 "use strict";
 
+// Base Relation
+// ---------------
 define(function(require, exports) {
 
   var _        = require('underscore');

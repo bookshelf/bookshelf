@@ -2,6 +2,8 @@
 
 "use strict";
 
+// Base Model
+// ---------------
 define(function(require, exports) {
 
   var _        = require('underscore');
@@ -166,7 +168,11 @@ define(function(require, exports) {
         return model.triggerThen('destroyed', model, resp, options);
       })
       .then(function() { return model._reset(); });
-    }
+    },
+
+    _handleResponse: function() {},
+
+    _handleEager: function() {}
 
   });
 

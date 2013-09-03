@@ -2,6 +2,8 @@
 
 "use strict";
 
+// Events
+// ---------------
 define(function(require, exports) {
 
   var Backbone    = require('backbone');
