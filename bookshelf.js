@@ -12,14 +12,14 @@ define(function(require, exports) {
 
   // Initial Setup
   // -------------
-  var Bookshelf      = exports;
-  var knex           = require('knex');
-  var _              = require('underscore');
-  var Events         = require('./lib/events').Events;
+  var Bookshelf = exports;
+  var knex      = require('knex');
+  var _         = require('underscore');
+  var Events    = require('./lib/events').Events;
 
-  var SqlModel       = require('./lib/sql/model').Model;
-  var SqlCollection  = require('./lib/sql/collection').Collection;
-  var SqlRelation    = require('./lib/sql/relation').Relation;
+  var SqlModel      = require('./lib/sql/model').Model;
+  var SqlCollection = require('./lib/sql/collection').Collection;
+  var SqlRelation   = require('./lib/sql/relation').Relation;
 
   // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.3.1';
