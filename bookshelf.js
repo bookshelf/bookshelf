@@ -15,7 +15,6 @@ define(function(require, exports) {
   var Bookshelf      = exports;
   var knex           = require('knex');
   var _              = require('underscore');
-  var when           = require('when');
   var Events         = require('./lib/events').Events;
 
   var SqlModel       = require('./lib/sql/model').Model;
@@ -120,11 +119,6 @@ define(function(require, exports) {
         Transaction: Builder.Transaction
       });
 
-      Target.Relation = SqlCollection.extend({
-        Model: Target.Model,
-        Collection: Target.Collection
-      });
-
       Target.Model = SqlModel.extend({
         builder: function(table) {
           return Builder(table);
@@ -139,6 +133,11 @@ define(function(require, exports) {
         builder: function(table) {
           return Builder(table);
         }
+      });
+
+      var Relation = Target.Relation = SqlRelation.extend({
+        Model: Target.Model,
+        Collection: Target.Collection
       });
     }
 
