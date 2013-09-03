@@ -9,8 +9,9 @@ define(function(require, exports) {
 
   var Sync = require('./sync').Sync;
   var Helpers = require('./helpers').Helpers;
-  var CollectionBase = require('../collectionbase').CollectionBase;
   var EagerRelation = require('./eager').EagerRelation;
+
+  var CollectionBase = require('../base/collection').CollectionBase;
 
   exports.Collection = CollectionBase.extend({
 
@@ -23,28 +24,28 @@ define(function(require, exports) {
     // Fetch the models for this collection, resetting the models
     // for the query when they arrive.
     fetch: function(options) {
-      options || (options = {});
+      options = options || {};
       var collection = this, relatedData = this.relatedData;
       return this.sync(options)
         .select()
+        .tap(function(response) {
+          if (!response || response.length === 0) return when.reject(null);
+        })
         .then(function(response) {
-          if (response && response.length > 0) {
-            collection.set(response, {silent: true, parse: true}).invoke('_reset');
-            if (relatedData && relatedData.isJoined()) relatedData.parsePivot(collection.models);
-          } else {
-            collection.reset([], {silent: true});
-            return [];
-          }
+          collection.set(response, {silent: true, parse: true}).invoke('_reset');
+          if (relatedData && relatedData.isJoined()) relatedData.parsePivot(collection.models);
           if (!options.withRelated) return response;
           return new EagerRelation(collection.models, response, new collection.model())
             .fetch(options)
             .then(function() { return response; });
         })
         .then(function(response) {
-          return collection.triggerThen('fetched', collection, response, options).then(function() {
-            return collection;
-          });
-        });
+          return collection.triggerThen('fetched', collection, response, options);
+        })
+        .otherwise(function() {
+          collection.reset([], {silent: true});
+        })
+        .yield(this);
     },
 
     // Fetches a single model from the collection, useful on related collections.
@@ -71,7 +72,7 @@ define(function(require, exports) {
     // hash into the inserted model. Also, if the model is a `manyToMany` relation,
     // automatically create the joining model upon insertion.
     create: function(model, options) {
-      options || (options = {});
+      options = options || {};
 
       var collection  = this;
       var relatedData = this.relatedData;

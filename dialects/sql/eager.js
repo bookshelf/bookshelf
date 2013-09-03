@@ -8,7 +8,8 @@ define(function(require, exports) {
   var when = require('when');
 
   var Helpers = require('./helpers').Helpers;
-  var EagerBase = require('../eagerbase').EagerBase;
+
+  var EagerBase = require('../base/eager').EagerBase;
 
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s). The `tempModel`

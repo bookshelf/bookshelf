@@ -12,15 +12,14 @@ define(function(require, exports) {
 
   // Initial Setup
   // -------------
-  var Bookshelf      = exports;
-  var knex           = require('knex');
-  var _              = require('underscore');
-  var when           = require('when');
-  var Events         = require('./lib/events').Events;
+  var Bookshelf = exports;
+  var knex      = require('knex');
+  var _         = require('underscore');
+  var Events    = require('./dialects/base/events').Events;
 
-  var SqlModel       = require('./lib/sql/model').Model;
-  var SqlCollection  = require('./lib/sql/collection').Collection;
-  var SqlRelation    = require('./lib/sql/relation').Relation;
+  var SqlModel      = require('./dialects/sql/model').Model;
+  var SqlCollection = require('./dialects/sql/collection').Collection;
+  var SqlRelation   = require('./dialects/sql/relation').Relation;
 
   // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.3.1';
@@ -120,11 +119,6 @@ define(function(require, exports) {
         Transaction: Builder.Transaction
       });
 
-      Target.Relation = SqlCollection.extend({
-        Model: Target.Model,
-        Collection: Target.Collection
-      });
-
       Target.Model = SqlModel.extend({
         builder: function(table) {
           return Builder(table);
@@ -139,6 +133,11 @@ define(function(require, exports) {
         builder: function(table) {
           return Builder(table);
         }
+      });
+
+      var Relation = Target.Relation = SqlRelation.extend({
+        Model: Target.Model,
+        Collection: Target.Collection
       });
     }
 

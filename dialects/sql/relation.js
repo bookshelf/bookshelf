@@ -4,16 +4,16 @@
 
 define(function(require, exports) {
 
-  var push = [].push;
-
   var _ = require('underscore');
   var when = require('when');
   var inflection = require('inflection');
 
   var Helpers = require('./helpers').Helpers;
-  var ModelBase = require('../modelbase').ModelBase;
-  var CollectionBase = require('../collectionbase').CollectionBase;
-  var RelationBase = require('../relationbase').RelationBase;
+
+  var ModelBase = require('../base/model').ModelBase;
+  var RelationBase = require('../base/relation').RelationBase;
+
+  var push = [].push;
 
   exports.Relation = RelationBase.extend({
 
@@ -224,14 +224,6 @@ define(function(require, exports) {
         });
       }
       return new Target(models, {parse: true});
-    },
-
-    // Creates a new model, used internally in the eager fetch helper methods.
-    createModel: function(data) {
-      if (this.target.prototype instanceof CollectionBase) {
-        return new this.target.prototype.model(data, {parse: true})._reset();
-      }
-      return new this.target(data, {parse: true})._reset();
     },
 
     // Groups the related response according to the type of relationship

@@ -9,8 +9,9 @@ define(function(require, exports) {
 
   var Sync = require('./sync').Sync;
   var Helpers = require('./helpers').Helpers;
-  var ModelBase = require('../modelbase').ModelBase;
   var EagerRelation = require('./eager').EagerRelation;
+
+  var ModelBase = require('../base/model').ModelBase;
 
   exports.Model = ModelBase.extend({
 
@@ -73,7 +74,7 @@ define(function(require, exports) {
     // If `{require: true}` is set as an option, the fetch is considered
     // a failure if the model comes up blank.
     fetch: function(options) {
-      options || (options = {});
+      options = options || {};
       var model = this;
 
       // Run the `first` call on the `sync` object to fetch a single model.
@@ -187,34 +188,6 @@ define(function(require, exports) {
         ]);
 
       }).yield(this);
-    },
-
-    // Destroy a model, calling a "delete" based on its `idAttribute`.
-    // A "destroying" and "destroyed" are triggered on the model before
-    // and after the model is destroyed, respectively. If an error is thrown
-    // during the "destroying" event, the model will not be destroyed.
-    destroy: function(options) {
-      options || (options = {});
-      var model = this;
-      return model.triggerThen('destroying', model, options)
-      .then(function() { return model.sync(options).del(); })
-      .then(function(resp) {
-        model.clear();
-        return model.triggerThen('destroyed', model, resp, options);
-      })
-      .then(function() { return model._reset(); });
-    },
-
-    // **format** converts a model into the values that should be saved into
-    // the database table. The default implementation is just to pass the response along.
-    format: function(attrs, options) {
-      return attrs;
-    },
-
-    // Returns the related item, or creates a new
-    // related item by creating a new model or collection.
-    related: function(name) {
-      return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
     },
 
     // Reset the query builder, called internally

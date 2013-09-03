@@ -6,6 +6,7 @@ define(function(require, exports) {
 
   var _        = require('underscore');
   var Backbone = require('backbone');
+
   var Events   = require('./events').Events;
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
@@ -98,6 +99,24 @@ define(function(require, exports) {
       return attrs;
     },
 
+    // **parse** converts a response into the hash of attributes to be `set` on
+    // the model. The default implementation is just to pass the response along.
+    parse: function(resp, options) {
+      return resp;
+    },
+
+    // **format** converts a model into the values that should be saved into
+    // the database table. The default implementation is just to pass the data along.
+    format: function(attrs, options) {
+      return attrs;
+    },
+
+    // Returns the related item, or creates a new
+    // related item by creating a new model or collection.
+    related: function(name) {
+      return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
+    },
+
     // Create a new model with identical attributes to this one,
     // including any relations on the current model.
     clone: function() {
@@ -133,7 +152,21 @@ define(function(require, exports) {
 
     save: function() {},
 
-    destroy: function() {}
+    // Destroy a model, calling a "delete" based on its `idAttribute`.
+    // A "destroying" and "destroyed" are triggered on the model before
+    // and after the model is destroyed, respectively. If an error is thrown
+    // during the "destroying" event, the model will not be destroyed.
+    destroy: function(options) {
+      var model = this;
+      options = options || {};
+      return model.triggerThen('destroying', model, options)
+      .then(function() { return model.sync(options).del(); })
+      .then(function(resp) {
+        model.clear();
+        return model.triggerThen('destroyed', model, resp, options);
+      })
+      .then(function() { return model._reset(); });
+    }
 
   });
 

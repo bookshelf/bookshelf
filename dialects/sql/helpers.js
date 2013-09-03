@@ -36,7 +36,7 @@ define(function(require, exports) {
     // If the first argument is an object, assume the keys are query builder
     // methods, and the values are the arguments for the query.
     query: function(obj, args) {
-      obj._knex || (obj._knex = obj.builder(_.result(obj, 'tableName')));
+      obj._knex = obj._knex || obj.builder(_.result(obj, 'tableName'));
       if (args.length === 0) return obj._knex;
       var method = args[0];
       if (_.isFunction(method)) {
