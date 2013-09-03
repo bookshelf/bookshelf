@@ -9,7 +9,7 @@ var deepEqual = require('assert').deepEqual;
 
 module.exports = function(Bookshelf, handler) {
 
-  var Backbone = Bookshelf.Backbone;
+  var Backbone  = require('backbone');
   var Models    = require('../shared/objects')(Bookshelf).Models;
 
   var stubSync = {
@@ -92,7 +92,7 @@ module.exports = function(Bookshelf, handler) {
     it('should use the same get method as the Backbone library', function() {
       var attached = ['get'];
       _.each(attached, function(item) {
-        deepEqual(Bookshelf.Model.prototype[item], Bookshelf.Backbone.Model.prototype[item]);
+        deepEqual(Bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
       });
     });
 

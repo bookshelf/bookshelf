@@ -7,7 +7,7 @@ var deepEqual = require('assert').deepEqual;
 
 module.exports = function(Bookshelf, handler) {
 
-  var Backbone = Bookshelf.Backbone;
+  var Backbone = require('backbone');
 
   var Models      = require('../shared/objects')(Bookshelf).Models;
   var Collections = require('../shared/objects')(Bookshelf).Collections;

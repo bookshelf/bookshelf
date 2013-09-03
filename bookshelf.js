@@ -12,21 +12,17 @@ define(function(require, exports) {
 
   // Initial Setup
   // -------------
-  var Bookshelf   = exports;
-  var Backbone    = require('backbone');
-  var knex        = require('knex');
-  var _           = require('underscore');
-  var when        = require('when');
-  var inflection  = require('inflection');
+  var Bookshelf      = exports;
+  var knex           = require('knex');
+  var _              = require('underscore');
+  var when           = require('when');
+  var inflection     = require('inflection');
 
   var Events         = require('./lib/events').Events;
   var Sync           = require('./lib/sync').Sync;
   var ModelBase      = require('./lib/modelbase').ModelBase;
   var CollectionBase = require('./lib/collectionbase').CollectionBase;
-
-  // Keep a reference to our own copy of Backbone, in case we want to use
-  // this specific instance elsewhere in the application.
-  Bookshelf.Backbone = Backbone;
+  var EagerBase      = require('./lib/eagerbase').EagerBase;
 
   // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.3.1';
@@ -421,88 +417,11 @@ define(function(require, exports) {
 
   });
 
-  // EagerRelation
-  // ---------------
-
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s). The `tempModel`
   // is only used to retrieve the value of the relation method, to know the constrains
   // for the eager query.
-  var EagerRelation = function(parent, parentResponse, target) {
-    this.parent = parent;
-    this.target = target;
-    this.parentResponse = parentResponse;
-    _.bindAll(this, 'pushModels', 'eagerFetch');
-  };
-
-  EagerRelation.prototype = {
-
-    // This helper function is used internally to determine which relations
-    // are necessary for fetching based on the `model.load` or `withRelated` option.
-    fetch: function(options) {
-      var relationName, related, relation;
-      var target      = this.target;
-      var handled     = this.handled = {};
-      var withRelated = this.prepWithRelated(options.withRelated);
-      var subRelated  = {};
-
-      // Internal flag to determine whether to set the ctor(s) on the `Relation` object.
-      target._isEager = true;
-
-      // Eager load each of the `withRelated` relation item, splitting on '.'
-      // which indicates a nested eager load.
-      for (var key in withRelated) {
-
-        related = key.split('.');
-        relationName = related[0];
-
-        // Add additional eager items to an array, to load at the next level in the query.
-        if (related.length > 1) {
-          var relatedObj = {};
-          subRelated[relationName] || (subRelated[relationName] = []);
-          relatedObj[related.slice(1).join('.')] = withRelated[key];
-          subRelated[relationName].push(relatedObj);
-        }
-
-        // Only allow one of a certain nested type per-level.
-        if (handled[relationName]) continue;
-
-        relation = target[relationName]();
-
-        if (!relation) throw new Error(relationName + ' is not defined on the model.');
-
-        handled[relationName] = relation;
-      }
-
-      // Delete the internal flag from the model.
-      delete target._isEager;
-
-      // Fetch all eager loaded models, loading them onto
-      // an array of pending deferred objects, which will handle
-      // all necessary pairing with parent objects, etc.
-      var pendingDeferred = [];
-      for (relationName in handled) {
-        pendingDeferred.push(this.eagerFetch(relationName, handled[relationName], _.extend({}, options, {
-          isEager: true,
-          withRelated: subRelated[relationName],
-          beforeFn: withRelated[relationName] || noop
-        })));
-      }
-
-      // Return a deferred handler for all of the nested object sync
-      // returning the original response when these syncs & pairings are complete.
-      return when.all(pendingDeferred).yield(this.parentResponse);
-    },
-
-    // Prep the `withRelated` object, to normalize into an object where each
-    // has a function that is called when running the query.
-    prepWithRelated: function(withRelated) {
-      if (!_.isArray(withRelated)) withRelated = [withRelated];
-      return _.reduce(withRelated, function(memo, item) {
-        _.isString(item) ? memo[item] = noop : _.extend(memo, item);
-        return memo;
-      }, {});
-    },
+  var EagerRelation = EagerBase.extend({
 
     // Handles an eager loaded fetch, passing the name of the item we're fetching for,
     // and any options needed for the current fetch.
@@ -580,7 +499,8 @@ define(function(require, exports) {
       }
       return relatedData.eagerPair(relationName, related, models);
     }
-  };
+
+  });
 
   // The `forge` function properly instantiates a new Model or Collection
   // without needing the `new` operator... to make object creation cleaner
@@ -670,6 +590,7 @@ define(function(require, exports) {
       if (method === 'delete') return builder.where(data).del();
       return builder.insert(data);
     }
+
   };
 
   // Used internally, the `Relation` helps in simplifying the relationship building,
@@ -984,7 +905,6 @@ define(function(require, exports) {
 
   // Helper functions
   // -------------------
-  var noop = function() {};
 
   // If there are no arguments, return the current object's
   // query builder (or create and return a new one). If there are arguments,
