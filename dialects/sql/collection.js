@@ -11,7 +11,7 @@ define(function(require, exports) {
   var Helpers = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
-  var CollectionBase = require('../collectionbase').CollectionBase;
+  var CollectionBase = require('../base/collection').CollectionBase;
 
   exports.Collection = CollectionBase.extend({
 
@@ -24,7 +24,7 @@ define(function(require, exports) {
     // Fetch the models for this collection, resetting the models
     // for the query when they arrive.
     fetch: function(options) {
-      options || (options = {});
+      options = options || {};
       var collection = this, relatedData = this.relatedData;
       return this.sync(options)
         .select()
@@ -72,7 +72,7 @@ define(function(require, exports) {
     // hash into the inserted model. Also, if the model is a `manyToMany` relation,
     // automatically create the joining model upon insertion.
     create: function(model, options) {
-      options || (options = {});
+      options = options || {};
 
       var collection  = this;
       var relatedData = this.relatedData;

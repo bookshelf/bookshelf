@@ -10,8 +10,8 @@ define(function(require, exports) {
 
   var Helpers = require('./helpers').Helpers;
 
-  var ModelBase = require('../modelbase').ModelBase;
-  var RelationBase = require('../relationbase').RelationBase;
+  var ModelBase = require('../base/model').ModelBase;
+  var RelationBase = require('../base/relation').RelationBase;
 
   var push = [].push;
 

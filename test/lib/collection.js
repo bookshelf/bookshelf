@@ -162,7 +162,7 @@ module.exports = function(Bookshelf, handler) {
 
     it('creates a new instance of Sync', function(){
       var model = new Bookshelf.Model();
-      equal((model.sync(model) instanceof require('../../lib/sql/sync').Sync), true);
+      equal((model.sync(model) instanceof require('../../dialects/sql/sync').Sync), true);
     });
 
   });

@@ -152,7 +152,21 @@ define(function(require, exports) {
 
     save: function() {},
 
-    destroy: function() {}
+    // Destroy a model, calling a "delete" based on its `idAttribute`.
+    // A "destroying" and "destroyed" are triggered on the model before
+    // and after the model is destroyed, respectively. If an error is thrown
+    // during the "destroying" event, the model will not be destroyed.
+    destroy: function(options) {
+      var model = this;
+      options = options || {};
+      return model.triggerThen('destroying', model, options)
+      .then(function() { return model.sync(options).del(); })
+      .then(function(resp) {
+        model.clear();
+        return model.triggerThen('destroyed', model, resp, options);
+      })
+      .then(function() { return model._reset(); });
+    }
 
   });
 

@@ -4,10 +4,10 @@
 
 define(function(require, exports) {
 
-  var _ = require('underscore');
+  var _        = require('underscore');
   var Backbone = require('backbone');
 
-  var CollectionBase = require('./collectionbase').CollectionBase;
+  var CollectionBase = require('./collection').CollectionBase;
 
   // Used internally, the `Relation` helps in simplifying the relationship building,
   // centralizing all logic dealing with type & option handling.

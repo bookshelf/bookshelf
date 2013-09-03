@@ -11,7 +11,7 @@ define(function(require, exports) {
   var Helpers = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
-  var ModelBase = require('../modelbase').ModelBase;
+  var ModelBase = require('../base/model').ModelBase;
 
   exports.Model = ModelBase.extend({
 
@@ -74,7 +74,7 @@ define(function(require, exports) {
     // If `{require: true}` is set as an option, the fetch is considered
     // a failure if the model comes up blank.
     fetch: function(options) {
-      options || (options = {});
+      options = options || {};
       var model = this;
 
       // Run the `first` call on the `sync` object to fetch a single model.
@@ -188,22 +188,6 @@ define(function(require, exports) {
         ]);
 
       }).yield(this);
-    },
-
-    // Destroy a model, calling a "delete" based on its `idAttribute`.
-    // A "destroying" and "destroyed" are triggered on the model before
-    // and after the model is destroyed, respectively. If an error is thrown
-    // during the "destroying" event, the model will not be destroyed.
-    destroy: function(options) {
-      options || (options = {});
-      var model = this;
-      return model.triggerThen('destroying', model, options)
-      .then(function() { return model.sync(options).del(); })
-      .then(function(resp) {
-        model.clear();
-        return model.triggerThen('destroyed', model, resp, options);
-      })
-      .then(function() { return model._reset(); });
     },
 
     // Reset the query builder, called internally

@@ -9,7 +9,7 @@ define(function(require, exports) {
   var Backbone  = require('backbone');
 
   var Events    = require('./events').Events;
-  var ModelBase = require('./modelbase').ModelBase;
+  var ModelBase = require('./model').ModelBase;
 
   var array  = [];
   var push   = array.push;
