@@ -13,7 +13,7 @@ define(function(require, exports) {
   // Require `Bookshelf`, which gives us all of the core
   // relational & database functionality. Also create the
   // public interface for the library.
-  var Bookshelf    = require('../bookshelf');
+  var Bookshelf    = require('../sql');
   var extension    = require('./lib');
   var ActiveRecord = module.exports = {};
 
