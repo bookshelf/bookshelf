@@ -18,24 +18,21 @@ define(function(require, exports) {
   var _           = require('underscore');
   var when        = require('when');
   var inflection  = require('inflection');
-  var triggerThen = require('trigger-then');
-  var Sync        = require('./lib/sync').Sync;
+
+  var Events         = require('./lib/events').Events;
+  var Sync           = require('./lib/sync').Sync;
+  var ModelBase      = require('./lib/modelbase').ModelBase;
+  var CollectionBase = require('./lib/collectionbase').CollectionBase;
 
   // Keep a reference to our own copy of Backbone, in case we want to use
   // this specific instance elsewhere in the application.
   Bookshelf.Backbone = Backbone;
 
-  // Mixin the `triggerThen` function into all relevant Backbone objects,
-  // so we can have event driven async validations, functions, etc.
-  triggerThen(Backbone, when);
-
   // Keep in sync with `package.json`.
   Bookshelf.VERSION = '0.3.1';
 
-  // We're using `Backbone.Events` rather than `EventEmitter`,
+  // We're using a modified `Backbone.Events` rather than `EventEmitter`,
   // for consistency and portability.
-  var Events = Bookshelf.Events = Backbone.Events;
-
   // `Bookshelf` may be used as a top-level pub-sub bus.
   _.extend(Bookshelf, Events);
 
@@ -51,34 +48,7 @@ define(function(require, exports) {
   // It has a similar implementation to the `Backbone.Model`
   // constructor, except that defaults are not set until the
   // object is persisted, and the collection property is not used.
-
-  // A unique `cid` property is also added to each created model, similar to
-  // `Backbone` models, and is useful checking the identity of two models.
-  var Model = Bookshelf.Model = function(attributes, options) {
-    var attrs = attributes || {};
-    options || (options = {});
-    this.attributes = Object.create(null);
-    this._reset();
-    this.relations = {};
-    this.cid  = _.uniqueId('c');
-    if (options) {
-      _.extend(this, _.pick(options, modelProps));
-      if (options.parse) attrs = this.parse(attrs, options) || {};
-    }
-    this.set(attrs, options);
-    this.initialize.apply(this, arguments);
-    _.bindAll(this, '_handleResponse', '_handleEager');
-  };
-
-  // A list of properties that are omitted from the `Backbone.Model.prototype`, since we're not
-  // handling validations, or tracking changes in the same fashion as `Backbone`, we can drop these
-  // specific methods.
-  var modelOmitted = ['changedAttributes', 'isValid', 'validationError', '_validate'];
-
-  // List of attributes attached directly from the `options` passed to the constructor.
-  var modelProps = ['tableName', 'hasTimestamps'];
-
-  _.extend(Model.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, {
+  var Model = Bookshelf.Model = ModelBase.extend({
 
     // The `hasOne` relation specifies that this table has exactly one of another type of object,
     // specified by a foreign key in the other table. The foreign key is assumed to be the singular of this
@@ -182,47 +152,6 @@ define(function(require, exports) {
       return this._handleEager([this.toJSON({shallow: true})]).yield(this);
     },
 
-    // Similar to the standard `Backbone` set method, but without individual
-    // change events, and adding different meaning to `changed` and `previousAttributes`
-    // defined as the last "sync"'ed state of the model.
-    set: function(key, val, options) {
-      if (key == null) return this;
-      var attrs;
-
-      // Handle both `"key", value` and `{key: value}` -style arguments.
-      if (typeof key === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-      options || (options = {});
-
-      // Extract attributes and options.
-      var hasChanged = false;
-      var unset   = options.unset;
-      var current = this.attributes;
-      var prev    = this._previousAttributes;
-
-      // Check for changes of `id`.
-      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
-
-      // For each `set` attribute, update or delete the current value.
-      for (var attr in attrs) {
-        val = attrs[attr];
-        if (!_.isEqual(prev[attr], val)) {
-          this.changed[attr] = val;
-          if (!_.isEqual(current[attr], val)) hasChanged = true;
-        } else {
-          delete this.changed[attr];
-        }
-        unset ? delete current[attr] : current[attr] = val;
-      }
-
-      if (hasChanged && !options.silent) this.trigger('change', this, options);
-      return this;
-    },
-
     // Sets and saves the hash of model attributes, triggering
     // a "creating" or "updating" event on the model, as well as a "saving" event,
     // to bind listeners for any necessary validation, logging, etc.
@@ -318,49 +247,6 @@ define(function(require, exports) {
       return attrs;
     },
 
-    // Returns an object containing a shallow copy of the model attributes,
-    // along with the `toJSON` value of any relations,
-    // unless `{shallow: true}` is passed in the `options`.
-    toJSON: function(options) {
-      var attrs = _.extend({}, this.attributes);
-      if (options && options.shallow) return attrs;
-      var relations = this.relations;
-      for (var key in relations) {
-        var relation = relations[key];
-        attrs[key] = relation.toJSON ? relation.toJSON() : relation;
-      }
-      if (this.pivot) {
-        var pivot = this.pivot.attributes;
-        for (key in pivot) {
-          attrs['_pivot_' + key] = pivot[key];
-        }
-      }
-      return attrs;
-    },
-
-    // Sets the timestamps before saving the model.
-    timestamp: function(options) {
-      var d = new Date();
-      var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
-      var vals = {};
-      vals[keys[1]] = d;
-      if (this.isNew(options) && (!options || options.method !== 'update')) vals[keys[0]] = d;
-      return vals;
-    },
-
-    // Create a new model with identical attributes to this one,
-    // including any relations on the current model.
-    clone: function() {
-      var model = new this.constructor(this.attributes);
-      var relations = this.relations;
-      for (var key in relations) {
-        model.relations[key] = relations[key].clone();
-      }
-      model._previousAttributes = _.clone(this._previousAttributes);
-      model.changed = _.clone(this.changed);
-      return model;
-    },
-
     // Returns the related item, or creates a new
     // related item by creating a new model or collection.
     related: function(name) {
@@ -395,14 +281,6 @@ define(function(require, exports) {
       return new Relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
     },
 
-    // Called after a `sync` action (save, fetch, delete) -
-    // resets the `_previousAttributes` and `changed` hash for the model.
-    _reset: function() {
-      this._previousAttributes = _.extend(Object.create(null), this.attributes);
-      this.changed = Object.create(null);
-      return this;
-    },
-
     // Handles the response data for the model, returning from the model's fetch call.
     // Todo: {silent: true, parse: true}, for parity with collection#set
     // need to check on Backbone's status there, ticket #2636
@@ -429,21 +307,7 @@ define(function(require, exports) {
 
   // A Bookshelf Collection contains a number of database rows, represented by
   // models, so they can be easily sorted, serialized, and manipulated.
-  var Collection = Bookshelf.Collection = function(models, options) {
-    if (options) _.extend(this, _.pick(options, collectionProps));
-    this._reset();
-    this.initialize.apply(this, arguments);
-    if (models) this.reset(models, _.extend({silent: true}, options));
-  };
-
-  // List of attributes attached directly from the constructor's options object.
-  var collectionProps = ['model', 'comparator'];
-
-  // Copied over from Backbone.
-  var setOptions = {add: true, remove: true, merge: true};
-
-  // Extend the Collection's prototype with the base methods
-  _.extend(Collection.prototype, _.omit(Backbone.Collection.prototype, 'model'), Events, {
+  var Collection = Bookshelf.Collection = CollectionBase.extend({
 
     model: Model,
 
@@ -451,86 +315,6 @@ define(function(require, exports) {
     // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
     through: function(Interim, foreignKey, otherKey) {
       return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
-    },
-
-    // A simplified version of Backbone's `Collection#set` method,
-    // removing the comparator, and getting rid of the temporary model creation,
-    // since there's *no way* we'll be getting the data in an inconsistent
-    // form from the database.
-    set: function(models, options) {
-      options = _.defaults({}, options, setOptions);
-      if (options.parse) models = this.parse(models, options);
-      if (!_.isArray(models)) models = models ? [models] : [];
-      var i, l, id, model, attrs, existing;
-      var at = options.at;
-      var targetModel = this.model;
-      var toAdd = [], toRemove = [], modelMap = {};
-      var add = options.add, merge = options.merge, remove = options.remove;
-      var order = add && remove ? [] : false;
-
-      // Turn bare objects into model references, and prevent invalid models
-      // from being added.
-      for (i = 0, l = models.length; i < l; i++) {
-        attrs = models[i];
-        if (attrs instanceof Model) {
-          id = model = attrs;
-        } else {
-          id = attrs[targetModel.prototype.idAttribute];
-        }
-
-        // If a duplicate is found, prevent it from being added and
-        // optionally merge it into the existing model.
-        if (existing = this.get(id)) {
-          if (remove) {
-            modelMap[existing.cid] = true;
-            continue;
-          }
-          if (merge) {
-            attrs = attrs === model ? model.attributes : attrs;
-            if (options.parse) attrs = existing.parse(attrs, options);
-            existing.set(attrs, options);
-          }
-
-          // This is a new model, push it to the `toAdd` list.
-        } else if (add) {
-          if (!(model = this._prepareModel(attrs, options))) continue;
-          toAdd.push(model);
-
-          // Listen to added models' events, and index models for lookup by
-          // `id` and by `cid`.
-          model.on('all', this._onModelEvent, this);
-          this._byId[model.cid] = model;
-          if (model.id != null) this._byId[model.id] = model;
-        }
-        if (order) order.push(existing || model);
-      }
-
-      // Remove nonexistent models if appropriate.
-      if (remove) {
-        for (i = 0, l = this.length; i < l; ++i) {
-          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
-        }
-        if (toRemove.length) this.remove(toRemove, options);
-      }
-
-      // See if sorting is needed, update `length` and splice in new models.
-      if (toAdd.length || (order && order.length)) {
-        this.length += toAdd.length;
-        if (at != null) {
-          splice.apply(this.models, [at, 0].concat(toAdd));
-        } else {
-          if (order) this.models.length = 0;
-          push.apply(this.models, order || toAdd);
-        }
-      }
-
-      if (options.silent) return this;
-
-      // Trigger `add` events.
-      for (i = 0, l = toAdd.length; i < l; i++) {
-        (model = toAdd[i]).trigger('add', model, this, options);
-      }
-      return this;
     },
 
     // Fetch the models for this collection, resetting the models
@@ -613,16 +397,6 @@ define(function(require, exports) {
         });
     },
 
-    // The `tableName` on the associated Model, used in relation building.
-    tableName: function() {
-      return _.result(this.model.prototype, 'tableName');
-    },
-
-    // The `idAttribute` on the associated Model, used in relation building.
-    idAttribute: function() {
-      return this.model.prototype.idAttribute;
-    },
-
     // Reset the query builder, called internally
     // each time a query is run.
     resetQuery: function() {
@@ -643,34 +417,18 @@ define(function(require, exports) {
     // Creates and returns a new `Bookshelf.Sync` instance.
     sync: function(options) {
       return new Sync(this, options);
-    },
-
-    // Prepare a model or hash of attributes to be added to this collection.
-    _prepareModel: function(attrs, options) {
-      if (attrs instanceof Model) return attrs;
-      return new this.model(attrs, options);
-    },
-
-    // Convenience method for map, returning a `when.all` promise.
-    mapThen: function(iterator, context) {
-      return when.all(this.map(iterator, context));
-    },
-
-    // Convenience method for invoke, returning a `when.all` promise.
-    invokeThen: function() {
-      return when.all(this.invoke.apply(this, arguments));
     }
 
   });
 
-  // Bookshelf.EagerRelation
+  // EagerRelation
   // ---------------
 
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s). The `tempModel`
   // is only used to retrieve the value of the relation method, to know the constrains
   // for the eager query.
-  var EagerRelation = Bookshelf.EagerRelation = function(parent, parentResponse, target) {
+  var EagerRelation = function(parent, parentResponse, target) {
     this.parent = parent;
     this.target = target;
     this.parentResponse = parentResponse;
@@ -824,9 +582,6 @@ define(function(require, exports) {
     }
   };
 
-  // Set up inheritance for the model and collection.
-  Model.extend = Collection.extend = EagerRelation.extend = Bookshelf.Backbone.Model.extend;
-
   // The `forge` function properly instantiates a new Model or Collection
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
@@ -900,7 +655,7 @@ define(function(require, exports) {
       // that we're looking to attach to this model, or
       // a hash of attributes to set in the relation.
       if (_.isObject(item)) {
-        if (item instanceof Model) {
+        if (item instanceof ModelBase) {
           data[relatedData.key('otherKey')] = item.id;
         } else {
           _.extend(data, item);
@@ -1133,7 +888,7 @@ define(function(require, exports) {
 
       var Target = this.target;
       if (this.isSingle()) {
-        if (!Target.prototype instanceof Model) {
+        if (!Target.prototype instanceof ModelBase) {
           throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
         }
         return models[0] || new Target();
@@ -1141,7 +896,7 @@ define(function(require, exports) {
 
       // Allows us to just use a model, but create a temporary collection for
       // a many relation.
-      if (Target.prototype instanceof Model) {
+      if (Target.prototype instanceof ModelBase) {
         Target = Bookshelf.Collection.extend({
           model: Target,
           builder: Target.prototype.builder
