@@ -91,6 +91,10 @@ define(function(require, exports, module) {
 
   });
 
+  Bookshelf.initialize = function(knex) {
+    return new this(knex);
+  };
+
   // The `forge` function properly instantiates a new `Model` or `Collection`
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.

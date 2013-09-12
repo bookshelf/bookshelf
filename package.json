@@ -4,7 +4,7 @@
   "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
-    "test": "mocha -b -R spec test/index.js"
+    "test": "mocha -R spec test/index.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
