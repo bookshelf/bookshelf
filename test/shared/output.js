@@ -253,6 +253,15 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -263,15 +272,6 @@ module.exports = {
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe'
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
@@ -436,10 +436,10 @@ module.exports = {
       postgres: {
         id: 3,
         name: 'backbonejs.org',
+        blogs: [],
         meta: {
         
         },
-        blogs: [],
         authors: []
       },
       sqlite3: {
@@ -1414,6 +1414,15 @@ module.exports = {
       mysql: {
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1432,15 +1441,6 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },
       postgres: {
@@ -1580,6 +1580,15 @@ module.exports = {
       postgres: [{
         id: 1,
         name: 'knexjs.org',
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -1598,19 +1607,19 @@ module.exports = {
             id: 1,
             name: 'knexjs.org'
           }
-        }],
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
         }]
       },{
         id: 2,
         name: 'bookshelfjs.org',
+        blogs: [{
+          id: 3,
+          site_id: 2,
+          name: 'Main Site Blog'
+        },{
+          id: 4,
+          site_id: 2,
+          name: 'Alternate Site Blog'
+        }],
         authors: [{
           id: 3,
           site_id: 2,
@@ -1629,21 +1638,12 @@ module.exports = {
             id: 2,
             name: 'bookshelfjs.org'
           }
-        }],
-        blogs: [{
-          id: 3,
-          site_id: 2,
-          name: 'Main Site Blog'
-        },{
-          id: 4,
-          site_id: 2,
-          name: 'Alternate Site Blog'
         }]
       },{
         id: 3,
         name: 'backbonejs.org',
-        authors: [],
-        blogs: []
+        blogs: [],
+        authors: []
       }],
       sqlite3: [{
         id: 1,
@@ -1716,22 +1716,22 @@ module.exports = {
     },
     'relations.20 - works with many-to-many (user -> roles)': {
       mysql: [{
-        rid: 1,
+        rid: 4,
         name: 'admin',
-        _pivot_rid: 1,
-        _pivot_uid: 1
+        _pivot_uid: 1,
+        _pivot_rid: 4
       }],
       postgres: [{
-        rid: 1,
+        rid: 4,
         name: 'admin',
-        _pivot_rid: 1,
-        _pivot_uid: 1
+        _pivot_uid: 1,
+        _pivot_rid: 4
       }],
       sqlite3: [{
-        rid: 1,
+        rid: 4,
         name: 'admin',
-        _pivot_rid: 1,
-        _pivot_uid: 1
+        _pivot_uid: 1,
+        _pivot_rid: 4
       }]
     },
     'relations.21 - works with eager loaded many-to-many (user -> roles)': {
@@ -1739,30 +1739,30 @@ module.exports = {
         uid: 1,
         username: 'root',
         roles: [{
-          rid: 1,
+          rid: 4,
           name: 'admin',
-          _pivot_rid: 1,
-          _pivot_uid: 1
+          _pivot_uid: 1,
+          _pivot_rid: 4
         }]
       },
       postgres: {
         uid: 1,
         username: 'root',
         roles: [{
-          rid: 1,
+          rid: 4,
           name: 'admin',
-          _pivot_rid: 1,
-          _pivot_uid: 1
+          _pivot_uid: 1,
+          _pivot_rid: 4
         }]
       },
       sqlite3: {
         uid: 1,
         username: 'root',
         roles: [{
-          rid: 1,
+          rid: 4,
           name: 'admin',
-          _pivot_rid: 1,
-          _pivot_uid: 1
+          _pivot_uid: 1,
+          _pivot_rid: 4
         }]
       }
     },

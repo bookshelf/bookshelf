@@ -5,6 +5,23 @@ var conn      = require(process.env.BOOKSHELF_TEST || './shared/config');
 
 var base = require('bookshelf-tests-base');
 
+require("mocha-as-promised")();
+
+global.sinon = require("sinon");
+
+var chai       = global.chai = require("chai");
+
+chai.use(require("chai-as-promised"));
+chai.use(require("sinon-chai"));
+chai.should();
+
+global._              = require('underscore');
+global.whenResolve    = require('when').resolve;
+global.expect         = chai.expect;
+global.AssertionError = chai.AssertionError;
+global.Assertion      = chai.Assertion;
+global.assert         = chai.assert;
+
 // Unit test all of the abstract base interfaces
 base.Collection();
 base.Model();
@@ -40,7 +57,7 @@ var Sqlite3 = Bookshelf.initialize({
 });
 
 describe('Bookshelf', function() {
-  require('./lib/relation')(MySQL);
+  // require('./lib/relation')(MySQL);
   require('./regular')(MySQL, 'mysql');
   require('./regular')(Postgres, 'postgres');
   require('./regular')(Sqlite3, 'sqlite3');

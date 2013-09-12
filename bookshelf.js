@@ -23,8 +23,8 @@ define(function(require, exports, module) {
   var SqlRelation   = require('./dialects/sql/relation').Relation;
 
   // Finally, the `Events`, which we've supplemented with a `triggerThen`
-  // method to allow for asynchronous event handling via promises. We mix this
-  // into the prototypes of the main objects in the library.
+  // method to allow for asynchronous event handling via promises. We also
+  // mix this into the prototypes of the main objects in the library.
   var Events     = require('./lib/events').Events;
 
   // Constructor for a new `Bookshelf` object, it accepts
@@ -52,7 +52,7 @@ define(function(require, exports, module) {
         return knex(tableName);
       },
       relation: function(type, Target, options) {
-        return new SqlRelation(type, Target, options, ModelCtor, CollectionCtor);
+        return new Relation(type, Target, options);
       }
     });
 
@@ -64,6 +64,13 @@ define(function(require, exports, module) {
       builder: function(tableName) {
         return knex(tableName);
       }
+    });
+
+    // Used internally, the `Relation` helps in simplifying the relationship building,
+    // centralizing all logic dealing with type & option handling.
+    var Relation = Bookshelf.Relation = SqlRelation.extend({
+      Model: ModelCtor,
+      Collection: CollectionCtor
     });
 
     // Grab a reference to the `knex` instance passed (or created) in this constructor,

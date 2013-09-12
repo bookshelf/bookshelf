@@ -1,14 +1,13 @@
-var When  = require('when');
+var when  = require('when');
 var _     = require('underscore');
-var Knex  = require('knex');
 
 module.exports = function(Bookshelf) {
 
-  Knex = Bookshelf.Knex;
+  var knex = Bookshelf.knex;
 
-  return When.all([
+  return when.all([
 
-    Knex('sites').insert([{
+    knex('sites').insert([{
       name: 'knexjs.org'
     }, {
       name: 'bookshelfjs.org'
@@ -16,7 +15,7 @@ module.exports = function(Bookshelf) {
       name: 'backbonejs.org'
     }]),
 
-    Knex('sitesmeta').insert([{
+    knex('sitesmeta').insert([{
       site_id: 1,
       description: 'This is a description for the Knexjs Site'
     }, {
@@ -24,7 +23,7 @@ module.exports = function(Bookshelf) {
       description: 'This is a description for the Bookshelfjs Site'
     }]),
 
-    Knex('info').insert([{
+    knex('info').insert([{
       meta_id: 1,
       other_description: 'This is an info block for hasOne -> through test'
     }, {
@@ -32,7 +31,7 @@ module.exports = function(Bookshelf) {
       other_description: 'This is an info block for an eager hasOne -> through test'
     }]),
 
-    Knex('admins').insert([{
+    knex('admins').insert([{
       username: 'test1',
       password: 'testpwd1',
       created_at: new Date(),
@@ -44,7 +43,7 @@ module.exports = function(Bookshelf) {
       updated_at: new Date()
     }]),
 
-    Knex('blogs').insert([{
+    knex('blogs').insert([{
       site_id: 1,
       name: 'Main Site Blog'
     },{
@@ -58,7 +57,7 @@ module.exports = function(Bookshelf) {
       name: 'Alternate Site Blog'
     }]),
 
-    Knex('authors').insert([{
+    knex('authors').insert([{
       site_id: 1,
       first_name: 'Tim',
       last_name: 'Griesser'
@@ -76,7 +75,7 @@ module.exports = function(Bookshelf) {
       last_name: 'Burgundy'
     }]),
 
-    Knex('posts').insert([{
+    knex('posts').insert([{
       owner_id: 1,
       blog_id: 1,
       name: 'This is a new Title!',
@@ -103,7 +102,7 @@ module.exports = function(Bookshelf) {
       content: 'Lorem ipsum Commodo consectetur eu ea amet laborum nulla eiusmod minim veniam ullamco nostrud sed mollit consectetur veniam mollit Excepteur quis cupidatat.'
     }]),
 
-    Knex('authors_posts').insert([{
+    knex('authors_posts').insert([{
       author_id: 1,
       post_id: 1
     },{
@@ -117,7 +116,7 @@ module.exports = function(Bookshelf) {
       post_id: 1
     }]),
 
-    Knex('tags').insert([{
+    knex('tags').insert([{
       name: 'cool'
     },{
       name: 'boring'
@@ -127,7 +126,7 @@ module.exports = function(Bookshelf) {
       name: 'amazing'
     }]),
 
-    Knex('posts_tags').insert([{
+    knex('posts_tags').insert([{
       post_id: 1,
       tag_id: 1
     },{
@@ -141,14 +140,14 @@ module.exports = function(Bookshelf) {
       tag_id: 1
     }]),
 
-    Knex('comments').insert([{
+    knex('comments').insert([{
       post_id: 1,
       name: '(blank)',
       email: 'test@example.com',
       comment: 'this is neat.'
     }]),
 
-    Knex('photos').insert([{
+    knex('photos').insert([{
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
       imageable_id: 1,
@@ -180,11 +179,11 @@ module.exports = function(Bookshelf) {
       imageable_type: 'sites'
     }]),
 
-    Knex('users').insert({uid: 1, username: 'root'}),
+    knex('users').insert({uid: 1, username: 'root'}),
 
-    Knex('roles').insert({rid: 4, name: 'admin'}),
+    knex('roles').insert({rid: 4, name: 'admin'}),
 
-    Knex('users_roles').insert({uid: 1, rid: 4})
+    knex('users_roles').insert({uid: 1, rid: 4})
 
   ]).then(null, function(e) {
     console.log(e.stack);

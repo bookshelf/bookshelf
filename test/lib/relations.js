@@ -1,4 +1,4 @@
-var When      = require('when');
+var when      = require('when');
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
@@ -203,15 +203,15 @@ module.exports = function(Bookshelf, handler) {
         var admin1 = new Admin({username: 'syncable', password: 'test'});
         var admin2 = new Admin({username: 'syncable', password: 'test'});
 
-        When.all([admin1.save(), admin2.save()])
+        when.all([admin1.save(), admin2.save()])
           .then(function() {
-            return When.all([
+            return when.all([
               new Site({id: 1}).admins().attach([admin1, admin2]),
               new Site({id: 2}).admins().attach(admin2)
             ]);
           })
           .then(function(resp) {
-            return When.all([
+            return when.all([
               new Site({id: 1}).admins().fetch().then(function(c) {
                 c.each(function(m) {
                   equal(m.hasChanged(), false);
@@ -225,7 +225,7 @@ module.exports = function(Bookshelf, handler) {
             ]);
           })
           .then(function(resp) {
-            return When.all([
+            return when.all([
               new Site({id: 1}).admins().detach().then(function(c) {
                 return c.fetch();
               }).then(function(c) {

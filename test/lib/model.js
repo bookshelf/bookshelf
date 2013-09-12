@@ -2,7 +2,7 @@
 var _ = require('underscore');
 _.str = require('underscore.string');
 
-var When = require('when');
+var when = require('when');
 
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
@@ -13,11 +13,11 @@ module.exports = function(Bookshelf, handler) {
   var Models    = require('../shared/objects')(Bookshelf).Models;
 
   var stubSync = {
-    first:  function() { return When.resolve({}); },
-    select: function() { return When.resolve({}); },
-    insert: function() { return When.resolve({}); },
-    update: function() { return When.resolve({}); },
-    del:    function() { return When.resolve({}); }
+    first:  function() { return when.resolve({}); },
+    select: function() { return when.resolve({}); },
+    insert: function() { return when.resolve({}); },
+    update: function() { return when.resolve({}); },
+    del:    function() { return when.resolve({}); }
   };
 
   describe('extend/constructor/initialize', function() {
@@ -103,7 +103,7 @@ module.exports = function(Bookshelf, handler) {
     var model = new Bookshelf.Model();
 
     it('returns the Knex builder when no arguments are passed', function() {
-      equal((model.query() instanceof Bookshelf.Knex.Builder), true);
+      equal((model.query() instanceof require('knex/lib/builder').Builder), true);
     });
 
     it('calls Knex builder method with the first argument, returning the model', function() {
@@ -319,7 +319,7 @@ module.exports = function(Bookshelf, handler) {
       var query = m.query();
       query.update = function() {
         equal(this.wheres.length, 1);
-        return When.resolve({});
+        return when.resolve({});
       };
       m.save(null, {method: 'update'}).then(function() {
 
@@ -343,7 +343,7 @@ module.exports = function(Bookshelf, handler) {
       query.then = function(onFulfilled, onRejected) {
         equal(this.bindings.length, 2);
         equal(this.wheres.length, 1);
-        return When.resolve(this.toString()).then(onFulfilled, onRejected);
+        return when.resolve(this.toString()).then(onFulfilled, onRejected);
       };
 
       user
