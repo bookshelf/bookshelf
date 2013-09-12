@@ -1,10 +1,12 @@
-//     Bookshelf.js 0.3.0
+//     Bookshelf.js 0.3.1
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
-(function(define) { "use strict";
+(function(define) {
+
+"use strict";
 
 define(function(require, exports, module) {
 
@@ -16,9 +18,9 @@ define(function(require, exports, module) {
 
   // ...as are all local dependencies. These are the main objects that
   // need to be augmented in the constructor to work properly.
-  var Model      = require('./lib/model').Model;
-  var Collection = require('./lib/collection').Collection;
-  var Relation   = require('./lib/relation').Relation;
+  var SqlModel      = require('./dialects/sql/model').Model;
+  var SqlCollection = require('./dialects/sql/collection').Collection;
+  var SqlRelation   = require('./dialects/sql/relation').Relation;
 
   // Finally, the `Events`, which we've supplemented with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We mix this
@@ -45,19 +47,19 @@ define(function(require, exports, module) {
     // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
     // mixing in the correct `builder` method, as well as the `relation` method,
     // passing in the correct `Model` & `Collection` constructors for later reference.
-    var ModelCtor = this.Model = Model.extend({
+    var ModelCtor = this.Model = SqlModel.extend({
       builder: function(tableName) {
         return knex(tableName);
       },
       relation: function(type, Target, options) {
-        return new Relation(type, Target, options, ModelCtor, CollectionCtor);
+        return new SqlRelation(type, Target, options, ModelCtor, CollectionCtor);
       }
     });
 
     // The collection also references the correct `Model`, specified above, for creating
     // new `Model` instances in the collection. We also extend with the correct builder /
     // `knex` combo.
-    var CollectionCtor = this.Collection = Collection.extend({
+    var CollectionCtor = this.Collection = SqlCollection.extend({
       model: ModelCtor,
       builder: function(tableName) {
         return knex(tableName);
@@ -95,10 +97,10 @@ define(function(require, exports, module) {
     return new this(knex);
   };
 
-  // The `forge` function properly instantiates a new `Model` or `Collection`
+  // The `forge` function properly instantiates a new Model or Collection
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
-  Model.forge = Collection.forge = function() {
+  SqlModel.forge = SqlCollection.forge = function() {
     var inst = Object.create(this.prototype);
     var obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);

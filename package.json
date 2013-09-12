@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
@@ -35,7 +35,8 @@
     "objectdump": "~0.3.0",
     "underscore.string": "~2.3.1",
     "grunt": "~0.4.1",
-    "grunt-release": "~0.5.1"
+    "grunt-release": "~0.5.1",
+    "tests-base": "git+ssh://git@github.com/bookshelf/tests-base.git"
   },
   "author": {
     "name": "Tim Griesser",
