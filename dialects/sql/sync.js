@@ -16,13 +16,16 @@ define(function(require, exports) {
   // part of a transaction, and this information is passed along to `Knex`.
   var Sync = function(syncing, options) {
     options || (options = {});
-    this.query = syncing.query();
+    this.query   = syncing.query();
     this.syncing = syncing.resetQuery();
     this.options = options;
-    if (options.transacting) this.query.transacting(options.transacting);
+    this._init(syncing, options);
+    this.initialize(syncing, options);
   };
 
   _.extend(Sync.prototype, {
+
+    initialize: function() {},
 
     // Select the first item from the database - only used by models.
     first: function() {
@@ -83,7 +86,12 @@ define(function(require, exports) {
         return when.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
       }
       return this.query.del();
+    },
+
+    _init: function(syncing, options) {
+      if (options.transacting) this.query.transacting(options.transacting);
     }
+
   });
 
   exports.Sync = Sync;

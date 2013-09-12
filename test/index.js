@@ -12,6 +12,15 @@ base.Events();
 base.Relation();
 base.Eager();
 
+// var sql = require('bookshelf-tests-sql');
+
+// sql.Collection();
+// sql.Model();
+// sql.Helpers();
+// sql.Eager();
+// sql.Relation();
+// sql.Sync();
+
 // The output goes here.
 exports.output = {};
 
