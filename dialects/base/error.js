@@ -1,9 +1,9 @@
+// Error Base
+// ---------------
 (function(define) {
 
 "use strict";
 
-// Error
-// ---------------
 define(function(require, exports) {
 
   var BaseError = function(name) {

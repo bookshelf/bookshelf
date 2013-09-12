@@ -1,9 +1,9 @@
+// Sync
+// ---------------
 (function(define) {
 
 "use strict";
 
-// Sync
-// ---------------
 define(function(require, exports) {
 
   var when     = require('when');

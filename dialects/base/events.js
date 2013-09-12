@@ -1,9 +1,9 @@
+// Events
+// ---------------
 (function(define) {
 
 "use strict";
 
-// Events
-// ---------------
 define(function(require, exports) {
 
   var when        = require('when');

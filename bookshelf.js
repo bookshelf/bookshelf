@@ -10,13 +10,11 @@
 
 define(function(require, exports, module) {
 
-  // All external dependencies are referenced through a local module,
-  // so that you can modify the `exports` and say... swap out `underscore`
-  // for `lodash` if you really wanted to.
-  var _          = require('./lib/ext/underscore')._;
-  var Knex       = require('./lib/ext/knex').Knex;
+  // All external libraries needed in this scope.
+  var _          = require('underscore');
+  var Knex       = require('knex');
 
-  // ...as are all local dependencies. These are the main objects that
+  // All local dependencies... These are the main objects that
   // need to be augmented in the constructor to work properly.
   var SqlModel      = require('./dialects/sql/model').Model;
   var SqlCollection = require('./dialects/sql/collection').Collection;
@@ -25,7 +23,7 @@ define(function(require, exports, module) {
   // Finally, the `Events`, which we've supplemented with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
   // mix this into the prototypes of the main objects in the library.
-  var Events     = require('./lib/events').Events;
+  var Events        = require('./dialects/base/events').Events;
 
   // Constructor for a new `Bookshelf` object, it accepts
   // an active `knex` instance and initializes the appropriate

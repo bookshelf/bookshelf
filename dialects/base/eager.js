@@ -1,9 +1,9 @@
+// Eager Base
+// ---------------
 (function(define) {
 
 "use strict";
 
-// Base Eager
-// ---------------
 define(function(require, exports) {
 
   var _         = require('underscore');

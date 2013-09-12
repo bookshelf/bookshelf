@@ -1,9 +1,9 @@
+// Base Model
+// ---------------
 (function(define) {
 
 "use strict";
 
-// Base Model
-// ---------------
 define(function(require, exports) {
 
   var _        = require('underscore');
