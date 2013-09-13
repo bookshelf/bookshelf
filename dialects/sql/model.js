@@ -96,8 +96,7 @@ define(function(require, exports) {
       // next step of the model. For simplicity, we temporarily attach the options
       // to `_eagerOptions`, which is cleaned up in the `_handleEager` method.
       if (options.withRelated) {
-        model._eagerOptions = options;
-        sync = sync.tap(this._handleEager);
+        sync = sync.tap(this._handleEager(options));
       }
 
       return sync.tap(function(response) {
@@ -113,8 +112,8 @@ define(function(require, exports) {
     // Eager loads relationships onto an already populated `Model` instance.
     load: function(relations, options) {
       _.isArray(relations) || (relations = [relations]);
-      this._eagerOptions = _.extend({}, options, {shallow: true, withRelated: relations});
-      return this._handleEager([this.toJSON({shallow: true})]).yield(this);
+      var handler = this._handleEager(_.extend({}, options, {shallow: true, withRelated: relations}));
+      return handler([this.toJSON({shallow: true})]).yield(this);
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -225,11 +224,11 @@ define(function(require, exports) {
     },
 
     // Handle the related data loading on the model.
-    _handleEager: function(response) {
+    _handleEager: function(options) {
       var model = this;
-      var options = this._eagerOptions;
-      delete this._eagerOptions;
-      return new EagerRelation([this], response, this).fetch(options);
+      return function(response) {
+        return new EagerRelation([model], response, model).fetch(options);
+      };
     }
 
   });

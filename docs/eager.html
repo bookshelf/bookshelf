@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>eager.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bookshelf.html">
+                bookshelf.js
+              </a>
+            
+              
+              <a class="source" href="collection.html">
+                collection.js
+              </a>
+            
+              
+              <a class="source" href="collectionbase.html">
+                collectionbase.js
+              </a>
+            
+              
+              <a class="source" href="eager.html">
+                eager.js
+              </a>
+            
+              
+              <a class="source" href="events.html">
+                events.js
+              </a>
+            
+              
+              <a class="source" href="helpers.html">
+                helpers.js
+              </a>
+            
+              
+              <a class="source" href="model.html">
+                model.js
+              </a>
+            
+              
+              <a class="source" href="modelbase.html">
+                modelbase.js
+              </a>
+            
+              
+              <a class="source" href="relation.html">
+                relation.js
+              </a>
+            
+              
+              <a class="source" href="sync.html">
+                sync.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>eager.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>(define) { <span class="string">"use strict"</span>;
+
+define(<span class="keyword">function</span>(require, exports, module) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>All external dependencies are referenced through a local module,
+so that you can modify the <code>exports</code> and say... swap out <code>underscore</code>
+for <code>lodash</code> if you really wanted to.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _    = require(<span class="string">'./ext/underscore'</span>)._;
+  <span class="keyword">var</span> when = require(<span class="string">'./ext/when'</span>).when;
+
+  <span class="keyword">var</span> Helpers  = require(<span class="string">'./helpers'</span>).Helpers;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h2">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2>Bookshelf.Eager</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>An <code>Eager</code> object temporarily stores the models from an eager load,
+and handles matching eager loaded objects with their parent(s). The <code>tempModel</code>
+is only used to retrieve the value of the relation method, to know the constrains
+for the eager query.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Eager = <span class="keyword">function</span>(parent, parentResponse, target) {
+    <span class="keyword">this</span>.parent = parent;
+    <span class="keyword">this</span>.target = target;
+    <span class="keyword">this</span>.parentResponse = parentResponse;
+    _.bindAll(<span class="keyword">this</span>, <span class="string">'pushModels'</span>, <span class="string">'eagerFetch'</span>);
+  };
+
+  Eager.prototype = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>This helper function is used internally to determine which relations
+are necessary for fetching based on the <code>model.load</code> or <code>withRelated</code> option.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    fetch: <span class="keyword">function</span>(options) {
+      <span class="keyword">var</span> relationName, related, relation;
+      <span class="keyword">var</span> target      = <span class="keyword">this</span>.target;
+      <span class="keyword">var</span> handled     = <span class="keyword">this</span>.handled = {};
+      <span class="keyword">var</span> withRelated = <span class="keyword">this</span>.prepWithRelated(options.withRelated);
+      <span class="keyword">var</span> subRelated  = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Internal flag to determine whether to set the ctor(s) on the <code>Relation</code> object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      target._isEager = <span class="literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Eager load each of the <code>withRelated</code> relation item, splitting on &#39;.&#39;
+which indicates a nested eager load.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> withRelated) {
+
+        related = key.split(<span class="string">'.'</span>);
+        relationName = related[<span class="number">0</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Add additional eager items to an array, to load at the next level in the query.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (related.length &gt; <span class="number">1</span>) {
+          <span class="keyword">var</span> relatedObj = {};
+          subRelated[relationName] || (subRelated[relationName] = []);
+          relatedObj[related.slice(<span class="number">1</span>).join(<span class="string">'.'</span>)] = withRelated[key];
+          subRelated[relationName].push(relatedObj);
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Only allow one of a certain nested type per-level.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span> (handled[relationName]) <span class="keyword">continue</span>;
+
+        relation = target[relationName]();
+
+        <span class="keyword">if</span> (!relation) <span class="keyword">throw</span> <span class="keyword">new</span> Error(relationName + <span class="string">' is not defined on the model.'</span>);
+
+        handled[relationName] = relation;
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Delete the internal flag from the model.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">delete</span> target._isEager;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Fetch all eager loaded models, loading them onto
+an array of pending deferred objects, which will handle
+all necessary pairing with parent objects, etc.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> pendingDeferred = [];
+      <span class="keyword">for</span> (relationName <span class="keyword">in</span> handled) {
+        pendingDeferred.push(<span class="keyword">this</span>.eagerFetch(relationName, handled[relationName], _.extend({}, options, {
+          isEager: <span class="literal">true</span>,
+          withRelated: subRelated[relationName],
+          beforeFn: withRelated[relationName] || noop
+        })));
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Return a deferred handler for all of the nested object sync
+returning the original response when these syncs &amp; pairings are complete.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">var</span> eagerHandler = <span class="keyword">this</span>;
+      <span class="keyword">return</span> when.all(pendingDeferred).then(<span class="keyword">function</span>() {
+        <span class="keyword">return</span> eagerHandler.parentResponse;
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Prep the <code>withRelated</code> object, to normalize into an object where each
+has a function that is called when running the query.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    prepWithRelated: <span class="keyword">function</span>(withRelated) {
+      <span class="keyword">if</span> (!_.isArray(withRelated)) withRelated = [withRelated];
+      <span class="keyword">return</span> _.reduce(withRelated, <span class="keyword">function</span>(memo, item) {
+        _.isString(item) ? memo[item] = noop : _.extend(memo, item);
+        <span class="keyword">return</span> memo;
+      }, {});
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Handles an eager loaded fetch, passing the name of the item we&#39;re fetching for,
+and any options needed for the current fetch.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    eagerFetch: <span class="keyword">function</span>(relationName, handled, options) {
+      <span class="keyword">var</span> relatedData = handled.relatedData;
+
+      <span class="keyword">if</span> (relatedData.type === <span class="string">'morphTo'</span>) <span class="keyword">return</span> <span class="keyword">this</span>.morphToFetch(relationName, relatedData, options);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Call the function, if one exists, to constrain the eager loaded query.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      options.beforeFn.call(handled, handled.query());
+
+      <span class="keyword">var</span> relation = <span class="keyword">this</span>;
+      <span class="keyword">return</span> handled
+        .sync(_.extend({}, options, {parentResponse: <span class="keyword">this</span>.parentResponse}))
+        .select()
+        .then(<span class="keyword">function</span>(resp) {
+          <span class="keyword">var</span> relatedModels = relation.pushModels(relationName, handled, resp);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>If there is a response, fetch additional nested eager relations, if any.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="keyword">if</span> (resp.length &gt; <span class="number">0</span> &amp;&amp; options.withRelated) {
+            <span class="keyword">return</span> <span class="keyword">new</span> Eager(relatedModels, resp, relatedData.createModel())
+              .fetch(options)
+              .then(<span class="keyword">function</span>() { <span class="keyword">return</span> resp; });
+          }
+          <span class="keyword">return</span> resp;
+        });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Special handler for the eager loaded morph-to relations, this handles
+the fact that there are several potential models that we need to be fetching against.
+pairing them up onto a single response for the eager loading.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    morphToFetch: <span class="keyword">function</span>(relationName, relatedData, options) {
+      <span class="keyword">var</span> pending = [];
+      <span class="keyword">var</span> groups = _.groupBy(<span class="keyword">this</span>.parent, <span class="keyword">function</span>(m) {
+        <span class="keyword">return</span> m.get(relationName + <span class="string">'_type'</span>);
+      });
+      <span class="keyword">for</span> (<span class="keyword">var</span> group <span class="keyword">in</span> groups) {
+        <span class="keyword">var</span> Target = Helpers.morphCandidate(relatedData.candidates, group);
+        <span class="keyword">var</span> target = <span class="keyword">new</span> Target();
+        pending.push(target
+          .query(<span class="string">'whereIn'</span>,
+            _.result(target, <span class="string">'idAttribute'</span>), _.uniq(_.invoke(groups[group], <span class="string">'get'</span>, relationName + <span class="string">'_id'</span>))
+          )
+          .sync(options)
+          .select()
+          .then(<span class="keyword">this</span>.morphToHandler(relationName,
+            relatedData.instance(<span class="string">'morphTo'</span>, Target, {morphName: relationName}))));
+      }
+      <span class="keyword">return</span> when.all(pending).then(<span class="keyword">function</span>(resps) {
+        <span class="keyword">return</span> _.flatten(resps);
+      });
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Handler for the individual <code>morphTo</code> fetches,
+attaching any of the related models onto the parent objects,
+stopping at this level of the eager relation loading.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    morphToHandler: <span class="keyword">function</span>(relationName, relatedData) {
+      <span class="keyword">var</span> eager = <span class="keyword">this</span>;
+      <span class="keyword">return</span> <span class="keyword">function</span>(resp) {
+        eager.pushModels(relationName, {relatedData: relatedData}, resp);
+      };
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Pushes each of the incoming models onto a new <code>related</code> array,
+which is used to correcly pair additional nested relations.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    pushModels: <span class="keyword">function</span>(relationName, handled, resp) {
+      <span class="keyword">var</span> models      = <span class="keyword">this</span>.parent;
+      <span class="keyword">var</span> relatedData = handled.relatedData;
+      <span class="keyword">var</span> related     = [];
+      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = resp.length; i &lt; l; i++) {
+        related.push(relatedData.createModel(resp[i]));
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>If this is a morphTo, we only want to pair on the morphValue for the current relation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> (relatedData.type === <span class="string">'morphTo'</span>) {
+        models = _.filter(models, <span class="keyword">function</span>(model) { <span class="keyword">return</span> model.get(relatedData.key(<span class="string">'morphKey'</span>)) === relatedData.key(<span class="string">'morphValue'</span>); });
+      }
+      <span class="keyword">return</span> relatedData.eagerPair(relationName, related, models);
+    }
+  };
+
+  <span class="keyword">var</span> noop = <span class="keyword">function</span>() {};
+
+  exports.Eager = Eager;
+
+});
+
+})(
+  <span class="keyword">typeof</span> define === <span class="string">'function'</span> &amp;&amp; define.amd ? define : <span class="function"><span class="keyword">function</span> <span class="params">(factory)</span> {</span> factory(require, exports, module); }
+);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

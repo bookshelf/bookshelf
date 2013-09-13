@@ -1,3 +1,5 @@
+// Base Model
+// ---------------
 (function(define) {
 
 "use strict";
@@ -166,7 +168,11 @@ define(function(require, exports) {
         return model.triggerThen('destroyed', model, resp, options);
       })
       .then(function() { return model._reset(); });
-    }
+    },
+
+    _handleResponse: function() {},
+
+    _handleEager: function() {}
 
   });
 

@@ -37,12 +37,13 @@ define(function(require, exports) {
           if (!options.withRelated) return response;
           return new EagerRelation(collection.models, response, new collection.model())
             .fetch(options)
-            .then(function() { return response; });
+            .yield(response);
         })
-        .then(function(response) {
+        .tap(function(response) {
           return collection.triggerThen('fetched', collection, response, options);
         })
-        .otherwise(function() {
+        .otherwise(function(err) {
+          if (err !== null) throw err;
           collection.reset([], {silent: true});
         })
         .yield(this);
@@ -63,7 +64,7 @@ define(function(require, exports) {
       options = _.extend({}, options, {shallow: true, withRelated: relations});
       return new EagerRelation(this.models, this.toJSON(options), new this.model())
         .fetch(options)
-        .then(function() { return collection; });
+        .yield(this);
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.

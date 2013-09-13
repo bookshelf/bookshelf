@@ -394,9 +394,8 @@
       Utility
     </a>
     <ul class="toc_section">
-      <li>– <a href="#Bookshelf-Backbone">Bookshelf.Backbone</a></li>
-      <li>– <a href="#Bookshelf-Knex">Bookshelf.Knex</a></li>
-      <li>– <a href="#Bookshelf-Transaction">Bookshelf.Transaction</a></li>
+      <li>– <a href="#Bookshelf-knex">Bookshelf.knex</a></li>
+      <li>– <a href="#Bookshelf-transaction">Bookshelf.transaction</a></li>
     </ul>
 
     <a class="toc_title" href="#faq">
@@ -2001,24 +2000,16 @@ collection
 
   <h2 id="Utility">Utility</h2>
 
-    <p id="Bookshelf-Backbone">
-      <b class="header">Bookshelf.Backbone</b>
-      <br />
-      A reference to the copy of Backbone used to create the Bookshelf objects can be accessed
-      from <tt>Bookshelf.Backbone</tt>. This can be helpful if you want to use Models &amp; Collections
-      elsewhere on the server, and ensure they are compatible with the Bookshelf objects.
-    </p>
-
     <p id="Bookshelf-Knex">
-      <b class="header">Bookshelf.Knex</b>
+      <b class="header">Bookshelf.knex</b>
       <br />
       A reference to the <tt>Knex.js</tt> instance being used by Bookshelf.
     </p>
 
     <p id="Bookshelf-Transaction">
-      <b class="header">Bookshelf.Transaction</b>
+      <b class="header">Bookshelf.transaction</b>
       <br />
-      An alias to <a href="http://knexjs.org/#Transaction">Knex.Transaction</a>, the transaction
+      An alias to <a href="http://knexjs.org/#Transaction">Knex.transaction</a>, the transaction
       object must be passed along in the options of any relevant <tt>Bookshelf.Sync</tt> calls,
       to ensure all queries are on the same connection. The entire transaction block is
       a promise that will resolve when the transaction is committed, or fail if the

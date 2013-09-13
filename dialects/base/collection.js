@@ -1,13 +1,18 @@
+// Base Collection
+// ---------------
 (function(define) {
 
 "use strict";
 
+// The `CollectionBase` is an object that takes
 define(function(require, exports) {
 
+  // All exernal dependencies required in this scope.
   var _         = require('underscore');
   var when      = require('when');
   var Backbone  = require('backbone');
 
+  // All components that need to be referenced in this scope.
   var Events    = require('./events').Events;
   var ModelBase = require('./model').ModelBase;
 

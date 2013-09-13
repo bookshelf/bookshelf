@@ -1,11 +1,13 @@
+// Events
+// ---------------
 (function(define) {
 
 "use strict";
 
 define(function(require, exports) {
 
-  var Backbone    = require('backbone');
   var when        = require('when');
+  var Backbone    = require('backbone');
   var triggerThen = require('trigger-then');
 
   // Mixin the `triggerThen` function into all relevant Backbone objects,

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var When = require('when');
+var when = require('when');
 
 var drops = [
   'sites', 'sitesmeta', 'admins',
@@ -10,59 +10,59 @@ var drops = [
 
 module.exports = function(Bookshelf) {
 
-  var Schema = Bookshelf.Knex.Schema;
+  var schema = Bookshelf.knex.schema;
 
-  return When.all(_.map(drops, function(val) {
-    return Schema.dropTableIfExists(val);
+  return when.all(_.map(drops, function(val) {
+    return schema.dropTableIfExists(val);
   }))
   .then(function() {
 
-    return When.all([
-      Schema.createTable('sites', function(table) {
+    return when.all([
+      schema.createTable('sites', function(table) {
         table.increments('id');
         table.string('name');
       }),
 
-      Schema.createTable('sitesmeta', function(table) {
+      schema.createTable('sitesmeta', function(table) {
         table.increments('id');
         table.integer('site_id');
         table.text('description');
       }),
 
-      Schema.createTable('info', function(table) {
+      schema.createTable('info', function(table) {
         table.increments('id');
         table.integer('meta_id');
         table.text('other_description');
       }),
 
-      Schema.createTable('admins', function(table) {
+      schema.createTable('admins', function(table) {
         table.increments('id');
         table.string('username');
         table.string('password');
         table.timestamps();
       }),
 
-      Schema.createTable('admins_sites', function(table) {
+      schema.createTable('admins_sites', function(table) {
         table.increments('id');
         table.integer('admin_id');
         table.integer('site_id');
         table.string('item').defaultTo('test');
       }),
 
-      Schema.createTable('blogs', function(table) {
+      schema.createTable('blogs', function(table) {
         table.increments('id');
         table.integer('site_id');
         table.string('name');
       }),
 
-      Schema.createTable('authors', function(table) {
+      schema.createTable('authors', function(table) {
         table.increments('id');
         table.integer('site_id');
         table.string('first_name');
         table.string('last_name');
       }),
 
-      Schema.createTable('posts', function(table) {
+      schema.createTable('posts', function(table) {
         table.increments('id');
         table.integer('owner_id');
         table.integer('blog_id');
@@ -70,24 +70,24 @@ module.exports = function(Bookshelf) {
         table.text('content');
       }),
 
-      Schema.createTable('authors_posts', function(table) {
+      schema.createTable('authors_posts', function(table) {
         table.increments('id');
         table.integer('author_id');
         table.integer('post_id');
       }),
 
-      Schema.createTable('tags', function(table) {
+      schema.createTable('tags', function(table) {
         table.increments('id');
         table.string('name');
       }),
 
-      Schema.createTable('posts_tags', function(table) {
+      schema.createTable('posts_tags', function(table) {
         table.increments('id');
         table.integer('post_id');
         table.integer('tag_id');
       }),
 
-      Schema.createTable('comments', function(table) {
+      schema.createTable('comments', function(table) {
         table.increments('id');
         table.integer('post_id');
         table.string('name');
@@ -95,22 +95,22 @@ module.exports = function(Bookshelf) {
         table.text('comment');
       }),
 
-      Schema.createTable('users', function(table) {
+      schema.createTable('users', function(table) {
         table.increments('uid');
         table.string('username');
       }),
 
-      Schema.createTable('roles', function(table) {
+      schema.createTable('roles', function(table) {
         table.increments('rid');
         table.string('name');
       }),
 
-      Schema.createTable('users_roles', function(table) {
+      schema.createTable('users_roles', function(table) {
         table.integer('rid');
         table.integer('uid');
       }),
 
-      Schema.createTable('photos', function(table) {
+      schema.createTable('photos', function(table) {
         table.increments('id');
         table.string('url');
         table.string('caption');
