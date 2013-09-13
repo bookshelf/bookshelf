@@ -1,9 +1,9 @@
 var when  = require('when');
 var _     = require('underscore');
 
-module.exports = function(Bookshelf) {
+module.exports = function(bookshelf) {
 
-  var knex = Bookshelf.knex;
+  var knex = bookshelf.knex;
 
   return when.all([
 

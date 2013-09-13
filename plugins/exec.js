@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
 
-  var _ = require('../lib/ext/underscore')._;
+  var _ = require('underscore');
 
   module.exports = function(Bookshelf) {
 

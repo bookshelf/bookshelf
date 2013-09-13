@@ -116,9 +116,7 @@ define(function(require, exports) {
 
       // If this is a single relation and we're not eager loading,
       // limit the query to a single item.
-      if (this.isSingle()) {
-        if (!resp) knex.limit(1);
-      }
+      if (this.isSingle() && !resp) knex.limit(1);
 
       // Finally, add (and validate) the where conditions, necessary for constraining the relation.
       this.whereClauses(knex, resp);

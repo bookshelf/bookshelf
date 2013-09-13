@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.3.1
+//     Bookshelf.js 0.5.0
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -98,6 +98,7 @@ define(function(require, exports, module) {
 
   });
 
+  // Alias to `new Bookshelf(opts)`.
   Bookshelf.initialize = function(knex) {
     return new this(knex);
   };

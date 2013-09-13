@@ -1,13 +1,13 @@
 
 // All Models & Collections Used in the Tests
 // (sort of mimics a simple multi-site blogging engine)
-module.exports = function(Shelf) {
+module.exports = function(Bookshelf) {
 
-  var Info = Shelf.Model.extend({
+  var Info = Bookshelf.Model.extend({
     tableName: 'info'
   });
 
-  var SiteMeta = Shelf.Model.extend({
+  var SiteMeta = Bookshelf.Model.extend({
     tableName: 'sitesmeta',
     site: function() {
       return this.belongsTo(Site);
@@ -17,7 +17,7 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Site = Shelf.Model.extend({
+  var Site = Bookshelf.Model.extend({
     tableName: 'sites',
     defaults: {
       name: 'Your Cool Site'
@@ -42,22 +42,22 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Sites = Shelf.Collection.extend({
+  var Sites = Bookshelf.Collection.extend({
     model: Site
   });
 
-  var Admin = Shelf.Model.extend({
+  var Admin = Bookshelf.Model.extend({
     tableName: 'admins',
     hasTimestamps: true
   });
 
   // All admins for a site.
-  var Admins = Shelf.Collection.extend({
+  var Admins = Bookshelf.Collection.extend({
     model: Admin
   });
 
   // Author of a blog post.
-  var Author = Shelf.Model.extend({
+  var Author = Bookshelf.Model.extend({
     tableName: 'authors',
     site: function() {
       return this.belongsTo(Site);
@@ -76,12 +76,12 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Authors = Shelf.Collection.extend({
+  var Authors = Bookshelf.Collection.extend({
     model: Author
   });
 
   // A blog for a site.
-  var Blog = Shelf.Model.extend({
+  var Blog = Bookshelf.Model.extend({
     tableName: 'blogs',
     defaults: {
       title: ''
@@ -100,12 +100,12 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Blogs = Shelf.Collection.extend({
+  var Blogs = Bookshelf.Collection.extend({
     model: Blog
   });
 
   // An individual post on a blog.
-  var Post = Shelf.Model.extend({
+  var Post = Bookshelf.Model.extend({
     tableName: 'posts',
     defaults: {
       author: '',
@@ -128,11 +128,11 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Posts = Shelf.Collection.extend({
+  var Posts = Bookshelf.Collection.extend({
     model: Post
   });
 
-  var Comment = Shelf.Model.extend({
+  var Comment = Bookshelf.Model.extend({
     tableName: 'comments',
     defaults: {
       email: '',
@@ -143,18 +143,18 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Comments = Shelf.Collection.extend({
+  var Comments = Bookshelf.Collection.extend({
     model: Comment
   });
 
-  var Tag = Shelf.Model.extend({
+  var Tag = Bookshelf.Model.extend({
     tableName: 'tags',
     posts: function() {
       return this.belongsToMany(Post);
     }
   });
 
-  var User = Shelf.Model.extend({
+  var User = Bookshelf.Model.extend({
     tableName: 'users',
     idAttribute: 'uid',
     roles: function() {
@@ -162,7 +162,7 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Role = Shelf.Model.extend({
+  var Role = Bookshelf.Model.extend({
     tableName: 'roles',
     idAttribute: 'rid',
     users: function(){
@@ -170,14 +170,14 @@ module.exports = function(Shelf) {
     }
   });
 
-  var Photo = Shelf.Model.extend({
+  var Photo = Bookshelf.Model.extend({
     tableName: 'photos',
     imageable: function() {
       return this.morphTo('imageable', Site, Author);
      }
    });
 
-  var Photos = Shelf.Collection.extend({
+  var Photos = Bookshelf.Collection.extend({
     model: Photo
   });
 
