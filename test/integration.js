@@ -7,8 +7,10 @@ module.exports = function(Bookshelf) {
     client: 'mysql',
     connection: config.mysql,
     pool: {
-      afterCreate: function(connection) {
-        return nodefn.call(connection.query.bind(connection), "SET sql_mode='TRADITIONAL';", []);
+      afterCreate: function(connection, callback) {
+        return nodefn.call(connection.query.bind(connection), "SET sql_mode='TRADITIONAL';", []).then(function() {
+          callback(null, connection);
+        });
       }
     }
   });

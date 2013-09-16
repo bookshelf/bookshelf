@@ -255,7 +255,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select * from `photos` where `imageable_id` = 1 and `imageable_type` = doctors';
+        var sql = "select * from `photos` where `imageable_id` = 1 and `imageable_type` = 'doctors'";
 
         equal(_knex.toString(), sql);
       });

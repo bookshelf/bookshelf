@@ -1,12 +1,13 @@
 
 var Bookshelf = require('../bookshelf');
 var base      = require('bookshelf-tests-base');
+var mocha     = require('mocha');
 
-require("mocha-as-promised")();
+require("mocha-as-promised")(mocha);
 
 global.sinon = require("sinon");
 
-var chai       = global.chai = require("chai");
+var chai = global.chai = require("chai");
 
 chai.use(require("chai-as-promised"));
 chai.use(require("sinon-chai"));

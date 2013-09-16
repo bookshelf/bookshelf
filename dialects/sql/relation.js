@@ -4,13 +4,13 @@
 
 define(function(require, exports) {
 
-  var _ = require('underscore');
-  var when = require('when');
-  var inflection = require('inflection');
+  var _            = require('underscore');
+  var when         = require('when');
+  var inflection   = require('inflection');
 
-  var Helpers = require('./helpers').Helpers;
+  var Helpers      = require('./helpers').Helpers;
 
-  var ModelBase = require('../base/model').ModelBase;
+  var ModelBase    = require('../base/model').ModelBase;
   var RelationBase = require('../base/relation').RelationBase;
 
   var push = [].push;
@@ -354,10 +354,7 @@ define(function(require, exports) {
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      var collection = this;
-      return when.all(pending).then(function() {
-        return collection;
-      });
+      return when.all(pending).yield(this);
     },
 
     // Handles setting the appropriate constraints and shelling out
@@ -384,8 +381,19 @@ define(function(require, exports) {
       if (options && options.transacting) {
         builder.transacting(options.transacting);
       }
-      if (method === 'delete') return builder.where(data).del();
-      return builder.insert(data);
+      var collection = this;
+      if (method === 'delete') {
+        return builder.where(data).del().then(function() {
+          var model;
+          if (!item) return collection.reset();
+          if (model = collection.get(data[relatedData.key('otherKey')])) {
+            collection.remove(model);
+          }
+        });
+      }
+      return builder.insert(data).then(function() {
+        collection.add(item);
+      });
     }
 
   };

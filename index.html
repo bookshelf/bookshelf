@@ -160,6 +160,10 @@
       font-size: 18px;
       line-height: 35px;
     }
+    span.small {
+      font-size: 12px;
+      font-style: italic;
+    }
     span.alias {
       font-size: 14px;
       font-style: italic;
@@ -293,12 +297,13 @@
       Introduction
     </a>
 
+    <a class="toc_title" href="#upgrading">
+      Upgrading
+    </a>
+
     <a class="toc_title" href="#Initialize">
       Initialize
     </a>
-    <ul class="toc_section">
-      <li>– <a href="#Init-multi-instance">multi-instance</a></li>
-    </ul>
 
     <a class="toc_title" href="#Model">
       Model
@@ -432,7 +437,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h3>Latest Release: 0.3.1</h3>
+    <h2>Latest Release: 0.3.1 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -462,7 +467,7 @@
       for crafting intelligent defaults for related key and table names.
     </p>
 
-    <p>
+    <p class="warning">
       Special thanks to <a target="_blank" href="https://twitter.com/taylorotwell">Taylor Otwell</a> and his work
       on the <a target="_blank" href="http://laravel.com/docs/eloquent">Eloquent ORM</a>, which has heavily
       influenced the library's design.
