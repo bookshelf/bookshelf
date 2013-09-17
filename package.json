@@ -37,7 +37,6 @@
     "underscore.string": "~2.3.1",
     "grunt": "~0.4.1",
     "grunt-release": "~0.5.1",
-    "tests-base": "git+ssh://git@github.com/bookshelf/tests-base.git",
     "mocha-as-promised": "~1.4.0",
     "chai-as-promised": "~3.3.1",
     "chai": "~1.7.2",

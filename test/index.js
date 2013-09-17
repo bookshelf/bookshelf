@@ -1,6 +1,6 @@
 
 var Bookshelf = require('../bookshelf');
-var base      = require('bookshelf-tests-base');
+var base      = require('./base');
 var mocha     = require('mocha');
 
 require("mocha-as-promised")(mocha);
