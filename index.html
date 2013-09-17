@@ -362,28 +362,25 @@
       <li>– <a href="#Collection-model">model</a></li>
       <li>– <a href="#Collection-constructor">constructor / initialize</a></li>
       <li>– <a href="#Collection-models">models</a></li>
-      <li>– <a href="#Collection-fetch">fetch</a></li>
-      <li>– <a href="#Collection-fetchOne">fetchOne</a></li>
-      <li>– <a href="#Collection-load">load</a></li>
-      <li>– <a href="#Collection-create">create</a></li>
       <li>– <a href="#Collection-parse">parse</a></li>
       <li>– <a href="#Collection-toJSON">toJSON</a></li>
+      <li>– <a href="#Collection-fetch">fetch</a></li>
+      <li>– <a href="#Collection-fetchOne">fetchOne</a></li>
+      <li>– <a href="#Collection-mapThen">mapThen</a></li>
+      <li>– <a href="#Collection-invokeThen">invokeThen</a></li>
+      <li>– <a href="#Collection-load">load</a></li>
+      <li>– <a href="#Collection-add">add</a></li>
+      <li>– <a href="#Collection-remove">remove</a></li>
+      <li>– <a href="#Collection-reset">reset</a></li>
+      <li>– <a href="#Collection-set">set</a></li>
+      <li>– <a href="#Collection-get">get</a></li>
+      <li>– <a href="#Collection-at">at</a></li>
       <li>– <a href="#Collection-query">query</a></li>
       <li>– <a href="#Collection-resetQuery">resetQuery</a></li>
       <li>– <a href="#Collection-sync">sync</a></li>
-      <li>– <a href="#Collection-Backbone-Methods"><b>Backbone Methods (19)</b></a></li>
+      <li>– <a href="#Collection-create">create</a></li>
+      <li>– <a href="#Collection-Backbone-Methods"><b>Other Backbone Methods (12)</b></a></li>
       <li>– <a href="#Collection-Underscore-Methods"><b>Underscore Methods (28)</b></a></li>
-    </ul>
-
-    <a class="toc_title" href="#Sync">
-      Sync
-    </a>
-    <ul class="toc_section">
-      <li>– <a href="#Sync-first">first</a></li>
-      <li>– <a href="#Sync-select">select</a></li>
-      <li>– <a href="#Sync-insert">insert</a></li>
-      <li>– <a href="#Sync-update">update</a></li>
-      <li>– <a href="#Sync-del">del / delete</a></li>
     </ul>
 
     <a class="toc_title" href="#Events">
@@ -422,7 +419,7 @@
     <p>
       <b>Bookshelf</b> is a <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> ORM for Node.js,
       built on <a href="http://knexjs.org">Knex</a> query builder.
-      It extends the Model &amp; Collection foundations of Backbone.js, providing <a href="#Bookshelf-Transaction">transaction support</a>,
+      It extends the Model &amp; Collection foundations of Backbone.js, providing <a href="#Bookshelf-transaction">transaction support</a>,
       eager/nested-eager relation loading, <a href="#Model-polymorphic-associations">polymorphic associations</a>, and support for
       one-to-one, one-to-many, and many-to-many relations.
     </p>
@@ -459,9 +456,9 @@
 
     <p>
       Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
-      <a target="_blank" href="http://backbonejs.org">Backbone.js</a> <small>(1.0.x)</small>,
-      <a target="_blank" href="http://underscorejs.org/">Underscore.js</a> <small>(1.4.x)</small>,
-      <a target="_blank" href="https://github.com/cujojs/when">when.js</a> <small>(2.1.x)</small>
+      <a target="_blank" href="http://backbonejs.org">Backbone.js</a>,
+      <a target="_blank" href="http://underscorejs.org/">Underscore.js</a>,
+      <a target="_blank" href="https://github.com/cujojs/when">when.js</a>
       for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
@@ -476,12 +473,12 @@
     <h2 id="introduction">Introduction</h2>
 
     <p>
-      Bookshelf aims to provide a simple library for common tasks when querying relational
-      databases in javascript, and forming relations between these objects, using ideas from
-      DataMapper and Active Record. With a <a href="docs/bookshelf.html">concise, literate codebase</a>,
-      Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific
-      validation scheme, and provides flexible and efficient relation/nested-relation loading, and
-      first class transaction support.
+      Bookshelf aims to provide a simple library for common tasks when querying databases in javascript,
+      and forming relations between these objects, taking a lot of ideas from the
+      the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.
+      With a <a href="docs/bookshelf.html">concise, literate codebase</a>, Bookshelf is simple to
+      read, understand, and extend. It doesn't force you to use any specific validation scheme,
+      provides flexible and efficient relation/nested-relation loading, and first class transaction support.
     </p>
 
     <p>
@@ -494,7 +491,7 @@
     <h2 id="installation">Installation</h2>
 
     <p>
-      All dependencies are specified in package.json file but include underscore.js, when.js, and knex.js library.
+      All dependencies are specified in package.json file but include <tt>underscore</tt>, <tt>when</tt>, and <tt>knex</tt> libraries.
       You'll then need to install either <tt>mysql</tt>, <tt>pg</tt>, or <tt>sqlite3</tt> from npm. It is advisable to install your own copy
       of Knex as well if you wish to build any custom queries outside of the ORM.
     </p>
@@ -508,48 +505,74 @@ $ npm install pg
 $ npm install sqlite3
 </pre>
 
-    <h2 id="Initialize">Bookshelf.Initialize</h2>
+    <h2 id="upgrading">Upgrading</h2>
 
     <p>
-      Required before using Bookshelf, the initialize performs the setup of the database,
-      passing through to Knex's <a href="http://knexjs.org/#Initialize">Initialize</a>.
+      If you are upgrading Bookshelf from 0.3.x to 0.5.x, you'll notice that some things have broken.
+      Luckily, with a few quick fixes to your code, you should be up and runnning in no-time.
+      <ul>
+        <li>
+          Global state is no longer stored in the library, an instance is returned from <tt>Bookshelf.initialize</tt>,
+          so you will need to call this once and then reference this <tt>Bookshelf</tt> client elsewhere in your application.
+          See the <a href="#Initialize">initialize</a> section for more information.
+        </li>
+        <li>
+          Lowercasing of <tt>Bookshelf.initialize</tt>, <tt>Bookshelf.knex</tt>, <tt>Bookshelf.transaction</tt>.
+        </li>
+        <li>
+          During the lifecycle events, such as "fetching", "saving", or "destroying", the model no-longer contains the active
+          query builder instance at the time it is saved. If you need to modify the query builder chain inside of an event handler,
+          you may now use <tt>options.query</tt> inside the event handlers.
+        </li>
+      </ul>
+    </p>
+
+    <h2 id="Initialize">Bookshelf.initialize</h2>
+
+    <p>
+      Bookshelf.initialize is the initializing function that must be called prior to using Bookshelf, accepting either an initialized
+      <a href="http://knexjs.org">Knex</a> client, or a hash of parameters to be passed along to <a href="http://knexjs.org/#initialize">Knex.initialize</a>.
     </p>
 
 <pre>
-Bookshelf.Initialize({
+var MySql = Bookshelf.initialize({
   client: 'mysql',
   connection: {
-    host     : 'localhost',
+    host     : '127.0.0.1',
     user     : 'your_database_user',
     password : 'your_database_password',
-    database : 'your_db',
+    database : 'myapp_test',
     charset  : 'utf8'
   }
 });
+
+var User = MySql.Model.extend({
+  tableName: 'users'
+});
 </pre>
 
-  <p id="Init-multi-instance">
-    It is also possible to use <b>Bookshelf</b> with multiple database connection instances if you'd like,
-    by creating named instances with <tt>Bookshelf.Initialize</tt>. To do this, pass the name of the
-    connection as the first parameter into <b>Bookshelf</b> and it will return that instance, which may
-    also be referenced by name under <tt>Bookshelf.Instances</tt>.
+  <p>
+    An initialize should only ever happen once in your application, as it creates a connection pool for the current database, you should use the instance returned from the initialize call throughout your library.
+
+    You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow is to set the client as a property on the Bookshelf library when your application starts, so you can easily reference it later:
   </p>
 
 <pre>
-var SqliteDB = Bookshelf.Initialize('sqlitedb', {
-  client: 'sqlite',
+// When the app starts
+var Bookshelf  = require('bookshelf');
+Bookshelf.PG = Bookshelf.initialize({
+  client: 'pg',
   connection: {
-    filename : './testdb'
+    // your connection config
   }
 });
 
-var MySql2 = Bookshelf.Initialize('mysql2', {
-  client: 'mysql',
-  connection: { ... }
-});
+// elsewhere, to use the client:
+var Bookshelf = require('bookshelf').PG;
 
-// Bookshelf.Instances['mysql2'] === MySql2;
-// Bookshelf.Instances['sqlitedb'] === SqliteDB;
+var Post = Bookshelf.Model.extend({
+  // ...
+});
 </pre>
 
     <h2 id="Model">Bookshelf.Model</h2>
@@ -650,8 +673,8 @@ var Books = Bookshelf.Model.extend({
 
   constructor: function() {
     Bookshelf.Model.apply(this, arguments);
-    this.on('saving', function(model) {
-      model.query('where', 'type', '=', 'book');
+    this.on('saving', function(model, attrs, options) {
+      options.query('where', 'type', '=', 'book');
     });
   }
 
@@ -1130,9 +1153,9 @@ new Site({id: 1}).admins().attach([1, 2]);
 var admin1 = new Admin({username: 'user1', password: 'test'});
 var admin2 = new Admin({username: 'user2', password: 'test'});
 
-When.all([admin1.save(), admin2.save()])
+when.all([admin1.save(), admin2.save()])
   .then(function() {
-    return When.all([
+    return when.all([
       new Site({id: 1}).admins().attach([admin1, admin2]),
       new Site({id: 2}).admins().attach(admin2)
     ]);
@@ -1331,7 +1354,7 @@ new Photo({id: 1}).fetch({
       If the model <tt>isNew</tt>, any <a href="#Model-defaults">defaults</a> will be added to
       the object being saved. If you wish to use <tt>update</tt> rather than <tt>insert</tt> or
       vice versa, the <tt>{method: ...}</tt> option may be specified to explicitly state which
-      <a href="#Sync">sync</a> method to use in the save call. If the method is <tt>update</tt>,
+      <tt>Bookshelf.Sync</tt> method to use in the save call. If the method is <tt>update</tt>,
       a <tt>{defaults: true}</tt> option may be specified to also merge with the default values.
     </p>
 
@@ -1360,7 +1383,8 @@ new Author({id: 1, first_name: 'User'})
       event if the model is being inserted or updated, and a <tt>"saving"</tt> event in either case. To prevent
       saving the model (with validation, etc.), throwing an error inside one of these event listeners will stop
       saving the model and reject the promise. A <tt>"created"</tt>, or <tt>"updated"</tt> event is fired after the
-      model is saved, as well as a <tt>"saved"</tt> event either way.
+      model is saved, as well as a <tt>"saved"</tt> event either way. If you wish to modify the query
+      when the "saving" event is fired, the knex query object should be available on <tt>options.query</tt>.
     </p>
 
     <p id="Model-destroy">
@@ -1615,7 +1639,7 @@ modelB.isNew(); // false
     <p id="Model-sync">
       <b class="header">sync</b><code>model.sync(method, model, [options])</code>
       <br />
-      Creates and returns a new <a href="#Sync">Bookshelf.Sync</a> instance. Can be overridden for custom behavior.
+      Creates and returns a new <tt>Bookshelf.Sync</tt> instance. Can be overridden for custom behavior.
     </p>
 
     <h2 id="Collection">Bookshelf.Collection</h2>
@@ -1676,7 +1700,7 @@ var Trilogy = Bookshelf.Collection.extend({
       <b class="header">constructor / initialize</b><code>new Collection([models], [options])</code>
       <br />
       When creating a Collection, you may choose to pass in the initial array
-      of <b>models</b>.  The collection's <a target="_blank" href="http://backbonejs.org/#Collection-comparator">comparator</a>
+      of <b>models</b>. The collection's <a target="_blank" href="http://backbonejs.org/#Collection-comparator">comparator</a>
       may be included as an option. Passing <tt>false</tt> as the
       comparator option will prevent sorting. If you define an
       <b>initialize</b> function, it will be invoked when the collection is
@@ -1716,7 +1740,6 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       relations loaded on the collection's models.
     </p>
 
-
     <p id="Collection-fetch">
       <b class="header">fetch</b><code>collection.fetch([options])</code>
       <br />
@@ -1745,6 +1768,46 @@ new Site({id:1})
   });
 </pre>
 
+    <p id="Collection-mapThen">
+      <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
+      <br />
+      Shortcut for calling <tt>when.all</tt> around a <tt>collection.map</tt> call, this will call the
+      underscore <a href="http://underscorejs.org/#map">map</a> on each of the models in the collection,
+      returning a promise which will be resolved with the array of fully settled responses from the map call.
+    </p>
+
+<pre>
+new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
+
+  return model.save().then(function() {
+    return model.get('id') + '-saved';
+  });
+
+}).then(function(resp) {
+
+  // resp: ['1-saved', '2-saved', '3-saved']
+
+});
+</pre>
+
+    <p id="Collection-invokeThen">
+      <b class="header">invokeThen</b><code>collection.invokeThen(method, args*)</code>
+      <br />
+      Shortcut for calling <tt>when.all</tt> around a <tt>collection.invoke</tt>, this will delegate to the
+      collection's <a href="http://underscorejs.org/#invoke">invoke</a> method, resolving the promise with an array
+      of responses all async (and sync) behavior has settled. Useful for bulk saving or deleting models:
+    </p>
+
+<pre>
+collection.invokeThen('save', options).then(function() {
+  // ... all models in the collection have been saved
+});
+
+collection.invokeThen('destroy', options).then(function() {
+  // ... all models in the collection have been destroyed
+});
+</pre>
+
     <p id="Collection-load">
       <b class="header">load</b><code>collection.load(relations, options).then(function(collection) {...</code>
       <br />
@@ -1761,12 +1824,93 @@ new Story({id: 2}).fetch({
 });
 </pre>
 
-    <p id="Collection-create">
-      <b class="header">create</b><code>collection.create(relations, options).then(function(model) {...</code>
+    <p id="Collection-add">
+      <b class="header">add</b><code>collection.add(models, [options])</code>
       <br />
-      Convenience to create a new instance of a model within a collection. Equivalent to instantiating a
-      model with a hash of attributes, saving the model to the database, and adding the model to the collection
-      after being successfully created. Returns a promise, resolving with the new model.
+      Add a model (or an array of models) to the collection, You may also pass
+      raw attributes objects, and have them be vivified as instances of the model.
+      Pass <tt>{at: index}</tt> to splice the model into the collection at the
+      specified <tt>index</tt>. If you're adding models to the collection that are
+      <i>already</i> in the collection, they'll be ignored, unless you pass
+      <tt>{merge: true}</tt>, in which case their attributes will be merged
+      into the corresponding models, firing any appropriate <tt>"change"</tt> events.
+    </p>
+
+<pre class="runnable">
+var ships = new Backbone.Collection;
+
+ships.on("add", function(ship) {
+  alert("Ahoy " + ship.get("name") + "!");
+});
+
+ships.add([
+  {name: "Flying Dutchman"},
+  {name: "Black Pearl"}
+]);
+</pre>
+
+    <p class="warning">
+      Note that adding the same model (a model with the same <tt>id</tt>) to
+      a collection more than once <br /> is a no-op.
+    </p>
+
+    <p id="Collection-remove">
+      <b class="header">remove</b><code>collection.remove(models, [options])</code>
+      <br />
+      Remove a model (or an array of models) from the collection, but does not remove
+      the model from the database, use the model's <a href="#Model-destroy">destroy</a>
+      method for this.
+    </p>
+
+    <p id="Collection-reset">
+      <b class="header">reset</b><code>collection.reset([models], [options])</code>
+      <br />
+      Adding and removing models one at a time is all well and good, but sometimes
+      you have so many models to change that you'd rather just update the collection
+      in bulk. Use <b>reset</b> to replace a collection with a new list
+      of models (or attribute hashes). Calling <tt>collection.reset()</tt> without
+      passing any models as arguments will empty the entire collection.
+    </p>
+
+    <p id="Collection-set">
+      <b class="header">set</b><code>collection.set(models, [options])</code>
+      <br />
+      The <b>set</b> method performs a "smart" update of the collection
+      with the passed list of models. If a model in the list isn't yet in the
+      collection it will be added; if the model is already in the collection
+      its attributes will be merged; and if the collection contains any models that
+      <i>aren't</i> present in the list, they'll be removed. If you'd like to
+      customize the behavior, you can disable it with options:
+      <tt>{add: false}</tt>, <tt>{remove: false}</tt>, or <tt>{merge: false}</tt>.
+    </p>
+
+<pre>
+var vanHalen = new Backbone.Collection([eddie, alex, stone, roth]);
+
+vanHalen.set([eddie, alex, stone, hagar]);
+
+// Fires a "remove" event for roth, and an "add" event for "hagar".
+// Updates any of stone, alex, and eddie's attributes that may have
+// changed over the years.
+</pre>
+
+    <p id="Collection-get">
+      <b class="header">get</b><code>collection.get(id)</code>
+      <br />
+      Get a model from a collection, specified by an <a href="#Model-id">id</a>,
+      a <a href="#Model-cid">cid</a>, or by passing in a <b>model</b>.
+    </p>
+
+<pre>
+var book = library.get(110);
+</pre>
+
+    <p id="Collection-at">
+      <b class="header">at</b><code>collection.at(index)</code>
+      <br />
+      Get a model from a collection, specified by index. Useful if your collection
+      is sorted, and if your collection isn't sorted, <b>at</b> will still
+      retrieve models in insertion order.
     </p>
 
     <p id="Collection-query">
@@ -1807,24 +1951,26 @@ collection
     <p id="Collection-sync">
       <b class="header">sync</b><code>collection.sync(collection, [options])</code>
       <br />
-      Creates and returns a new <a href="#Sync">Bookshelf.Sync</a> instance. Can be overridden for custom behavior.
+      Creates and returns a new <tt>Bookshelf.Sync</tt> instance. Can be overridden for custom behavior.
+    </p>
+
+    <p id="Collection-create">
+      <b class="header">create</b><code>collection.create(relations, options).then(function(model) {...</code>
+      <br />
+      Convenience to create a new instance of a model within a collection. Equivalent to instantiating a
+      model with a hash of attributes, saving the model to the database, and adding the model to the collection
+      after being successfully created. Returns a promise, resolving with the new model.
     </p>
 
     <p id="Collection-Backbone-Methods">
-      <b class="header">Backbone Methods (19)</b>
+      <b class="header">Additional Backbone Methods (12)</b>
       <br />
-      Bookshelf also proxies to <b>Backbone.js</b> for any of the core Collection methods
-      that don't need modification for the ORM. The Backbone documentation
+      Bookshelf also proxies to <b>Backbone.js</b> for more core Collection methods
+      that aren't documented here The Backbone documentation
       applies equally for Bookself, and can be used to read more on these methods.
     </p>
 
     <ul>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-add">add</a></li>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-remove">remove</a></li>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-reset">reset</a></li>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-set">set</a></li>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-get">get</a></li>
-      <li><a target="_blank" href="http://backbonejs.org/#Collection-at">at</a></li>
       <li><a target="_blank" href="http://backbonejs.org/#Collection-push">push</a></li>
       <li><a target="_blank" href="http://backbonejs.org/#Collection-pop">pop</a></li>
       <li><a target="_blank" href="http://backbonejs.org/#Collection-unshift">unshift</a></li>
@@ -1877,60 +2023,6 @@ collection
       <li><a href="http://underscorejs.org/#isEmpty">isEmpty</a></li>
       <li><a href="http://underscorejs.org/#chain">chain</a></li>
     </ul>
-
-  <h2 id="Sync">Bookshelf.Sync</h2>
-
-    <p>
-      The <b>Bookshelf.Sync</b> object handles all database communication for models and collections.
-      Unlike Backbone's <tt>sync</tt> method, <b>Bookshelf.Sync</b> is a constructor taking two arguments:
-      the current <tt>model</tt> (or collection) and any <tt>options</tt> needed for
-      the sync method being performed. It comes with five built in
-      methods: <a href="#Sync-first">first</a>, <a href="#Sync-select">select</a>,
-      <a href="#Sync-insert">insert</a>, <a href="#Sync-update">update</a>, and
-      <a href="#Sync-del">del</a> (delete).
-    </p>
-
-    <p id="Sync-first">
-      <b class="header">first</b><code>sync.first([options]).then(function(model) {...</code>
-      <br />
-      Used by the model, the <tt>first</tt> method selects the first matching and returns a promise,
-      resolving with the model or collection originally passed in the the <a href="#Sync">Bookshelf.Sync</a>.
-    </p>
-
-    <p id="Sync-select">
-      <b class="header">select</b><code>sync.select([options]).then(function(model) {...</code>
-      <br />
-      Used by models and collections, the <tt>select</tt> method selects rows from the database based on the
-      <a href="#Model-tableName">tableName</a> and <a href="#Model-idAttribute">idAttrribute</a>, along with
-      any custom query constraints.
-    </p>
-
-    <p id="Sync-insert">
-      <b class="header">insert</b><code>sync.insert([options]).then(function(model) {...</code>
-      <br />
-      Used by models, and relations, the <tt>insert</tt> method inserts a single model, based on the
-      <a href="#Model-tableName">tableName</a> and any <a href="#Model-relation-types">relation constraints</a>,
-      returning a promise which resolves with the inserted model.
-    </p>
-
-    <p id="Sync-update">
-      <b class="header">update</b><code>sync.update([options]).then(function(model) {...</code>
-      <br />
-      Used by models, and relations, the <tt>update</tt> method inserts a single model, based on the
-      <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a> and any custom
-      <a href="#Model-query">query</a> or <a href="#Model-relation-types">relation</a> constraints,
-      returning a promise which resolves with the inserted model.
-    </p>
-
-    <p id="Sync-del">
-      <b class="header">del</b><code>sync.del([options]).then(function(model) {...</code>
-      <br />
-      Used by models, collections, and relations, the <tt>del</tt> method removes one or more models,
-      based on the <a href="#Model-tableName">tableName</a>, <a href="#Model-idAtribute">idAtribute</a>
-      and any custom <a href="#Model-query">query</a> or <a href="#Model-relation-types">relation</a> constraints,
-      returning a promise which resolves with no arguments. If no <a href="#Model-idAtribute">idAtribute</a> or
-      custom constraints have been defined, the promise will fail.
-    </p>
 
   <h2 id="Events">Bookshelf.Events</h2>
 
@@ -2005,16 +2097,16 @@ collection
 
   <h2 id="Utility">Utility</h2>
 
-    <p id="Bookshelf-Knex">
+    <p id="Bookshelf-knex">
       <b class="header">Bookshelf.knex</b>
       <br />
       A reference to the <tt>Knex.js</tt> instance being used by Bookshelf.
     </p>
 
-    <p id="Bookshelf-Transaction">
+    <p id="Bookshelf-transaction">
       <b class="header">Bookshelf.transaction</b>
       <br />
-      An alias to <a href="http://knexjs.org/#Transaction">Knex.transaction</a>, the transaction
+      An alias to <a href="http://knexjs.org/#transaction">Knex.transaction</a>, the transaction
       object must be passed along in the options of any relevant <tt>Bookshelf.Sync</tt> calls,
       to ensure all queries are on the same connection. The entire transaction block is
       a promise that will resolve when the transaction is committed, or fail if the
@@ -2022,15 +2114,15 @@ collection
     </p>
 
 <pre>
-var When = require('when');
+var when = require('when');
 
-Bookshelf.Transaction(function(t) {
+Bookshelf.transaction(function(t) {
 
   new Library({name: 'Old Books'})
     .save(null, {transacting: t})
     .then(function(model) {
 
-      return When.all(_.map([
+      return when.all(_.map([
         {title: 'Canterbury Tales'},
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
@@ -2112,6 +2204,11 @@ Bookshelf.Transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.5.0</b> &mdash; <small><i>September 16, 2013</i></small><br />
+
+    </p>
 
     <p>
       <b class="header">0.3.1</b> &mdash; <small><i>August 29, 2013</i></small><br />
