@@ -1,10 +1,11 @@
 {
   "name": "bookshelf",
   "version": "0.5.0",
-  "description": "A lightweight Active Record ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
+  "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
-    "test": "mocha -R spec test/index.js"
+    "test": "mocha -R spec test/index.js",
+    "doc":  "groc -o docs --verbose lib/*.js lib/**/*.js clients/*.js clients/**/*.js bookshelf.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -22,7 +23,7 @@
   "dependencies": {
     "backbone": "~1.0.0",
     "inflection": "~1.2.x",
-    "when": "~2.3.0",
+    "when": "~2.4.0",
     "trigger-then": "~0.1.1",
     "underscore": "~1.5.1",
     "knex": "~0.4.0"
