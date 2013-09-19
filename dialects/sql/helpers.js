@@ -1,3 +1,5 @@
+// Helpers
+// ---------------
 (function(define) {
 
 "use strict";

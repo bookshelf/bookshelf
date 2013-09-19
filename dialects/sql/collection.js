@@ -1,3 +1,5 @@
+// Collection
+// ---------
 (function(define) {
 
 "use strict";

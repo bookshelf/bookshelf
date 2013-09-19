@@ -1,9 +1,9 @@
+// Sync
+// -------
 (function(define) {
 
 "use strict";
 
-// Bookshelf.Sync
-// -------------------
 define(function(require, exports) {
 
   var _    = require('underscore');
