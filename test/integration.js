@@ -1,3 +1,5 @@
+var _        = require('underscore');
+
 module.exports = function(Bookshelf) {
 
   var Knex     = require('knex');
