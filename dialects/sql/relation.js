@@ -4,13 +4,13 @@
 
 define(function(require, exports) {
 
-  var _ = require('underscore');
-  var when = require('when');
-  var inflection = require('inflection');
+  var _            = require('underscore');
+  var when         = require('when');
+  var inflection   = require('inflection');
 
-  var Helpers = require('./helpers').Helpers;
+  var Helpers      = require('./helpers').Helpers;
 
-  var ModelBase = require('../base/model').ModelBase;
+  var ModelBase    = require('../base/model').ModelBase;
   var RelationBase = require('../base/relation').RelationBase;
 
   var push = [].push;
@@ -32,6 +32,7 @@ define(function(require, exports) {
         if (this.isInverse()) {
           if (this.type === 'morphTo') {
             this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
+            this.targetTableName = _.result(this.target.prototype, 'tableName');
           }
           this.parentFk = parent.get(this.key('foreignKey'));
         } else {
@@ -103,7 +104,7 @@ define(function(require, exports) {
 
       // The base select column
       if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
-        knex.columns.push(this.isJoined() ? this.targetTableName + '.*' : '*');
+        knex.columns.push(this.targetTableName + '.*');
       } else if (_.isArray(options.columns) && options.columns.length > 0) {
         push.apply(knex.columns, options.columns);
       }
@@ -206,6 +207,9 @@ define(function(require, exports) {
       models || (models = []);
 
       var Target = this.target;
+
+      // If it's a single model, check whether there's already a model
+      // we can pick from... otherwise create a new instance.
       if (this.isSingle()) {
         if (!Target.prototype instanceof ModelBase) {
           throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
@@ -213,12 +217,12 @@ define(function(require, exports) {
         return models[0] || new Target();
       }
 
-      // Allows us to just use a model, but create a temporary collection for
-      // a many relation.
+      // Allows us to just use a model, but create a temporary
+      // collection for a "*-many" relation.
       if (Target.prototype instanceof ModelBase) {
         Target = this.Collection.extend({
           model: Target,
-          builder: Target.prototype.builder
+          _builder: Target.prototype._builder
         });
       }
       return new Target(models, {parse: true});
@@ -354,10 +358,7 @@ define(function(require, exports) {
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      var collection = this;
-      return when.all(pending).then(function() {
-        return collection;
-      });
+      return when.all(pending).yield(this);
     },
 
     // Handles setting the appropriate constraints and shelling out
@@ -380,12 +381,23 @@ define(function(require, exports) {
       } else if (item) {
         data[relatedData.key('otherKey')] = item;
       }
-      var builder = this.builder(relatedData.joinTable());
+      var builder = this._builder(relatedData.joinTable());
       if (options && options.transacting) {
         builder.transacting(options.transacting);
       }
-      if (method === 'delete') return builder.where(data).del();
-      return builder.insert(data);
+      var collection = this;
+      if (method === 'delete') {
+        return builder.where(data).del().then(function() {
+          var model;
+          if (!item) return collection.reset();
+          if (model = collection.get(data[relatedData.key('otherKey')])) {
+            collection.remove(model);
+          }
+        });
+      }
+      return builder.insert(data).then(function() {
+        collection.add(item);
+      });
     }
 
   };

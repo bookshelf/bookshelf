@@ -1,18 +1,18 @@
 
 var Bookshelf = require('../bookshelf');
-var base      = require('bookshelf-tests-base');
+var base      = require('./base');
+var mocha     = require('mocha');
 
-require("mocha-as-promised")();
+require("mocha-as-promised")(mocha);
 
 global.sinon = require("sinon");
 
-var chai       = global.chai = require("chai");
+var chai = global.chai = require("chai");
 
 chai.use(require("chai-as-promised"));
 chai.use(require("sinon-chai"));
 chai.should();
 
-global._              = require('underscore');
 global.whenResolve    = require('when').resolve;
 global.expect         = chai.expect;
 global.AssertionError = chai.AssertionError;

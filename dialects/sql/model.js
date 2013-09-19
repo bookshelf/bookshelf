@@ -19,26 +19,26 @@ define(function(require, exports) {
     // specified by a foreign key in the other table. The foreign key is assumed to be the singular of this
     // object's `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
     hasOne: function(Target, foreignKey) {
-      return this.relation('hasOne', Target, {foreignKey: foreignKey}).init(this);
+      return this._relation('hasOne', Target, {foreignKey: foreignKey}).init(this);
     },
 
     // The `hasMany` relation specifies that this object has one or more rows in another table which
     // match on this object's primary key. The foreign key is assumed to be the singular of this object's
     // `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
     hasMany: function(Target, foreignKey) {
-      return this.relation('hasMany', Target, {foreignKey: foreignKey}).init(this);
+      return this._relation('hasMany', Target, {foreignKey: foreignKey}).init(this);
     },
 
     // A reverse `hasOne` relation, the `belongsTo`, where the specified key in this table
     // matches the primary `idAttribute` of another table.
     belongsTo: function(Target, foreignKey) {
-      return this.relation('belongsTo', Target, {foreignKey: foreignKey}).init(this);
+      return this._relation('belongsTo', Target, {foreignKey: foreignKey}).init(this);
     },
 
     // A `belongsToMany` relation is when there are many-to-many relation
     // between two models, with a joining table.
     belongsToMany: function(Target, joinTableName, foreignKey, otherKey) {
-      return this.relation('belongsToMany', Target, {
+      return this._relation('belongsToMany', Target, {
         joinTableName: joinTableName, foreignKey: foreignKey, otherKey: otherKey
       }).init(this);
     },
@@ -59,7 +59,7 @@ define(function(require, exports) {
     // the alternate end of the polymorphic model is defined.
     morphTo: function(morphName) {
       if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
-      return this.relation('morphTo', null, {morphName: morphName, candidates: _.rest(arguments)}).init(this);
+      return this._relation('morphTo', null, {morphName: morphName, candidates: _.rest(arguments)}).init(this);
     },
 
     // Used to define passthrough relationships - `hasOne`, `hasMany`,
@@ -209,7 +209,7 @@ define(function(require, exports) {
     // Helper for setting up the `morphOne` or `morphMany` relations.
     _morphOneOrMany: function(Target, morphName, morphValue, type) {
       if (!morphName || !Target) throw new Error('The polymorphic `name` and `Target` are required.');
-      return this.relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
+      return this._relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
     },
 
     // Handles the response data for the model, returning from the model's fetch call.

@@ -46,10 +46,10 @@ define(function(require, exports, module) {
     // mixing in the correct `builder` method, as well as the `relation` method,
     // passing in the correct `Model` & `Collection` constructors for later reference.
     var ModelCtor = this.Model = SqlModel.extend({
-      builder: function(tableName) {
+      _builder: function(tableName) {
         return knex(tableName);
       },
-      relation: function(type, Target, options) {
+      _relation: function(type, Target, options) {
         return new Relation(type, Target, options);
       }
     });
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
     // `knex` combo.
     var CollectionCtor = this.Collection = SqlCollection.extend({
       model: ModelCtor,
-      builder: function(tableName) {
+      _builder: function(tableName) {
         return knex(tableName);
       }
     });

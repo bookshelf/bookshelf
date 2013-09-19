@@ -205,46 +205,58 @@ module.exports = function(Bookshelf) {
 
         it('provides "attach" for creating or attaching records', function() {
 
+          var site1  = new Site({id: 1});
+          var site2  = new Site({id: 2});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
           var admin2 = new Admin({username: 'syncable', password: 'test'});
+          var admin1_id;
 
           return when.all([admin1.save(), admin2.save()])
             .then(function() {
+              admin1_id = admin1.id;
               return when.all([
-                new Site({id: 1}).admins().attach([admin1, admin2]),
-                new Site({id: 2}).admins().attach(admin2)
+                site1.related('admins').attach([admin1, admin2]),
+                site2.related('admins').attach(admin2)
               ]);
             })
             .then(function(resp) {
+              expect(site1.related('admins')).to.have.length(2);
+              expect(site2.related('admins')).to.have.length(1);
+            }).then(function() {
               return when.all([
-                new Site({id: 1}).admins().fetch().then(function(c) {
+                new Site({id: 1}).related('admins').fetch().then(function(c) {
                   c.each(function(m) {
                     equal(m.hasChanged(), false);
                   });
                   equal(c.at(0).pivot.get('item'), 'test');
                   equal(c.length, 2);
                 }),
-                new Site({id: 2}).admins().fetch().then(function(c) {
+                new Site({id: 2}).related('admins').fetch().then(function(c) {
                   equal(c.length, 1);
                 })
               ]);
             })
             .then(function(resp) {
               return when.all([
-                new Site({id: 1}).admins().detach().then(function(c) {
+                new Site({id: 1}).related('admins').fetch(),
+                new Site({id: 2}).related('admins').fetch()
+              ]);
+            })
+            .spread(function(admins1, admins2) {
+              return when.all([
+                admins1.detach(admin1_id).then(function(c) {
+                  expect(admins1).to.have.length(1);
                   return c.fetch();
                 }).then(function(c) {
-                  equal(c.length, 0);
+                  equal(c.length, 1);
                 }),
-                new Site({id: 2}).admins().detach().then(function(c) {
+                admins2.detach().then(function(c) {
+                  expect(admins2).to.have.length(0);
                   return c.fetch();
                 }).then(function(c) {
                   equal(c.length, 0);
                 })
               ]);
-            })
-            .then(null, function(e) {
-              console.log(e.stack);
             });
         });
 

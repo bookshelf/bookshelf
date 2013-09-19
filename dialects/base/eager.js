@@ -4,6 +4,10 @@
 
 "use strict";
 
+// The EagerBase provides a scaffold for handling with eager relation
+// pairing, by queueing the appropriate related method calls with
+// a database specific `eagerFetch` method, which then may utilize
+// `pushModels` for pairing the models depending on the database need.
 define(function(require, exports) {
 
   var _         = require('underscore');
