@@ -49,7 +49,7 @@ define(function(require, exports) {
         relatedData.selectConstraints(this.query, options);
       } else {
         columns = options.columns;
-        if (!_.isArray(columns)) columns = columns ? [columns] : ['*'];
+        if (!_.isArray(columns)) columns = columns ? [columns] : [_.result(syncing, 'tableName') + '.*'];
       }
 
       // Create the deferred object, triggering a `fetching` event if the model

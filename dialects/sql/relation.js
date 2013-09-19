@@ -32,6 +32,7 @@ define(function(require, exports) {
         if (this.isInverse()) {
           if (this.type === 'morphTo') {
             this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
+            this.targetTableName = _.result(this.target.prototype, 'tableName');
           }
           this.parentFk = parent.get(this.key('foreignKey'));
         } else {
@@ -103,7 +104,7 @@ define(function(require, exports) {
 
       // The base select column
       if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
-        knex.columns.push(this.isJoined() ? this.targetTableName + '.*' : '*');
+        knex.columns.push(this.targetTableName + '.*');
       } else if (_.isArray(options.columns) && options.columns.length > 0) {
         push.apply(knex.columns, options.columns);
       }
