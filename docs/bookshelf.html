@@ -1,390 +1,70 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-  <title>bookshelf.js</title>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
-  <link rel="stylesheet" media="all" href="docco.css" />
-</head>
-<body>
-  <div id="container">
-    <div id="background"></div>
-    
-      <ul id="jump_to">
-        <li>
-          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
-          <a class="small" href="javascript:void(0);">+</a>
-          <div id="jump_wrapper">
-          <div id="jump_page">
-            
-              
-              <a class="source" href="bookshelf.html">
-                bookshelf.js
-              </a>
-            
-              
-              <a class="source" href="collection.html">
-                collection.js
-              </a>
-            
-              
-              <a class="source" href="collectionbase.html">
-                collectionbase.js
-              </a>
-            
-              
-              <a class="source" href="eager.html">
-                eager.js
-              </a>
-            
-              
-              <a class="source" href="events.html">
-                events.js
-              </a>
-            
-              
-              <a class="source" href="helpers.html">
-                helpers.js
-              </a>
-            
-              
-              <a class="source" href="model.html">
-                model.js
-              </a>
-            
-              
-              <a class="source" href="modelbase.html">
-                modelbase.js
-              </a>
-            
-              
-              <a class="source" href="relation.html">
-                relation.js
-              </a>
-            
-              
-              <a class="source" href="sync.html">
-                sync.js
-              </a>
-            
-          </div>
-        </li>
-      </ul>
-    
-    <ul class="sections">
-        
-          <li id="title">
-              <div class="annotation">
-                  <h1>bookshelf.js</h1>
-              </div>
-          </li>
-        
-        
-        
-        <li id="section-1">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-1">&#182;</a>
-              </div>
-              <pre><code>Bookshelf.js 0.3.0
-
-(c) 2013 Tim Griesser
+<!DOCTYPE html><html lang="en"><head><title>bookshelf</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="bookshelf"><meta name="groc-project-path" content="bookshelf.js"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">bookshelf.js</div></div><div id="document"><div class="segment"><div class="comments"><div class="wrapper"><pre><code>Bookshelf.js 0.5.0
+</code></pre></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><pre><code>(c) 2013 Tim Griesser
 Bookshelf may be freely distributed under the MIT license.
 For all details and documentation:
-http://bookshelfjs.org</code></pre>
+http://bookshelfjs.org
+</code></pre></div></div><div class="code"><div class="wrapper"><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">define</span><span class="p">)</span> <span class="p">{</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>(define) { <span class="string">"use strict"</span>;
+<span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
 
-define(<span class="keyword">function</span>(require, exports, module) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
-              </div>
-              <p>All external dependencies are referenced through a local module,
-so that you can modify the <code>exports</code> and say... swap out <code>underscore</code>
-for <code>lodash</code> if you really wanted to.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> _          = require(<span class="string">'./lib/ext/underscore'</span>)._;
-  <span class="keyword">var</span> Knex       = require(<span class="string">'./lib/ext/knex'</span>).Knex;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>...as are all local dependencies. These are the main objects that
-need to be augmented in the constructor to work properly.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Model      = require(<span class="string">'./lib/model'</span>).Model;
-  <span class="keyword">var</span> Collection = require(<span class="string">'./lib/collection'</span>).Collection;
-  <span class="keyword">var</span> Relation   = require(<span class="string">'./lib/relation'</span>).Relation;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>Finally, the <code>Events</code>, which we&#39;ve supplemented with a <code>triggerThen</code>
-method to allow for asynchronous event handling via promises. We mix this
-into the prototypes of the main objects in the library.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Events     = require(<span class="string">'./lib/events'</span>).Events;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
-              <p>Constructor for a new <code>Bookshelf</code> object, it accepts
+<span class="nx">define</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>All external libraries needed in this scope.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">_</span>          <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">Knex</span>       <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;knex&#39;</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>All local dependencies... These are the main objects that
+need to be augmented in the constructor to work properly.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">SqlModel</span>      <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./dialects/sql/model&#39;</span><span class="p">).</span><span class="nx">Model</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">SqlCollection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./dialects/sql/collection&#39;</span><span class="p">).</span><span class="nx">Collection</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">SqlRelation</span>   <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./dialects/sql/relation&#39;</span><span class="p">).</span><span class="nx">Relation</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Finally, the <code>Events</code>, which we've supplemented with a <code>triggerThen</code>
+method to allow for asynchronous event handling via promises. We also
+mix this into the prototypes of the main objects in the library.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Events</span>        <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./dialects/base/events&#39;</span><span class="p">).</span><span class="nx">Events</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Constructor for a new <code>Bookshelf</code> object, it accepts
 an active <code>knex</code> instance and initializes the appropriate
-<code>Model</code> and <code>Collection</code> constructors for use in the current instance.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="keyword">var</span> Bookshelf = <span class="keyword">function</span>(knex) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>Allows you to construct the library with either <code>Bookshelf(opts)</code>
-or <code>new Bookshelf(opts)</code>.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> Bookshelf)) {
-      <span class="keyword">return</span> <span class="keyword">new</span> Bookshelf(knex);
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>If the knex isn&#39;t a <code>Knex</code> instance, we&#39;ll assume it&#39;s
-a compatible config object and pass it through to create a new instance.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (!knex.client || !(knex.client <span class="keyword">instanceof</span> Knex.ClientBase)) {
-      knex = <span class="keyword">new</span> Knex(knex);
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-8">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              <p>The <code>Model</code> constructor is referenced as a property on the <code>Bookshelf</code> instance,
+<code>Model</code> and <code>Collection</code> constructors for use in the current instance.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">Bookshelf</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">knex</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Allows you to construct the library with either <code>Bookshelf(opts)</code>
+or <code>new Bookshelf(opts)</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">Bookshelf</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">new</span> <span class="nx">Bookshelf</span><span class="p">(</span><span class="nx">knex</span><span class="p">);</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>If the knex isn't a <code>Knex</code> instance, we'll assume it's
+a compatible config object and pass it through to create a new instance.</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">knex</span><span class="p">.</span><span class="nx">client</span> <span class="o">||</span> <span class="o">!</span><span class="p">(</span><span class="nx">knex</span><span class="p">.</span><span class="nx">client</span> <span class="k">instanceof</span> <span class="nx">Knex</span><span class="p">.</span><span class="nx">ClientBase</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">knex</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Knex</span><span class="p">(</span><span class="nx">knex</span><span class="p">);</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The <code>Model</code> constructor is referenced as a property on the <code>Bookshelf</code> instance,
 mixing in the correct <code>builder</code> method, as well as the <code>relation</code> method,
-passing in the correct <code>Model</code> &amp; <code>Collection</code> constructors for later reference.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> ModelCtor = <span class="keyword">this</span>.Model = Model.extend({
-      builder: <span class="keyword">function</span>(tableName) {
-        <span class="keyword">return</span> knex(tableName);
-      },
-      relation: <span class="keyword">function</span>(type, Target, options) {
-        <span class="keyword">return</span> <span class="keyword">new</span> Relation(type, Target, options, ModelCtor, CollectionCtor);
-      }
-    });</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <p>The collection also references the correct <code>Model</code>, specified above, for creating
+passing in the correct <code>Model</code> &amp; <code>Collection</code> constructors for later reference.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">ModelCtor</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">Model</span> <span class="o">=</span> <span class="nx">SqlModel</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+      <span class="nx">_builder</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tableName</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">knex</span><span class="p">(</span><span class="nx">tableName</span><span class="p">);</span>
+      <span class="p">},</span>
+      <span class="nx">_relation</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">Target</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">Relation</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">Target</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The collection also references the correct <code>Model</code>, specified above, for creating
 new <code>Model</code> instances in the collection. We also extend with the correct builder /
-<code>knex</code> combo.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> CollectionCtor = <span class="keyword">this</span>.Collection = Collection.extend({
-      model: ModelCtor,
-      builder: <span class="keyword">function</span>(tableName) {
-        <span class="keyword">return</span> knex(tableName);
-      }
-    });</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-10">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
-              </div>
-              <p>Grab a reference to the <code>knex</code> instance passed (or created) in this constructor,
-for convenience.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">this</span>.knex = knex;
-  };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-11">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
-              </div>
-              <p>A <code>Bookshelf</code> instance may be used as a top-level pub-sub bus, as it mixes in the
+<code>knex</code> combo.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">CollectionCtor</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">Collection</span> <span class="o">=</span> <span class="nx">SqlCollection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+      <span class="nx">model</span><span class="o">:</span> <span class="nx">ModelCtor</span><span class="p">,</span>
+      <span class="nx">_builder</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tableName</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">knex</span><span class="p">(</span><span class="nx">tableName</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Used internally, the <code>Relation</code> helps in simplifying the relationship building,
+centralizing all logic dealing with type &amp; option handling.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">Relation</span> <span class="o">=</span> <span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">Relation</span> <span class="o">=</span> <span class="nx">SqlRelation</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+      <span class="nx">Model</span><span class="o">:</span> <span class="nx">ModelCtor</span><span class="p">,</span>
+      <span class="nx">Collection</span><span class="o">:</span> <span class="nx">CollectionCtor</span>
+    <span class="p">});</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Grab a reference to the <code>knex</code> instance passed (or created) in this constructor,
+for convenience.</p></div></div><div class="code"><div class="wrapper">    <span class="k">this</span><span class="p">.</span><span class="nx">knex</span> <span class="o">=</span> <span class="nx">knex</span><span class="p">;</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>A <code>Bookshelf</code> instance may be used as a top-level pub-sub bus, as it mixes in the
 <code>Events</code> object. It also contains the version number, and a <code>Transaction</code> method
-referencing the correct version of <code>knex</code> passed into the object.</p>
+referencing the correct version of <code>knex</code> passed into the object.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">Events</span><span class="p">,</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Keep in sync with <code>package.json</code>.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">VERSION</span><span class="o">:</span> <span class="s1">&#39;0.5.0&#39;</span><span class="p">,</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Helper method to wrap a series of Bookshelf actions in a <code>knex</code> transaction block;</p></div></div><div class="code"><div class="wrapper">    <span class="nx">transaction</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">knex</span><span class="p">.</span><span class="nx">transaction</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Provides a nice, tested, standardized way of adding plugins to a <code>Bookshelf</code> instance,
+injecting the current instance into the plugin, which should be a module.exports.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">plugin</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">plugin</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">plugin</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  _.extend(Bookshelf.prototype, Events, {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-12">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
-              </div>
-              <p>Keep in sync with <code>package.json</code>.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    VERSION: <span class="string">'0.5.0'</span>,</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-13">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
-              </div>
-              <p>Wrap a series of Bookshelf actions in a <code>knex</code> transaction block;</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    Transaction: <span class="keyword">function</span>() {
-      <span class="keyword">return</span> <span class="keyword">this</span>.knex.transaction.apply(<span class="keyword">this</span>, arguments);
-    },</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-14">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
-              </div>
-              <p>Provides a nice, tested, standardized way of adding plugins to a <code>Bookshelf</code> instance,
-injecting the current instance into the plugin, which should be a module.exports.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    plugin: <span class="keyword">function</span>(plugin) {
-      plugin(<span class="keyword">this</span>);
-      <span class="keyword">return</span> <span class="keyword">this</span>;
-    }
-
-  });</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-15">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
-              </div>
-              <p>The <code>forge</code> function properly instantiates a new <code>Model</code> or <code>Collection</code>
+  <span class="p">});</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Alias to <code>new Bookshelf(opts)</code>.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">initialize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">knex</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="k">this</span><span class="p">(</span><span class="nx">knex</span><span class="p">);</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>The <code>forge</code> function properly instantiates a new Model or Collection
 without needing the <code>new</code> operator... to make object creation cleaner
-and more chainable.</p>
+and more chainable.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">SqlModel</span><span class="p">.</span><span class="nx">forge</span> <span class="o">=</span> <span class="nx">SqlCollection</span><span class="p">.</span><span class="nx">forge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">inst</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">inst</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">Object</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="o">===</span> <span class="nx">obj</span> <span class="o">?</span> <span class="nx">obj</span> <span class="o">:</span> <span class="nx">inst</span><span class="p">);</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Finally, export <code>Bookshelf</code> to the world.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Bookshelf</span><span class="p">;</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  Model.forge = Collection.forge = <span class="keyword">function</span>() {
-    <span class="keyword">var</span> inst = Object.create(<span class="keyword">this</span>.prototype);
-    <span class="keyword">var</span> obj = <span class="keyword">this</span>.apply(inst, arguments);
-    <span class="keyword">return</span> (Object(obj) === obj ? obj : inst);
-  };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-16">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
-              </div>
-              <p>Finally, export <code>Bookshelf</code> to the world.</p>
+<span class="p">});</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  module.exports = Bookshelf;
-
-});
-
-})(
-  <span class="keyword">typeof</span> define === <span class="string">'function'</span> &amp;&amp; define.amd ? define : <span class="function"><span class="keyword">function</span> <span class="params">(factory)</span> {</span> factory(require, exports, module); }
-);</pre></div></div>
-            
-        </li>
-        
-    </ul>
-  </div>
-</body>
-</html>
+<span class="p">})(</span>
+  <span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">define</span><span class="p">.</span><span class="nx">amd</span> <span class="o">?</span> <span class="nx">define</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">factory</span><span class="p">)</span> <span class="p">{</span> <span class="nx">factory</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">module</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">);</span></div></div></div></div></body></html>

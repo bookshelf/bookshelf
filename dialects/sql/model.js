@@ -1,3 +1,5 @@
+// Model
+// ---------------
 (function(define) {
 
 "use strict";

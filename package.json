@@ -1,11 +1,11 @@
 {
   "name": "bookshelf",
-  "version": "0.5.0",
+  "version": "0.3.1",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -R spec test/index.js",
-    "doc":  "groc -o docs --verbose lib/*.js lib/**/*.js clients/*.js clients/**/*.js bookshelf.js"
+    "doc":  "groc -o docs --verbose dialects/**/*.js plugins/*.js bookshelf.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {

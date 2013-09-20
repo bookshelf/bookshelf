@@ -1,5 +1,5 @@
 // EagerRelation
-// ---------
+// ---------------
 (function(define) {
 
 "use strict";
