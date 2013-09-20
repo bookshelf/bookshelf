@@ -1777,7 +1777,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
     </p>
 
 <pre>
-collection.invokeThen('save', options).then(function() {
+collection.invokeThen('save', null, options).then(function() {
   // ... all models in the collection have been saved
 });
 

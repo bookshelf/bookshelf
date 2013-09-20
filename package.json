@@ -1,11 +1,11 @@
 {
   "name": "bookshelf",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -R spec test/index.js",
-    "doc":  "groc -o docs --verbose dialects/**/*.js plugins/*.js bookshelf.js"
+    "doc": "groc -o docs --verbose dialects/**/*.js plugins/*.js bookshelf.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -29,9 +29,9 @@
     "knex": "~0.4.0"
   },
   "devDependencies": {
-    "mocha": "~1.12.1",
+    "mocha": "~1.13.0",
     "mysql": "~2.0.0-alpha7",
-    "pg": "~2.4.0",
+    "pg": "~2.6.2",
     "sqlite3": "~2.1.7",
     "objectdump": "~0.3.0",
     "underscore.string": "~2.3.1",
@@ -39,7 +39,7 @@
     "grunt-release": "~0.5.1",
     "mocha-as-promised": "~1.4.0",
     "chai-as-promised": "~3.3.1",
-    "chai": "~1.7.2",
+    "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",
     "sinon": "~1.7.3"
   },
