@@ -1,5 +1,5 @@
 // Sync
-// -------
+// ---------------
 (function(define) {
 
 "use strict";

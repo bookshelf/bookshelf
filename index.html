@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.3.1)</span>
+      Bookshelf.js <span class="version">(0.5.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -434,7 +434,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.3.1 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.5.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -523,6 +523,9 @@ $ npm install sqlite3
           During the lifecycle events, such as "fetching", "saving", or "destroying", the model no-longer contains the active
           query builder instance at the time it is saved. If you need to modify the query builder chain inside of an event handler,
           you may now use <tt>options.query</tt> inside the event handlers.
+        </li>
+        <li>
+          Other smaller bugfixes &amp; changes noted in the <a href="#changelog">Change Log</a>
         </li>
       </ul>
     </p>
@@ -1185,31 +1188,6 @@ var Tag = Bookshelf.Model.extend({
 });
 </pre>
 
-  <p>
-    By default, the pivot attributes are defined with the <tt>_pivot_</tt> prefix. If you would
-    like to specify how they are named on the related models, pass an object with the key/value pairs
-    to <tt>withPivot</tt>.
-  </p>
-
-<pre>
-var Tag = Bookshelf.Model.extend({
-  comments: function() {
-    return this.belongsToMany(Comment).withPivot({
-      created_at: 'comment_created_at',
-      order: 'order'
-    });
-  }
-});
-
-new Tag({id: 1}).comments().fetch().then(function(model) {
-  JSON.stringify(model);
-  // {id: 1, name: 'tag name', comments: [
-  //   {id: 1, comment_created_at: ..., order: ...},
-  //   {id: 2, comment_created_at: ..., order: ...}
-  // ];
-});
-</pre>
-
     <h3 id="Model-polymorphic-associations">Polymorphic Associations:</h3>
 
     <p>
@@ -1799,7 +1777,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
     </p>
 
 <pre>
-collection.invokeThen('save', options).then(function() {
+collection.invokeThen('save', null, options).then(function() {
   // ... all models in the collection have been saved
 });
 
@@ -2162,7 +2140,7 @@ Bookshelf.transaction(function(t) {
 
     <p id="faq-debug">
       <b class="header">Can I use standard node.js style callbacks.</b><br />
-      Yes - you can call <tt>require('bookshelf/plugins/exec')</tt> after loading Bookshelf, and
+      Yes - you can call <tt>Bookshelf.plugin(require('bookshelf/plugins/exec'))</tt> after initializing a Bookshelf instance, and
       any models/collections created from that point forward will contain both <tt>then</tt> and
       <tt>exec</tt> methods, where the <tt>exec</tt> method takes the standard <tt>(err, result)</tt>
       callback interface.
@@ -2206,12 +2184,53 @@ Bookshelf.transaction(function(t) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
-      <b class="header">0.5.0</b> &mdash; <small><i>September 16, 2013</i></small><br />
+      <b class="header">0.5.0</b> &mdash; <small><i>September 20, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.3.1...0.5.0">Diff</a><br />
+      <b>Major Breaking changes:</b>
+      <ul>
+        <li>
+          Global state is no longer stored in the library, an instance is returned from <tt>Bookshelf.initialize</tt>,
+          so you will need to call this once and then reference this <tt>Bookshelf</tt> client elsewhere in your application.
+          See the <a href="#Initialize">initialize</a> section for more information.
+        </li>
+        <li>
+          Lowercasing of <tt>bookshelf.initialize</tt>, <tt>bookshelf.knex</tt>, <tt>bookshelf.transaction</tt>.
+        </li>
+        <li>
+          During the lifecycle events, such as "fetching", "saving", or "destroying", the model no-longer contains the active
+          query builder instance at the time it is saved. If you need to modify the query builder chain inside of an event handler,
+          you may now use <tt>options.query</tt> inside the event handlers.
+        </li>
+      </ul>
+
+      <b>Other Changes:</b>
+
+      <ul>
+
+        <li>Added <tt>tableName</tt> for all queries, so joins use the correct id (#61).</li>
+
+        <li>The <tt>attach</tt> &amp; <tt>detach</tt> now remove models from the associated collection, as appropriate (#59).</li>
+
+        <li>A <tt>withPivot</tt> no longer accepts an object to specify the keys for the returned pivot items, if you wish to specify
+        how these pivot objects are defined on the object, a custom <a href="#Model-toJSON">toJSON</a> is your best bet.</li>
+
+        <li>
+          Added <a href="Collection-invokeThen">invokeThen</a> and <a href="Collection-mapThen">mapThen</a> as convenience helpers for
+          <tt>when.all(collection.invoke(method, args*))</tt> and <tt>when.all(collection.map(method, iterator, [context]))</tt>, respectively.
+        </li>
+
+        <li>Added a <tt>Bookshelf.plugin</tt> method, for a standard way to extend Bookshelf instances.</li>
+
+        <li>A re-written modular architecture, to move the library toward becoming a database agnostic "data mapper" foundation, with
+          the ablitiy to form relations between different data stores and types, not just SQL (although SQL is the primary focus for now).
+          Also, support for AMD, for eventual use outside of Node.js runtime (with webSQL and likewise).
+        </li>
+
+      </ul>
 
     </p>
 
     <p>
-      <b class="header">0.3.1</b> &mdash; <small><i>August 29, 2013</i></small><br />
+      <b class="header">0.3.1</b> &mdash; <small><i>August 29, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.3.0...0.3.1">Diff</a> &mdash; <a href="http://htmlpreview.github.com/?https://raw.github.com/tgriesser/bookshelf/0.3.0/index.html">Docs</a><br />
       Fixed regression in <tt>belongsToMany</tt> custom column name order.
     </p>
 
@@ -2359,6 +2378,6 @@ user.fetch({withRelated: ['accounts', {
     </p>
 
   </div>
-  <script src="docs/public/scripts/ga.js" type="text/javascript" charset="utf-8"></script>
+  <script src="docs/assets/ga.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
