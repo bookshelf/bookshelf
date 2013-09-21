@@ -346,7 +346,7 @@ module.exports = function(Bookshelf) {
 
     });
 
-    describe('Issue #63 - hasOne relations', function () {
+    describe('Issue #63 - hasOne relations', function() {
 
       it('should return Customer (id=1) with settings', function (done) {
 

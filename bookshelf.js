@@ -1,4 +1,4 @@
-//     Bookshelf.js 0.5.0
+//     Bookshelf.js 0.5.1
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
@@ -82,7 +82,7 @@ define(function(require, exports, module) {
   _.extend(Bookshelf.prototype, Events, {
 
     // Keep in sync with `package.json`.
-    VERSION: '0.5.0',
+    VERSION: '0.5.1',
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
     transaction: function() {
