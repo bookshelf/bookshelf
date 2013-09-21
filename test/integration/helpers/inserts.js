@@ -183,7 +183,19 @@ module.exports = function(bookshelf) {
 
     knex('roles').insert({rid: 4, name: 'admin'}),
 
-    knex('users_roles').insert({uid: 1, rid: 4})
+    knex('users_roles').insert({uid: 1, rid: 4}),
+
+    knex('Customer').insert([
+      {id: 1, name: 'Customer1'},
+      {id: 2, name: 'Customer2'},
+      {id: 3, name: 'Customer3'},
+      {id: 4, name: 'Customer4'}]),
+
+    knex('Settings').insert([
+      {id: 1, Customer_id: 1, data: 'Europe/Paris'},
+      {id: 2, Customer_id: 4, data: 'UTC'}
+    ])
+
 
   ]).then(null, function(e) {
     console.log(e.stack);

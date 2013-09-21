@@ -243,8 +243,8 @@ define(function(require, exports) {
       if (this.isJoined()) related = this.parsePivot(related);
 
       var grouped = _.groupBy(related, function(model) {
-        return this.isSingle() ? model.id : (model.pivot ?
-          model.pivot.get(this.key('foreignKey')) : model.get(this.key('foreignKey')));
+        return model.pivot ? model.pivot.get(this.key('foreignKey')) :
+          this.isInverse() ? model.id : model.get(this.key('foreignKey'));
       }, this);
 
       for (var i = 0, l = models.length; i < l; i++) {

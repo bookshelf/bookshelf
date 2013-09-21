@@ -11,17 +11,18 @@ module.exports = function(Bookshelf) {
     var Collections = objs.Collections;
 
     // Models
-    var Site     = Models.Site;
-    var SiteMeta = Models.SiteMeta;
-    var Admin    = Models.Admin;
-    var Author   = Models.Author;
-    var Blog     = Models.Blog;
-    var Post     = Models.Post;
-    var Comment  = Models.Comment;
-    var Tag      = Models.Tag;
-    var User     = Models.User;
-    var Role     = Models.Role;
-    var Photo    = Models.Photo;
+    var Site       = Models.Site;
+    var SiteMeta   = Models.SiteMeta;
+    var Admin      = Models.Admin;
+    var Author     = Models.Author;
+    var Blog       = Models.Blog;
+    var Post       = Models.Post;
+    var Comment    = Models.Comment;
+    var Tag        = Models.Tag;
+    var User       = Models.User;
+    var Role       = Models.Role;
+    var Photo      = Models.Photo;
+    var Customer   = Models.Customer;
 
     // Collections
     var Sites    = Collections.Sites;
@@ -343,6 +344,49 @@ module.exports = function(Bookshelf) {
 
       });
 
+    });
+
+    describe('Issue #63 - hasOne relations', function () {
+
+      it('should return Customer (id=1) with settings', function (done) {
+
+        var expected = {
+          id      : 1,
+          name    : 'Customer1',
+          settings: {
+            id : 1,
+            Customer_id : 1,
+            data : 'Europe/Paris'
+          }
+        };
+
+        return new Customer({ id: 1 })
+          .fetch({ withRelated: 'settings' })
+          .then(function (model) {
+            var cust = model.toJSON();
+            expect(cust).to.eql(expected);
+          });
+      });
+
+      it('should return Customer (id=4) with settings', function (done) {
+
+        var expected = {
+          id : 4,
+          name : 'Customer4',
+          settings: {
+            id : 2,
+            Customer_id : 4,
+            data : 'UTC'
+          }
+        };
+
+        return new Customer({ id: 4 })
+          .fetch({ withRelated: 'settings' })
+          .then(function (model) {
+            var cust = model.toJSON();
+            expect(cust).to.eql(expected);
+          });
+      });
     });
 
   });
