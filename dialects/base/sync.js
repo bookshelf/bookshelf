@@ -1,4 +1,4 @@
-// Sync
+// Base Sync
 // ---------------
 (function(define) {
 

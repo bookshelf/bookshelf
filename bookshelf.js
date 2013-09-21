@@ -1,4 +1,5 @@
-//     Bookshelf.js 0.5.1
+// Bookshelf.js 0.5.1
+// ---------------
 
 //     (c) 2013 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
