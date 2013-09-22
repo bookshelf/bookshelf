@@ -164,15 +164,6 @@ module.exports = {
       result: {
         id: 1,
         name: 'knexjs.org',
-        blogs: [{
-          id: 1,
-          site_id: 1,
-          name: 'Main Site Blog'
-        },{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog'
-        }],
         authors: [{
           id: 1,
           site_id: 1,
@@ -183,6 +174,15 @@ module.exports = {
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe'
+        }],
+        blogs: [{
+          id: 1,
+          site_id: 1,
+          name: 'Main Site Blog'
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog'
         }]
       }
     },
@@ -357,7 +357,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -368,7 +368,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -379,7 +379,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -408,7 +408,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     },
@@ -433,7 +433,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     },
@@ -458,7 +458,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     }
@@ -1828,7 +1828,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -1904,7 +1904,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -1980,7 +1980,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     }
@@ -2370,6 +2370,100 @@ module.exports = {
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
+      }]
+    }
+  },
+  '#65 - should eager load correctly for models': {
+    mysql: {
+      result: {
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      }
+    }
+  },
+  '#65 - should eager load correctly for collections': {
+    mysql: {
+      result: [{
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      },{
+        hostname: 'apple.com',
+        instance_id: 10,
+        route: null,
+        instance: {
+          id: 10,
+          name: 'computers'
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      },{
+        hostname: 'apple.com',
+        instance_id: 10,
+        route: null,
+        instance: {
+          id: 10,
+          name: 'computers'
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        hostname: 'google.com',
+        instance_id: 3,
+        route: null,
+        instance: {
+          id: 3,
+          name: 'search engine'
+        }
+      },{
+        hostname: 'apple.com',
+        instance_id: 10,
+        route: null,
+        instance: {
+          id: 10,
+          name: 'computers'
+        }
       }]
     }
   }

@@ -181,13 +181,27 @@ module.exports = function(Bookshelf) {
     model: Photo
   });
 
-  // Define the model
   var Settings = Bookshelf.Model.extend({ tableName: 'Settings' });
 
   var Customer = Bookshelf.Model.extend({
     tableName: 'Customer',
     settings: function () {
       return this.hasOne(Settings);
+    }
+  });
+
+  var Hostname = Bookshelf.Model.extend({
+    tableName: 'hostnames',
+    idAttribute: 'hostname',
+    instance: function() {
+      return this.belongsTo(Instance);
+    }
+  });
+
+  var Instance = Bookshelf.Model.extend({
+    tableName: 'instances',
+    hostnames: function() {
+      return this.hasMany(Hostname);
     }
   });
 
@@ -206,7 +220,9 @@ module.exports = function(Bookshelf) {
       Photo: Photo,
       Info: Info,
       Customer: Customer,
-      Settings: Settings
+      Settings: Settings,
+      Instance: Instance,
+      Hostname: Hostname
     },
     Collections: {
       Sites: Sites,

@@ -23,6 +23,8 @@ module.exports = function(Bookshelf) {
     var Role       = Models.Role;
     var Photo      = Models.Photo;
     var Customer   = Models.Customer;
+    var Instance   = Models.Instance;
+    var Hostname   = Models.Hostname;
 
     // Collections
     var Sites    = Collections.Sites;
@@ -387,6 +389,22 @@ module.exports = function(Bookshelf) {
             expect(cust).to.eql(expected);
           });
       });
+    });
+
+    describe('Issue #65, custom idAttribute with eager loaded belongsTo', function() {
+
+      it('#65 - should eager load correctly for models', function() {
+
+        return new Hostname({hostname: 'google.com'}).fetch({log: true, withRelated: 'instance'});
+
+      });
+
+      it('#65 - should eager load correctly for collections', function() {
+
+        return new Bookshelf.Collection([], {model: Hostname}).fetch({log: true,  withRelated: 'instance'});
+
+      });
+
     });
 
   });
