@@ -1,3 +1,5 @@
+// Finder Interface
+// ---------------
 (function(define) {
 
 "use strict";

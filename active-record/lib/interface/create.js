@@ -1,3 +1,5 @@
+// Create Interface
+// ---------------
 (function(define) {
 
 "use strict";
@@ -22,7 +24,7 @@ define(function(require, exports) {
       });
     },
 
-    // Work just like findOrCreateBy but it will call new instead of create.
+    // Works just like `findOrCreateBy` but it will call new instead of create.
     findOrInitializeBy: function() {
       var model = this;
       options = options || {};

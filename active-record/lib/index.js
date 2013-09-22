@@ -1,3 +1,5 @@
+// Bookshelf Active Record
+// ---------------
 (function(define) {
 
 "use strict";

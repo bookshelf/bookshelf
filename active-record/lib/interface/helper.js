@@ -1,3 +1,5 @@
+// Helper Interface
+// ---------------
 (function(define) {
 
 "use strict";
