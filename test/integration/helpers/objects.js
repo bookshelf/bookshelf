@@ -181,6 +181,16 @@ module.exports = function(Bookshelf) {
     model: Photo
   });
 
+  // Define the model
+  var Settings = Bookshelf.Model.extend({ tableName: 'Settings' });
+
+  var Customer = Bookshelf.Model.extend({
+    tableName: 'Customer',
+    settings: function () {
+      return this.hasOne(Settings);
+    }
+  });
+
   return {
     Models: {
       Site: Site,
@@ -194,7 +204,9 @@ module.exports = function(Bookshelf) {
       User: User,
       Role: Role,
       Photo: Photo,
-      Info: Info
+      Info: Info,
+      Customer: Customer,
+      Settings: Settings
     },
     Collections: {
       Sites: Sites,
