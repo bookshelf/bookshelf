@@ -262,14 +262,16 @@ define(function(require, exports) {
     parsePivot: function(models) {
       var Through = this.throughTarget;
       return _.map(models, function(model) {
-        var data = {}, attrs = model.attributes, through;
+        var data = {}, keep = {}, attrs = model.attributes, through;
         if (Through) through = new Through();
         for (var key in attrs) {
           if (key.indexOf('_pivot_') === 0) {
             data[key.slice(7)] = attrs[key];
-            delete attrs[key];
+          } else {
+            keep[key] = attrs[key];
           }
         }
+        model.attributes = keep;
         if (!_.isEmpty(data)) {
           model.pivot = through ? through.set(data, {silent: true}) : new this.Model(data, {
             tableName: this.joinTable()

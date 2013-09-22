@@ -106,7 +106,7 @@ define(function(require, exports) {
     // Reset the query builder, called internally
     // each time a query is run.
     resetQuery: function() {
-      delete this._knex;
+      this._knex = null;
       return this;
     },
 
