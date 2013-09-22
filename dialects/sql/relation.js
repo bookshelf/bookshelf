@@ -34,7 +34,8 @@ define(function(require, exports) {
         if (this.isInverse()) {
           if (this.type === 'morphTo') {
             this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
-            this.targetTableName = _.result(this.target.prototype, 'tableName');
+            this.targetTableName   = _.result(this.target.prototype, 'tableName');
+            this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
           }
           this.parentFk = parent.get(this.key('foreignKey'));
         } else {
@@ -179,7 +180,7 @@ define(function(require, exports) {
         var targetTable = this.type === 'belongsTo' ? this.parentTableName : this.joinTable();
         key = targetTable + '.' + (this.type === 'belongsTo' ? this.parentIdAttribute : this.key('foreignKey'));
       } else {
-        key = this.isInverse() ? this.parentIdAttribute : this.key('foreignKey');
+        key = this.isInverse() ? this.targetIdAttribute : this.key('foreignKey');
       }
 
       knex[resp ? 'whereIn' : 'where'](key, resp ? this.eagerKeys(resp) : this.parentFk);
