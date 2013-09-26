@@ -189,13 +189,12 @@ module.exports = function(Bookshelf) {
         }
       });
 
-      it('parses the model attributes on fetch', function(ok) {
-        new ParsedSite({id: 1})
+      it('parses the model attributes on fetch', function() {
+        return new ParsedSite({id: 1})
           .fetch()
           .then(function(model) {
             equal(model.get('name').indexOf('Test: '), 0);
-            ok();
-          }, ok);
+          });
       });
 
       it('parses the model attributes on creation if {parse: true} is passed', function() {
@@ -210,7 +209,7 @@ module.exports = function(Bookshelf) {
     describe('format', function() {
 
       // TODO: better way to test this.
-      it('calls format when saving', function(ok) {
+      it('calls format when saving', function() {
 
         var M = Backbone.Model.extend({
           tableName: 'test',
@@ -227,10 +226,9 @@ module.exports = function(Bookshelf) {
           var data = this.format(_.extend({}, this.attributes));
           equal(data.first_name, 'Tim');
           equal(data.last_name, 'G');
-          ok();
           return stubSync;
         };
-        m.save();
+        return m.save();
 
       });
 
@@ -240,32 +238,27 @@ module.exports = function(Bookshelf) {
 
       var Site = Models.Site;
 
-      it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function(ok) {
+      it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function() {
         var count = 0;
         var model = new Site({id: 1});
         model.on('fetched', function() {
           count++;
         });
 
-        model.fetch().then(function(model) {
+        return model.fetch().then(function(model) {
           equal(model.get('id'), 1);
           equal(model.get('name'), 'knexjs.org');
           equal(count, 1);
-          ok();
         });
 
       });
 
-      it('has a fetching event, which will fail if an error is thrown or if a rejected promise is provided', function(ok) {
-
+      it('has a fetching event, which will fail if an error is thrown or if a rejected promise is provided', function() {
         var model = new Site({id: 1});
         model.on('fetching', function() {
           throw new Error("This failed");
         });
-        model.fetch().then(null, function() {
-          ok();
-        });
-
+        return expect(model.fetch()).to.be.rejected;
       });
 
     });
@@ -274,8 +267,9 @@ module.exports = function(Bookshelf) {
 
       var Site = Models.Site;
 
-      it('saves a new object', function(ok) {
-        new Site({name: 'Fourth Site'}).save().then(function(m) {
+      it('saves a new object', function() {
+
+        return new Site({name: 'Fourth Site'}).save().then(function(m) {
           equal(m.get('id'), 4);
           return new Bookshelf.Collection(null, {model: Site}).fetch();
         })
@@ -283,12 +277,11 @@ module.exports = function(Bookshelf) {
           equal(c.last().id, 4);
           equal(c.last().get('name'), 'Fourth Site');
           equal(c.length, 4);
-          ok();
-        }).then(null, ok);
+        });
       });
 
-      it('updates an existing object', function(ok) {
-        new Site({id: 4, name: 'Fourth Site Updated'}).save()
+      it('updates an existing object', function() {
+        return new Site({id: 4, name: 'Fourth Site Updated'}).save()
           .then(function() {
             return new Bookshelf.Collection(null, {model: Site}).fetch();
           })
@@ -296,12 +289,11 @@ module.exports = function(Bookshelf) {
             equal(c.last().id, 4);
             equal(c.last().get('name'), 'Fourth Site Updated');
             equal(c.length, 4);
-            ok();
-          }).then(null, ok);
+          });
       });
 
-      it('allows passing a method to save, to call insert or update explicitly', function(ok) {
-        new Site({id: 5, name: 'Fifth site, explicity created'}).save(null, {method: 'insert'})
+      it('allows passing a method to save, to call insert or update explicitly', function() {
+        return new Site({id: 5, name: 'Fifth site, explicity created'}).save(null, {method: 'insert'})
         .then(function() {
           return new Bookshelf.Collection(null, {model: Site}).fetch();
         })
@@ -309,11 +301,10 @@ module.exports = function(Bookshelf) {
           equal(c.length, 5);
           equal(c.last().id, 5);
           equal(c.last().get('name'), 'Fifth site, explicity created');
-          ok();
-        }).then(null, ok);
+        });
       });
 
-      it('does not constrain on the `id` during update unless defined', function(ok) {
+      it('does not constrain on the `id` during update unless defined', function() {
 
         var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
         var query = m.query();
@@ -321,21 +312,22 @@ module.exports = function(Bookshelf) {
           equal(this.wheres.length, 1);
           return when.resolve({});
         };
-        m.save(null, {method: 'update'}).then(function() {
+
+        return m.save(null, {method: 'update'}).then(function() {
 
           var m2 = new Bookshelf.Model({id: 1}).query({where: {uuid: 'testing'}});
           var query2 = m2.query();
           query2.update = function() {
             equal(this.wheres.length, 2);
-            ok();
           };
-          m2.save(null, {method: 'update'});
+
+          return m2.save(null, {method: 'update'});
 
         });
 
       });
 
-      it('allows {patch: true} as an option for only updating passed data', function(ok) {
+      it('allows {patch: true} as an option for only updating passed data', function() {
 
         var user = new Bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
         var query = user.query();
@@ -346,13 +338,12 @@ module.exports = function(Bookshelf) {
           return when.resolve(this.toString()).then(onFulfilled, onRejected);
         };
 
-        user
+        return user
           .save({bio: 'Short user bio'}, {patch: true})
           .then(function(model) {
             equal(model.id, 1);
             equal(model.get('bio'), 'Short user bio');
             equal(model.get('first_name'), 'Testing');
-            ok();
           });
 
       });
@@ -363,22 +354,23 @@ module.exports = function(Bookshelf) {
 
       var Site = Models.Site;
 
-      it('issues a delete to the Knex, returning a promise', function(ok) {
-        new Site({id: 5}).destroy().then(function() {
+      it('issues a delete to the Knex, returning a promise', function() {
+
+        return new Site({id: 5}).destroy().then(function() {
           return new Bookshelf.Collection(null, {model: Site}).fetch();
         })
         .then(function(c) {
           equal(c.length, 4);
-          ok();
-        })
-        ;
+        });
+
       });
 
-      it('fails if no idAttribute or wheres are defined on the model.', function(ok) {
-        new Site().destroy().then(null, function(e) {
+      it('fails if no idAttribute or wheres are defined on the model.', function() {
+
+        return new Site().destroy().then(null, function(e) {
           equal(e.toString(), 'Error: A model cannot be destroyed without a "where" clause or an idAttribute.');
-          ok();
         });
+
       });
 
       it('triggers a destroying event on the model', function(ok) {
@@ -390,16 +382,15 @@ module.exports = function(Bookshelf) {
         m.destroy();
       });
 
-      it('will not destroy the model if an error is thrown during the destroying event', function(ok) {
+      it('will not destroy the model if an error is thrown during the destroying event', function() {
         var m = new Site({id: 1});
         m.on('destroying', function(model) {
           if (model.id === 1) {
             throw new Error("You cannot destroy the first site");
           }
         });
-        m.destroy().then(null, function(e) {
+        return m.destroy().then(null, function(e) {
           equal(e.toString(), 'Error: You cannot destroy the first site');
-          ok();
         });
       });
 
@@ -417,63 +408,58 @@ module.exports = function(Bookshelf) {
 
     describe('hasTimestamps', function() {
 
-      it('will set the created_at and updated_at columns if true', function(ok) {
+      it('will set the created_at and updated_at columns if true', function() {
         var m = new (Bookshelf.Model.extend({hasTimestamps: true}))();
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), true);
           equal(_.isDate(this.get('updated_at')), true);
-          ok();
           return stubSync;
         };
-        m.save({item: 'test'});
+        return m.save({item: 'test'});
       });
 
-      it('only sets the updated_at for existing models', function(ok) {
+      it('only sets the updated_at for existing models', function() {
         var m1 = new (Bookshelf.Model.extend({hasTimestamps: true}))();
         m1.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('updated_at')), true);
-          ok();
           return stubSync;
         };
-        m1.save({item: 'test'});
+        return m1.save({item: 'test'});
       });
 
-      it('allows passing hasTimestamps in the options hash', function(ok) {
+      it('allows passing hasTimestamps in the options hash', function() {
         var m = new Bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), true);
           equal(_.isDate(this.get('updated_at')), true);
-          ok();
           return stubSync;
         };
-        m.save({item: 'test'});
+        return m.save({item: 'test'});
       });
 
-      it('allows custom keys for the created at & update at values', function(ok) {
+      it('allows custom keys for the created at & update at values', function() {
         var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', 'updatedAt']});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('createdAt')), true);
           equal(_.isDate(this.get('updatedAt')), true);
-          ok();
           return stubSync;
         };
-        m.save({item: 'test'});
+        return m.save({item: 'test'});
       });
 
-      it('does not set created_at when {method: "update"} is passed', function(ok) {
+      it('does not set created_at when {method: "update"} is passed', function() {
         var m = new Bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), false);
           equal(_.isDate(this.get('updated_at')), true);
-          ok();
           return stubSync;
         };
-        m.save({item: 'test'}, {method: 'update'});
+        return m.save({item: 'test'}, {method: 'update'});
       });
 
     });
@@ -504,19 +490,18 @@ module.exports = function(Bookshelf) {
 
     describe('defaults', function() {
 
-      it('assigns defaults on save, rather than initialize', function(ok) {
+      it('assigns defaults on save, rather than initialize', function() {
         var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
         var item = new Item({newItem: 'test2'});
         deepEqual(item.toJSON(), {newItem: 'test2'});
         item.sync = function() {
           deepEqual(this.toJSON(), {id: 1, item: 'test', newItem: 'test2'});
-          ok();
           return stubSync;
         };
-        item.save({id: 1});
+        return item.save({id: 1});
       });
 
-      it('only assigns defaults when creating a model, unless {defaults: true} is passed in the save options', function(ok) {
+      it('only assigns defaults when creating a model, unless {defaults: true} is passed in the save options', function() {
         var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
         var item = new Item({id: 1, newItem: 'test2'});
         deepEqual(item.toJSON(), {id: 1, newItem: 'test2'});
@@ -524,13 +509,13 @@ module.exports = function(Bookshelf) {
           deepEqual(this.toJSON(), {id: 1, newItem: 'test2'});
           return stubSync;
         };
-        item.save();
-        item.sync = function() {
-          deepEqual(this.toJSON(), {id: 2, item: 'test', newItem: 'test2'});
-          ok();
-          return stubSync;
-        };
-        item.save({id: 2}, {defaults: true});
+        return item.save().then(function() {
+          item.sync = function() {
+            deepEqual(this.toJSON(), {id: 2, item: 'test', newItem: 'test2'});
+            return stubSync;
+          };
+          return item.save({id: 2}, {defaults: true});
+        });
       });
 
     });
@@ -557,14 +542,15 @@ module.exports = function(Bookshelf) {
 
     describe('previous, previousAttributes', function() {
 
-      it('will return the previous value of an attribute the last time it was synced', function(ok) {
+      it('will return the previous value of an attribute the last time it was synced', function() {
         var count = 0;
         var model = new Models.Site({id: 1});
         model.on('change', function() {
           count++;
         });
         equal(model.previous('id'), void 0);
-        model.fetch().then(function() {
+
+        return model.fetch().then(function() {
           deepEqual(model.previousAttributes(), {id: 1, name: 'knexjs.org'});
           deepEqual(model.changed, {});
           model.set('id', 2);
@@ -572,19 +558,18 @@ module.exports = function(Bookshelf) {
           deepEqual(model.changed, {id: 2});
           model.set('id', 1);
           equal(count, 1);
-          ok();
-        }).then(null, ok);
+        });
 
       });
 
     });
 
-    describe('hasChanged', function(ok) {
+    describe('hasChanged', function() {
 
       var site = new Models.Site({name: 'Third Site'});
       equal(site.hasChanged('name'), true);
       deepEqual(site.changed, {name: 'Third Site'});
-      site.fetch().then(function() {
+      return site.fetch().then(function() {
         deepEqual(site.hasChanged, {});
       });
 

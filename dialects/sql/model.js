@@ -95,10 +95,10 @@ define(function(require, exports) {
 
       // If the "withRelated" is specified, we also need to eager load all of the
       // data on the model, as a side-effect, before we ultimately jump into the
-      // next step of the model. For simplicity, we temporarily attach the options
-      // to `_eagerOptions`, which is cleaned up in the `_handleEager` method.
+      // next step of the model. Since the `columns` are only relevant to the current
+      // level, ensure those are omitted from the options.
       if (options.withRelated) {
-        sync = sync.tap(this._handleEager(options));
+        sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
       }
 
       return sync.tap(function(response) {

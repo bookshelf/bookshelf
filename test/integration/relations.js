@@ -350,7 +350,7 @@ module.exports = function(Bookshelf) {
 
     describe('Issue #63 - hasOne relations', function() {
 
-      it('should return Customer (id=1) with settings', function (done) {
+      it('should return Customer (id=1) with settings', function () {
 
         var expected = {
           id      : 1,
@@ -370,7 +370,7 @@ module.exports = function(Bookshelf) {
           });
       });
 
-      it('should return Customer (id=4) with settings', function (done) {
+      it('should return Customer (id=4) with settings', function () {
 
         var expected = {
           id : 4,
@@ -406,6 +406,28 @@ module.exports = function(Bookshelf) {
       });
 
     });
+
+    describe('Issue #70 - fetching specific columns, and relations', function() {
+
+      it('doesnt pass the columns along to sub-queries', function() {
+
+        return new Author({id: 2})
+          .fetch({
+            withRelated: 'posts',
+            columns: ['id', 'last_name']
+          })
+          .then(function(author) {
+
+            expect(author.attributes.first_name).to.be.undefined;
+
+            expect(author.related('posts').length).to.equal(2);
+
+          });
+
+      });
+
+    });
+
 
   });
 

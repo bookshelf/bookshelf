@@ -25,6 +25,7 @@ define(function(require, exports) {
     this._reset();
     this.initialize.apply(this, arguments);
     if (models) this.reset(models, _.extend({silent: true}, options));
+    _.bindAll(this, '_handleResponse', '_handleEager');
   };
 
   // List of attributes attached directly from the constructor's options object.
@@ -145,7 +146,11 @@ define(function(require, exports) {
       return when.all(this.invoke.apply(this, arguments));
     },
 
-    fetch: function() {}
+    fetch: function() {},
+
+    _handleResponse: function() {},
+
+    _handleEager: function() {}
 
   });
 
