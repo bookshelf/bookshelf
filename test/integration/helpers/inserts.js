@@ -194,8 +194,18 @@ module.exports = function(bookshelf) {
     knex('Settings').insert([
       {id: 1, Customer_id: 1, data: 'Europe/Paris'},
       {id: 2, Customer_id: 4, data: 'UTC'}
-    ])
+    ]),
 
+    knex('hostnames').insert([
+      {hostname: 'google.com', instance_id: 3},
+      {hostname: 'apple.com', instance_id: 10},
+    ]),
+
+    knex('instances').insert([
+      {id: 3, name: 'search engine'},
+      {id: 4, name: 'not used'},
+      {id: 10, name: 'computers'},
+    ])
 
   ]).then(null, function(e) {
     console.log(e.stack);

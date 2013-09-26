@@ -95,7 +95,7 @@ module.exports = function(Bookshelf) {
 
       });
 
-      it('should populate a `hasMany` or `morphMany` with the proper keys', function(ok) {
+      it('should populate a `hasMany` or `morphMany` with the proper keys', function() {
 
         return new Site({id: 10})
           .authors()
