@@ -1,23 +1,13 @@
 ## Bookshelf Active Record
 
-An extension of the database capabilities of [Bookshelf.js](http://bookshelfjs.org), the Bookshelf
-Active Record provides a similar query interface to that of Rails' ActiveRecord.
+An extension of the database capabilities of [Bookshelf.js](http://bookshelfjs.org),
+the Bookshelf Active Record provides a similar query interface to that of Rails' ActiveRecord.
 
 ```js
 // Create a main instance of ActiveRecord at the beginning of your application
 // lifecycle... after you initialize with `config` once, you may just require the
 // module
-var ActiveRecord = require('bookshelf/active-record')(config);
-
-// Later, this will work:
-var ActiveRecord = require('bookshelf/active-record');
-
-// If you need to use with multiple databases, you may optionally
-// specify the `name` of the instance:
-var ActiveRecordPG = require('bookshelf/active-record')('pg', otherConfig);
-
-// And then later:
-var ActiveRecordPG = require('bookshelf/active-record').instance('pg');
+var activeRecord = require('bookshelf/active-record').initialize(config);
 ```
 
 This is still very much a work in progress.

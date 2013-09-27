@@ -8,7 +8,7 @@ define(function(require, exports) {
 
   module.exports = function(bookshelf) {
 
-    var instance   = require('./query')(bookshelf);
+    var instance = require('./query')(bookshelf);
 
     require('./validation')(instance);
     require('./migration')(instance);

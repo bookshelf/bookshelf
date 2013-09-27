@@ -14,57 +14,27 @@ define(function(require, exports) {
   // relational & database functionality. Also create the
   // public interface for the library.
   var Bookshelf    = require('../sql');
-  var extension    = require('./lib');
-  var ActiveRecord = module.exports = {};
+  var activeRecord = require('./lib');
 
-  // Any active record instance we create is kept here, for convenience.
-  ActiveRecord.Instances = {};
+  var ActiveRecord = function(bookshelf) {
+
+    if (!(this instanceof ActiveRecord)) {
+      return new ActiveRecord(config);
+    }
+
+    if (!(bookshelf instanceof Bookshelf)) {
+      bookshelf = new Bookshelf(bookshelf);
+    }
+
+    // Augment the `bookshelf` instance with all of the
+    // Active Record helper methods we're after.
+    return activeRecord(bookshelf);
+  };
 
   // The initialize method gives us the ability to create and store
   // a new ActiveRecord instance.
-  ActiveRecord.initialize = function(name, config) {
-
-    // If there's an object, assume this is the `main` instance of
-    // the `ActiveRecord` we're using.
-    if (_.isObject(name)) {
-      options = name;
-      name = 'main';
-    }
-
-    // Only allow a single named instance of `ActiveRecord`.
-    if (ActiveRecord.Instances[name]) {
-      throw new Error('A ' + name + ' instance of ActiveRecord already exists');
-    }
-
-    // Create the new `Bookshelf` instance with a specific config, and
-    // extend the `Bookshelf.Model` with the correct prototype and static methods
-    // to make this into an almost 1-to-1 ActiveRecord clone...
-    var instance = extension(Bookshelf(config));
-
-    // For convenience, we'll mixin the first instance to the exports, so that
-    // from that point on in the app, you can just call `require('active-record')`
-    // and have it give you back the initialized instance. If you don't want it
-    // to do that for you, just reproduce the few lines above on your own
-    // and you're good to go...
-    if (name === 'main') {
-      _.extend(ActiveRecord, instance);
-    }
-
-    // ...and also, put the instance in an `Instances` object cache, for quick
-    // reference later. Again, if you're not a fan of the global state this creates
-    // internally in the library, just simply reproduce the three lines needed to
-    // create the instance above.
-    ActiveRecord.Instances[name] = instance;
-
-    // Finally, return the now properly config'ed instance of AR.
-    return instance;
-  };
-
-  // Convenience, for getting a particular instance,
-  // because `require('active-record').instance('pg')` looks
-  // much nicer than `require('active-record').Instances.pg`
-  ActiveRecord.instance = function(name) {
-    return ActiveRecord.Instances[name];
+  ActiveRecord.initialize = function(bookshelf) {
+    return new ActiveRecord(bookshelf);
   };
 
   // A function which augments the target object with
