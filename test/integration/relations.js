@@ -428,6 +428,26 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('Issue #77 - Using collection.create() on relations', function() {
+
+      it('maintains the correct parent model references when using related()', function() {
+
+        return new Site().fetch({withRelated: 'authors'}).then(function(site) {
+
+          return site.related('authors').create({first_name: 'Dummy', last_name: 'Account'}).then(function(model) {
+
+            expect(model.attributes).to.eql({first_name: 'Dummy', last_name: 'Account', site_id: site.id, id: model.id});
+
+            expect(site.related('authors')).to.have.length(3);
+
+          });
+
+        });
+
+      });
+
+    });
+
 
   });
 

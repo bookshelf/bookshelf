@@ -27,20 +27,17 @@ define(function(require, exports) {
       this.parentTableName   = _.result(parent, 'tableName');
       this.parentIdAttribute = _.result(parent, 'idAttribute');
 
-      // If the parent object is eager loading, we don't need the
-      // id attribute, because we'll just be creating a `whereIn` from the
-      // previous response anyway.
-      if (!parent._isEager) {
-        if (this.isInverse()) {
-          if (this.type === 'morphTo') {
-            this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
-            this.targetTableName   = _.result(this.target.prototype, 'tableName');
-            this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
-          }
-          this.parentFk = parent.get(this.key('foreignKey'));
-        } else {
-          this.parentFk = parent.id;
+      if (this.isInverse()) {
+        // If the parent object is eager loading, and it's a polymorphic `morphTo` relation,
+        // we can't know what the target will be until the models are sorted and matched.
+        if (this.type === 'morphTo' && !parent._isEager) {
+          this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
+          this.targetTableName   = _.result(this.target.prototype, 'tableName');
+          this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
         }
+        this.parentFk = parent.get(this.key('foreignKey'));
+      } else {
+        this.parentFk = parent.id;
       }
 
       var target = this.target ? this.relatedInstance() : {};
@@ -233,25 +230,29 @@ define(function(require, exports) {
 
     // Groups the related response according to the type of relationship
     // we're handling, for easy attachment to the parent models.
-    eagerPair: function(relationName, related, models) {
+    eagerPair: function(relationName, related, parentModels) {
 
       // If this is a morphTo, we only want to pair on the morphValue for the current relation.
       if (this.type === 'morphTo') {
-        models = _.filter(models, function(model) { return model.get(this.key('morphKey')) === this.key('morphValue'); }, this);
+        parentModels = _.filter(parentModels, function(model) { return model.get(this.key('morphKey')) === this.key('morphValue'); }, this);
       }
 
       // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
       if (this.isJoined()) related = this.parsePivot(related);
 
+      // Group all of the related models for easier association with their parent models.
       var grouped = _.groupBy(related, function(model) {
         return model.pivot ? model.pivot.get(this.key('foreignKey')) :
           this.isInverse() ? model.id : model.get(this.key('foreignKey'));
       }, this);
 
-      for (var i = 0, l = models.length; i < l; i++) {
-        var model = models[i];
+      // Loop over the `parentModels` and attach the appropriated grouped sub-models,
+      // keeping the appropriated `relatedData` on the new related instance.
+      for (var i = 0, l = parentModels.length; i < l; i++) {
+        var model = parentModels[i];
         var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
-        model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        relation.relatedData = this;
       }
       return related;
     },
