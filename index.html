@@ -1293,19 +1293,6 @@ var Photo = Bookshelf.Model.extend({
 });
 </pre>
 
-    <p class="warning">
-      Note: a morphTo may not have a nested eager relation underneath it. From the example above, you could
-      not do something like:
-    </p>
-
-<pre>
-new Photos().fetch({
-  withRelated: ['imageable.otherRelation']
-});
-</pre>
-
-    <p class="warning">The <tt>otherRelation</tt> in this case would be ignored.</p>
-
     <p id="Model-relations">
       <b class="header">relations</b><code>model.relations</code>
       <br />

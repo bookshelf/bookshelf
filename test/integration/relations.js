@@ -314,6 +314,10 @@ module.exports = function(Bookshelf) {
           return new Photos().fetch({log: true, withRelated: ['imageable']});
         });
 
+        it('eager loads beyond the morphTo, where possible', function() {
+          return new Photos().fetch({log: true, withRelated: ['imageable.authors']});
+        });
+
       });
 
       describe('`through` relations', function() {

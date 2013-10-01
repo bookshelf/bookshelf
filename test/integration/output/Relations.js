@@ -357,7 +357,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-
+        
         },
         blogs: [],
         authors: []
@@ -367,10 +367,10 @@ module.exports = {
       result: {
         id: 3,
         name: 'backbonejs.org',
-        meta: {
-
-        },
         blogs: [],
+        meta: {
+        
+        },
         authors: []
       }
     },
@@ -379,7 +379,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-
+        
         },
         blogs: [],
         authors: []
@@ -408,7 +408,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-
+        
         }
       }]
     },
@@ -433,7 +433,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-
+        
         }
       }]
     },
@@ -458,7 +458,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-
+        
         }
       }]
     }
@@ -1038,45 +1038,6 @@ module.exports = {
       result: {
         id: 1,
         name: 'knexjs.org',
-        authors: [{
-          id: 1,
-          site_id: 1,
-          first_name: 'Tim',
-          last_name: 'Griesser',
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          },
-          ownPosts: [{
-            id: 1,
-            owner_id: 1,
-            blog_id: 1,
-            name: 'This is a new Title!',
-            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          }]
-        },{
-          id: 2,
-          site_id: 1,
-          first_name: 'Bazooka',
-          last_name: 'Joe',
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          },
-          ownPosts: [{
-            id: 2,
-            owner_id: 2,
-            blog_id: 2,
-            name: 'This is a new Title 2!',
-            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
-          },{
-            id: 3,
-            owner_id: 2,
-            blog_id: 1,
-            name: 'This is a new Title 3!',
-            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }]
-        }],
         blogs: [{
           id: 1,
           site_id: 1,
@@ -1105,6 +1066,45 @@ module.exports = {
             name: 'This is a new Title 2!',
             content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
           }]
+        }],
+        authors: [{
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser',
+          ownPosts: [{
+            id: 1,
+            owner_id: 1,
+            blog_id: 1,
+            name: 'This is a new Title!',
+            content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
+          }],
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          }
+        },{
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe',
+          ownPosts: [{
+            id: 2,
+            owner_id: 2,
+            blog_id: 2,
+            name: 'This is a new Title 2!',
+            content: 'Lorem ipsum Veniam ex amet occaecat dolore in pariatur minim est exercitation deserunt Excepteur enim officia occaecat in exercitation aute et ad esse ex in in dolore amet consequat quis sed mollit et id incididunt sint dolore velit officia dolor dolore laboris dolor Duis ea ex quis deserunt anim nisi qui culpa laboris nostrud Duis anim deserunt esse laboris nulla qui in dolor voluptate aute reprehenderit amet ut et non voluptate elit irure mollit dolor consectetur nisi adipisicing commodo et mollit dolore incididunt cupidatat nulla ut irure deserunt non officia laboris fugiat ut pariatur ut non aliqua eiusmod dolor et nostrud minim elit occaecat commodo consectetur cillum elit laboris mollit dolore amet id qui eiusmod nulla elit eiusmod est ad aliqua aute enim ut aliquip ex in Ut nisi sint exercitation est mollit veniam cupidatat adipisicing occaecat dolor irure in aute aliqua ullamco.'
+          },{
+            id: 3,
+            owner_id: 2,
+            blog_id: 1,
+            name: 'This is a new Title 3!',
+            content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
+          }],
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          }
         }]
       }
     },
@@ -1828,7 +1828,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-
+        
         }
       }]
     },
@@ -1904,7 +1904,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-
+        
         }
       }]
     },
@@ -1980,7 +1980,369 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-
+        
+        }
+      }]
+    }
+  },
+  'eager loads beyond the morphTo, where possible': {
+    mysql: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageable: {
+        
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageable: {
+        
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageable: {
+        
         }
       }]
     }
