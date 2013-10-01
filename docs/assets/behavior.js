@@ -56,6 +56,32 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "singleLineComment": ["//"],
                   "name": "JavaScript"
                 },
+                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/collection.js",
+                "projectPath": "dialects/base/collection.js",
+                "targetPath": "dialects/base/collection",
+                "title": "collection"
+              },
+              "depth": 3,
+              "outline": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Base Collection",
+                    "slug": "base-collection"
+                  },
+                  "depth": 2
+                }
+              ]
+            }, {
+              "type": "file",
+              "data": {
+                "language": {
+                  "nameMatchers": [".js"],
+                  "pygmentsLexer": "javascript",
+                  "singleLineComment": ["//"],
+                  "name": "JavaScript"
+                },
                 "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/eager.js",
                 "projectPath": "dialects/base/eager.js",
                 "targetPath": "dialects/base/eager",

@@ -5,7 +5,7 @@
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -R spec test/index.js",
-    "doc": "groc -o docs --verbose dialects/**/*.js plugins/*.js bookshelf.js"
+    "doc": "groc -o docs --verbose dialects/base/collection.js dialects/**/*.js plugins/*.js bookshelf.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
