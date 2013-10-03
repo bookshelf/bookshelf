@@ -1,4 +1,6 @@
 
+require('when/monitor/console');
+
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
 var mocha     = require('mocha');

@@ -566,11 +566,15 @@ module.exports = function(Bookshelf) {
 
     describe('hasChanged', function() {
 
-      var site = new Models.Site({name: 'Third Site'});
-      equal(site.hasChanged('name'), true);
-      deepEqual(site.changed, {name: 'Third Site'});
-      return site.fetch().then(function() {
-        deepEqual(site.hasChanged, {});
+      it('will determine whether an attribute, or the model has changed', function() {
+
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          expect(site.hasChanged()).to.be.false;
+          site.set('name', 'Changed site');
+          equal(site.hasChanged('name'), true);
+          deepEqual(site.changed, {name: 'Changed site'});
+        });
+
       });
 
     });
