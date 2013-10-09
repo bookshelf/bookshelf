@@ -159,6 +159,12 @@ define(function(require, exports) {
 
   CollectionBase.extend = Backbone.Collection.extend;
 
+  // Helper to mixin additional items to the current prototype.
+  CollectionBase.include = function (object) {
+    _.extend(this.prototype, object);
+    return this;
+  };
+
   exports.CollectionBase = CollectionBase;
 
 });

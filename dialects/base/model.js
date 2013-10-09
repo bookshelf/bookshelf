@@ -179,7 +179,13 @@ define(function(require, exports) {
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
 
-  ModelBase.extend = Backbone.Model.extend;
+  ModelBase.extend  = Backbone.Model.extend;
+
+  // Helper to mixin additional items to the current prototype.
+  ModelBase.include = function (object) {
+    _.extend(this.prototype, object);
+    return this;
+  };
 
   exports.ModelBase = ModelBase;
 

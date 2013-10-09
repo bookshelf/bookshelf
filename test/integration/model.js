@@ -100,7 +100,10 @@ module.exports = function(Bookshelf) {
 
     describe('query', function() {
 
-      var model = new Bookshelf.Model();
+      var model;
+      beforeEach(function() {
+        model = new Bookshelf.Model();
+      });
 
       it('returns the Knex builder when no arguments are passed', function() {
         equal((model.query() instanceof require('knex/lib/builder').Builder), true);
