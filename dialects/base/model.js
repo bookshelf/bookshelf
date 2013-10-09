@@ -181,9 +181,9 @@ define(function(require, exports) {
 
   ModelBase.extend  = Backbone.Model.extend;
 
-  // Helper to mixin additional items to the current prototype.
-  ModelBase.include = function (object) {
-    _.extend(this.prototype, object);
+  // Helper to mixin one or more additional items to the current prototype.
+  ModelBase.include = function() {
+    _.extend.apply(_, [this.prototype].concat(_.toArray(arguments)));
     return this;
   };
 
