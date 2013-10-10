@@ -264,6 +264,14 @@ module.exports = function(Bookshelf) {
         return expect(model.fetch()).to.be.rejected;
       });
 
+      it('allows access to the query builder on the options object in the fetching event', function() {
+        var model = new Site({id: 1});
+        model.on('fetching', function(model, columns, options) {
+          expect(options.query.whereIn).to.be.a.function;
+        });
+        return model.fetch();
+      });
+
     });
 
     describe('save', function() {

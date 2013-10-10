@@ -52,6 +52,10 @@ define(function(require, exports) {
         if (!_.isArray(columns)) columns = columns ? [columns] : [_.result(syncing, 'tableName') + '.*'];
       }
 
+      // Set the query builder on the options, in-case we need to
+      // access in the `fetching` event handlers.
+      options.query = this.query;
+
       // Create the deferred object, triggering a `fetching` event if the model
       // isn't an eager load.
       return when(function(){
