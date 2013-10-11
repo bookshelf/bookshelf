@@ -56,11 +56,8 @@ define(function(require, exports) {
       // access in the `fetching` event handlers.
       options.query = this.query;
 
-      // Create the deferred object, triggering a `fetching` event if the model
-      // isn't an eager load.
-      return when(function(){
-        if (!options.isEager) return syncing.triggerThen('fetching', syncing, columns, options);
-      }()).then(function() {
+      // Trigger a `fetching` event on the model, and then select the appropriate columns.
+      return syncing.triggerThen('fetching', syncing, columns, options).then(function() {
         return sync.query.select(columns);
       });
     },
