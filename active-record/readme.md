@@ -12,20 +12,20 @@ var activeRecord = require('bookshelf/active-record').initialize(config);
 
 This is still very much a work in progress.
 
-#### [Active Record Basics](guides/basics.md)
+#### [Active Record Basics](docs/basics.md)
 This guide will get you started with models, persistence to database and the Active Record pattern and library.
 
-#### [Active Record Validations](guides/validation.md)
+#### [Active Record Validations](docs/validation.md)
 This guide covers how you can use Active Record validations
 
-#### [Active Record Callbacks](guides/callbacks.md)
+#### [Active Record Callbacks](docs/callbacks.md)
 This guide covers how you can use Active Record callbacks.
 
-#### [Active Record Associations](guides/associations.md)
+#### [Active Record Associations](docs/associations.md)
 This guide covers all the associations provided by Active Record.
 
-#### [Active Record Query Interface](guides/interface.md)
+#### [Active Record Query Interface](docs/interface.md)
 This guide covers the database query interface provided by Active Record.
 
-#### [Database Migrations](guides/migration.md)
+#### [Database Migrations](docs/migration.md)
 This guide covers how you can use Active Record migrations to alter your database in a structured and organized manner.
