@@ -7,13 +7,13 @@
 define(function(require, exports) {
 
   var _            = require('underscore');
-  var when         = require('when');
   var inflection   = require('inflection');
 
   var Helpers      = require('./helpers').Helpers;
 
   var ModelBase    = require('../base/model').ModelBase;
   var RelationBase = require('../base/relation').RelationBase;
+  var Promise      = require('../base/promise').Promise;
 
   var push = [].push;
 
@@ -357,14 +357,14 @@ define(function(require, exports) {
     _handler: function(method, ids, options) {
       var pending = [];
       if (ids == void 0) {
-        if (method === 'insert') return when.resolve(this);
+        if (method === 'insert') return Promise.resolve(this);
         if (method === 'delete') pending.push(this._processPivot(method, null, options));
       }
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      return when.all(pending).yield(this);
+      return Promise.all(pending).yield(this);
     },
 
     // Handles setting the appropriate constraints and shelling out

@@ -7,13 +7,13 @@
 define(function(require, exports) {
 
   var _ = require('underscore');
-  var when = require('when');
 
   var Sync = require('./sync').Sync;
   var Helpers = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
   var CollectionBase = require('../base/collection').CollectionBase;
+  var Promise        = require('../base/promise').Promise;
 
   exports.Collection = CollectionBase.extend({
 
@@ -26,36 +26,38 @@ define(function(require, exports) {
     // Fetch the models for this collection, resetting the models
     // for the query when they arrive.
     fetch: function(options) {
-      options = options || {};
-      var collection = this, relatedData = this.relatedData;
-      var sync = this.sync(options)
-        .select()
-        .tap(function(response) {
-          if (!response || response.length === 0) {
-            if (options.require) throw new Error('EmptyResponse');
-            return when.reject(null);
+      options = options ? _.clone(options) : {};
+      return Promise.bind(this).then(function() {
+        var sync = this.sync(options)
+          .select()
+          .bind(this)
+          .tap(function(response) {
+            if (!response || response.length === 0) {
+              if (options.require) throw new Error('EmptyResponse');
+              return Promise.reject(null);
+            }
+          })
+
+          // Now, load all of the data onto the collection as necessary.
+          .tap(this._handleResponse);
+
+          // If the "withRelated" is specified, we also need to eager load all of the
+          // data on the collection, as a side-effect, before we ultimately jump into the
+          // next step of the collection. Since the `columns` are only relevant to the current
+          // level, ensure those are omitted from the options.
+          if (options.withRelated) {
+            sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
           }
-        })
 
-        // Now, load all of the data onto the collection as necessary.
-        .tap(this._handleResponse);
+          return sync.tap(function(response) {
+            return this.triggerThen('fetched', this, response, options);
+          })
+          .caught(function(err) {
+            if (err !== null) throw err;
+            this.reset([], {silent: true});
+          });
 
-        // If the "withRelated" is specified, we also need to eager load all of the
-        // data on the collection, as a side-effect, before we ultimately jump into the
-        // next step of the collection. Since the `columns` are only relevant to the current
-        // level, ensure those are omitted from the options.
-        if (options.withRelated) {
-          sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
-        }
-
-        return sync.tap(function(response) {
-          return collection.triggerThen('fetched', collection, response, options);
-        })
-        .otherwise(function(err) {
-          if (err !== null) throw err;
-          collection.reset([], {silent: true});
-        })
-        .yield(this);
+      }).bind().yield(this);
     },
 
     // Fetches a single model from the collection, useful on related collections.
@@ -138,9 +140,8 @@ define(function(require, exports) {
 
     // Handle the related data loading on the collection.
     _handleEager: function(options) {
-      var collection = this;
       return function(response) {
-        return new EagerRelation(collection.models, response, new collection.model()).fetch(options);
+        return new EagerRelation(this.models, response, new this.model()).fetch(options);
       };
     }
 

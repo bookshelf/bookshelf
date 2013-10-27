@@ -7,10 +7,10 @@
 define(function(require, exports) {
 
   var _ = require('underscore');
-  var when = require('when');
 
-  var Helpers = require('./helpers').Helpers;
+  var Helpers   = require('./helpers').Helpers;
   var EagerBase = require('../base/eager').EagerBase;
+  var Promise   = require('../base/promise').Promise;
 
   // An `EagerRelation` object temporarily stores the models from an eager load,
   // and handles matching eager loaded objects with their parent(s). The `tempModel`
@@ -55,7 +55,7 @@ define(function(require, exports) {
             relatedData: relatedData.instance('morphTo', Target, {morphName: relationName})
           }, options)));
       }
-      return when.all(pending).then(function(resps) {
+      return Promise.all(pending).then(function(resps) {
         return _.flatten(resps);
       });
     }

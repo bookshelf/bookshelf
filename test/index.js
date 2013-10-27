@@ -1,5 +1,10 @@
+var Promise = require('../dialects/base/promise').Promise;
 
-require('when/monitor/console');
+global.testPromise = Promise;
+
+Promise.onPossiblyUnhandledRejection(function(e) {
+  console.log(e.stack);
+});
 
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
@@ -15,7 +20,6 @@ chai.use(require("chai-as-promised"));
 chai.use(require("sinon-chai"));
 chai.should();
 
-global.whenResolve    = require('when').resolve;
 global.expect         = chai.expect;
 global.AssertionError = chai.AssertionError;
 global.Assertion      = chai.Assertion;

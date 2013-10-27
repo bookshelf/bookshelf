@@ -1,7 +1,7 @@
 var _ = require('underscore');
 _.str = require('underscore.string');
 
-var when  = require('when');
+var Promise = global.testPromise;
 var equal = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
@@ -13,11 +13,11 @@ module.exports = function(Bookshelf) {
     var Models    = require('./helpers/objects')(Bookshelf).Models;
 
     var stubSync = {
-      first:  function() { return when.resolve({}); },
-      select: function() { return when.resolve({}); },
-      insert: function() { return when.resolve({}); },
-      update: function() { return when.resolve({}); },
-      del:    function() { return when.resolve({}); }
+      first:  function() { return Promise.resolve({}); },
+      select: function() { return Promise.resolve({}); },
+      insert: function() { return Promise.resolve({}); },
+      update: function() { return Promise.resolve({}); },
+      del:    function() { return Promise.resolve({}); }
     };
 
     describe('extend/constructor/initialize', function() {
@@ -321,7 +321,7 @@ module.exports = function(Bookshelf) {
         var query = m.query();
         query.update = function() {
           equal(this.wheres.length, 1);
-          return when.resolve({});
+          return Promise.resolve({});
         };
 
         return m.save(null, {method: 'update'}).then(function() {
@@ -346,7 +346,7 @@ module.exports = function(Bookshelf) {
         query.then = function(onFulfilled, onRejected) {
           equal(this.bindings.length, 2);
           equal(this.wheres.length, 1);
-          return when.resolve(this.toString()).then(onFulfilled, onRejected);
+          return Promise.resolve(this.toString()).then(onFulfilled, onRejected);
         };
 
         return user

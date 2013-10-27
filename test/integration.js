@@ -4,14 +4,14 @@ module.exports = function(Bookshelf) {
 
   var Knex     = require('knex');
   var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
-  var nodefn   = require('when/node/function');
+  var Promise  = global.testPromise;
 
   var MySQL = Bookshelf.initialize({
     client: 'mysql',
     connection: config.mysql,
     pool: {
       afterCreate: function(connection, callback) {
-        return nodefn.call(connection.query.bind(connection), "SET sql_mode='TRADITIONAL';", []).then(function() {
+        return Promise.promisify(connection.query, connection)("SET sql_mode='TRADITIONAL';", []).then(function() {
           callback(null, connection);
         });
       }
