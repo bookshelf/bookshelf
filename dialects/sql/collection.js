@@ -62,20 +62,23 @@ define(function(require, exports) {
 
     // Fetches a single model from the collection, useful on related collections.
     fetchOne: function(options) {
-      var model = new this.model;
-      model._knex = this.query().clone();
-      if (this.relatedData) model.relatedData = this.relatedData;
-      return model.fetch(options);
+      return Promise.bind(this).then(function() {
+        var model = new this.model;
+        model._knex = this.query().clone();
+        if (this.relatedData) model.relatedData = this.relatedData;
+        return model.fetch(options);
+      }).bind();
     },
 
     // Eager loads relationships onto an already populated `Collection` instance.
     load: function(relations, options) {
-      var collection = this;
-      _.isArray(relations) || (relations = [relations]);
-      options = _.extend({}, options, {shallow: true, withRelated: relations});
-      return new EagerRelation(this.models, this.toJSON(options), new this.model())
-        .fetch(options)
-        .yield(this);
+      return Promise.bind(this).then(function() {
+        _.isArray(relations) || (relations = [relations]);
+        options = _.extend({}, options, {shallow: true, withRelated: relations});
+        return new EagerRelation(this.models, this.toJSON(options), new this.model())
+          .fetch(options)
+          .yield(this);
+      }).bind();
     },
 
     // Shortcut for creating a new model, saving, and adding to the collection.
@@ -84,32 +87,32 @@ define(function(require, exports) {
     // hash into the inserted model. Also, if the model is a `manyToMany` relation,
     // automatically create the joining model upon insertion.
     create: function(model, options) {
-      options = options || {};
+      return Promise.bind(this).then(function() {
+        options = options ? _.clone(options) : {};
+        var relatedData = this.relatedData;
+        model = this._prepareModel(model, options);
 
-      var collection  = this;
-      var relatedData = this.relatedData;
+        // If we've already added things on the query chain,
+        // these are likely intended for the model.
+        if (this._knex) {
+          model._knex = this._knex;
+          this.resetQuery();
+        }
 
-      model = this._prepareModel(model, options);
-
-      // If we've already added things on the query chain,
-      // these are likely intended for the model.
-      if (this._knex) {
-        model._knex = this._knex;
-        this.resetQuery();
-      }
-
-      return Helpers
-        .saveConstraints(model, relatedData)
-        .save(null, options)
-        .then(function() {
-          if (relatedData && (relatedData.type === 'belongsToMany' || relatedData.isThrough())) {
-            return collection.attach(model, options);
-          }
-        })
-        .then(function() {
-          collection.add(model, options);
-          return model;
-        });
+        return Helpers
+          .saveConstraints(model, relatedData)
+          .save(null, options)
+          .bind(this)
+          .then(function() {
+            if (relatedData && (relatedData.type === 'belongsToMany' || relatedData.isThrough())) {
+              return this.attach(model, options);
+            }
+          })
+          .then(function() {
+            this.add(model, options);
+            return model;
+          });
+      }).bind();
     },
 
     // Reset the query builder, called internally

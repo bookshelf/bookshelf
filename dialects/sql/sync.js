@@ -69,9 +69,11 @@ define(function(require, exports) {
 
     // Issues an `insert` command on the query - only used by models.
     insert: function() {
-      var syncing = this.syncing;
-      return this.query
-        .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+      return Promise.bind(this).then(function() {
+        var syncing = this.syncing;
+        return this.query
+          .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+      }).bind();
     },
 
     // Issues an `update` command on the query - only used by models.
