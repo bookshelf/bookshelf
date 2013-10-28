@@ -18,7 +18,7 @@ define(function(require, exports) {
     this.parent = parent;
     this.target = target;
     this.parentResponse = parentResponse;
-    _.bindAll(this, 'pushModels', 'eagerFetch');
+    _.bindAll(this, 'pushModels');
   };
 
   EagerBase.prototype = {

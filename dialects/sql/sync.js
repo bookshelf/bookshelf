@@ -78,22 +78,26 @@ define(function(require, exports) {
 
     // Issues an `update` command on the query - only used by models.
     update: function(attrs) {
-      var syncing = this.syncing, query = this.query;
-      if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-      if (query.wheres.length === 0) {
-        return Promise.reject(new Error('A model cannot be updated without a "where" clause or an idAttribute.'));
-      }
-      return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+      return Promise.bind(this).then(function() {
+        var syncing = this.syncing, query = this.query;
+        if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+        if (query.wheres.length === 0) {
+          throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
+        }
+        return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+      }).bind();
     },
 
     // Issues a `delete` command on the query.
     del: function() {
-      var query = this.query, syncing = this.syncing;
-      if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-      if (query.wheres.length === 0) {
-        return Promise.reject(new Error('A model cannot be destroyed without a "where" clause or an idAttribute.'));
-      }
-      return this.query.del();
+      return Promise.bind(this).then(function() {
+        var query = this.query, syncing = this.syncing;
+        if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+        if (query.wheres.length === 0) {
+          throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
+        }
+        return this.query.del();
+      }).bind();
     }
 
   });

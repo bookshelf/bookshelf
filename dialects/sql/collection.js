@@ -8,8 +8,8 @@ define(function(require, exports) {
 
   var _ = require('underscore');
 
-  var Sync = require('./sync').Sync;
-  var Helpers = require('./helpers').Helpers;
+  var Sync          = require('./sync').Sync;
+  var Helpers       = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
   var CollectionBase = require('../base/collection').CollectionBase;
@@ -26,8 +26,8 @@ define(function(require, exports) {
     // Fetch the models for this collection, resetting the models
     // for the query when they arrive.
     fetch: function(options) {
-      options = options ? _.clone(options) : {};
       return Promise.bind(this).then(function() {
+        options = options ? _.clone(options) : {};
         var sync = this.sync(options)
           .select()
           .bind(this)
