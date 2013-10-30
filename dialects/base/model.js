@@ -6,11 +6,12 @@
 
 define(function(require, exports) {
 
-  var _        = require('underscore');
+  var _ = require('underscore');
   var Backbone = require('backbone');
 
   var Events   = require('./events').Events;
   var Helpers  = require('./helpers').Helpers;
+  var Promise  = require('./promise').Promise;
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
   // a generic model base.
@@ -36,7 +37,6 @@ define(function(require, exports) {
     }
     this.set(attrs, options);
     this.initialize.apply(this, arguments);
-    _.bindAll(this, '_handleResponse', '_handleEager');
   };
 
   _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
@@ -177,15 +177,17 @@ define(function(require, exports) {
     // and after the model is destroyed, respectively. If an error is thrown
     // during the "destroying" event, the model will not be destroyed.
     destroy: function(options) {
-      var model = this;
-      options = options || {};
-      return model.triggerThen('destroying', model, options)
-      .then(function() { return model.sync(options).del(); })
-      .then(function(resp) {
-        model.clear();
-        return model.triggerThen('destroyed', model, resp, options);
-      })
-      .then(function() { return model._reset(); });
+      options = options ? _.clone(options) : {};
+      return Promise.bind(this).then(function() {
+        return this.triggerThen('destroying', this, options);
+      }).then(function() {
+        return this.sync(options).del();
+      }).then(function(resp) {
+        this.clear();
+        return this.triggerThen('destroyed', this, resp, options);
+      }).then(function() {
+        return this._reset();
+      }).bind();
     },
 
     _handleResponse: function() {},

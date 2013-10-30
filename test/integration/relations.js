@@ -1,4 +1,4 @@
-var when      = require('when');
+var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
 module.exports = function(Bookshelf) {
@@ -200,7 +200,7 @@ module.exports = function(Bookshelf) {
       describe('Pivot Tables', function() {
 
         before(function() {
-          return when.all([
+          return Promise.all([
             new Site({id: 1}).admins().detach(),
             new Site({id: 2}).admins().detach()
           ]);
@@ -214,10 +214,10 @@ module.exports = function(Bookshelf) {
           var admin2 = new Admin({username: 'syncable', password: 'test'});
           var admin1_id;
 
-          return when.all([admin1.save(), admin2.save()])
+          return Promise.all([admin1.save(), admin2.save()])
             .then(function() {
               admin1_id = admin1.id;
-              return when.all([
+              return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
                 site2.related('admins').attach(admin2)
               ]);
@@ -226,7 +226,7 @@ module.exports = function(Bookshelf) {
               expect(site1.related('admins')).to.have.length(2);
               expect(site2.related('admins')).to.have.length(1);
             }).then(function() {
-              return when.all([
+              return Promise.all([
                 new Site({id: 1}).related('admins').fetch().then(function(c) {
                   c.each(function(m) {
                     equal(m.hasChanged(), false);
@@ -240,13 +240,13 @@ module.exports = function(Bookshelf) {
               ]);
             })
             .then(function(resp) {
-              return when.all([
+              return Promise.all([
                 new Site({id: 1}).related('admins').fetch(),
                 new Site({id: 2}).related('admins').fetch()
               ]);
             })
             .spread(function(admins1, admins2) {
-              return when.all([
+              return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
                   return c.fetch();

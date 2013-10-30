@@ -9,12 +9,12 @@ define(function(require, exports) {
 
   // All exernal dependencies required in this scope.
   var _         = require('underscore');
-  var when      = require('when');
   var Backbone  = require('backbone');
 
   // All components that need to be referenced in this scope.
   var Events    = require('./events').Events;
   var Helpers   = require('./helpers').Helpers;
+  var Promise   = require('./promise').Promise;
   var ModelBase = require('./model').ModelBase;
 
   var array  = [];
@@ -26,7 +26,6 @@ define(function(require, exports) {
     this._reset();
     this.initialize.apply(this, arguments);
     if (models) this.reset(models, _.extend({silent: true}, options));
-    _.bindAll(this, '_handleResponse', '_handleEager');
   };
 
   // List of attributes attached directly from the constructor's options object.
@@ -143,17 +142,19 @@ define(function(require, exports) {
       return new this.model(attrs, options);
     },
 
-    // Convenience method for map, returning a `when.all` promise.
+    // Convenience method for map, returning a `Promise.all` promise.
     mapThen: function(iterator, context) {
-      return when.all(this.map(iterator, context));
+      return Promise.all(this.map(iterator, context));
     },
 
-    // Convenience method for invoke, returning a `when.all` promise.
+    // Convenience method for invoke, returning a `Promise.all` promise.
     invokeThen: function() {
-      return when.all(this.invoke.apply(this, arguments));
+      return Promise.all(this.invoke.apply(this, arguments));
     },
 
-    fetch: function() {},
+    fetch: function() {
+      return Promise.rejected('The fetch method has not been implemented');
+    },
 
     _handleResponse: function() {},
 
