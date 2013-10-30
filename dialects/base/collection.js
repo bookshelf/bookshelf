@@ -14,6 +14,7 @@ define(function(require, exports) {
 
   // All components that need to be referenced in this scope.
   var Events    = require('./events').Events;
+  var Helpers   = require('./helpers').Helpers;
   var ModelBase = require('./model').ModelBase;
 
   var array  = [];
@@ -72,7 +73,7 @@ define(function(require, exports) {
         if (attrs instanceof ModelBase) {
           id = model = attrs;
         } else {
-          id = attrs[targetModel.prototype.idAttribute];
+          id = Helpers.idValue(attrs, targetModel.prototype.idAttribute);
         }
 
         // If a duplicate is found, prevent it from being added and
@@ -97,7 +98,7 @@ define(function(require, exports) {
           // `id` and by `cid`.
           model.on('all', this._onModelEvent, this);
           this._byId[model.cid] = model;
-          if (model.id != null) this._byId[model.id] = model;
+          if (model.id != null) this._byId[Helpers.prepId(model.id)] = model;
         }
         if (order) order.push(existing || model);
       }
@@ -130,6 +131,12 @@ define(function(require, exports) {
       return this;
     },
 
+    // Get a model from the set by id.
+    get: function(obj) {
+      if (obj == null) return void 0;
+      return this._byId[Helpers.prepId(obj.id)] || this._byId[obj.cid] || this._byId[Helpers.prepId(obj)];
+    },
+
     // Prepare a model or hash of attributes to be added to this collection.
     _prepareModel: function(attrs, options) {
       if (attrs instanceof ModelBase) return attrs;
@@ -150,7 +157,21 @@ define(function(require, exports) {
 
     _handleResponse: function() {},
 
-    _handleEager: function() {}
+    _handleEager: function() {},
+
+    // Internal method called every time a model in the set fires an event.
+    // Sets need to update their indexes when models change ids. All other
+    // events simply proxy through. "add" and "remove" events that originate
+    // in other collections are ignored.
+    _onModelEvent: function(event, model, collection, options) {
+      if ((event === 'add' || event === 'remove') && collection !== this) return;
+      if (event === 'destroyed') this.remove(model, options);
+      if (model && event === 'changePk') {
+        delete this._byId[Helpers.prepId(model._previousPk)];
+        if (model.id != null) this._byId[model.getId()] = model;
+      }
+      this.trigger.apply(this, arguments);
+    }
 
   });
 

@@ -10,6 +10,7 @@ define(function(require, exports) {
   var Backbone = require('backbone');
 
   var Events   = require('./events').Events;
+  var Helpers  = require('./helpers').Helpers;
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
   // a generic model base.
@@ -56,14 +57,24 @@ define(function(require, exports) {
       }
       options || (options = {});
 
-      // Extract attributes and options.
+      var newIdVal, changedPk, previousPk = this.id;
       var hasChanged = false;
+
+      // Extract attributes and options.
       var unset   = options.unset;
       var current = this.attributes;
       var prev    = this._previousAttributes;
 
-      // Check for changes of `id`.
-      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+      // Check for changes of `id`, which if it's a composite
+      // key means that one of the items in the composite key has changed.
+      if (newIdVal = Helpers.idValue(attrs, this.idAttribute, previousPk || [])) {
+        this.id = _.isEqual(newIdVal, []) ? void 0 : newIdVal;
+      }
+
+      if (!_.isEqual(this.id, previousPk)) {
+        this._previousPk = previousPk;
+        changedPk = true;
+      }
 
       // For each `set` attribute, update or delete the current value.
       for (var attr in attrs) {
@@ -78,7 +89,14 @@ define(function(require, exports) {
       }
 
       if (hasChanged && !options.silent) this.trigger('change', this, options);
+      if (changedPk) this.trigger('changePk', this, options);
       return this;
+    },
+
+    // Gets the primary key for the model, in string form, for reference
+    // in the lookup hashes and otherwise.
+    getId: function() {
+      return Helpers.prepId(this.id);
     },
 
     // Returns an object containing a shallow copy of the model attributes,

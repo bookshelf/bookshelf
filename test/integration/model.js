@@ -590,6 +590,42 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('composite keys', function() {
+
+      var composite, Composite = Bookshelf.Model.extend({
+        idAttribute: ['name', 'email']
+      });
+
+      beforeEach(function() {
+        composite = new Composite();
+      });
+
+      it('should set an array as the `id` if both are set', function() {
+        composite.set({name: 'Tim', email: 'tim@example.com'});
+        expect(composite.id).to.eql(['Tim', 'tim@example.com']);
+      });
+
+      it('should not set the `id` if only one is set', function() {
+        composite.set({name: 'Tim', email: null});
+        expect(composite.id).to.equal(void 0);
+      });
+
+      it('should set the composite key on the collection hash', function() {
+        var coll = new Bookshelf.Collection([], {model: Composite});
+        coll.add({name: 'Tim', email: 'tim@example.com'});
+        expect(coll._byId['Tim-tim@example.com']).to.be.instanceOf(Composite);
+      });
+
+      it('should unset the composite key when the key changes', function() {
+        var coll = new Bookshelf.Collection([], {model: Composite});
+        coll.add({name: 'Tim', email: 'tim@example.com'});
+        expect(coll._byId['Tim-tim@example.com']).to.eql(coll.at(0));
+        coll.at(0).unset('name');
+        expect(coll._byId['Tim-tim@example.com']).to.be.undefined;
+      });
+
+    });
+
   });
 
 };
