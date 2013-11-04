@@ -211,7 +211,7 @@ define(function(require, exports) {
       // If it's a single model, check whether there's already a model
       // we can pick from... otherwise create a new instance.
       if (this.isSingle()) {
-        if (!Target.prototype instanceof ModelBase) {
+        if (!(Target.prototype instanceof ModelBase)) {
           throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
         }
         return models[0] || new Target();
