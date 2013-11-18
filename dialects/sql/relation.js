@@ -254,6 +254,15 @@ define(function(require, exports) {
         var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
         relation.relatedData = this;
       }
+
+      // Now that related models have been successfully paired, update each with
+      // its parsed attributes
+      _.each(related, function (model) {
+        var attrs = model.parse(model.attributes);
+        model.attributes = Object.create(null);
+        model.set(attrs, {silent: true})._reset();
+      });
+
       return related;
     },
 
