@@ -452,6 +452,29 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('Issue #97 - Eager loading on parsed models', function() {
+
+      it('correctly pairs eager-loaded models before parse()', function () {
+        return when.all([
+          new Blog({id: 1}).related('parsedPosts').fetch(),
+          new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+        ]).then(function (data) {
+          var parsedPosts = data[0], blog = data[1];
+          expect(blog.related('parsedPosts').length).to.equal(parsedPosts.length);
+        });
+      });
+
+      it('parses eager-loaded models after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var attrs = blog.related('parsedPosts').at(0).attributes;
+            Object.keys(attrs).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+    });
 
   });
 
