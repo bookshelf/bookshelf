@@ -107,7 +107,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `doctormeta`.* from `doctormeta` where `doctoring_id` = 1 limit 1');
+        equal(_knex.toString(), 'select `doctormeta`.* from `doctormeta` where `doctormeta`.`doctoring_id` = 1 limit 1');
       });
 
       it('should handle a hasOne -> through relation', function() {
@@ -255,7 +255,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = "select `photos`.* from `photos` where `imageable_id` = 1 and `imageable_type` = 'doctors'";
+        var sql = "select `photos`.* from `photos` where `photos`.`imageable_id` = 1 and `photos`.`imageable_type` = 'doctors'";
 
         equal(_knex.toString(), sql);
       });
