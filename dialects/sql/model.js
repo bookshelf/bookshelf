@@ -156,8 +156,9 @@ define(function(require, exports) {
       var model = this.set(vals, {silent: true});
 
       // If there are any save constraints, set them on the model.
-      if (this.relatedData && 'morphTo' !== this.relatedData.type)
+      if (this.relatedData && this.relatedData.type !== 'morphTo') {
         Helpers.saveConstraints(this, this.relatedData);
+      }
 
       var sync  = this.sync(options);
 
