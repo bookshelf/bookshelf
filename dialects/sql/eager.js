@@ -40,19 +40,20 @@ define(function(require, exports) {
     morphToFetch: function(relationName, relatedData, options) {
       var pending = [];
       var groups = _.groupBy(this.parent, function(m) {
-        return m.get(relationName + '_type');
+        return m.get(relatedData.morphName + '_type');
       });
       for (var group in groups) {
         var Target = Helpers.morphCandidate(relatedData.candidates, group);
         var target = new Target();
         pending.push(target
           .query('whereIn',
-            _.result(target, 'idAttribute'), _.uniq(_.invoke(groups[group], 'get', relationName + '_id'))
+            _.result(target, 'idAttribute'),
+            _.uniq(_.invoke(groups[group], 'get', relatedData.morphName + '_id'))
           )
           .sync(options)
           .select()
           .tap(eagerLoadHelper(this, relationName, {
-            relatedData: relatedData.instance('morphTo', Target, {morphName: relationName})
+            relatedData: relatedData.instance('morphTo', Target, {morphName: relatedData.morphName})
           }, options)));
       }
       return when.all(pending).then(function(resps) {

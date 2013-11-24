@@ -3,6 +3,14 @@
 // (sort of mimics a simple multi-site blogging engine)
 module.exports = function(Bookshelf) {
 
+  function _parsed (attributes) {
+    var parsed = {};
+    Object.keys(attributes).forEach(function (name) {
+      parsed[name + "_parsed"] = attributes[name];
+    });
+    return parsed;
+  }
+
   var Info = Bookshelf.Model.extend({
     tableName: 'info'
   });
@@ -42,6 +50,11 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  // A SiteParsed appends "_parsed" to each field name on fetch
+  var SiteParsed = Site.extend({
+    parse: _parsed
+  });
+
   var Sites = Bookshelf.Collection.extend({
     model: Site
   });
@@ -76,6 +89,11 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  // A AuthorParsed appends "_parsed" to each field name on fetch
+  var AuthorParsed = Author.extend({
+    parse: _parsed
+  });
+
   var Authors = Bookshelf.Collection.extend({
     model: Author
   });
@@ -93,7 +111,7 @@ module.exports = function(Bookshelf) {
       return this.hasMany(Post);
     },
     parsedPosts: function () {
-      return this.hasMany(ParsedPost);
+      return this.hasMany(PostParsed);
     },
     validate: function(attrs) {
       if (!attrs.title) return 'A title is required.';
@@ -131,15 +149,9 @@ module.exports = function(Bookshelf) {
     }
   });
 
-  // A ParsedPost appends "_parsed" to each field name on fetch
-  var ParsedPost = Post.extend({
-    parse: function(attributes) {
-      var parsed = {};
-      Object.keys(attributes).forEach(function (name) {
-        parsed[name + "_parsed"] = attributes[name];
-      });
-      return parsed;
-    }
+  // A PostParsed appends "_parsed" to each field name on fetch
+  var PostParsed = Post.extend({
+    parse: _parsed
   });
 
   var Posts = Bookshelf.Collection.extend({
@@ -188,7 +200,10 @@ module.exports = function(Bookshelf) {
     tableName: 'photos',
     imageable: function() {
       return this.morphTo('imageable', Site, Author);
-     }
+    },
+    imageableParsed: function() {
+      return this.morphTo('imageable', SiteParsed, AuthorParsed);
+    }
    });
 
   var Photos = Bookshelf.Collection.extend({
@@ -222,12 +237,14 @@ module.exports = function(Bookshelf) {
   return {
     Models: {
       Site: Site,
+      SiteParsed: SiteParsed,
       SiteMeta: SiteMeta,
       Admin: Admin,
       Author: Author,
+      AuthorParsed: AuthorParsed,
       Blog: Blog,
       Post: Post,
-      ParsedPost: ParsedPost,
+      PostParsed: PostParsed,
       Comment: Comment,
       Tag: Tag,
       User: User,

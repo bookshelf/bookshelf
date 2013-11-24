@@ -232,10 +232,13 @@ define(function(require, exports) {
     // Groups the related response according to the type of relationship
     // we're handling, for easy attachment to the parent models.
     eagerPair: function(relationName, related, parentModels) {
+      var model;
 
       // If this is a morphTo, we only want to pair on the morphValue for the current relation.
       if (this.type === 'morphTo') {
-        parentModels = _.filter(parentModels, function(model) { return model.get(this.key('morphKey')) === this.key('morphValue'); }, this);
+        parentModels = _.filter(parentModels, function(model) {
+          return model.get(this.key('morphKey')) === this.key('morphValue');
+        }, this);
       }
 
       // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
@@ -247,10 +250,10 @@ define(function(require, exports) {
           this.isInverse() ? model.id : model.get(this.key('foreignKey'));
       }, this);
 
-      // Loop over the `parentModels` and attach the appropriated grouped sub-models,
-      // keeping the appropriated `relatedData` on the new related instance.
+      // Loop over the `parentModels` and attach the grouped sub-models,
+      // keeping the `relatedData` on the new related instance.
       for (var i = 0, l = parentModels.length; i < l; i++) {
-        var model = parentModels[i];
+        model = parentModels[i];
         var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
         var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
         relation.relatedData = this;
@@ -258,11 +261,10 @@ define(function(require, exports) {
 
       // Now that related models have been successfully paired, update each with
       // its parsed attributes
-      _.each(related, function (model) {
-        var attrs = model.parse(model.attributes);
-        model.attributes = Object.create(null);
-        model.set(attrs, {silent: true})._reset();
-      });
+      for (i = 0, l = related.length; i < l; i++) {
+        model = related[i];
+        model.attributes = model.parse(model.attributes);
+      }
 
       return related;
     },

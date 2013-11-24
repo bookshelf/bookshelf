@@ -1072,22 +1072,26 @@ module.exports = {
           site_id: 1,
           first_name: 'Tim',
           last_name: 'Griesser',
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          },
           ownPosts: [{
             id: 1,
             owner_id: 1,
             blog_id: 1,
             name: 'This is a new Title!',
             content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.'
-          }],
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          }
+          }]
         },{
           id: 2,
           site_id: 1,
           first_name: 'Bazooka',
           last_name: 'Joe',
+          site: {
+            id: 1,
+            name: 'knexjs.org'
+          },
           ownPosts: [{
             id: 2,
             owner_id: 2,
@@ -1100,11 +1104,7 @@ module.exports = {
             blog_id: 1,
             name: 'This is a new Title 3!',
             content: 'Lorem ipsum Reprehenderit esse esse consectetur aliquip magna.'
-          }],
-          site: {
-            id: 1,
-            name: 'knexjs.org'
-          }
+          }]
         }]
       }
     },
@@ -2825,6 +2825,296 @@ module.exports = {
         instance: {
           id: 10,
           name: 'computers'
+        }
+      }]
+    }
+  },
+  'parses eager-loaded morphTo relations (model)': {
+    mysql: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 1,
+          site_id_parsed: 1,
+          first_name_parsed: 'Tim',
+          last_name_parsed: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 2,
+          site_id_parsed: 1,
+          first_name_parsed: 'Bazooka',
+          last_name_parsed: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageableParsed: {
+        
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 1,
+          site_id_parsed: 1,
+          first_name_parsed: 'Tim',
+          last_name_parsed: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 2,
+          site_id_parsed: 1,
+          first_name_parsed: 'Bazooka',
+          last_name_parsed: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageableParsed: {
+        
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 1,
+          site_id_parsed: 1,
+          first_name_parsed: 'Tim',
+          last_name_parsed: 'Griesser'
+        }
+      },{
+        id: 2,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'authors',
+        imageableParsed: {
+          id_parsed: 2,
+          site_id_parsed: 1,
+          first_name_parsed: 'Bazooka',
+          last_name_parsed: 'Joe'
+        }
+      },{
+        id: 3,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 4,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 1,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 1,
+          name_parsed: 'knexjs.org',
+          meta: {
+            id: 1,
+            site_id: 1,
+            description: 'This is a description for the Knexjs Site'
+          }
+        }
+      },{
+        id: 5,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 6,
+        url: 'https://www.google.com/images/srpr/logo4w.png',
+        caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id: 2,
+        imageable_type: 'sites',
+        imageableParsed: {
+          id_parsed: 2,
+          name_parsed: 'bookshelfjs.org',
+          meta: {
+            id: 2,
+            site_id: 2,
+            description: 'This is a description for the Bookshelfjs Site'
+          }
+        }
+      },{
+        id: 7,
+        url: 'http://image.dev',
+        caption: 'this is a test image',
+        imageable_id: 10,
+        imageable_type: 'sites',
+        imageableParsed: {
+        
         }
       }]
     }

@@ -1,3 +1,4 @@
+var _         = require('underscore');
 var when      = require('when');
 var equal     = require('assert').equal;
 
@@ -470,6 +471,18 @@ module.exports = function(Bookshelf) {
             var attrs = blog.related('parsedPosts').at(0).attributes;
             Object.keys(attrs).forEach(function (key) {
               expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+      it('parses eager-loaded morphTo relations (model)', function () {
+        return new Photos().fetch({ withRelated: 'imageableParsed.meta', log: true })
+          .then(function (photos) {
+            photos.forEach(function(photo) {
+              var attrs = photo.related('imageableParsed').attributes;
+              Object.keys(attrs).forEach(function (key) {
+                expect(/_parsed$/.test(key)).to.be.true;
+              });
             });
           });
       });
