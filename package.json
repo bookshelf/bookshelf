@@ -21,24 +21,24 @@
     "active record"
   ],
   "dependencies": {
-    "backbone": "~1.0.0",
+    "backbone": "~1.1.0",
     "inflection": "~1.2.x",
-    "when": "~2.4.0",
     "trigger-then": "~0.1.1",
     "underscore": "~1.5.1",
-    "knex": "~0.4.6"
+    "knex": "~0.4.13",
+    "bluebird": "~0.10.5-0"
   },
   "devDependencies": {
     "mocha": "~1.13.0",
     "mysql": "~2.0.0-alpha7",
-    "pg": "~2.6.2",
+    "pg": "~2.8.2",
     "sqlite3": "~2.1.7",
     "objectdump": "~0.3.0",
     "underscore.string": "~2.3.1",
     "grunt": "~0.4.1",
-    "grunt-release": "~0.5.1",
+    "grunt-release": "~0.6.0",
     "mocha-as-promised": "~1.4.0",
-    "chai-as-promised": "~3.3.1",
+    "chai-as-promised": "~4.1.0",
     "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",
     "sinon": "~1.7.3"

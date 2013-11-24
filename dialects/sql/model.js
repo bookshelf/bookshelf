@@ -7,13 +7,13 @@
 define(function(require, exports) {
 
   var _ = require('underscore');
-  var when = require('when');
 
   var Sync = require('./sync').Sync;
   var Helpers = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
   var ModelBase = require('../base/model').ModelBase;
+  var Promise   = require('../base/promise').Promise;
 
   exports.Model = ModelBase.extend({
 
@@ -76,46 +76,55 @@ define(function(require, exports) {
     // If `{require: true}` is set as an option, the fetch is considered
     // a failure if the model comes up blank.
     fetch: function(options) {
-      options = options || {};
-      var model = this;
+      options = options ? _.clone(options) : {};
+      return Promise.bind(this).then(function() {
 
-      // Run the `first` call on the `sync` object to fetch a single model.
-      var sync = this.sync(options).first()
+        // Run the `first` call on the `sync` object to fetch a single model.
+        var sync = this.sync(options)
+          .first()
+          .bind(this)
 
-        // Jump the rest of the chain if the response doesn't exist...
-        .tap(function(response) {
-          if (!response || response.length === 0) {
-            if (options.require) throw new Error('EmptyResponse');
-            return when.reject(null);
-          }
+          // Jump the rest of the chain if the response doesn't exist...
+          .tap(function(response) {
+            if (!response || response.length === 0) {
+              if (options.require) throw new Error('EmptyResponse');
+              return Promise.reject(null);
+            }
+          })
+
+          // Now, load all of the data into the model as necessary.
+          .tap(this._handleResponse);
+
+        // If the "withRelated" is specified, we also need to eager load all of the
+        // data on the model, as a side-effect, before we ultimately jump into the
+        // next step of the model. Since the `columns` are only relevant to the current
+        // level, ensure those are omitted from the options.
+        if (options.withRelated) {
+          sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
+        }
+
+        return sync.tap(function(response) {
+          return this.triggerThen('fetched', this, response, options);
         })
+        .yield(this)
+        .caught(function(err) {
+          if (err === null) return err;
+          throw err;
+        });
 
-        // Now, load all of the data into the model as necessary.
-        .tap(this._handleResponse);
-
-      // If the "withRelated" is specified, we also need to eager load all of the
-      // data on the model, as a side-effect, before we ultimately jump into the
-      // next step of the model. Since the `columns` are only relevant to the current
-      // level, ensure those are omitted from the options.
-      if (options.withRelated) {
-        sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
-      }
-
-      return sync.tap(function(response) {
-        return model.triggerThen('fetched', model, response, options);
-      })
-      .yield(model)
-      .otherwise(function(err) {
-        if (err === null) return err;
-        throw err;
-      });
+      }).bind();
     },
 
     // Eager loads relationships onto an already populated `Model` instance.
     load: function(relations, options) {
-      _.isArray(relations) || (relations = [relations]);
-      var handler = this._handleEager(_.extend({}, options, {shallow: true, withRelated: relations}));
-      return handler([this.toJSON({shallow: true})]).yield(this);
+      return Promise.bind(this)
+        .then(function() {
+          return [this.toJSON({shallow: true})];
+        })
+        .then(this._handleEager(_.extend({}, options, {
+          shallow: true,
+          withRelated: _.isArray(relations) ? relations : [relations]
+        }))).bind().yield(this);
     },
 
     // Sets and saves the hash of model attributes, triggering
@@ -130,67 +139,73 @@ define(function(require, exports) {
         attrs = key || {};
         options = val || {};
       } else {
-        options || (options = {});
         (attrs = {})[key] = val;
+        options = options ? _.clone(options) : {};
       }
 
-      // If the model has timestamp columns,
-      // set them as attributes on the model, even
-      // if the "patch" option is specified.
-      if (this.hasTimestamps) _.extend(attrs, this.timestamp(options));
+      return Promise.bind(this).then(function() {
+        return this.isNew(options);
+      }).then(function(isNew) {
 
-      // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
-      var method = options.method || (options.method = this.isNew(options) ? 'insert' : 'update');
-      var vals = attrs;
+        // If the model has timestamp columns,
+        // set them as attributes on the model, even
+        // if the "patch" option is specified.
+        if (this.hasTimestamps) _.extend(attrs, this.timestamp(options));
 
-      // If the object is being created, we merge any defaults here
-      // rather than during object creation.
-      if (method === 'insert' || options.defaults) {
-        var defaults = _.result(this, 'defaults');
-        if (defaults) {
-          vals = _.extend({}, defaults, this.attributes, vals);
-        }
-      }
+        // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
+        var method = options.method || (options.method = isNew ? 'insert' : 'update');
+        var vals = attrs;
 
-      // Set the attributes on the model, and maintain a reference to use below.
-      var model = this.set(vals, {silent: true});
-
-      // If there are any save constraints, set them on the model.
-      if (this.relatedData && this.relatedData.type !== 'morphTo') {
-        Helpers.saveConstraints(this, this.relatedData);
-      }
-
-      var sync  = this.sync(options);
-
-      // Gives access to the `query` object in the `options`, in case we need it.
-      options.query = sync.query;
-
-      return when.all([
-        model.triggerThen((method === 'insert' ? 'creating' : 'updating'), model, attrs, options),
-        model.triggerThen('saving', model, attrs, options)
-      ])
-      .then(function() {
-        return sync[options.method](method === 'update' && options.patch ? attrs : model.attributes);
-      })
-      .then(function(resp) {
-
-        // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && resp) {
-          model.attributes[model.idAttribute] = model[model.idAttribute] = resp[0];
+        // If the object is being created, we merge any defaults here
+        // rather than during object creation.
+        if (method === 'insert' || options.defaults) {
+          var defaults = _.result(this, 'defaults');
+          if (defaults) {
+            vals = _.extend({}, defaults, this.attributes, vals);
+          }
         }
 
-        // In case we need to reference the `previousAttributes` for the model
-        // in the following event handlers.
-        options.previousAttributes = model._previousAttributes;
+        // Set the attributes on the model.
+        this.set(vals, {silent: true});
 
-        model._reset();
+        // If there are any save constraints, set them on the model.
+        if (this.relatedData && this.relatedData.type !== 'morphTo') {
+          Helpers.saveConstraints(this, this.relatedData);
+        }
 
-        return when.all([
-          model.triggerThen((method === 'insert' ? 'created' : 'updated'), model, resp, options),
-          model.triggerThen('saved', model, resp, options)
-        ]);
+        // Gives access to the `query` object in the `options`, in case we need it
+        // in any event handlers.
+        var sync = this.sync(options);
+        options.query = sync.query;
 
-      }).yield(this);
+        return Promise.bind(this).all([
+          this.triggerThen((method === 'insert' ? 'creating' : 'updating'), this, attrs, options),
+          this.triggerThen('saving', this, attrs, options)
+        ])
+        .then(function() {
+          return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
+        })
+        .then(function(resp) {
+
+          // After a successful database save, the id is updated if the model was created
+          if (method === 'insert' && resp) {
+            this.attributes[this.idAttribute] = this[this.idAttribute] = resp[0];
+          }
+
+          // In case we need to reference the `previousAttributes` for the this
+          // in the following event handlers.
+          options.previousAttributes = this._previousAttributes;
+
+          this._reset();
+
+          return Promise.all([
+            this.triggerThen((method === 'insert' ? 'created' : 'updated'), this, resp, options),
+            this.triggerThen('saved', this, resp, options)
+          ]);
+
+        });
+
+      }).bind().yield(this);
     },
 
     // Reset the query builder, called internally
@@ -229,9 +244,8 @@ define(function(require, exports) {
 
     // Handle the related data loading on the model.
     _handleEager: function(options) {
-      var model = this;
       return function(response) {
-        return new EagerRelation([model], response, model).fetch(options);
+        return new EagerRelation([this], response, this).fetch(options);
       };
     }
 

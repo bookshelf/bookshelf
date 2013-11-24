@@ -11,8 +11,8 @@
 define(function(require, exports) {
 
   var _         = require('underscore');
-  var when      = require('when');
   var Backbone  = require('backbone');
+  var Promise   = require('./promise').Promise;
 
   var EagerBase = function(parent, parentResponse, target) {
     this.parent = parent;
@@ -76,7 +76,7 @@ define(function(require, exports) {
 
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs & pairings are complete.
-      return when.all(pendingDeferred).yield(this.parentResponse);
+      return Promise.all(pendingDeferred).yield(this.parentResponse);
     },
 
     // Prep the `withRelated` object, to normalize into an object where each

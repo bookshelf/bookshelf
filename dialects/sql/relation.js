@@ -7,13 +7,13 @@
 define(function(require, exports) {
 
   var _            = require('underscore');
-  var when         = require('when');
   var inflection   = require('inflection');
 
   var Helpers      = require('./helpers').Helpers;
 
   var ModelBase    = require('../base/model').ModelBase;
   var RelationBase = require('../base/relation').RelationBase;
+  var Promise      = require('../base/promise').Promise;
 
   var push = [].push;
 
@@ -23,7 +23,7 @@ define(function(require, exports) {
     // gathering any relevant primitives from the parent object,
     // without keeping any hard references.
     init: function(parent) {
-      this.parentId = parent.id;
+      this.parentId          = parent.id;
       this.parentTableName   = _.result(parent, 'tableName');
       this.parentIdAttribute = _.result(parent, 'idAttribute');
 
@@ -367,54 +367,58 @@ define(function(require, exports) {
     // Helper for handling either the `attach` or `detach` call on
     // the `belongsToMany` or `hasOne` / `hasMany` :through relationship.
     _handler: function(method, ids, options) {
-      var pending = [];
-      if (ids == void 0) {
-        if (method === 'insert') return when.resolve(this);
-        if (method === 'delete') pending.push(this._processPivot(method, null, options));
-      }
-      if (!_.isArray(ids)) ids = ids ? [ids] : [];
-      for (var i = 0, l = ids.length; i < l; i++) {
-        pending.push(this._processPivot(method, ids[i], options));
-      }
-      return when.all(pending).yield(this);
+      return Promise.bind(this).then(function() {
+        var pending = [];
+        if (ids == void 0) {
+          if (method === 'insert') return Promise.resolve(this);
+          if (method === 'delete') pending.push(this._processPivot(method, null, options));
+        }
+        if (!_.isArray(ids)) ids = ids ? [ids] : [];
+        for (var i = 0, l = ids.length; i < l; i++) {
+          pending.push(this._processPivot(method, ids[i], options));
+        }
+        return Promise.all(pending).yield(this);
+      }).bind();
     },
 
     // Handles setting the appropriate constraints and shelling out
     // to either the `insert` or `delete` call for the current model,
     // returning a promise.
     _processPivot: function(method, item, options) {
-      var data = {};
-      var relatedData = this.relatedData;
-      data[relatedData.key('foreignKey')] = relatedData.parentFk;
+      return Promise.bind(this).then(function() {
+        var data = {};
+        var relatedData = this.relatedData;
+        data[relatedData.key('foreignKey')] = relatedData.parentFk;
 
-      // If the item is an object, it's either a model
-      // that we're looking to attach to this model, or
-      // a hash of attributes to set in the relation.
-      if (_.isObject(item)) {
-        if (item instanceof ModelBase) {
-          data[relatedData.key('otherKey')] = item.id;
-        } else {
-          _.extend(data, item);
-        }
-      } else if (item) {
-        data[relatedData.key('otherKey')] = item;
-      }
-      var builder = this._builder(relatedData.joinTable());
-      if (options && options.transacting) {
-        builder.transacting(options.transacting);
-      }
-      var collection = this;
-      if (method === 'delete') {
-        return builder.where(data).del().then(function() {
-          var model;
-          if (!item) return collection.reset();
-          if (model = collection.get(data[relatedData.key('otherKey')])) {
-            collection.remove(model);
+        // If the item is an object, it's either a model
+        // that we're looking to attach to this model, or
+        // a hash of attributes to set in the relation.
+        if (_.isObject(item)) {
+          if (item instanceof ModelBase) {
+            data[relatedData.key('otherKey')] = item.id;
+          } else {
+            _.extend(data, item);
           }
+        } else if (item) {
+          data[relatedData.key('otherKey')] = item;
+        }
+        var builder = this._builder(relatedData.joinTable());
+        if (options && options.transacting) {
+          builder.transacting(options.transacting);
+        }
+        var collection = this;
+        if (method === 'delete') {
+          return builder.where(data).del().then(function() {
+            var model;
+            if (!item) return collection.reset();
+            if (model = collection.get(data[relatedData.key('otherKey')])) {
+              collection.remove(model);
+            }
+          });
+        }
+        return builder.insert(data).then(function() {
+          collection.add(item);
         });
-      }
-      return builder.insert(data).then(function() {
-        collection.add(item);
       });
     }
 
