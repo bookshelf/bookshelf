@@ -92,6 +92,9 @@ module.exports = function(Bookshelf) {
     posts: function() {
       return this.hasMany(Post);
     },
+    parsedPosts: function () {
+      return this.hasMany(ParsedPost);
+    },
     validate: function(attrs) {
       if (!attrs.title) return 'A title is required.';
     },
@@ -125,6 +128,17 @@ module.exports = function(Bookshelf) {
     },
     comments: function() {
       return this.hasMany(Comment);
+    }
+  });
+
+  // A ParsedPost appends "_parsed" to each field name on fetch
+  var ParsedPost = Post.extend({
+    parse: function(attributes) {
+      var parsed = {};
+      Object.keys(attributes).forEach(function (name) {
+        parsed[name + "_parsed"] = attributes[name];
+      });
+      return parsed;
     }
   });
 
@@ -213,6 +227,7 @@ module.exports = function(Bookshelf) {
       Author: Author,
       Blog: Blog,
       Post: Post,
+      ParsedPost: ParsedPost,
       Comment: Comment,
       Tag: Tag,
       User: User,
