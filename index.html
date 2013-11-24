@@ -753,9 +753,7 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
-      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
-      is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
-      event will be fired when a record is successfully retrieved.
+      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved.
     </p>
 
 <pre>
@@ -767,6 +765,12 @@ new Book({'ISBN-13': '9780440180296'})
     console.log(model.get('title'));
   });
 </pre>
+
+    <p class="warning">
+      If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
+      in the <tt>options</tt> for the fetch call, or use the <a href="#Model-query">query</a> method,
+      tapping into the knex <a href="http://knexjs.org/#Builder-column">column</a> method to specify which columns will be fetched.
+    </p>
 
     <p>
       The <tt>withRelated</tt> parameter may be specified to fetch the resource,
@@ -1756,6 +1760,12 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       event will be fired when records are successfully retrieved.
     </p>
 
+    <p class="warning">
+      If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
+      in the <tt>options</tt> for the fetch call, or use the <a href="#Model-query">query</a> method,
+      tapping into the knex <a href="http://knexjs.org/#Builder-column">column</a> method to specify which columns will be fetched.
+    </p>
+
     <p id="Collection-fetchOne">
       <b class="header">fetchOne</b><code>collection.fetchOne([options])</code>
       <br />
@@ -2211,6 +2221,16 @@ Bookshelf.transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />
+      <ul>
+        <li>Parse models after all relations have been eager loaded, for appropriate column name matching (thanks <a href="https://github.com/benesch">@benesch</a>) (#97)
+        </li>
+        <li>Documentation tweaks and other internal code cleanup.</li>
+        <li>Documentation tweaks and other internal code cleanup.</li>
+      </ul>
+    </p>
 
     <p>
       <b class="header">0.5.7</b> &mdash; <small><i>October 11, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.6...0.5.7">Diff</a><br />
