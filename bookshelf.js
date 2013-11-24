@@ -12,7 +12,7 @@
 define(function(require, exports, module) {
 
   // All external libraries needed in this scope.
-  var _          = require('underscore');
+  var _          = require('lodash');
   var Knex       = require('knex');
 
   // All local dependencies... These are the main objects that

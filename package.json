@@ -24,9 +24,9 @@
     "backbone": "~1.1.0",
     "inflection": "~1.2.x",
     "trigger-then": "~0.1.1",
-    "underscore": "~1.5.1",
     "knex": "~0.4.13",
-    "bluebird": "~0.10.5-0"
+    "bluebird": "~0.10.5-0",
+    "lodash": "~2.3.0"
   },
   "devDependencies": {
     "mocha": "~1.13.0",

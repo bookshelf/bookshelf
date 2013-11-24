@@ -8,7 +8,7 @@
 define(function(require, exports) {
 
   // All exernal dependencies required in this scope.
-  var _         = require('underscore');
+  var _         = require('lodash');
   var Backbone  = require('backbone');
 
   // All components that need to be referenced in this scope.

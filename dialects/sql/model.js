@@ -6,10 +6,10 @@
 
 define(function(require, exports) {
 
-  var _ = require('underscore');
+  var _             = require('lodash');
 
-  var Sync = require('./sync').Sync;
-  var Helpers = require('./helpers').Helpers;
+  var Sync          = require('./sync').Sync;
+  var Helpers       = require('./helpers').Helpers;
   var EagerRelation = require('./eager').EagerRelation;
 
   var ModelBase = require('../base/model').ModelBase;

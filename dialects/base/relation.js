@@ -6,7 +6,7 @@
 
 define(function(require, exports) {
 
-  var _        = require('underscore');
+  var _        = require('lodash');
   var Backbone = require('backbone');
 
   var CollectionBase = require('./collection').CollectionBase;

@@ -6,7 +6,7 @@
 
 define(function(require, exports) {
 
-  var _         = require('underscore');
+  var _         = require('lodash');
 
   var Helpers   = require('./helpers').Helpers;
   var EagerBase = require('../base/eager').EagerBase;

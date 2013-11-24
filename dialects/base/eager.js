@@ -10,7 +10,7 @@
 // `pushModels` for pairing the models depending on the database need.
 define(function(require, exports) {
 
-  var _         = require('underscore');
+  var _         = require('lodash');
   var Backbone  = require('backbone');
   var Promise   = require('./promise').Promise;
 

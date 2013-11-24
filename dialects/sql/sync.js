@@ -6,7 +6,7 @@
 
 define(function(require, exports) {
 
-  var _       = require('underscore');
+  var _       = require('lodash');
   var Promise = require('../base/promise').Promise;
 
   // Sync is the dispatcher for any database queries,

@@ -1,4 +1,4 @@
-var _         = require('underscore');
+var _         = require('lodash');
 var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
