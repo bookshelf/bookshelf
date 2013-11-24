@@ -24,7 +24,7 @@ define(function(require, exports) {
 
     // This helper function is used internally to determine which relations
     // are necessary for fetching based on the `model.load` or `withRelated` option.
-    fetch: function(options) {
+    fetch: Promise.method(function(options) {
       var relationName, related, relation;
       var target      = this.target;
       var handled     = this.handled = {};
@@ -77,7 +77,7 @@ define(function(require, exports) {
       // Return a deferred handler for all of the nested object sync
       // returning the original response when these syncs & pairings are complete.
       return Promise.all(pendingDeferred).yield(this.parentResponse);
-    },
+    }),
 
     // Prep the `withRelated` object, to normalize into an object where each
     // has a function that is called when running the query.
