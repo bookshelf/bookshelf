@@ -158,7 +158,7 @@ define(function(require, exports) {
     // A "destroying" and "destroyed" are triggered on the model before
     // and after the model is destroyed, respectively. If an error is thrown
     // during the "destroying" event, the model will not be destroyed.
-    destroy: function(options) {
+    destroy: Promise.method(function(options) {
       options = options ? _.clone(options) : {};
       return Promise.bind(this).then(function() {
         return this.triggerThen('destroying', this, options);
@@ -167,10 +167,8 @@ define(function(require, exports) {
       }).then(function(resp) {
         this.clear();
         return this.triggerThen('destroyed', this, resp, options);
-      }).then(function() {
-        return this._reset();
-      }).bind();
-    },
+      }).then(this._reset);
+    }),
 
     _handleResponse: function() {},
 

@@ -75,48 +75,46 @@ define(function(require, exports) {
     // Returns a deferred promise through the `Bookshelf.Sync`.
     // If `{require: true}` is set as an option, the fetch is considered
     // a failure if the model comes up blank.
-    fetch: function(options) {
+    fetch: Promise.method(function(options) {
       options = options ? _.clone(options) : {};
-      return Promise.bind(this).then(function() {
 
-        // Run the `first` call on the `sync` object to fetch a single model.
-        var sync = this.sync(options)
-          .first()
-          .bind(this)
+      // Run the `first` call on the `sync` object to fetch a single model.
+      var sync = this.sync(options)
+        .first()
+        .bind(this)
 
-          // Jump the rest of the chain if the response doesn't exist...
-          .tap(function(response) {
-            if (!response || response.length === 0) {
-              if (options.require) throw new Error('EmptyResponse');
-              return Promise.reject(null);
-            }
-          })
-
-          // Now, load all of the data into the model as necessary.
-          .tap(this._handleResponse);
-
-        // If the "withRelated" is specified, we also need to eager load all of the
-        // data on the model, as a side-effect, before we ultimately jump into the
-        // next step of the model. Since the `columns` are only relevant to the current
-        // level, ensure those are omitted from the options.
-        if (options.withRelated) {
-          sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
-        }
-
-        return sync.tap(function(response) {
-          return this.triggerThen('fetched', this, response, options);
+        // Jump the rest of the chain if the response doesn't exist...
+        .tap(function(response) {
+          if (!response || response.length === 0) {
+            if (options.require) throw new Error('EmptyResponse');
+            return Promise.reject(null);
+          }
         })
-        .yield(this)
-        .caught(function(err) {
-          if (err === null) return err;
-          throw err;
-        });
 
-      }).bind();
-    },
+        // Now, load all of the data into the model as necessary.
+        .tap(this._handleResponse);
+
+      // If the "withRelated" is specified, we also need to eager load all of the
+      // data on the model, as a side-effect, before we ultimately jump into the
+      // next step of the model. Since the `columns` are only relevant to the current
+      // level, ensure those are omitted from the options.
+      if (options.withRelated) {
+        sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
+      }
+
+      return sync.tap(function(response) {
+        return this.triggerThen('fetched', this, response, options);
+      })
+      .yield(this)
+      .caught(function(err) {
+        if (err === null) return err;
+        throw err;
+      });
+
+    }),
 
     // Eager loads relationships onto an already populated `Model` instance.
-    load: function(relations, options) {
+    load: Promise.method(function(relations, options) {
       return Promise.bind(this)
         .then(function() {
           return [this.toJSON({shallow: true})];
@@ -124,14 +122,14 @@ define(function(require, exports) {
         .then(this._handleEager(_.extend({}, options, {
           shallow: true,
           withRelated: _.isArray(relations) ? relations : [relations]
-        }))).bind().yield(this);
-    },
+        }))).yield(this);
+    }),
 
     // Sets and saves the hash of model attributes, triggering
     // a "creating" or "updating" event on the model, as well as a "saving" event,
     // to bind listeners for any necessary validation, logging, etc.
     // If an error is thrown during these events, the model will not be saved.
-    save: function(key, val, options) {
+    save: Promise.method(function(key, val, options) {
       var attrs;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
@@ -205,8 +203,8 @@ define(function(require, exports) {
 
         });
 
-      }).bind().yield(this);
-    },
+      }).yield(this);
+    }),
 
     // Reset the query builder, called internally
     // each time a query is run.
