@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.5.7)</span>
+      Bookshelf.js <span class="version">(0.5.8)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -435,7 +435,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.5.7 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.5.8 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2225,10 +2225,11 @@ Bookshelf.transaction(function(t) {
     <p>
       <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />
       <ul>
-        <li>Parse models after all relations have been eager loaded, for appropriate column name matching (thanks <a href="https://github.com/benesch">@benesch</a>) (#97)
-        </li>
-        <li>Documentation tweaks and other internal code cleanup.</li>
-        <li>Documentation tweaks and other internal code cleanup.</li>
+        <li>Parse models after all relations have been eager loaded, for appropriate column name matching (thanks <a href="https://github.com/benesch">@benesch</a>) (#97)</li>
+        <li>Specify table for <tt>withRelated</tt> fetches to prevent column
+          naming conflicts (#96).</li>
+        <li>Fix for polymorphic relation loading (#95).</li>
+        <li>Other documentation tweaks and other internal code cleanup.</li>
       </ul>
     </p>
 
