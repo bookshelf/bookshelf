@@ -458,8 +458,8 @@
     <p>
       Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
       <a target="_blank" href="http://backbonejs.org">Backbone.js</a>,
-      <a target="_blank" href="http://underscorejs.org/">Underscore.js</a>,
-      <a target="_blank" href="https://github.com/cujojs/when">when.js</a>
+      <a target="_blank" href="http://lodash.com/">Underscore.js</a>,
+      <a target="_blank" href="https://github.com/petkaantonov/bluebird">bluebird</a>
       for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
@@ -1181,9 +1181,9 @@ new Site({id: 1}).related('admins').attach([1, 2]);
 var admin1 = new Admin({username: 'user1', password: 'test'});
 var admin2 = new Admin({username: 'user2', password: 'test'});
 
-when.all([admin1.save(), admin2.save()])
+Promise.all([admin1.save(), admin2.save()])
   .then(function() {
-    return when.all([
+    return Promise.all([
       new Site({id: 1}).admins().attach([admin1, admin2]),
       new Site({id: 2}).admins().attach(admin2)
     ]);
@@ -1675,7 +1675,7 @@ modelB.isNew(); // false
     </p>
 
 <pre>
-var when = require('when');
+var Promise = require('bluebird');
 var Accounts = Bookshelf.Collection.extend({
   model: Account
 });
@@ -1685,7 +1685,7 @@ var accounts = Accounts.forge([
   {name: 'Person2'}
 ])
 
-when.all(accounts.invoke('save')).then(function() {
+Promise.all(accounts.invoke('save')).then(function() {
   // collection models should now be saved...
 });
 </pre>
@@ -1788,7 +1788,7 @@ new Site({id:1})
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
       <br />
-      Shortcut for calling <tt>when.all</tt> around a <tt>collection.map</tt> call, this will call the
+      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.map</tt> call, this will call the
       underscore <a href="http://underscorejs.org/#map">map</a> on each of the models in the collection,
       returning a promise which will be resolved with the array of fully settled responses from the map call.
     </p>
@@ -1810,7 +1810,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
     <p id="Collection-invokeThen">
       <b class="header">invokeThen</b><code>collection.invokeThen(method, args*)</code>
       <br />
-      Shortcut for calling <tt>when.all</tt> around a <tt>collection.invoke</tt>, this will delegate to the
+      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.invoke</tt>, this will delegate to the
       collection's <a href="http://underscorejs.org/#invoke">invoke</a> method, resolving the promise with an array
       of responses all async (and sync) behavior has settled. Useful for bulk saving or deleting models:
     </p>
@@ -2131,7 +2131,7 @@ collection
     </p>
 
 <pre>
-var when = require('when');
+var Promise = require('bluebird');
 
 Bookshelf.transaction(function(t) {
 
@@ -2139,7 +2139,7 @@ Bookshelf.transaction(function(t) {
     .save(null, {transacting: t})
     .then(function(model) {
 
-      return when.all(_.map([
+      return Promise.all(_.map([
         {title: 'Canterbury Tales'},
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
@@ -2329,7 +2329,7 @@ process.stderr.on('data', function(data) {
 
         <li>
           Added <a href="#Collection-invokeThen">invokeThen</a> and <a href="#Collection-mapThen">mapThen</a> as convenience helpers for
-          <tt>when.all(collection.invoke(method, args*))</tt> and <tt>when.all(collection.map(method, iterator, [context]))</tt>, respectively.
+          <tt>Promise.all(collection.invoke(method, args*))</tt> and <tt>Promise.all(collection.map(method, iterator, [context]))</tt>, respectively.
         </li>
 
         <li>Added a <tt>Bookshelf.plugin</tt> method, for a standard way to extend Bookshelf instances.</li>
