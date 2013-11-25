@@ -2,8 +2,8 @@ var Promise = require('../dialects/base/promise').Promise;
 
 global.testPromise = Promise;
 
-Promise.onPossiblyUnhandledRejection(function(e) {
-  console.log(e.stack);
+process.stderr.on('data', function(data) {
+  console.log(data);
 });
 
 var Bookshelf = require('../bookshelf');
