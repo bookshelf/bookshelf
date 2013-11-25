@@ -24,12 +24,12 @@
     "backbone": "~1.1.0",
     "inflection": "~1.2.x",
     "trigger-then": "~0.1.1",
-    "knex": "~0.4.13",
+    "knex": "~0.5.0",
     "bluebird": "~0.10.5-0",
     "lodash": "~2.3.0"
   },
   "devDependencies": {
-    "mocha": "~1.13.0",
+    "mocha": "~1.14.0",
     "mysql": "~2.0.0-alpha7",
     "pg": "~2.8.2",
     "sqlite3": "~2.1.7",
