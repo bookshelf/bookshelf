@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.5.8)</span>
+      Bookshelf.js <span class="version">(0.6.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -435,7 +435,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.5.8 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2194,6 +2194,19 @@ Bookshelf.transaction(function(t) {
       code with <tt>debugger</tt> statements like you would in the browser.
     </p>
 
+    <p>
+      Bookshelf uses it's own copy of the "bluebird" promise library, you can read up <a href="https://github.com/petkaantonov/bluebird#error-handling">here</a> for more on debugging these promises... but in short, adding:
+    </p>
+
+<pre>
+process.stderr.on('data', function(data) {
+  console.log(data);
+});
+</pre>
+
+    <p>At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
+    </p>
+
     <p id="faq-tests">
       <b class="header">How do I run the test suite?</b><br />
       The test suite looks for an environment variable called <tt>BOOKSHELF_TEST</tt> for the path to the database
@@ -2221,6 +2234,15 @@ Bookshelf.transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.6.0</b> &mdash; <small><i>November 25, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.8...0.6.0">Diff</a><br />
+      <ul>
+        <li>Updating dependency to knex.js 0.5.x</li>
+        <li>Switched from when.js to <a href="https://github.com/petkaantonov/bluebird">bluebird</a> for promise implementation, with shim for backward compatibility.</li>
+        <li>Switched from underscore to lodash, for semver reliability.</li>
+      </ul>
+    </p>
 
     <p>
       <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />

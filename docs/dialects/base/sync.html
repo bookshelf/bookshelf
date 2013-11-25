@@ -5,23 +5,23 @@ by dialect-specific sync implementations,
 making Bookshelf effectively a data store
 agnostic "Data Mapper".</p></div></div><div class="code"><div class="wrapper"><span class="nx">define</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="kd">var</span> <span class="nx">when</span>     <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;when&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">Promise</span>  <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./promise&#39;</span><span class="p">).</span><span class="nx">Promise</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">Backbone</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Used as the base of the prototype chain,
 a convenient object for any <code>instanceof</code>
 checks you may need.</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">BaseSync</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
 
-  <span class="nx">BaseSync</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>May be used for any setup for the class.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Return a single model object.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">first</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">when</span><span class="p">.</span><span class="nx">resolve</span><span class="p">({});</span>
+  <span class="nx">BaseSync</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Return a single model object.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">first</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">fulfilled</span><span class="p">({});</span>
     <span class="p">},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Select one or more models, returning an array
 of data objects.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">when</span><span class="p">.</span><span class="nx">resolve</span><span class="p">([]);</span>
+      <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">fulfilled</span><span class="p">([]);</span>
     <span class="p">},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Insert a single row, returning an object
 (typically containing an "insert id").</p></div></div><div class="code"><div class="wrapper">    <span class="nx">insert</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">when</span><span class="p">.</span><span class="nx">resolve</span><span class="p">({});</span>
+      <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">fulfilled</span><span class="p">({});</span>
     <span class="p">},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Update an object in the data store.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">when</span><span class="p">.</span><span class="nx">resolve</span><span class="p">({});</span>
+      <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">fulfilled</span><span class="p">({});</span>
     <span class="p">},</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Delete a record from the data store.</p></div></div><div class="code"><div class="wrapper">    <span class="nx">del</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">when</span><span class="p">.</span><span class="nx">resolve</span><span class="p">({});</span>
+      <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">fulfilled</span><span class="p">({});</span>
     <span class="p">}</span>
 
   <span class="p">};</span>
