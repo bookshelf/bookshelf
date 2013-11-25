@@ -458,7 +458,7 @@
     <p>
       Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
       <a target="_blank" href="http://backbonejs.org">Backbone.js</a>,
-      <a target="_blank" href="http://lodash.com/">Underscore.js</a>,
+      <a target="_blank" href="http://lodash.com/">Lo-dash</a>,
       <a target="_blank" href="https://github.com/petkaantonov/bluebird">bluebird</a>
       for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
@@ -1514,7 +1514,7 @@ console.log(JSON.stringify(artist));
     <p id="Model-Underscore-Methods">
       <b class="header">Underscore Methods (6)</b>
       <br />
-      Bookshelf proxies to <b>Underscore.js</b> to provide 6 object functions
+      Bookshelf proxies to the <b>Underscore</b> implementation to provide 6 object functions
       on <b>Bookshelf.Model</b>. They aren't all documented here, but
       you can take a look at the Underscore documentation for the full details&hellip;
     </p>
@@ -1657,7 +1657,7 @@ modelB.isNew(); // false
 
     <p>
       Collections are ordered sets of models returned from the database,
-      which may be used with a full suite of <a href="#Collection-Underscore-Methods">Underscore.js methods</a>.
+      which may be used with a full suite of <a href="#Collection-Underscore-Methods">Underscore methods</a>.
     </p>
 
     <p id="Collection-extend">
@@ -2005,9 +2005,7 @@ collection
     <p id="Collection-Underscore-Methods">
       <b class="header">Underscore Methods (28)</b>
       <br />
-      Just as with <b>Backbone</b>, Bookshelf proxies to <b>Underscore.js</b> to provide 28 iteration functions
-      on <b>Bookshelf.Collection</b>. They aren't all documented here, but
-      you can take a look at the Underscore documentation for the full details&hellip;
+      Just as with <b>Backbone</b>, Bookshelf proxies to the <b>Underscore</b> implementation to provide 28 iteration functions on <b>Bookshelf.Collection</b>. They aren't all documented here, but you can take a look at the Underscore documentation for the full details&hellip;
     </p>
 
     <ul class="small">
