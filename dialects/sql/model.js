@@ -176,10 +176,11 @@ define(function(require, exports) {
         var sync = this.sync(options);
         options.query = sync.query;
 
-        return Promise.bind(this).all([
+        return Promise.all([
           this.triggerThen((method === 'insert' ? 'creating' : 'updating'), this, attrs, options),
           this.triggerThen('saving', this, attrs, options)
         ])
+        .bind(this)
         .then(function() {
           return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
         })

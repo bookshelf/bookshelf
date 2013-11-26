@@ -359,6 +359,28 @@ module.exports = function(Bookshelf) {
 
       });
 
+      it('fires saving and creating and then saves', function() {
+        var user   = new Bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
+        var query  = user.query();
+        var events = 0;
+        user.sync  = function() {
+          return _.extend(stubSync, {
+            insert: function() {
+              equal(events, 2);
+              return Promise.resolve({});
+            }
+          });
+        };
+        user.on('creating saving updating', function() {
+          return Promise.resolve().then(function() {
+            return Promise.resolve().then(function() {
+              events++;
+            });
+          });
+        });
+        return user.save();
+      });
+
     });
 
     describe('destroy', function() {
