@@ -1,7 +1,7 @@
-var _ = require('underscore');
+var _ = require('lodash');
 _.str = require('underscore.string');
 
-var when  = require('when');
+var Promise = global.testPromise;
 var equal = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
@@ -13,11 +13,11 @@ module.exports = function(Bookshelf) {
     var Models    = require('./helpers/objects')(Bookshelf).Models;
 
     var stubSync = {
-      first:  function() { return when.resolve({}); },
-      select: function() { return when.resolve({}); },
-      insert: function() { return when.resolve({}); },
-      update: function() { return when.resolve({}); },
-      del:    function() { return when.resolve({}); }
+      first:  function() { return Promise.resolve({}); },
+      select: function() { return Promise.resolve({}); },
+      insert: function() { return Promise.resolve({}); },
+      update: function() { return Promise.resolve({}); },
+      del:    function() { return Promise.resolve({}); }
     };
 
     describe('extend/constructor/initialize', function() {
@@ -100,7 +100,10 @@ module.exports = function(Bookshelf) {
 
     describe('query', function() {
 
-      var model = new Bookshelf.Model();
+      var model;
+      beforeEach(function() {
+        model = new Bookshelf.Model();
+      });
 
       it('returns the Knex builder when no arguments are passed', function() {
         equal((model.query() instanceof require('knex/lib/builder').Builder), true);
@@ -261,6 +264,14 @@ module.exports = function(Bookshelf) {
         return expect(model.fetch()).to.be.rejected;
       });
 
+      it('allows access to the query builder on the options object in the fetching event', function() {
+        var model = new Site({id: 1});
+        model.on('fetching', function(model, columns, options) {
+          expect(options.query.whereIn).to.be.a.function;
+        });
+        return model.fetch();
+      });
+
     });
 
     describe('save', function() {
@@ -310,7 +321,7 @@ module.exports = function(Bookshelf) {
         var query = m.query();
         query.update = function() {
           equal(this.wheres.length, 1);
-          return when.resolve({});
+          return Promise.resolve({});
         };
 
         return m.save(null, {method: 'update'}).then(function() {
@@ -335,7 +346,7 @@ module.exports = function(Bookshelf) {
         query.then = function(onFulfilled, onRejected) {
           equal(this.bindings.length, 2);
           equal(this.wheres.length, 1);
-          return when.resolve(this.toString()).then(onFulfilled, onRejected);
+          return Promise.resolve(this.toString()).then(onFulfilled, onRejected);
         };
 
         return user
@@ -566,11 +577,15 @@ module.exports = function(Bookshelf) {
 
     describe('hasChanged', function() {
 
-      var site = new Models.Site({name: 'Third Site'});
-      equal(site.hasChanged('name'), true);
-      deepEqual(site.changed, {name: 'Third Site'});
-      return site.fetch().then(function() {
-        deepEqual(site.hasChanged, {});
+      it('will determine whether an attribute, or the model has changed', function() {
+
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          expect(site.hasChanged()).to.be.false;
+          site.set('name', 'Changed site');
+          equal(site.hasChanged('name'), true);
+          deepEqual(site.changed, {name: 'Changed site'});
+        });
+
       });
 
     });

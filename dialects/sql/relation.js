@@ -6,14 +6,14 @@
 
 define(function(require, exports) {
 
-  var _            = require('underscore');
-  var when         = require('when');
+  var _            = require('lodash');
   var inflection   = require('inflection');
 
   var Helpers      = require('./helpers').Helpers;
 
   var ModelBase    = require('../base/model').ModelBase;
   var RelationBase = require('../base/relation').RelationBase;
+  var Promise      = require('../base/promise').Promise;
 
   var push = [].push;
 
@@ -23,24 +23,21 @@ define(function(require, exports) {
     // gathering any relevant primitives from the parent object,
     // without keeping any hard references.
     init: function(parent) {
-      this.parentId = parent.id;
+      this.parentId          = parent.id;
       this.parentTableName   = _.result(parent, 'tableName');
       this.parentIdAttribute = _.result(parent, 'idAttribute');
 
-      // If the parent object is eager loading, we don't need the
-      // id attribute, because we'll just be creating a `whereIn` from the
-      // previous response anyway.
-      if (!parent._isEager) {
-        if (this.isInverse()) {
-          if (this.type === 'morphTo') {
-            this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
-            this.targetTableName   = _.result(this.target.prototype, 'tableName');
-            this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
-          }
-          this.parentFk = parent.get(this.key('foreignKey'));
-        } else {
-          this.parentFk = parent.id;
+      if (this.isInverse()) {
+        // If the parent object is eager loading, and it's a polymorphic `morphTo` relation,
+        // we can't know what the target will be until the models are sorted and matched.
+        if (this.type === 'morphTo' && !parent._isEager) {
+          this.target = Helpers.morphCandidate(this.candidates, parent.get(this.key('morphKey')));
+          this.targetTableName   = _.result(this.target.prototype, 'tableName');
+          this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
         }
+        this.parentFk = parent.get(this.key('foreignKey'));
+      } else {
+        this.parentFk = parent.id;
       }
 
       var target = this.target ? this.relatedInstance() : {};
@@ -180,13 +177,14 @@ define(function(require, exports) {
         var targetTable = this.type === 'belongsTo' ? this.parentTableName : this.joinTable();
         key = targetTable + '.' + (this.type === 'belongsTo' ? this.parentIdAttribute : this.key('foreignKey'));
       } else {
-        key = this.isInverse() ? this.targetIdAttribute : this.key('foreignKey');
+        key = this.targetTableName + '.' +
+          (this.isInverse() ? this.targetIdAttribute : this.key('foreignKey'));
       }
 
       knex[resp ? 'whereIn' : 'where'](key, resp ? this.eagerKeys(resp) : this.parentFk);
 
       if (this.isMorph()) {
-        knex.where(this.key('morphKey'), this.key('morphValue'));
+        knex.where(this.targetTableName + '.' + this.key('morphKey'), this.key('morphValue'));
       }
     },
 
@@ -214,7 +212,7 @@ define(function(require, exports) {
       // If it's a single model, check whether there's already a model
       // we can pick from... otherwise create a new instance.
       if (this.isSingle()) {
-        if (!Target.prototype instanceof ModelBase) {
+        if (!(Target.prototype instanceof ModelBase)) {
           throw new Error('The `'+this.type+'` related object must be a Bookshelf.Model');
         }
         return models[0] || new Target();
@@ -233,26 +231,41 @@ define(function(require, exports) {
 
     // Groups the related response according to the type of relationship
     // we're handling, for easy attachment to the parent models.
-    eagerPair: function(relationName, related, models) {
+    eagerPair: function(relationName, related, parentModels) {
+      var model;
 
       // If this is a morphTo, we only want to pair on the morphValue for the current relation.
       if (this.type === 'morphTo') {
-        models = _.filter(models, function(model) { return model.get(this.key('morphKey')) === this.key('morphValue'); }, this);
+        parentModels = _.filter(parentModels, function(model) {
+          return model.get(this.key('morphKey')) === this.key('morphValue');
+        }, this);
       }
 
       // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
       if (this.isJoined()) related = this.parsePivot(related);
 
+      // Group all of the related models for easier association with their parent models.
       var grouped = _.groupBy(related, function(model) {
         return model.pivot ? model.pivot.get(this.key('foreignKey')) :
           this.isInverse() ? model.id : model.get(this.key('foreignKey'));
       }, this);
 
-      for (var i = 0, l = models.length; i < l; i++) {
-        var model = models[i];
+      // Loop over the `parentModels` and attach the grouped sub-models,
+      // keeping the `relatedData` on the new related instance.
+      for (var i = 0, l = parentModels.length; i < l; i++) {
+        model = parentModels[i];
         var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
-        model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        relation.relatedData = this;
       }
+
+      // Now that related models have been successfully paired, update each with
+      // its parsed attributes
+      for (i = 0, l = related.length; i < l; i++) {
+        model = related[i];
+        model.attributes = model.parse(model.attributes);
+      }
+
       return related;
     },
 
@@ -353,23 +366,23 @@ define(function(require, exports) {
 
     // Helper for handling either the `attach` or `detach` call on
     // the `belongsToMany` or `hasOne` / `hasMany` :through relationship.
-    _handler: function(method, ids, options) {
+    _handler: Promise.method(function(method, ids, options) {
       var pending = [];
       if (ids == void 0) {
-        if (method === 'insert') return when.resolve(this);
+        if (method === 'insert') return Promise.resolve(this);
         if (method === 'delete') pending.push(this._processPivot(method, null, options));
       }
       if (!_.isArray(ids)) ids = ids ? [ids] : [];
       for (var i = 0, l = ids.length; i < l; i++) {
         pending.push(this._processPivot(method, ids[i], options));
       }
-      return when.all(pending).yield(this);
-    },
+      return Promise.all(pending).yield(this);
+    }),
 
     // Handles setting the appropriate constraints and shelling out
     // to either the `insert` or `delete` call for the current model,
     // returning a promise.
-    _processPivot: function(method, item, options) {
+    _processPivot: Promise.method(function(method, item, options) {
       var data = {};
       var relatedData = this.relatedData;
       data[relatedData.key('foreignKey')] = relatedData.parentFk;
@@ -403,7 +416,7 @@ define(function(require, exports) {
       return builder.insert(data).then(function() {
         collection.add(item);
       });
-    }
+    })
 
   };
 

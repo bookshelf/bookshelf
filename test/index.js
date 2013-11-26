@@ -1,9 +1,21 @@
+var Promise = require('../dialects/base/promise').Promise;
+
+global.testPromise = Promise;
+
+process.stderr.on('data', function(data) {
+  console.log(data);
+});
+
 
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
-var mocha     = require('mocha');
 
-require("mocha-as-promised")(mocha);
+if (process.argv.pop() === 'test/index.js') {
+  var mocha     = require('mocha');
+  require("mocha-as-promised")(mocha);
+} else {
+  require("mocha-as-promised")();
+}
 
 global.sinon = require("sinon");
 
@@ -13,7 +25,6 @@ chai.use(require("chai-as-promised"));
 chai.use(require("sinon-chai"));
 chai.should();
 
-global.whenResolve    = require('when').resolve;
 global.expect         = chai.expect;
 global.AssertionError = chai.AssertionError;
 global.Assertion      = chai.Assertion;

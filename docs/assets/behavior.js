@@ -25,8 +25,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.5.3",
-            "slug": "bookshelfjs-053"
+            "title": "Bookshelf.js 0.6.0",
+            "slug": "bookshelfjs-060"
           },
           "depth": 2
         }
@@ -48,6 +48,32 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "depth": 2,
           "children": [
             {
+              "type": "file",
+              "data": {
+                "language": {
+                  "nameMatchers": [".js"],
+                  "pygmentsLexer": "javascript",
+                  "singleLineComment": ["//"],
+                  "name": "JavaScript"
+                },
+                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/collection.js",
+                "projectPath": "dialects/base/collection.js",
+                "targetPath": "dialects/base/collection",
+                "title": "collection"
+              },
+              "depth": 3,
+              "outline": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Base Collection",
+                    "slug": "base-collection"
+                  },
+                  "depth": 2
+                }
+              ]
+            }, {
               "type": "file",
               "data": {
                 "language": {
@@ -125,6 +151,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "depth": 2
                 }
               ]
+            }, {
+              "type": "file",
+              "data": {
+                "language": {
+                  "nameMatchers": [".js"],
+                  "pygmentsLexer": "javascript",
+                  "singleLineComment": ["//"],
+                  "name": "JavaScript"
+                },
+                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/promise.js",
+                "projectPath": "dialects/base/promise.js",
+                "targetPath": "dialects/base/promise",
+                "title": "promise"
+              },
+              "depth": 3,
+              "outline": []
             }, {
               "type": "file",
               "data": {

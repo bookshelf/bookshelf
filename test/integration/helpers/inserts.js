@@ -1,11 +1,11 @@
-var when  = require('when');
-var _     = require('underscore');
+var Promise = global.testPromise;
+var _       = require('lodash');
 
 module.exports = function(bookshelf) {
 
   var knex = bookshelf.knex;
 
-  return when.all([
+  return Promise.all([
 
     knex('sites').insert([{
       name: 'knexjs.org'

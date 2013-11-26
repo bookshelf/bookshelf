@@ -1,4 +1,5 @@
-var when      = require('when');
+var _         = require('lodash');
+var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
 module.exports = function(Bookshelf) {
@@ -200,7 +201,7 @@ module.exports = function(Bookshelf) {
       describe('Pivot Tables', function() {
 
         before(function() {
-          return when.all([
+          return Promise.all([
             new Site({id: 1}).admins().detach(),
             new Site({id: 2}).admins().detach()
           ]);
@@ -214,10 +215,10 @@ module.exports = function(Bookshelf) {
           var admin2 = new Admin({username: 'syncable', password: 'test'});
           var admin1_id;
 
-          return when.all([admin1.save(), admin2.save()])
+          return Promise.all([admin1.save(), admin2.save()])
             .then(function() {
               admin1_id = admin1.id;
-              return when.all([
+              return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
                 site2.related('admins').attach(admin2)
               ]);
@@ -226,7 +227,7 @@ module.exports = function(Bookshelf) {
               expect(site1.related('admins')).to.have.length(2);
               expect(site2.related('admins')).to.have.length(1);
             }).then(function() {
-              return when.all([
+              return Promise.all([
                 new Site({id: 1}).related('admins').fetch().then(function(c) {
                   c.each(function(m) {
                     equal(m.hasChanged(), false);
@@ -240,13 +241,13 @@ module.exports = function(Bookshelf) {
               ]);
             })
             .then(function(resp) {
-              return when.all([
+              return Promise.all([
                 new Site({id: 1}).related('admins').fetch(),
                 new Site({id: 2}).related('admins').fetch()
               ]);
             })
             .spread(function(admins1, admins2) {
-              return when.all([
+              return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
                   return c.fetch();
@@ -312,6 +313,10 @@ module.exports = function(Bookshelf) {
 
         it('eager loads morphTo (photos -> imageable)', function() {
           return new Photos().fetch({log: true, withRelated: ['imageable']});
+        });
+
+        it('eager loads beyond the morphTo, where possible', function() {
+          return new Photos().fetch({log: true, withRelated: ['imageable.authors']});
         });
 
       });
@@ -428,6 +433,61 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('Issue #77 - Using collection.create() on relations', function() {
+
+      it('maintains the correct parent model references when using related()', function() {
+
+        return new Site().fetch({withRelated: 'authors'}).then(function(site) {
+
+          return site.related('authors').create({first_name: 'Dummy', last_name: 'Account'}).then(function(model) {
+
+            expect(model.attributes).to.eql({first_name: 'Dummy', last_name: 'Account', site_id: site.id, id: model.id});
+
+            expect(site.related('authors')).to.have.length(3);
+
+          });
+
+        });
+
+      });
+
+    });
+
+    describe('Issue #97 - Eager loading on parsed models', function() {
+
+      it('correctly pairs eager-loaded models before parse()', function () {
+        return Promise.all([
+          new Blog({id: 1}).related('parsedPosts').fetch(),
+          new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+        ]).then(function (data) {
+          var parsedPosts = data[0], blog = data[1];
+          expect(blog.related('parsedPosts').length).to.equal(parsedPosts.length);
+        });
+      });
+
+      it('parses eager-loaded models after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var attrs = blog.related('parsedPosts').at(0).attributes;
+            Object.keys(attrs).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+      it('parses eager-loaded morphTo relations (model)', function () {
+        return new Photos().fetch({ withRelated: 'imageableParsed.meta', log: true })
+          .then(function (photos) {
+            photos.forEach(function(photo) {
+              var attrs = photo.related('imageableParsed').attributes;
+              Object.keys(attrs).forEach(function (key) {
+                expect(/_parsed$/.test(key)).to.be.true;
+              });
+            });
+          });
+      });
+
+    });
 
   });
 

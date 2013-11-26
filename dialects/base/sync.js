@@ -10,7 +10,7 @@
 // agnostic "Data Mapper".
 define(function(require, exports) {
 
-  var when     = require('when');
+  var Promise  = require('./promise').Promise;
   var Backbone = require('backbone');
 
   // Used as the base of the prototype chain,
@@ -20,34 +20,31 @@ define(function(require, exports) {
 
   BaseSync.prototype = {
 
-    // May be used for any setup for the class.
-    initialize: function() {},
-
     // Return a single model object.
     first: function() {
-      return when.resolve({});
+      return Promise.fulfilled({});
     },
 
     // Select one or more models, returning an array
     // of data objects.
     select: function() {
-      return when.resolve([]);
+      return Promise.fulfilled([]);
     },
 
     // Insert a single row, returning an object
     // (typically containing an "insert id").
     insert: function() {
-      return when.resolve({});
+      return Promise.fulfilled({});
     },
 
     // Update an object in the data store.
     update: function() {
-      return when.resolve({});
+      return Promise.fulfilled({});
     },
 
     // Delete a record from the data store.
     del: function() {
-      return when.resolve({});
+      return Promise.fulfilled({});
     }
 
   };

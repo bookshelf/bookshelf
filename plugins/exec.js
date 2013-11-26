@@ -9,7 +9,7 @@
 // `Bookshelf.plugin(require('bookshelf/plugins/exec'))`
 define(function(require, exports, module) {
 
-  var _ = require('underscore');
+  var _ = require('lodash');
 
   // Accept the instance of `Bookshelf` we'd like to add `exec` support to.
   module.exports = function(Bookshelf) {

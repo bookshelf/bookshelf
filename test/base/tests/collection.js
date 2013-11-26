@@ -1,7 +1,7 @@
-var when      = require('when');
+var Promise   = testPromise;
 var assert    = require('assert');
 var equal     = assert.equal;
-var _         = require('underscore');
+var _         = require('lodash');
 
 module.exports = function() {
 
@@ -21,7 +21,7 @@ module.exports = function() {
         tableName: 'test_table',
         idAttribute: 'some_id',
         invokedMethod: function() {
-          return when(this.id);
+          return Promise.resolve(this.id);
         }
       })
     });
@@ -99,13 +99,9 @@ module.exports = function() {
 
     it('contains an invokeThen method, which does an invoke on the models, and returns a when.all promise', function() {
 
-      var spyIterator = sinon.spy(function(model) {
-        return model.id;
-      });
-
       return collection.invokeThen('invokedMethod').then(function(resp) {
         expect(_.compact(resp)).to.eql([1]);
-      });
+      })
 
     });
 

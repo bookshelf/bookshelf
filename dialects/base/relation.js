@@ -6,7 +6,7 @@
 
 define(function(require, exports) {
 
-  var _        = require('underscore');
+  var _        = require('lodash');
   var Backbone = require('backbone');
 
   var CollectionBase = require('./collection').CollectionBase;
@@ -30,12 +30,13 @@ define(function(require, exports) {
       return new this.constructor(type, Target, options);
     },
 
-    // Creates a new model, used internally in the eager fetch helper methods.
+    // Creates a new, unparsed model, used internally in the eager fetch helper
+    // methods. (Parsing may mutate information necessary for eager pairing.)
     createModel: function(data) {
       if (this.target.prototype instanceof CollectionBase) {
-        return new this.target.prototype.model(data, {parse: true})._reset();
+        return new this.target.prototype.model(data)._reset();
       }
-      return new this.target(data, {parse: true})._reset();
+      return new this.target(data)._reset();
     },
 
     // Eager pair the models.

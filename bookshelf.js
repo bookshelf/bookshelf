@@ -1,4 +1,4 @@
-// Bookshelf.js 0.5.3
+// Bookshelf.js 0.6.0
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -12,7 +12,7 @@
 define(function(require, exports, module) {
 
   // All external libraries needed in this scope.
-  var _          = require('underscore');
+  var _          = require('lodash');
   var Knex       = require('knex');
 
   // All local dependencies... These are the main objects that
@@ -83,7 +83,7 @@ define(function(require, exports, module) {
   _.extend(Bookshelf.prototype, Events, {
 
     // Keep in sync with `package.json`.
-    VERSION: '0.5.3',
+    VERSION: '0.6.0',
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
     transaction: function() {

@@ -1,4 +1,4 @@
-var when = require('when');
+var Promise = global.testPromise;
 
 module.exports = function(Bookshelf) {
 
@@ -139,7 +139,7 @@ module.exports = function(Bookshelf) {
 
         query.then = function(onFufilled, onRejected) {
           expect(this.values[0]).to.eql([['first_name', 'Test'], ['last_name', 'User'], ['site_id', 1]]);
-          return when.resolve(this.toString()).then(onFufilled, onRejected);
+          return Promise.resolve(this.toString()).then(onFufilled, onRejected);
         };
 
         return authors.create({first_name: 'Test', last_name: 'User'});

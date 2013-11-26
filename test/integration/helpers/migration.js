@@ -1,5 +1,5 @@
-var _ = require('underscore');
-var when = require('when');
+var _ = require('lodash');
+var Promise = global.testPromise;
 
 var drops = [
   'sites', 'sitesmeta', 'admins',
@@ -13,12 +13,12 @@ module.exports = function(Bookshelf) {
 
   var schema = Bookshelf.knex.schema;
 
-  return when.all(_.map(drops, function(val) {
+  return Promise.all(_.map(drops, function(val) {
     return schema.dropTableIfExists(val);
   }))
   .then(function() {
 
-    return when.all([
+    return Promise.all([
       schema.createTable('sites', function(table) {
         table.increments('id');
         table.string('name');

@@ -6,10 +6,11 @@
 
 define(function(require, exports) {
 
-  var _        = require('underscore');
+  var _        = require('lodash');
   var Backbone = require('backbone');
 
   var Events   = require('./events').Events;
+  var Promise  = require('./promise').Promise;
 
   // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
   // a generic model base.
@@ -35,7 +36,6 @@ define(function(require, exports) {
     }
     this.set(attrs, options);
     this.initialize.apply(this, arguments);
-    _.bindAll(this, '_handleResponse', '_handleEager');
   };
 
   _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
@@ -158,17 +158,17 @@ define(function(require, exports) {
     // A "destroying" and "destroyed" are triggered on the model before
     // and after the model is destroyed, respectively. If an error is thrown
     // during the "destroying" event, the model will not be destroyed.
-    destroy: function(options) {
-      var model = this;
-      options = options || {};
-      return model.triggerThen('destroying', model, options)
-      .then(function() { return model.sync(options).del(); })
-      .then(function(resp) {
-        model.clear();
-        return model.triggerThen('destroyed', model, resp, options);
-      })
-      .then(function() { return model._reset(); });
-    },
+    destroy: Promise.method(function(options) {
+      options = options ? _.clone(options) : {};
+      return Promise.bind(this).then(function() {
+        return this.triggerThen('destroying', this, options);
+      }).then(function() {
+        return this.sync(options).del();
+      }).then(function(resp) {
+        this.clear();
+        return this.triggerThen('destroyed', this, resp, options);
+      }).then(this._reset);
+    }),
 
     _handleResponse: function() {},
 
@@ -179,7 +179,13 @@ define(function(require, exports) {
   // List of attributes attached directly from the `options` passed to the constructor.
   var modelProps = ['tableName', 'hasTimestamps'];
 
-  ModelBase.extend = Backbone.Model.extend;
+  ModelBase.extend  = Backbone.Model.extend;
+
+  // Helper to mixin one or more additional items to the current prototype.
+  ModelBase.include = function() {
+    _.extend.apply(_, [this.prototype].concat(_.toArray(arguments)));
+    return this;
+  };
 
   exports.ModelBase = ModelBase;
 

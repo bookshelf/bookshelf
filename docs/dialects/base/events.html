@@ -4,13 +4,12 @@
 
 <span class="nx">define</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="kd">var</span> <span class="nx">when</span>        <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;when&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">Promise</span>     <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./promise&#39;</span><span class="p">).</span><span class="nx">Promise</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">Backbone</span>    <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;backbone&#39;</span><span class="p">);</span>
   <span class="kd">var</span> <span class="nx">triggerThen</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;trigger-then&#39;</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments"><div class="wrapper"><p>Mixin the <code>triggerThen</code> function into all relevant Backbone objects,
-so we can have event driven async validations, functions, etc.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">triggerThen</span><span class="p">(</span><span class="nx">Backbone</span><span class="p">,</span> <span class="nx">when</span><span class="p">);</span>
+so we can have event driven async validations, functions, etc.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">triggerThen</span><span class="p">(</span><span class="nx">Backbone</span><span class="p">,</span> <span class="nx">Promise</span><span class="p">);</span>
 
   <span class="nx">exports</span><span class="p">.</span><span class="nx">Events</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Events</span><span class="p">;</span>
-
 <span class="p">});</span>
 
 <span class="p">})(</span>
