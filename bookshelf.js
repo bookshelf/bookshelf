@@ -1,4 +1,4 @@
-// Bookshelf.js 0.6.0
+// Bookshelf.js 0.6.1
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -83,7 +83,7 @@ define(function(require, exports, module) {
   _.extend(Bookshelf.prototype, Events, {
 
     // Keep in sync with `package.json`.
-    VERSION: '0.6.0',
+    VERSION: '0.6.1',
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
     transaction: function() {
