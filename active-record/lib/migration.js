@@ -14,7 +14,6 @@ define(function(require, exports, module) {
 
       up: function() {
 
-
       },
 
       down: function() {
