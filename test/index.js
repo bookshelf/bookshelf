@@ -1,4 +1,4 @@
-var Promise = require('../dialects/base/promise').Promise;
+var Promise = require('../dialects/base/promise');
 
 global.testPromise = Promise;
 

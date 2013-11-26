@@ -3,15 +3,15 @@
 var _            = require('lodash');
 var inflection   = require('inflection');
 
-var Helpers      = require('./helpers').Helpers;
+var Helpers      = require('./helpers');
 
-var ModelBase    = require('../base/model').ModelBase;
-var RelationBase = require('../base/relation').RelationBase;
-var Promise      = require('../base/promise').Promise;
+var ModelBase    = require('../base/model');
+var RelationBase = require('../base/relation');
+var Promise      = require('../base/promise');
 
 var push = [].push;
 
-exports.Relation = RelationBase.extend({
+module.exports = RelationBase.extend({
 
   // Assembles the new model or collection we're creating an instance of,
   // gathering any relevant primitives from the parent object,

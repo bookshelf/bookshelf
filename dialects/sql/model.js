@@ -2,14 +2,14 @@
 // ---------------
 var _             = require('lodash');
 
-var Sync          = require('./sync').Sync;
-var Helpers       = require('./helpers').Helpers;
-var EagerRelation = require('./eager').EagerRelation;
+var Sync          = require('./sync');
+var Helpers       = require('./helpers');
+var EagerRelation = require('./eager');
 
-var ModelBase = require('../base/model').ModelBase;
-var Promise   = require('../base/promise').Promise;
+var ModelBase = require('../base/model');
+var Promise   = require('../base/promise');
 
-exports.Model = ModelBase.extend({
+module.exports = ModelBase.extend({
 
   // The `hasOne` relation specifies that this table has exactly one of another type of object,
   // specified by a foreign key in the other table. The foreign key is assumed to be the singular of this

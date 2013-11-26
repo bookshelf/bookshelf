@@ -17,4 +17,4 @@ Promise.prototype.otherwise = Promise.prototype.caught;
 Promise.resolve = Promise.fulfilled;
 Promise.reject  = Promise.rejected;
 
-exports.Promise = Promise;
+module.exports = Promise;

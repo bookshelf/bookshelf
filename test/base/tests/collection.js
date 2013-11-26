@@ -10,8 +10,8 @@ module.exports = function() {
   var path     = require('path');
   var basePath = process.cwd();
 
-  var CollectionBase = require(path.resolve(basePath + '/dialects/base/collection')).CollectionBase;
-  var ModelBase      = require(path.resolve(basePath + '/dialects/base/model')).ModelBase;
+  var CollectionBase = require(path.resolve(basePath + '/dialects/base/collection'));
+  var ModelBase      = require(path.resolve(basePath + '/dialects/base/model'));
 
   describe('Collection', function() {
 

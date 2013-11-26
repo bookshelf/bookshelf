@@ -12,14 +12,14 @@ var Knex       = require('knex');
 
 // All local dependencies... These are the main objects that
 // need to be augmented in the constructor to work properly.
-var SqlModel      = require('./dialects/sql/model').Model;
-var SqlCollection = require('./dialects/sql/collection').Collection;
-var SqlRelation   = require('./dialects/sql/relation').Relation;
+var SqlModel      = require('./dialects/sql/model');
+var SqlCollection = require('./dialects/sql/collection');
+var SqlRelation   = require('./dialects/sql/relation');
 
 // Finally, the `Events`, which we've supplemented with a `triggerThen`
 // method to allow for asynchronous event handling via promises. We also
 // mix this into the prototypes of the main objects in the library.
-var Events        = require('./dialects/base/events').Events;
+var Events        = require('./dialects/base/events');
 
 // Constructor for a new `Bookshelf` object, it accepts
 // an active `knex` instance and initializes the appropriate

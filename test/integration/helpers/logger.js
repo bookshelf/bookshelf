@@ -11,8 +11,8 @@ Ctors.Raw           = require('knex/lib/raw').Raw;
 Ctors.Builder       = require('knex/lib/builder').Builder;
 Ctors.SchemaBuilder = require('knex/lib/schemabuilder').SchemaBuilder;
 
-Ctors.Model         = require('../../../dialects/sql/model').Model;
-Ctors.Collection    = require('../../../dialects/sql/collection').Collection;
+Ctors.Model         = require('../../../dialects/sql/model');
+Ctors.Collection    = require('../../../dialects/sql/collection');
 
 var fs            = require('fs');
 var objectdump    = require('objectdump');

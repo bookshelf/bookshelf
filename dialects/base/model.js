@@ -3,8 +3,8 @@
 var _        = require('lodash');
 var Backbone = require('backbone');
 
-var Events   = require('./events').Events;
-var Promise  = require('./promise').Promise;
+var Events   = require('./events');
+var Promise  = require('./promise');
 
 // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
 // a generic model base.
@@ -181,4 +181,4 @@ ModelBase.include = function() {
   return this;
 };
 
-exports.ModelBase = ModelBase;
+module.exports = ModelBase;

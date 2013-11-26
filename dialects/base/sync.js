@@ -6,7 +6,7 @@
 // making Bookshelf effectively a data store
 // agnostic "Data Mapper".
 
-var Promise  = require('./promise').Promise;
+var Promise  = require('./promise');
 var Backbone = require('backbone');
 
 // Used as the base of the prototype chain,
@@ -47,4 +47,4 @@ BaseSync.prototype = {
 
 BaseSync.extend = Backbone.Model.extend;
 
-exports.BaseSync = BaseSync;
+module.exports = BaseSync;

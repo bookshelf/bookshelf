@@ -79,7 +79,7 @@ module.exports = function(Bookshelf) {
 
       it('creates a new instance of Sync', function(){
         var model = new Bookshelf.Model();
-        expect(model.sync(model)).to.be.an.instanceOf(require('../../dialects/sql/sync').Sync);
+        expect(model.sync(model)).to.be.an.instanceOf(require('../../dialects/sql/sync'));
       });
 
     });

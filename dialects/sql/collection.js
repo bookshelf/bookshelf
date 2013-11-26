@@ -2,14 +2,14 @@
 // ---------------
 var _             = require('lodash');
 
-var Sync          = require('./sync').Sync;
-var Helpers       = require('./helpers').Helpers;
-var EagerRelation = require('./eager').EagerRelation;
+var Sync          = require('./sync');
+var Helpers       = require('./helpers');
+var EagerRelation = require('./eager');
 
-var CollectionBase = require('../base/collection').CollectionBase;
-var Promise        = require('../base/promise').Promise;
+var CollectionBase = require('../base/collection');
+var Promise        = require('../base/promise');
 
-exports.Collection = CollectionBase.extend({
+module.exports = CollectionBase.extend({
 
   // Used to define passthrough relationships - `hasOne`, `hasMany`,
   // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.

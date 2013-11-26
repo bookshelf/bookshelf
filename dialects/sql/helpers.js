@@ -3,7 +3,7 @@
 
 var _ = require('lodash');
 
-exports.Helpers = {
+module.exports = {
 
   // Sets the constraints necessary during a `model.save` call.
   saveConstraints: function(model, relatedData) {

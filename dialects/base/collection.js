@@ -6,9 +6,9 @@ var _         = require('lodash');
 var Backbone  = require('backbone');
 
 // All components that need to be referenced in this scope.
-var Events    = require('./events').Events;
-var Promise   = require('./promise').Promise;
-var ModelBase = require('./model').ModelBase;
+var Events    = require('./events');
+var Promise   = require('./promise');
+var ModelBase = require('./model');
 
 var array  = [];
 var push   = array.push;
@@ -160,4 +160,4 @@ CollectionBase.include = function() {
   return this;
 };
 
-exports.CollectionBase = CollectionBase;
+module.exports = CollectionBase;

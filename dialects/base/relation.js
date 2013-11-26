@@ -4,7 +4,7 @@
 var _        = require('lodash');
 var Backbone = require('backbone');
 
-var CollectionBase = require('./collection').CollectionBase;
+var CollectionBase = require('./collection');
 
 // Used internally, the `Relation` helps in simplifying the relationship building,
 // centralizing all logic dealing with type & option handling.
@@ -41,4 +41,4 @@ RelationBase.prototype = {
 
 RelationBase.extend = Backbone.Model.extend;
 
-exports.RelationBase = RelationBase;
+module.exports = RelationBase;

@@ -8,7 +8,7 @@
 
 var _         = require('lodash');
 var Backbone  = require('backbone');
-var Promise   = require('./promise').Promise;
+var Promise   = require('./promise');
 
 var EagerBase = function(parent, parentResponse, target) {
   this.parent = parent;
@@ -103,4 +103,4 @@ var noop = function() {};
 
 EagerBase.extend = Backbone.Model.extend;
 
-exports.EagerBase = EagerBase;
+module.exports = EagerBase;

@@ -2,15 +2,15 @@
 // ---------------
 var _         = require('lodash');
 
-var Helpers   = require('./helpers').Helpers;
-var EagerBase = require('../base/eager').EagerBase;
-var Promise   = require('../base/promise').Promise;
+var Helpers   = require('./helpers');
+var EagerBase = require('../base/eager');
+var Promise   = require('../base/promise');
 
 // An `EagerRelation` object temporarily stores the models from an eager load,
 // and handles matching eager loaded objects with their parent(s). The `tempModel`
 // is only used to retrieve the value of the relation method, to know the constrains
 // for the eager query.
-var EagerRelation = exports.EagerRelation = EagerBase.extend({
+var EagerRelation = module.exports = EagerBase.extend({
 
   // Handles an eager loaded fetch, passing the name of the item we're fetching for,
   // and any options needed for the current fetch.

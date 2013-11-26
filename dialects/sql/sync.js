@@ -1,7 +1,7 @@
 // Sync
 // ---------------
 var _       = require('lodash');
-var Promise = require('../base/promise').Promise;
+var Promise = require('../base/promise');
 
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
@@ -85,4 +85,4 @@ _.extend(Sync.prototype, {
 
 });
 
-exports.Sync = Sync;
+module.exports = Sync;
