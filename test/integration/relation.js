@@ -4,7 +4,7 @@ module.exports = function(Bookshelf) {
 
   describe('Relation', function() {
 
-    var Relation = require('../../dialects/sql/relation');
+    var Relation = require('../../sql/relation');
 
     var Photo = Bookshelf.Model.extend({
       tableName: 'photos',
