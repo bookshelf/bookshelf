@@ -1,55 +1,44 @@
 // Base Relation
 // ---------------
-(function(define) {
 
-"use strict";
+var _        = require('lodash');
+var Backbone = require('backbone');
 
-define(function(require, exports) {
+var CollectionBase = require('./collection').CollectionBase;
 
-  var _        = require('lodash');
-  var Backbone = require('backbone');
+// Used internally, the `Relation` helps in simplifying the relationship building,
+// centralizing all logic dealing with type & option handling.
+var RelationBase = function(type, Target, options) {
+  this.type = type;
+  if (this.target = Target) {
+    this.targetTableName = _.result(Target.prototype, 'tableName');
+    this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
+  }
+  _.extend(this, options);
+};
 
-  var CollectionBase = require('./collection').CollectionBase;
+RelationBase.prototype = {
 
-  // Used internally, the `Relation` helps in simplifying the relationship building,
-  // centralizing all logic dealing with type & option handling.
-  var RelationBase = function(type, Target, options) {
-    this.type = type;
-    if (this.target = Target) {
-      this.targetTableName = _.result(Target.prototype, 'tableName');
-      this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
+  // Creates a new relation instance, used by the `Eager` relation in
+  // dealing with `morphTo` cases, where the same relation is targeting multiple models.
+  instance: function(type, Target, options) {
+    return new this.constructor(type, Target, options);
+  },
+
+  // Creates a new, unparsed model, used internally in the eager fetch helper
+  // methods. (Parsing may mutate information necessary for eager pairing.)
+  createModel: function(data) {
+    if (this.target.prototype instanceof CollectionBase) {
+      return new this.target.prototype.model(data)._reset();
     }
-    _.extend(this, options);
-  };
+    return new this.target(data)._reset();
+  },
 
-  RelationBase.prototype = {
+  // Eager pair the models.
+  eagerPair: function() {}
 
-    // Creates a new relation instance, used by the `Eager` relation in
-    // dealing with `morphTo` cases, where the same relation is targeting multiple models.
-    instance: function(type, Target, options) {
-      return new this.constructor(type, Target, options);
-    },
+};
 
-    // Creates a new, unparsed model, used internally in the eager fetch helper
-    // methods. (Parsing may mutate information necessary for eager pairing.)
-    createModel: function(data) {
-      if (this.target.prototype instanceof CollectionBase) {
-        return new this.target.prototype.model(data)._reset();
-      }
-      return new this.target(data)._reset();
-    },
+RelationBase.extend = Backbone.Model.extend;
 
-    // Eager pair the models.
-    eagerPair: function() {}
-
-  };
-
-  RelationBase.extend = Backbone.Model.extend;
-
-  exports.RelationBase = RelationBase;
-
-});
-
-})(
-  typeof define === 'function' && define.amd ? define : function (factory) { factory(require, exports); }
-);
+exports.RelationBase = RelationBase;
