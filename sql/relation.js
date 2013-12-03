@@ -394,8 +394,9 @@ var pivotHelpers = {
       data[relatedData.key('otherKey')] = item;
     }
     var builder = this._builder(relatedData.joinTable());
-    if (options && options.transacting) {
-      builder.transacting(options.transacting);
+    if (options) {
+      if (options.transacting) builder.transacting(options.transacting);
+      if (options.debug) builder.debug();
     }
     var collection = this;
     if (method === 'delete') {
