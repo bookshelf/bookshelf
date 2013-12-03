@@ -13,6 +13,7 @@ var Sync = function(syncing, options) {
   this.query   = syncing.query();
   this.syncing = syncing.resetQuery();
   this.options = options;
+  if (options.debug) this.query.debug();
   if (options.transacting) this.query.transacting(options.transacting);
 };
 
