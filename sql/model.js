@@ -145,7 +145,8 @@ module.exports = ModelBase.extend({
       if (this.hasTimestamps) _.extend(attrs, this.timestamp(options));
 
       // Determine whether the model is new, based on whether the model has an `idAttribute` or not.
-      var method = options.method || (options.method = isNew ? 'insert' : 'update');
+      options.method = (options.method || (isNew ? 'insert' : 'update')).toLowerCase();
+      var method = options.method;
       var vals = attrs;
 
       // If the object is being created, we merge any defaults here
