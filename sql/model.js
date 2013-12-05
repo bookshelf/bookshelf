@@ -184,6 +184,8 @@ module.exports = ModelBase.extend({
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && resp) {
           this.attributes[this.idAttribute] = this[this.idAttribute] = resp[0];
+        } else if (method === 'update' && resp === 0) {
+          throw new Error('No rows were affected in the update, did you mean to pass the {insert: true} option?');
         }
 
         // In case we need to reference the `previousAttributes` for the this

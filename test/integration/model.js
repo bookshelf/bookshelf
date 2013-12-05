@@ -16,7 +16,7 @@ module.exports = function(Bookshelf) {
       first:  function() { return Promise.resolve({}); },
       select: function() { return Promise.resolve({}); },
       insert: function() { return Promise.resolve({}); },
-      update: function() { return Promise.resolve({}); },
+      update: function() { return Promise.resolve(1); },
       del:    function() { return Promise.resolve({}); }
     };
 
@@ -315,13 +315,23 @@ module.exports = function(Bookshelf) {
         });
       });
 
+      it('errors if the row was not updated', function() {
+
+        return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
+          throw new Error('This should not succeed');
+        }, function(err) {
+          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {insert: true} option?');
+        });
+
+      });
+
       it('does not constrain on the `id` during update unless defined', function() {
 
         var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
         var query = m.query();
         query.update = function() {
           equal(this.wheres.length, 1);
-          return Promise.resolve({});
+          return Promise.resolve(1);
         };
 
         return m.save(null, {method: 'update'}).then(function() {
@@ -346,7 +356,7 @@ module.exports = function(Bookshelf) {
         query.then = function(onFulfilled, onRejected) {
           equal(this.bindings.length, 2);
           equal(this.wheres.length, 1);
-          return Promise.resolve(this.toString()).then(onFulfilled, onRejected);
+          return Promise.resolve(1).then(onFulfilled, onRejected);
         };
 
         return user
