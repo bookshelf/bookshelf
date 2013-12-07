@@ -89,16 +89,15 @@ exports.Collection = CollectionBase.extend({
     return Helpers
       .saveConstraints(model, relatedData)
       .save(null, options)
-      .bind(this)
-      .then(function() {
+      .then(_.bind(function() {
         if (relatedData && (relatedData.type === 'belongsToMany' || relatedData.isThrough())) {
           return this.attach(model, options);
         }
-      })
-      .then(function() {
+      }, this))
+      .then(_.bind(function() {
         this.add(model, options);
         return model;
-      });
+      }, this));
   }),
 
   // Reset the query builder, called internally

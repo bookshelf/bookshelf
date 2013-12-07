@@ -47,7 +47,7 @@ module.exports = function(Bookshelf) {
   _.each(['load', 'fetch', 'save', 'destroy'], function(method) {
     wrapExec(Bookshelf.Model.prototype, method);
   });
-  _.each(['load', 'fetch'], function(method) {
+  _.each(['load', 'fetch', 'create'], function(method) {
     wrapExec(Bookshelf.Collection.prototype, method);
   });
 };
