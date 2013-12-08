@@ -1,6 +1,5 @@
 // Events
 // ---------------
-
 var Promise     = require('./promise');
 var Backbone    = require('backbone');
 var triggerThen = require('trigger-then');

@@ -8,6 +8,7 @@ var Backbone  = require('backbone');
 // All components that need to be referenced in this scope.
 var Events    = require('./events');
 var Promise   = require('./promise');
+var Helpers   = require('./helpers');
 var ModelBase = require('./model');
 
 var array  = [];
@@ -123,12 +124,6 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
     return this;
   },
 
-  // Prepare a model or hash of attributes to be added to this collection.
-  _prepareModel: function(attrs, options) {
-    if (attrs instanceof ModelBase) return attrs;
-    return new this.model(attrs, options);
-  },
-
   // Convenience method for map, returning a `Promise.all` promise.
   mapThen: function(iterator, context) {
     return Promise.all(this.map(iterator, context));
@@ -139,13 +134,13 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
     return Promise.all(this.invoke.apply(this, arguments));
   },
 
-  fetch: function() {
-    return Promise.rejected('The fetch method has not been implemented');
-  },
+  fetch: Promise.method(Helpers.methodMissing('Collection.fetch')),
 
-  _handleResponse: function() {},
-
-  _handleEager: function() {}
+  // Prepare a model or hash of attributes to be added to this collection.
+  _prepareModel: function(attrs, options) {
+    if (attrs instanceof ModelBase) return attrs;
+    return new this.model(attrs, options);
+  }
 
 });
 

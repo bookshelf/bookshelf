@@ -8,7 +8,7 @@ var CollectionBase = require('./collection');
 
 // Used internally, the `Relation` helps in simplifying the relationship building,
 // centralizing all logic dealing with type & option handling.
-var RelationBase = function(type, Target, options) {
+var RelationBase = module.exports = function(type, Target, options) {
   this.type = type;
   if (this.target = Target) {
     this.targetTableName = _.result(Target.prototype, 'tableName');
@@ -32,13 +32,8 @@ RelationBase.prototype = {
       return new this.target.prototype.model(data)._reset();
     }
     return new this.target(data)._reset();
-  },
-
-  // Eager pair the models.
-  eagerPair: function() {}
+  }
 
 };
 
 RelationBase.extend = require('simple-extend');
-
-module.exports = RelationBase;

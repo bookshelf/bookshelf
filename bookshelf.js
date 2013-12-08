@@ -94,6 +94,9 @@ _.extend(Bookshelf.prototype, Events, {
 
 });
 
+// All error types thrown by `Bookshelf`
+Bookshelf.Errors = require('./base/errors');
+
 // Alias to `new Bookshelf(opts)`.
 Bookshelf.initialize = function(knex) {
   return new this(knex);

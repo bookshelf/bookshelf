@@ -5,6 +5,7 @@ var Backbone = require('backbone');
 
 var Events   = require('./events');
 var Promise  = require('./promise');
+var Helpers  = require('./helpers');
 
 // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
 // a generic model base.
@@ -15,9 +16,8 @@ var modelOmitted = [
 ];
 
 // The "ModelBase" is similar to the 'Active Model' in Rails,
-// it defines a standard interface from which other objects may
-// inherit.
-var ModelBase = function(attributes, options) {
+// it defines a standard interface from which other objects may inherit.
+var ModelBase = module.exports = function(attributes, options) {
   var attrs = attributes || {};
   options || (options = {});
   this.attributes = Object.create(null);
@@ -144,9 +144,9 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
     return this;
   },
 
-  fetch: function() {},
+  fetch: Promise.method(Helpers.methodMissing('Model.fetch')),
 
-  save: function() {},
+  save: Promise.method(Helpers.methodMissing('Model.save')),
 
   // Destroy a model, calling a "delete" based on its `idAttribute`.
   // A "destroying" and "destroyed" are triggered on the model before
@@ -162,23 +162,17 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
       this.clear();
       return this.triggerThen('destroyed', this, resp, options);
     }).then(this._reset);
-  }),
-
-  _handleResponse: function() {},
-
-  _handleEager: function() {}
+  })
 
 });
 
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];
 
-ModelBase.extend  = require('simple-extend');
+ModelBase.extend = require('simple-extend');
 
 // Helper to mixin one or more additional items to the current prototype.
 ModelBase.include = function() {
   _.extend.apply(_, [this.prototype].concat(_.toArray(arguments)));
   return this;
 };
-
-module.exports = ModelBase;
