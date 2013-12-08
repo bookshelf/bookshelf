@@ -26,7 +26,8 @@
     "trigger-then": "~0.1.1",
     "knex": "~0.5.0",
     "bluebird": "~0.10.10-0",
-    "lodash": "~2.4.0"
+    "lodash": "~2.4.0",
+    "simple-extend": "~0.1.0"
   },
   "devDependencies": {
     "mocha": "~1.14.0",

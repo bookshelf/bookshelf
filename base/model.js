@@ -173,7 +173,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];
 
-ModelBase.extend  = Backbone.Model.extend;
+ModelBase.extend  = require('simple-extend');
 
 // Helper to mixin one or more additional items to the current prototype.
 ModelBase.include = function() {

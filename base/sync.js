@@ -45,6 +45,6 @@ BaseSync.prototype = {
 
 };
 
-BaseSync.extend = Backbone.Model.extend;
+BaseSync.extend = require('simple-extend');
 
 module.exports = BaseSync;

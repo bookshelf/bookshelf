@@ -152,7 +152,7 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];
 
-CollectionBase.extend = Backbone.Collection.extend;
+CollectionBase.extend = require('simple-extend');
 
 // Helper to mixin one or more additional items to the current prototype.
 CollectionBase.include = function() {

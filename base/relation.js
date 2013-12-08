@@ -39,6 +39,6 @@ RelationBase.prototype = {
 
 };
 
-RelationBase.extend = Backbone.Model.extend;
+RelationBase.extend = require('simple-extend');
 
 module.exports = RelationBase;

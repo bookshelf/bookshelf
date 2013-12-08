@@ -101,6 +101,6 @@ EagerBase.prototype = {
 
 var noop = function() {};
 
-EagerBase.extend = Backbone.Model.extend;
+EagerBase.extend = require('simple-extend');
 
 module.exports = EagerBase;
