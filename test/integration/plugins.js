@@ -20,7 +20,7 @@ module.exports = function(Bookshelf) {
         }
         });
 
-        _.each(['load', 'fetch', 'create'], function(method) {
+        _.each(['load', 'fetch', 'create', 'fetchOne'], function(method) {
         var fn = collection[method]();
         if (!_.isFunction(fn.then) || !_.isFunction(fn.exec)) {
           throw new Error('then and exec are not both defined');
