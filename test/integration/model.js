@@ -325,6 +325,10 @@ module.exports = function(Bookshelf) {
 
       });
 
+      it('should not error if updated row was not affected', function() {
+        return new Site({id: 5, name: 'Fifth site, explicity created'}).save();
+      });
+
       it('does not constrain on the `id` during update unless defined', function() {
 
         var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
