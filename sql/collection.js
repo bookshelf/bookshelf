@@ -19,7 +19,7 @@ module.exports = CollectionBase.extend({
 
   // Fetch the models for this collection, resetting the models
   // for the query when they arrive.
-  fetch: Promise.method(function(options) {
+  fetch: Promise.nodeMethod(function(options) {
     options = options ? _.clone(options) : {};
     var sync = this.sync(options)
       .select()
@@ -53,7 +53,7 @@ module.exports = CollectionBase.extend({
   }),
 
   // Fetches a single model from the collection, useful on related collections.
-  fetchOne: Promise.method(function(options) {
+  fetchOne: Promise.nodeMethod(function(options) {
     var model = new this.model;
     model._knex = this.query().clone();
     if (this.relatedData) model.relatedData = this.relatedData;
@@ -61,7 +61,7 @@ module.exports = CollectionBase.extend({
   }),
 
   // Eager loads relationships onto an already populated `Collection` instance.
-  load: Promise.method(function(relations, options) {
+  load: Promise.nodeMethod(function(relations, options) {
     _.isArray(relations) || (relations = [relations]);
     options = _.extend({}, options, {shallow: true, withRelated: relations});
     return new EagerRelation(this.models, this.toJSON(options), new this.model())
@@ -74,7 +74,7 @@ module.exports = CollectionBase.extend({
   // If the model is a relation, put the `foreignKey` and `fkValue` from the `relatedData`
   // hash into the inserted model. Also, if the model is a `manyToMany` relation,
   // automatically create the joining model upon insertion.
-  create: Promise.method(function(model, options) {
+  create: Promise.nodeMethod(function(model, options) {
     options = options ? _.clone(options) : {};
     var relatedData = this.relatedData;
     model = this._prepareModel(model, options);

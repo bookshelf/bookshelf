@@ -69,7 +69,7 @@ module.exports = ModelBase.extend({
   // Returns a deferred promise through the `Bookshelf.Sync`.
   // If `{require: true}` is set as an option, the fetch is considered
   // a failure if the model comes up blank.
-  fetch: Promise.method(function(options) {
+  fetch: Promise.nodeMethod(function(options) {
     options = options ? _.clone(options) : {};
 
     // Run the `first` call on the `sync` object to fetch a single model.
@@ -108,7 +108,7 @@ module.exports = ModelBase.extend({
   }),
 
   // Eager loads relationships onto an already populated `Model` instance.
-  load: Promise.method(function(relations, options) {
+  load: Promise.nodeMethod(function(relations, options) {
     return Promise.bind(this)
       .then(function() {
         return [this.toJSON({shallow: true})];
@@ -123,7 +123,7 @@ module.exports = ModelBase.extend({
   // a "creating" or "updating" event on the model, as well as a "saving" event,
   // to bind listeners for any necessary validation, logging, etc.
   // If an error is thrown during these events, the model will not be saved.
-  save: Promise.method(function(key, val, options) {
+  save: Promise.nodeMethod(function(key, val, options) {
     var attrs;
 
     // Handle both `"key", value` and `{key: value}` -style arguments.

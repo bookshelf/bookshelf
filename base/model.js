@@ -152,7 +152,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
   // A "destroying" and "destroyed" are triggered on the model before
   // and after the model is destroyed, respectively. If an error is thrown
   // during the "destroying" event, the model will not be destroyed.
-  destroy: Promise.method(function(options) {
+  destroy: Promise.nodeMethod(function(options) {
     options = options ? _.clone(options) : {};
     return Promise.bind(this).then(function() {
       return this.triggerThen('destroying', this, null, options);
