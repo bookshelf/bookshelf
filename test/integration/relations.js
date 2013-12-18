@@ -200,7 +200,7 @@ module.exports = function(Bookshelf) {
 
       describe('Pivot Tables', function() {
 
-        before(function() {
+        beforeEach(function() {
           return Promise.all([
             new Site({id: 1}).admins().detach(),
             new Site({id: 2}).admins().detach()
@@ -216,6 +216,63 @@ module.exports = function(Bookshelf) {
           var admin1_id;
 
           return Promise.all([admin1.save(), admin2.save()])
+            .then(function() {
+              admin1_id = admin1.id;
+              return Promise.all([
+                site1.related('admins').attach([admin1, admin2]),
+                site2.related('admins').attach(admin2)
+              ]);
+            })
+            .then(function(resp) {
+              expect(site1.related('admins')).to.have.length(2);
+              expect(site2.related('admins')).to.have.length(1);
+            }).then(function() {
+              return Promise.all([
+                new Site({id: 1}).related('admins').fetch().then(function(c) {
+                  c.each(function(m) {
+                    equal(m.hasChanged(), false);
+                  });
+                  equal(c.at(0).pivot.get('item'), 'test');
+                  equal(c.length, 2);
+                }),
+                new Site({id: 2}).related('admins').fetch().then(function(c) {
+                  equal(c.length, 1);
+                })
+              ]);
+            })
+            .then(function(resp) {
+              return Promise.all([
+                new Site({id: 1}).related('admins').fetch(),
+                new Site({id: 2}).related('admins').fetch()
+              ]);
+            })
+            .spread(function(admins1, admins2) {
+              return Promise.all([
+                admins1.detach(admin1_id).then(function(c) {
+                  expect(admins1).to.have.length(1);
+                  return c.fetch();
+                }).then(function(c) {
+                  equal(c.length, 1);
+                }),
+                admins2.detach().then(function(c) {
+                  expect(admins2).to.have.length(0);
+                  return c.fetch();
+                }).then(function(c) {
+                  equal(c.length, 0);
+                })
+              ]);
+            });
+        });
+
+        it('keeps the attach method for eager loaded relations, #120', function() {
+          var site1  = new Site({id: 1});
+          var site2  = new Site({id: 2});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+          var admin2 = new Admin({username: 'syncable', password: 'test'});
+          var admin1_id;
+
+          return Promise.all([admin1.save(), admin2.save(),
+            site1.fetch({withRelated: 'admins'}), site2.fetch({withRelated: 'admins'})])
             .then(function() {
               admin1_id = admin1.id;
               return Promise.all([
@@ -347,6 +404,14 @@ module.exports = function(Bookshelf) {
 
         it('eager loads belongsToMany `through`', function() {
           return new Authors().fetch({log: true, withRelated: 'blogs'});
+        });
+
+        it('keeps the attached methods on loaded collection', function() {
+          return new Authors().fetch({
+            withRelated: 'blogs'
+          }).then(function(authors) {
+            console.log(authors.at(0).related('blogs').attach);
+          });
         });
 
       });

@@ -251,6 +251,7 @@ exports.Relation = RelationBase.extend({
       var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
       var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
+      if (this.isJoined()) _.extend(relation, pivotHelpers);
     }
 
     // Now that related models have been successfully paired, update each with
