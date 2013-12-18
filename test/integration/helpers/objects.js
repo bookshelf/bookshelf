@@ -25,6 +25,11 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var Uuid = Bookshelf.Model.extend({
+    idAttribute: 'uuid',
+    tableName: 'uuid_test'
+  });
+
   var Site = Bookshelf.Model.extend({
     tableName: 'sites',
     defaults: {
@@ -254,7 +259,8 @@ module.exports = function(Bookshelf) {
       Customer: Customer,
       Settings: Settings,
       Instance: Instance,
-      Hostname: Hostname
+      Hostname: Hostname,
+      Uuid: Uuid
     },
     Collections: {
       Sites: Sites,

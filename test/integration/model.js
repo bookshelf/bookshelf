@@ -1,4 +1,6 @@
-var _ = require('lodash');
+var _    = require('lodash');
+var uuid = require('node-uuid');
+
 _.str = require('underscore.string');
 
 var Promise = global.testPromise;
@@ -393,6 +395,29 @@ module.exports = function(Bookshelf) {
           });
         });
         return user.save();
+      });
+
+      it('Allows setting a uuid, #24 #130', function() {
+        var uuidval = uuid.v4();
+        var SubSite = Models.Uuid.extend({
+          initialize: function() {
+            this.on('saving', this._generateId);
+          },
+          _generateId: function (model, attrs, options) {
+            if (model.isNew()) {
+              model.set(model.idAttribute, uuidval);
+            }
+          }
+        });
+        var subsite = new SubSite({name: 'testing'});
+        return subsite.save().then(function(model) {
+          expect(model.id).to.equal(uuidval);
+          expect(model.get('name')).to.equal('testing');
+        }).then(function() {
+          return new SubSite({uuid: uuidval}).fetch();
+        }).then(function(model) {
+          expect(model.get('name')).to.equal('testing');
+        });
       });
 
     });
