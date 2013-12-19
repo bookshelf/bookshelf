@@ -32,14 +32,14 @@ module.exports = CollectionBase.extend({
       })
 
       // Now, load all of the data onto the collection as necessary.
-      .tap(this._handleResponse);
+      .tap(handleResponse);
 
     // If the "withRelated" is specified, we also need to eager load all of the
     // data on the collection, as a side-effect, before we ultimately jump into the
     // next step of the collection. Since the `columns` are only relevant to the current
     // level, ensure those are omitted from the options.
     if (options.withRelated) {
-      sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
+      sync = sync.tap(handleEager(_.omit(options, 'columns')));
     }
 
     return sync.tap(function(response) {
@@ -116,22 +116,22 @@ module.exports = CollectionBase.extend({
   // Creates and returns a new `Bookshelf.Sync` instance.
   sync: function(options) {
     return new Sync(this, options);
-  },
-
-  // Handles the response data for the collection, returning from the collection's fetch call.
-  _handleResponse: function(response) {
-    var relatedData = this.relatedData;
-    this.set(response, {silent: true, parse: true}).invoke('_reset');
-    if (relatedData && relatedData.isJoined()) {
-      relatedData.parsePivot(this.models);
-    }
-  },
-
-  // Handle the related data loading on the collection.
-  _handleEager: function(options) {
-    return function(response) {
-      return new EagerRelation(this.models, response, new this.model()).fetch(options);
-    };
   }
 
 });
+
+// Handles the response data for the collection, returning from the collection's fetch call.
+function handleResponse(response) {
+  var relatedData = this.relatedData;
+  this.set(response, {silent: true, parse: true}).invoke('_reset');
+  if (relatedData && relatedData.isJoined()) {
+    relatedData.parsePivot(this.models);
+  }
+}
+
+// Handle the related data loading on the collection.
+function handleEager(options) {
+  return function(response) {
+    return new EagerRelation(this.models, response, new this.model()).fetch(options);
+  };
+}

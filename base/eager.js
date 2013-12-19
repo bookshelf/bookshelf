@@ -12,8 +12,8 @@ var Promise   = require('./promise');
 
 var EagerBase = function(parent, parentResponse, target) {
   this.parent = parent;
-  this.target = target;
   this.parentResponse = parentResponse;
+  this.target = target;
 };
 
 EagerBase.prototype = {
@@ -79,10 +79,12 @@ EagerBase.prototype = {
   // has a function that is called when running the query.
   prepWithRelated: function(withRelated) {
     if (!_.isArray(withRelated)) withRelated = [withRelated];
-    return _.reduce(withRelated, function(memo, item) {
-      _.isString(item) ? memo[item] = noop : _.extend(memo, item);
-      return memo;
-    }, {});
+    var obj = {};
+    for (var i = 0, l = withRelated.length; i < l; i++) {
+      var related = withRelated[i];
+      _.isString(related) ? obj[related] = noop : _.extend(obj, related);
+    }
+    return obj;
   },
 
   // Pushes each of the incoming models onto a new `related` array,

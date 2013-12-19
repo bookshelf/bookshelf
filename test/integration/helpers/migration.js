@@ -6,7 +6,7 @@ var drops = [
   'admins_sites', 'authors', 'authors_posts',
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
   'users', 'roles', 'photos', 'users_roles', 'info',
-  'Customer', 'Settings', 'hostnames', 'instances'
+  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test'
 ];
 
 module.exports = function(Bookshelf) {
@@ -138,6 +138,11 @@ module.exports = function(Bookshelf) {
 
       schema.createTable('instances', function(table){
         table.bigIncrements('id');
+        table.string('name');
+      }),
+
+      schema.createTable('uuid_test', function(table) {
+        table.uuid('uuid');
         table.string('name');
       })
 

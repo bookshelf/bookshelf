@@ -86,14 +86,14 @@ module.exports = ModelBase.extend({
       })
 
       // Now, load all of the data into the model as necessary.
-      .tap(this._handleResponse);
+      .tap(handleResponse);
 
     // If the "withRelated" is specified, we also need to eager load all of the
     // data on the model, as a side-effect, before we ultimately jump into the
     // next step of the model. Since the `columns` are only relevant to the current
     // level, ensure those are omitted from the options.
     if (options.withRelated) {
-      sync = sync.tap(this._handleEager(_.omit(options, 'columns')));
+      sync = sync.tap(handleEager(_.omit(options, 'columns')));
     }
 
     return sync.tap(function(response) {
@@ -113,7 +113,7 @@ module.exports = ModelBase.extend({
       .then(function() {
         return [this.toJSON({shallow: true})];
       })
-      .then(this._handleEager(_.extend({}, options, {
+      .then(handleEager(_.extend({}, options, {
         shallow: true,
         withRelated: _.isArray(relations) ? relations : [relations]
       }))).yield(this);
@@ -182,8 +182,8 @@ module.exports = ModelBase.extend({
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && resp) {
-          this.attributes[this.idAttribute] = this[this.idAttribute] = resp[0];
+        if (method === 'insert' && this.id == null) {
+          this.attributes[this.idAttribute] = this.id = resp[0];
         } else if (method === 'update' && resp === 0) {
           throw new Error('No rows were affected in the update, did you mean to pass the {insert: true} option?');
         }
@@ -225,24 +225,24 @@ module.exports = ModelBase.extend({
   _morphOneOrMany: function(Target, morphName, morphValue, type) {
     if (!morphName || !Target) throw new Error('The polymorphic `name` and `Target` are required.');
     return this._relation(type, Target, {morphName: morphName, morphValue: morphValue}).init(this);
-  },
-
-  // Handles the response data for the model, returning from the model's fetch call.
-  // Todo: {silent: true, parse: true}, for parity with collection#set
-  // need to check on Backbone's status there, ticket #2636
-  _handleResponse: function(response) {
-    var relatedData = this.relatedData;
-    this.set(this.parse(response[0]), {silent: true})._reset();
-    if (relatedData && relatedData.isJoined()) {
-      relatedData.parsePivot([this]);
-    }
-  },
-
-  // Handle the related data loading on the model.
-  _handleEager: function(options) {
-    return function(response) {
-      return new EagerRelation([this], response, this).fetch(options);
-    };
   }
 
 });
+
+// Handles the response data for the model, returning from the model's fetch call.
+// Todo: {silent: true, parse: true}, for parity with collection#set
+// need to check on Backbone's status there, ticket #2636
+function handleResponse(response) {
+  var relatedData = this.relatedData;
+  this.set(this.parse(response[0]), {silent: true})._reset();
+  if (relatedData && relatedData.isJoined()) {
+    relatedData.parsePivot([this]);
+  }
+}
+
+// Handle the related data loading on the model.
+function handleEager(options) {
+  return function(response) {
+    return new EagerRelation([this], response, this).fetch(options);
+  };
+}
