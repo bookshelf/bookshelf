@@ -25,8 +25,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.6.1",
-            "slug": "bookshelfjs-061"
+            "title": "Bookshelf.js 0.6.2",
+            "slug": "bookshelfjs-062"
           },
           "depth": 2
         }
@@ -417,8 +417,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Exec plugin",
-                "slug": "exec-plugin"
+                "title": "Exec plugin (deprecated)",
+                "slug": "exec-plugin-deprecated"
               },
               "depth": 2
             }
