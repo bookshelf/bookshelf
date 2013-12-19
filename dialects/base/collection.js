@@ -141,11 +141,7 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
 
   fetch: function() {
     return Promise.rejected('The fetch method has not been implemented');
-  },
-
-  _handleResponse: function() {},
-
-  _handleEager: function() {}
+  }
 
 });
 

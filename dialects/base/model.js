@@ -162,11 +162,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
       this.clear();
       return this.triggerThen('destroyed', this, resp, options);
     }).then(this._reset);
-  }),
-
-  _handleResponse: function() {},
-
-  _handleEager: function() {}
+  })
 
 });
 

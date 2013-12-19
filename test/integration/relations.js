@@ -406,14 +406,6 @@ module.exports = function(Bookshelf) {
           return new Authors().fetch({log: true, withRelated: 'blogs'});
         });
 
-        it('keeps the attached methods on loaded collection', function() {
-          return new Authors().fetch({
-            withRelated: 'blogs'
-          }).then(function(authors) {
-            console.log(authors.at(0).related('blogs').attach);
-          });
-        });
-
       });
 
     });
