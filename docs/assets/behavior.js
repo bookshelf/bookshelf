@@ -25,8 +25,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.5.7",
-            "slug": "bookshelfjs-057"
+            "title": "Bookshelf.js 0.6.2",
+            "slug": "bookshelfjs-062"
           },
           "depth": 2
         }
@@ -151,6 +151,22 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "depth": 2
                 }
               ]
+            }, {
+              "type": "file",
+              "data": {
+                "language": {
+                  "nameMatchers": [".js"],
+                  "pygmentsLexer": "javascript",
+                  "singleLineComment": ["//"],
+                  "name": "JavaScript"
+                },
+                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/promise.js",
+                "projectPath": "dialects/base/promise.js",
+                "targetPath": "dialects/base/promise",
+                "title": "promise"
+              },
+              "depth": 3,
+              "outline": []
             }, {
               "type": "file",
               "data": {
@@ -401,8 +417,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Exec plugin",
-                "slug": "exec-plugin"
+                "title": "Exec plugin (deprecated)",
+                "slug": "exec-plugin-deprecated"
               },
               "depth": 2
             }

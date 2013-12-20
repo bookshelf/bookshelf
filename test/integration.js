@@ -1,4 +1,4 @@
-var _        = require('underscore');
+var _        = require('lodash');
 
 module.exports = function(Bookshelf) {
 
@@ -63,7 +63,6 @@ module.exports = function(Bookshelf) {
       require('./integration/model')(bookshelf);
       require('./integration/collection')(bookshelf);
       require('./integration/relations')(bookshelf);
-      require('./integration/plugins')(bookshelf);
     });
 
   });

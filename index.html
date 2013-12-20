@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.5.7)</span>
+      Bookshelf.js <span class="version">(0.6.2)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -340,6 +340,7 @@
       <li>– <a href="#Model-format">format</a></li>
       <li>– <a href="#Model-parse">parse</a></li>
       <li>– <a href="#Model-toJSON">toJSON</a></li>
+      <li>– <a href="#Model-Backbone-Methods"><b>Other Backbone Methods (4)</b></a></li>
       <li>– <a href="#Model-Underscore-Methods"><b>Underscore Methods (6)</b></a></li>
       <li>– <a href="#Model-query">query</a></li>
       <li>– <a href="#Model-resetQuery">resetQuery</a></li>
@@ -434,7 +435,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.5.7 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.2 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -457,8 +458,8 @@
     <p>
       Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
       <a target="_blank" href="http://backbonejs.org">Backbone.js</a>,
-      <a target="_blank" href="http://underscorejs.org/">Underscore.js</a>,
-      <a target="_blank" href="https://github.com/cujojs/when">when.js</a>
+      <a target="_blank" href="http://lodash.com/">Lo-dash</a>,
+      <a target="_blank" href="https://github.com/petkaantonov/bluebird">bluebird</a>
       for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
       builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
       for crafting intelligent defaults for related key and table names.
@@ -498,6 +499,7 @@
 
 <pre>
 $ npm install knex --save
+$ npm install bookshelf --save
 
 # Then add one of the following:
 $ npm install mysql
@@ -728,10 +730,7 @@ var Television = Bookshelf.Model.extend({
       <b class="header">set</b><code>model.set(attributes, [options])</code>
       <br />
       Set a hash of attributes (one or many) on the model. If any of the attributes
-      change the model's state, a <tt>"change"</tt> event will be triggered.
-      Change events for specific attributes are also triggered, and you can
-      bind to those as well, for example: <tt>change:title</tt>, and
-      <tt>change:content</tt>. You may also pass individual keys and values.
+      change the model's state, a <tt>"change"</tt> event will be triggered. You may also pass individual keys and values.
     </p>
 
 <pre>
@@ -752,9 +751,7 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
-      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model
-      is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
-      event will be fired when a record is successfully retrieved.
+      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved.
     </p>
 
 <pre>
@@ -766,6 +763,12 @@ new Book({'ISBN-13': '9780440180296'})
     console.log(model.get('title'));
   });
 </pre>
+
+    <p class="warning">
+      If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
+      in the <tt>options</tt> for the fetch call, or use the <a href="#Model-query">query</a> method,
+      tapping into the knex <a href="http://knexjs.org/#Builder-column">column</a> method to specify which columns will be fetched.
+    </p>
 
     <p>
       The <tt>withRelated</tt> parameter may be specified to fetch the resource,
@@ -1176,9 +1179,9 @@ new Site({id: 1}).related('admins').attach([1, 2]);
 var admin1 = new Admin({username: 'user1', password: 'test'});
 var admin2 = new Admin({username: 'user2', password: 'test'});
 
-when.all([admin1.save(), admin2.save()])
+Promise.all([admin1.save(), admin2.save()])
   .then(function() {
-    return when.all([
+    return Promise.all([
       new Site({id: 1}).admins().attach([admin1, admin2]),
       new Site({id: 2}).admins().attach(admin2)
     ]);
@@ -1491,10 +1494,25 @@ console.log(JSON.stringify(artist));
 // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
 </pre>
 
+    <p id="Model-Backbone-Methods">
+      <b class="header">Additional Backbone Methods (4)</b>
+      <br />
+      Bookshelf also proxies to <b>Backbone.js</b> for more core Model methods
+      that aren't documented here. The Backbone documentation applies equally
+      for Bookshelf, and can be used to read more on these methods.
+    </p>
+
+    <ul>
+      <li><a target="_blank" href="http://backbonejs.org/#Model-escape">escape</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Model-has">has</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Model-unset">unset</a></li>
+      <li><a target="_blank" href="http://backbonejs.org/#Model-clear">clear</a></li>
+    </ul>
+
     <p id="Model-Underscore-Methods">
       <b class="header">Underscore Methods (6)</b>
       <br />
-      Bookshelf proxies to <b>Underscore.js</b> to provide 6 object functions
+      Bookshelf proxies to the <b>Underscore</b> implementation to provide 6 object functions
       on <b>Bookshelf.Model</b>. They aren't all documented here, but
       you can take a look at the Underscore documentation for the full details&hellip;
     </p>
@@ -1637,7 +1655,7 @@ modelB.isNew(); // false
 
     <p>
       Collections are ordered sets of models returned from the database,
-      which may be used with a full suite of <a href="#Collection-Underscore-Methods">Underscore.js methods</a>.
+      which may be used with a full suite of <a href="#Collection-Underscore-Methods">Underscore methods</a>.
     </p>
 
     <p id="Collection-extend">
@@ -1655,7 +1673,7 @@ modelB.isNew(); // false
     </p>
 
 <pre>
-var when = require('when');
+var Promise = require('bluebird');
 var Accounts = Bookshelf.Collection.extend({
   model: Account
 });
@@ -1665,7 +1683,7 @@ var accounts = Accounts.forge([
   {name: 'Person2'}
 ])
 
-when.all(accounts.invoke('save')).then(function() {
+Promise.all(accounts.invoke('save')).then(function() {
   // collection models should now be saved...
 });
 </pre>
@@ -1740,6 +1758,12 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       event will be fired when records are successfully retrieved.
     </p>
 
+    <p class="warning">
+      If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
+      in the <tt>options</tt> for the fetch call, or use the <a href="#Model-query">query</a> method,
+      tapping into the knex <a href="http://knexjs.org/#Builder-column">column</a> method to specify which columns will be fetched.
+    </p>
+
     <p id="Collection-fetchOne">
       <b class="header">fetchOne</b><code>collection.fetchOne([options])</code>
       <br />
@@ -1762,7 +1786,7 @@ new Site({id:1})
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
       <br />
-      Shortcut for calling <tt>when.all</tt> around a <tt>collection.map</tt> call, this will call the
+      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.map</tt> call, this will call the
       underscore <a href="http://underscorejs.org/#map">map</a> on each of the models in the collection,
       returning a promise which will be resolved with the array of fully settled responses from the map call.
     </p>
@@ -1784,7 +1808,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
     <p id="Collection-invokeThen">
       <b class="header">invokeThen</b><code>collection.invokeThen(method, args*)</code>
       <br />
-      Shortcut for calling <tt>when.all</tt> around a <tt>collection.invoke</tt>, this will delegate to the
+      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.invoke</tt>, this will delegate to the
       collection's <a href="http://underscorejs.org/#invoke">invoke</a> method, resolving the promise with an array
       of responses all async (and sync) behavior has settled. Useful for bulk saving or deleting models:
     </p>
@@ -1957,8 +1981,8 @@ collection
       <b class="header">Additional Backbone Methods (12)</b>
       <br />
       Bookshelf also proxies to <b>Backbone.js</b> for more core Collection methods
-      that aren't documented here The Backbone documentation
-      applies equally for Bookself, and can be used to read more on these methods.
+      that aren't documented here. The Backbone documentation
+      applies equally for Bookshelf, and can be used to read more on these methods.
     </p>
 
     <ul>
@@ -1979,9 +2003,7 @@ collection
     <p id="Collection-Underscore-Methods">
       <b class="header">Underscore Methods (28)</b>
       <br />
-      Just as with <b>Backbone</b>, Bookshelf proxies to <b>Underscore.js</b> to provide 28 iteration functions
-      on <b>Bookshelf.Collection</b>. They aren't all documented here, but
-      you can take a look at the Underscore documentation for the full details&hellip;
+      Just as with <b>Backbone</b>, Bookshelf proxies to the <b>Underscore</b> implementation to provide 28 iteration functions on <b>Bookshelf.Collection</b>. They aren't all documented here, but you can take a look at the Underscore documentation for the full details&hellip;
     </p>
 
     <ul class="small">
@@ -2105,7 +2127,7 @@ collection
     </p>
 
 <pre>
-var when = require('when');
+var Promise = require('bluebird');
 
 Bookshelf.transaction(function(t) {
 
@@ -2113,7 +2135,7 @@ Bookshelf.transaction(function(t) {
     .save(null, {transacting: t})
     .then(function(model) {
 
-      return when.all(_.map([
+      return Promise.all(_.map([
         {title: 'Canterbury Tales'},
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
@@ -2141,7 +2163,7 @@ Bookshelf.transaction(function(t) {
 
     <h2 id="faq">F.A.Q.</h2>
 
-    <p id="faq-debug">
+    <p id="faq-relation-loading">
       <b class="header">My relations don't seem to be loading, what's up?</b><br />
       Make sure you check that the type is correct for the initial parameters passed to the initial model
       being fetched. For example new <tt>Model({id: '1'}).load([relations...])</tt> will not return the same as
@@ -2151,12 +2173,10 @@ Bookshelf.transaction(function(t) {
       <tt>Model({id: '1'}).fetch({withRelated: [relations...]})</tt> should work just fine.
     </p>
 
-    <p id="faq-debug">
+    <p id="faq-callbacks">
       <b class="header">Can I use standard node.js style callbacks.</b><br />
-      Yes - you can call <tt>Bookshelf.plugin(require('bookshelf/plugins/exec'))</tt> after initializing a Bookshelf instance, and
-      any models/collections created from that point forward will contain both <tt>then</tt> and
-      <tt>exec</tt> methods, where the <tt>exec</tt> method takes the standard <tt>(err, result)</tt>
-      callback interface.
+      Yes - you can call <tt>.exec(function(err, resp) {</tt> on any "sync" method and
+      use the standard <tt>(err, result)</tt> style callback interface if you prefer.
     </p>
 
     <p id="faq-debug">
@@ -2166,6 +2186,19 @@ Bookshelf.transaction(function(t) {
       the various calls and see what all is going on behind the scenes. I'd recommend
       <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug
       code with <tt>debugger</tt> statements like you would in the browser.
+    </p>
+
+    <p>
+      Bookshelf uses it's own copy of the "bluebird" promise library, you can read up <a href="https://github.com/petkaantonov/bluebird#error-handling">here</a> for more on debugging these promises... but in short, adding:
+    </p>
+
+<pre>
+process.stderr.on('data', function(data) {
+  console.log(data);
+});
+</pre>
+
+    <p>At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
     </p>
 
     <p id="faq-tests">
@@ -2195,6 +2228,41 @@ Bookshelf.transaction(function(t) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.6.2</b> &mdash; <small><i>December 18, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.1...0.6.2">Diff</a><br />
+      <ul>
+        <li>Debug may now be passed as an option in any sync method, to log queries, including relations.</li>
+        <li>Save now triggers an error in updates with no affected rows. (#119)</li>
+        <li>The <tt>model.id</tt> attribute is only set on insert if it's empty. (#130)</li>
+        <li>Ensure eager loaded relations can use attach/detach. (#120)</li>
+      </ul>
+    </p>
+
+    <p>
+      <b class="header">0.6.1</b> &mdash; <small><i>November 26, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.0...0.6.1">Diff</a><br />
+      Fixes bug with promise code and saving event firing, where promises are not properly resolved with ".all" during saving events.
+    </p>
+
+    <p>
+      <b class="header">0.6.0</b> &mdash; <small><i>November 25, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.8...0.6.0">Diff</a><br />
+      <ul>
+        <li>Updating dependency to knex.js 0.5.x</li>
+        <li>Switched from when.js to <a href="https://github.com/petkaantonov/bluebird">bluebird</a> for promise implementation, with shim for backward compatibility.</li>
+        <li>Switched from underscore to lodash, for semver reliability.</li>
+      </ul>
+    </p>
+
+    <p>
+      <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />
+      <ul>
+        <li>Parse models after all relations have been eager loaded, for appropriate column name matching (thanks <a href="https://github.com/benesch">@benesch</a>) (#97)</li>
+        <li>Specify table for <tt>withRelated</tt> fetches to prevent column
+          naming conflicts (#96).</li>
+        <li>Fix for polymorphic relation loading (#95).</li>
+        <li>Other documentation tweaks and other internal code cleanup.</li>
+      </ul>
+    </p>
 
     <p>
       <b class="header">0.5.7</b> &mdash; <small><i>October 11, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.6...0.5.7">Diff</a><br />
@@ -2270,7 +2338,7 @@ Bookshelf.transaction(function(t) {
 
         <li>
           Added <a href="#Collection-invokeThen">invokeThen</a> and <a href="#Collection-mapThen">mapThen</a> as convenience helpers for
-          <tt>when.all(collection.invoke(method, args*))</tt> and <tt>when.all(collection.map(method, iterator, [context]))</tt>, respectively.
+          <tt>Promise.all(collection.invoke(method, args*))</tt> and <tt>Promise.all(collection.map(method, iterator, [context]))</tt>, respectively.
         </li>
 
         <li>Added a <tt>Bookshelf.plugin</tt> method, for a standard way to extend Bookshelf instances.</li>

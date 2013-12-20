@@ -1,7 +1,7 @@
 var cwd           = process.cwd();
 var isDev         = parseInt(process.env.BOOKSHELF_DEV, 10);
 
-var _             = require('underscore');
+var _             = require('lodash');
 
 var Ctors = {};
 

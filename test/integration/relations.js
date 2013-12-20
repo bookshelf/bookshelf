@@ -1,3 +1,4 @@
+var _         = require('lodash');
 var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
@@ -199,7 +200,7 @@ module.exports = function(Bookshelf) {
 
       describe('Pivot Tables', function() {
 
-        before(function() {
+        beforeEach(function() {
           return Promise.all([
             new Site({id: 1}).admins().detach(),
             new Site({id: 2}).admins().detach()
@@ -215,6 +216,63 @@ module.exports = function(Bookshelf) {
           var admin1_id;
 
           return Promise.all([admin1.save(), admin2.save()])
+            .then(function() {
+              admin1_id = admin1.id;
+              return Promise.all([
+                site1.related('admins').attach([admin1, admin2]),
+                site2.related('admins').attach(admin2)
+              ]);
+            })
+            .then(function(resp) {
+              expect(site1.related('admins')).to.have.length(2);
+              expect(site2.related('admins')).to.have.length(1);
+            }).then(function() {
+              return Promise.all([
+                new Site({id: 1}).related('admins').fetch().then(function(c) {
+                  c.each(function(m) {
+                    equal(m.hasChanged(), false);
+                  });
+                  equal(c.at(0).pivot.get('item'), 'test');
+                  equal(c.length, 2);
+                }),
+                new Site({id: 2}).related('admins').fetch().then(function(c) {
+                  equal(c.length, 1);
+                })
+              ]);
+            })
+            .then(function(resp) {
+              return Promise.all([
+                new Site({id: 1}).related('admins').fetch(),
+                new Site({id: 2}).related('admins').fetch()
+              ]);
+            })
+            .spread(function(admins1, admins2) {
+              return Promise.all([
+                admins1.detach(admin1_id).then(function(c) {
+                  expect(admins1).to.have.length(1);
+                  return c.fetch();
+                }).then(function(c) {
+                  equal(c.length, 1);
+                }),
+                admins2.detach().then(function(c) {
+                  expect(admins2).to.have.length(0);
+                  return c.fetch();
+                }).then(function(c) {
+                  equal(c.length, 0);
+                })
+              ]);
+            });
+        });
+
+        it('keeps the attach method for eager loaded relations, #120', function() {
+          var site1  = new Site({id: 1});
+          var site2  = new Site({id: 2});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+          var admin2 = new Admin({username: 'syncable', password: 'test'});
+          var admin1_id;
+
+          return Promise.all([admin1.save(), admin2.save(),
+            site1.fetch({withRelated: 'admins'}), site2.fetch({withRelated: 'admins'})])
             .then(function() {
               admin1_id = admin1.id;
               return Promise.all([
@@ -452,6 +510,41 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('Issue #97 - Eager loading on parsed models', function() {
+
+      it('correctly pairs eager-loaded models before parse()', function () {
+        return Promise.all([
+          new Blog({id: 1}).related('parsedPosts').fetch(),
+          new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+        ]).then(function (data) {
+          var parsedPosts = data[0], blog = data[1];
+          expect(blog.related('parsedPosts').length).to.equal(parsedPosts.length);
+        });
+      });
+
+      it('parses eager-loaded models after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var attrs = blog.related('parsedPosts').at(0).attributes;
+            Object.keys(attrs).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+      it('parses eager-loaded morphTo relations (model)', function () {
+        return new Photos().fetch({ withRelated: 'imageableParsed.meta', log: true })
+          .then(function (photos) {
+            photos.forEach(function(photo) {
+              var attrs = photo.related('imageableParsed').attributes;
+              Object.keys(attrs).forEach(function (key) {
+                expect(/_parsed$/.test(key)).to.be.true;
+              });
+            });
+          });
+      });
+
+    });
 
   });
 

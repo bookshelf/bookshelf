@@ -1,4 +1,6 @@
-var _ = require('underscore');
+var _    = require('lodash');
+var uuid = require('node-uuid');
+
 _.str = require('underscore.string');
 
 var Promise = global.testPromise;
@@ -16,7 +18,7 @@ module.exports = function(Bookshelf) {
       first:  function() { return Promise.resolve({}); },
       select: function() { return Promise.resolve({}); },
       insert: function() { return Promise.resolve({}); },
-      update: function() { return Promise.resolve({}); },
+      update: function() { return Promise.resolve(1); },
       del:    function() { return Promise.resolve({}); }
     };
 
@@ -315,13 +317,27 @@ module.exports = function(Bookshelf) {
         });
       });
 
+      it('errors if the row was not updated', function() {
+
+        return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
+          throw new Error('This should not succeed');
+        }, function(err) {
+          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {insert: true} option?');
+        });
+
+      });
+
+      it('should not error if updated row was not affected', function() {
+        return new Site({id: 5, name: 'Fifth site, explicity created'}).save();
+      });
+
       it('does not constrain on the `id` during update unless defined', function() {
 
         var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
         var query = m.query();
         query.update = function() {
           equal(this.wheres.length, 1);
-          return Promise.resolve({});
+          return Promise.resolve(1);
         };
 
         return m.save(null, {method: 'update'}).then(function() {
@@ -346,7 +362,7 @@ module.exports = function(Bookshelf) {
         query.then = function(onFulfilled, onRejected) {
           equal(this.bindings.length, 2);
           equal(this.wheres.length, 1);
-          return Promise.resolve(this.toString()).then(onFulfilled, onRejected);
+          return Promise.resolve(1).then(onFulfilled, onRejected);
         };
 
         return user
@@ -357,6 +373,51 @@ module.exports = function(Bookshelf) {
             equal(model.get('first_name'), 'Testing');
           });
 
+      });
+
+      it('fires saving and creating and then saves', function() {
+        var user   = new Bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
+        var query  = user.query();
+        var events = 0;
+        user.sync  = function() {
+          return _.extend(stubSync, {
+            insert: function() {
+              equal(events, 2);
+              return Promise.resolve({});
+            }
+          });
+        };
+        user.on('creating saving updating', function() {
+          return Promise.resolve().then(function() {
+            return Promise.resolve().then(function() {
+              events++;
+            });
+          });
+        });
+        return user.save();
+      });
+
+      it('Allows setting a uuid, #24 #130', function() {
+        var uuidval = uuid.v4();
+        var SubSite = Models.Uuid.extend({
+          initialize: function() {
+            this.on('saving', this._generateId);
+          },
+          _generateId: function (model, attrs, options) {
+            if (model.isNew()) {
+              model.set(model.idAttribute, uuidval);
+            }
+          }
+        });
+        var subsite = new SubSite({name: 'testing'});
+        return subsite.save().then(function(model) {
+          expect(model.id).to.equal(uuidval);
+          expect(model.get('name')).to.equal('testing');
+        }).then(function() {
+          return new SubSite({uuid: uuidval}).fetch();
+        }).then(function(model) {
+          expect(model.get('name')).to.equal('testing');
+        });
       });
 
     });
