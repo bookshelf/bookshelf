@@ -348,6 +348,11 @@ var pivotHelpers = {
   detach: function(ids, options) {
     return this._handler('delete', ids, options);
   },
+  
+  // Update an existing relation's pivot table entry.
+  update: function(ids, options) {
+    return this._handler('update', ids, options);
+  },
 
   // Selects any additional columns on the pivot table,
   // taking a hash of columns which specifies the pivot
@@ -408,6 +413,26 @@ var pivotHelpers = {
         }
       });
     }
+    if (method === 'update') {
+      var where = {};
+      var otherKey = relatedData.key('otherKey');
+      var foreignKey = relatedData.key('foreignKey');
+
+      if (data[otherKey]) {
+        where[otherKey] = data[otherKey];
+      } else if(data.id) {
+        where[otherKey] = data.id;
+      }
+
+      where[foreignKey] = relatedData.parentFk;
+
+      delete data.id;
+      delete data[otherKey];
+      delete data[foreignKey];
+
+      return builder.where(where).update(data);
+    }
+
     return builder.insert(data).then(function() {
       collection.add(item);
     });
