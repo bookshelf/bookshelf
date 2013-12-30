@@ -1317,7 +1317,7 @@ var Photo = Bookshelf.Model.extend({
 
 <pre>
 new Photo({id: 1}).fetch({
-  withRelated: ['accounts']
+  withRelated: ['account']
 }).then(function(photo) {
   if (photo) {
     var account = photo.related('account');
