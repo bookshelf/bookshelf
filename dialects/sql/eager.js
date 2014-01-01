@@ -23,7 +23,7 @@ var EagerRelation = exports.EagerRelation = EagerBase.extend({
     options.beforeFn.call(handled, handled.query());
 
     return handled
-      .sync(_.extend({}, options, {parentResponse: this.parentResponse}))
+      .sync(_.extend(options, {parentResponse: this.parentResponse}))
       .select()
       .tap(eagerLoadHelper(this, relationName, handled, options));
   }),
