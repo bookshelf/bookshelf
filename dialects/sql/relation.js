@@ -439,7 +439,7 @@ var pivotHelpers = {
 
       return builder.where(where).update(data).then(function (numUpdated) {
         if (options.require && options.require === true && numUpdated === 0) {
-          throw new Error('No rows where updated');
+          throw new Error('No rows were updated');
         }
 
         return numUpdated;
