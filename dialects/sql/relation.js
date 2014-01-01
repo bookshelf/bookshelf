@@ -348,10 +348,12 @@ var pivotHelpers = {
   detach: function(ids, options) {
     return this._handler('delete', ids, options);
   },
-  
+
   // Update an existing relation's pivot table entry.
-  update: function(ids, options) {
-    return this._handler('update', ids, options);
+  updatePivot: function(data, options, updateWhere) {
+    options = options || {};
+    options.updateWhere = updateWhere;
+    return this._handler('update', data, options);
   },
 
   // Selects any additional columns on the pivot table,
@@ -417,6 +419,7 @@ var pivotHelpers = {
       var where = {};
       var otherKey = relatedData.key('otherKey');
       var foreignKey = relatedData.key('foreignKey');
+      var updateWhere = options.updateWhere || {};
 
       if (data[otherKey]) {
         where[otherKey] = data[otherKey];
@@ -430,7 +433,13 @@ var pivotHelpers = {
       delete data[otherKey];
       delete data[foreignKey];
 
-      return builder.where(where).update(data);
+      for (var opt in updateWhere) {
+        builder = builder[opt].apply(builder, updateWhere[opt]);
+      }
+
+      return builder.where(where).update(data).then(function (numUpdated) {
+        return numUpdated;
+      });
     }
 
     return builder.insert(data).then(function() {
