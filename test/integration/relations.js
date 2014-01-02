@@ -265,6 +265,77 @@ module.exports = function(Bookshelf) {
         });
 
       });
+      
+      describe('Updating pivot tables with `updatePivot`', function () {
+        var admin1_id;
+        var admin2_id;
+
+        before(function () {
+          var admin1 = new Admin({username: 'updatetest', password: 'test'});
+          var admin2 = new Admin({username: 'updatetest2', password: 'test'});
+          return Promise.all([admin1.save(),admin2.save()])
+          .then(function (admin) {
+            admin1_id = admin1.id;
+            admin2_id = admin2.id;
+            return (new Site({id: 1})).related('admins').attach([admin1, admin2]);
+          });
+        });
+
+        after(function () {
+          return new Site({id: 1}).admins().detach();
+        });
+
+        it('updates a single matching row inside the pivot table if an `id` is passed with the data', function() {
+          var site1  = new Site({id: 1});
+          return site1.admins()
+          .updatePivot({id: admin1_id, item: 'testvalue'})
+          .then(function (relation) {
+            return relation.withPivot(['item']).fetch().then(function (col) {
+              equal(col.get(admin1_id).pivot.get('item'), 'testvalue');
+              equal(col.get(admin2_id).pivot.get('item'), 'test');
+            });
+          });
+        });
+
+        it('updates all rows inside the pivot table belonging to the current model, if no `id` is passed with the data', function() {
+          var site1  = new Site({id: 1});
+          return site1.admins()
+          .updatePivot({item: 'allupdated'})
+          .then(function (relation) {
+            return relation.withPivot(['item']).fetch().then(function (col) {
+              equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
+              equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
+            });
+          });
+
+        });
+
+        it('updates all rows, which match the passed in where-criterias', function() {
+          var site1  = new Site({id: 1});
+          return site1.admins()
+          .updatePivot({item: 'anotherupdate'}, null, {whereIn: ['admin_id', [admin1_id]]})
+          .then(function (relation) {
+            return relation.withPivot(['item']).fetch().then(function (col) {
+              equal(col.get(admin1_id).pivot.get('item'), 'anotherupdate');
+              equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
+            });
+          });
+
+        });
+
+        it('throws an error if no columns are updated and `require: true` is passed as option', function() {
+          // non-existent site
+          return (new Site({id: 99999})).admins()
+          .updatePivot({'item': 'testvalue'}, {require: true})
+          .then(function (relation) {
+            throw new Error('this should not happen');
+          }).catch(function (err) {
+            expect(err).to.be.ok;
+            expect(err).to.be.an.instanceof(Error);
+          });
+        });
+
+      });
 
       describe('Custom foreignKey & otherKey', function() {
 
