@@ -534,6 +534,28 @@ module.exports = function(Bookshelf) {
         return m.save({item: 'test'}, {method: 'update'});
       });
 
+      it('will accept a falsy value as an option for created and ignore it', function() {
+        var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(_.isDate(this.get('createdAt')), true);
+          equal(_.isDate(this.get('updatedAt')), false);
+          return stubSync;
+        };
+        return m.save({item: 'test'});
+      });
+
+      it('will accept a falsy value as an option for updated and ignore it', function() {
+        var m = new Bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(_.isDate(this.get('updatedAt')), true);
+          equal(_.isDate(this.get('createdAt')), false);
+          return stubSync;
+        };
+        return m.save({item: 'test'});
+      });
+
     });
 
     describe('timestamp', function() {
