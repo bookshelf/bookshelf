@@ -139,6 +139,24 @@ module.exports = function (bookshelf) {
       m.set('firstName', 'Joe');
       equal(m.get('firstName'), 'Joe');
     });
+    
+    it('works fine with `underscore` methods - #170', function () {
+       var m = new (bookshelf.Model.extend({
+        outputVirtuals: true,
+        virtuals: {
+          fullName: function() {
+              return this.get('firstName') + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      deepEqual(m.keys(), ['firstName', 'lastName', 'fullName']);
+      deepEqual(m.values(), ['Joe', 'Shmoe', 'Joe Shmoe']);
+      deepEqual(m.pairs(), [['firstName', 'Joe'], ['lastName', 'Shmoe'], ['fullName', 'Joe Shmoe']]);
+      deepEqual(m.invert(), {'Joe': 'firstName', 'Shmoe': 'lastName','Joe Shmoe': 'fullName'});
+      deepEqual(m.pick('fullName'), {'fullName': 'Joe Shmoe'});
+      deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
+    });
 
   });
 };
