@@ -536,6 +536,25 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('visibility', function () {
+
+      it('should only serialize properties we have set to visible', function() {
+        var m = new Bookshelf.Model({id: 1, test: 'hello', test2: 'world'}, {visible: ['test', 'test2']});
+        deepEqual(m.toJSON(), {test: 'hello', test2: 'world'});
+      });
+
+      it('should serialize all properties except the ones we have hidden', function () {
+        var m = new Bookshelf.Model({id: 1, test: 'hello', test2: 'world'}, {hidden: ['test', 'test2']});
+        deepEqual(m.toJSON(), {id: 1});
+      });
+
+      it('should resort to hidden by default if both are provided', function () {
+        var m = new Bookshelf.Model({id: 1, test: 'hello', test2: 'world'}, {hidden: ['test'], visible: ['test']});
+        deepEqual(m.toJSON(), {id: 1, test2: 'world' });
+      });
+
+    });
+
     describe('timestamp', function() {
 
       it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function() {

@@ -79,7 +79,12 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
   // along with the `toJSON` value of any relations,
   // unless `{shallow: true}` is passed in the `options`.
   toJSON: function(options) {
-    var attrs = _.extend({}, this.attributes);
+    // Check if the developer intends to show/hide certain attributes from serialization.
+    var attrs =
+      this.hidden ? _.omit(this.attributes, this.hidden) :
+      this.visible ? _.pick(this.attributes, this.visible) :
+      _.extend({}, this.attributes);
+
     if (options && options.shallow) return attrs;
     var relations = this.relations;
     for (var key in relations) {
@@ -167,7 +172,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
 });
 
 // List of attributes attached directly from the `options` passed to the constructor.
-var modelProps = ['tableName', 'hasTimestamps'];
+var modelProps = ['tableName', 'hasTimestamps', 'hidden', 'visible'];
 
 ModelBase.extend  = Backbone.Model.extend;
 
