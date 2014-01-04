@@ -5,6 +5,8 @@ module.exports = function (Bookshelf) {
   var proto     = Bookshelf.Model.prototype;
 
   var Model = Bookshelf.Model.extend({
+    outputVirtuals: true,
+
     // If virtual properties have been defined they will be created
     // as simple getters on the model during `initialize`
     initialize: function (attributes, options) {
@@ -48,9 +50,10 @@ module.exports = function (Bookshelf) {
 
       if (includeVirtuals && includeVirtualsOpts) {
         var virtuals = this.virtuals;
+        var getter;
         if (_.isObject(virtuals)) {
-          for(var func in virtuals) {
-            attrs[func] = virtuals[func].call(this);
+          for(var virtualName in virtuals) {
+            attrs[virtualName] =  virtuals[virtualName].get ? virtuals[virtualName].get.call(this) : virtuals[virtualName].call(this);
           }
         }
       }
