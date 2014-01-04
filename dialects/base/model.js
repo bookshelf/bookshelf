@@ -199,7 +199,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
 });
 
 // List of attributes attached directly from the `options` passed to the constructor.
-var modelProps = ['tableName', 'hasTimestamps'];
+var modelProps = ['tableName', 'hasTimestamps', 'virtualsInJSON'];
 
 ModelBase.extend  = Backbone.Model.extend;
 
