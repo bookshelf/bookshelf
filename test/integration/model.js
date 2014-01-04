@@ -185,6 +185,102 @@ module.exports = function(Bookshelf) {
       });
     });
 
+    describe('virtuals', function () {
+      
+      it('allow to create virtual properties on the model', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+        equal(m.fullName, 'Joe Shmoe');
+      });
+
+      it('are included in the `toJSON` result, if `virtualsInJSON` is set to `true` on the model', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtualsInJSON: true,
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+      });
+
+      it('are not included in the `toJSON` result, if `virtualsInJSON` is set to `false` or is not defined on the model', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtualsInJSON: false,
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+
+      it('are included in the `toJSON` result, if `virtualsInJSON` is set to `false` but `virtuals: true` is set in the `options` for `toJSON`', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtualsInJSON: false,
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+        var json = m.toJSON({virtuals: true});
+        deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+
+      it('are not included in the `toJSON` result, if `virtualsInJSON` is set to `true` but `virtuals: false` is set in the `options` for `toJSON`', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtualsInJSON: true,
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+        var json = m.toJSON({virtuals: false});
+        deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+      
+      it('are not included in the `toJSON` result, if `virtualsInJSON: false` is passed as `options` to the model constructor', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'}, {virtualsInJSON: false});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+
+      it('are included in the `toJSON` result, if `virtualsInJSON: true` is passed as `options` to the model constructor', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'}, {virtualsInJSON: true});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+      });
+    });
+    
     describe('parse', function() {
 
       var ParsedSite = Models.Site.extend({
