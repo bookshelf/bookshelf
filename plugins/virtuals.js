@@ -15,10 +15,20 @@ module.exports = function (Bookshelf) {
 
       var virtuals = this.virtuals;
       if (_.isObject(virtuals)) {
-        for(var func in virtuals) {
-          Object.defineProperty(this, func, {
+        for(var virtualName in virtuals) {
+          var getter, setter;
+
+          if (virtuals[virtualName].get) {
+            getter = virtuals[virtualName].get;
+            setter = virtuals[virtualName].set ? virtuals[virtualName].set : undefined;
+          } else {
+            getter = virtuals[virtualName];
+          }
+
+          Object.defineProperty(this, virtualName, {
             enumerable: true,
-            get: virtuals[func],
+            get: getter,
+            set: setter
           });
         }
       }
@@ -49,14 +59,26 @@ module.exports = function (Bookshelf) {
     },
 
     // Allow virtuals to be fetched like normal properties
-    get: function(attr) {
+    get: function (attr) {
       var virtuals = this.virtuals;
       if (virtuals[attr]) {
-        return virtuals[attr].call(this);
+        return virtuals[attr].get ? virtuals[attr].get.call(this) : virtuals[attr].call(this);
       }
 
       return Backbone.Model.prototype.get.apply(this, arguments);
     },
+
+    // Allow virtuals to be set like normal properties
+    set: function (key, val, options) {
+      if (key == null) return this;
+      var virtual = this.virtuals[key];
+      if (virtual && virtual.set) {
+        virtual.set.call(this, val);
+        return this;
+      }
+
+      return proto.set.apply(this, arguments);
+    }
   });
 
   Bookshelf.Model = Model;
