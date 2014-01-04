@@ -2,6 +2,31 @@ module.exports = function (Bookshelf) {
   "use strict";
   var _         = require('lodash');
   var proto     = Bookshelf.Model.prototype;
+  
+  function getVirtual(model, virtualName) {
+    var virtuals = _.isObject(model.virtuals) ? model.virtuals : {};
+    
+    if (typeof virtuals[virtualName] === 'undefined') {
+      return undefined;
+    }
+
+    return virtuals[virtualName].get ? virtuals[virtualName].get.call(model) : virtuals[virtualName].call(model);
+  }
+
+  function getVirtuals(model) {
+    if (!_.isObject(model.virtuals)) {
+      return {};
+    }
+
+    var attrs = {};
+    var virtuals = model.virtuals;
+
+    for (var virtualName in virtuals) {
+      attrs[virtualName] = getVirtual(model, virtualName);
+    }
+
+    return attrs;
+  }
 
   var Model = Bookshelf.Model.extend({
     outputVirtuals: true,
@@ -46,13 +71,7 @@ module.exports = function (Bookshelf) {
       includeVirtualsOpts = _.isBoolean(includeVirtualsOpts) ? includeVirtualsOpts : includeVirtuals;
 
       if (includeVirtuals && includeVirtualsOpts) {
-        var virtuals = this.virtuals;
-        var getter;
-        if (_.isObject(virtuals)) {
-          for(var virtualName in virtuals) {
-            attrs[virtualName] =  virtuals[virtualName].get ? virtuals[virtualName].get.call(this) : virtuals[virtualName].call(this);
-          }
-        }
+        attrs = _.merge(attrs, getVirtuals(this));
       }
 
       return attrs;
@@ -61,8 +80,8 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
       var virtuals = this.virtuals;
-      if (virtuals && virtuals[attr]) {
-        return virtuals[attr].get ? virtuals[attr].get.call(this) : virtuals[attr].call(this);
+      if (_.isObject(virtuals) && virtuals[attr]) {
+        return getVirtual(this, attr);
       }
 
       return proto.get.apply(this, arguments);
@@ -81,6 +100,26 @@ module.exports = function (Bookshelf) {
 
       return proto.set.apply(this, arguments);
     }
+  });
+  
+  // Underscore methods that we want to implement on the Model.
+  var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+
+  // Mix in each Underscore method as a proxy to `Model#attributes`.
+  _.each(modelMethods, function(method) {
+    Model.prototype[method] = function() {
+
+      if (!_.isObject(this.virtuals)) {
+        return proto[method].apply(this, arguments);
+      }
+
+      var args = _.toArray(arguments);
+      var virtuals = getVirtuals(this);
+
+      args.unshift(_.merge({}, this.attributes, virtuals));
+
+      return _[method].apply(_, args);
+    };
   });
 
   Bookshelf.Model = Model;
