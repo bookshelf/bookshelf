@@ -319,6 +319,7 @@
       <li>– <a href="#Model-get">get</a></li>
       <li>– <a href="#Model-fetch">fetch</a></li>
       <li>– <a href="#Model-load">load</a></li>
+      <li>– <a href="#Model-virtuals">virtuals</a></li>
       <li><b><a href="#Model-relation-types">Relation Types:</a></b></li>
       <li>– <a href="#Model-hasOne">hasOne</a></li>
       <li>– <a href="#Model-hasMany">hasMany</a></li>
@@ -825,6 +826,41 @@ new Posts().fetch().then(function(collection) {
     {tags: [...]}, {tags: [...]}
   ]
 }
+</pre>
+
+    <p id="Model-virtuals">
+      <b class="header">virtuals</b><code>model.virtuals</code>
+      <br />
+      The <b>virtuals</b> property can hold an object containing virtual property getters.
+      These properties are used to compute virtual fields on the fly. By default they are not included
+      in the result of a <tt>toJSON</tt> call, but can be by setting <tt>virtualsInJSON: true</tt>
+      while extending the model, passing <tt>{virtuals: true}</tt> to the <tt>toJSON</tt> method or by
+      passing <tt>{virtualsInJSON: true}</tt> with the <tt>options</tt> object to the constructor function.
+    </p>
+    <p>
+      Equally they can be omitted from the <tt>toJSON</tt> result, by passing <tt>{virtuals: false}</tt> to the <tt>toJSON</tt>
+      method or as <tt>options</tt> to the constructor function. The argument passed in to <tt>toJSON</tt>  will always override the
+      global config, so it is possible to define <tt>virtualsInJSON: true</tt> on the model and have <tt>virtuals</tt> included,
+      but exclude them for specific calls to <tt>toJSON</tt>.
+    </p>
+
+<pre>
+var User = Bookshelf.Model.extend({
+  tableName: 'users',
+  virtualsInJSON: true,
+  virtuals: {
+    fullName: function() {
+        return this.get('firstName') + ' ' + this.get('lastName');
+    }
+  }
+});
+
+var user = User.forge({firstName: 'Joe', lastName: 'Shmoe'});
+console.log(user.fullName === 'Joe Shmoe'); // => true
+
+var json,
+json = user.toJSON(); // will contain key `fullName` with value 'Joe Shmoe'
+json = user.toJSON({virtuals: false}); // will not contain key `fullName`
 </pre>
 
     <h3 id="Model-relation-types">Relation Types:</h3>
