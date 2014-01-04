@@ -82,6 +82,27 @@ module.exports = function (Bookshelf) {
       return proto.set.apply(this, arguments);
     }
   });
+  
+  var slice = [].slice;
+  var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
 
+  // override the `underscore` methods to work with the virtuals
+  _.each(modelMethods, function(method) {
+    Model.prototype[method] = function() {
+      var args = slice.call(arguments);
+      var attrs = _.clone(this.attributes);
+      var virtuals = this.virtuals;
+
+      if (virtuals) {
+        for (var virtualName in virtuals) {
+          attrs[virtualName] = virtuals[virtualName].get ? virtuals[virtualName].get.call(this) : virtuals[virtualName].call(this);
+        }
+      }
+
+      args.unshift(attrs);
+      return _[method].apply(_, args);
+    };
+  });
+  
   Bookshelf.Model = Model;
 };
