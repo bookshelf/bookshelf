@@ -110,7 +110,7 @@ module.exports = function (Bookshelf) {
     Model.prototype[method] = function() {
 
       if (!_.isObject(this.virtuals)) {
-        return Bookshelf.Model.prototype[method].apply(this, arguments);
+        return proto[method].apply(this, arguments);
       }
 
       var args = _.toArray(arguments);
