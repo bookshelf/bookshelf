@@ -74,7 +74,9 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be set like normal properties
     set: function (key, val, options) {
       if (key == null) return this;
-      var virtual = this.virtuals[key];
+      
+      var virtuals = this.virtuals;
+      var virtual = virtuals && virtuals[key];
       if (virtual && virtual.set) {
         virtual.set.call(this, val);
         return this;
