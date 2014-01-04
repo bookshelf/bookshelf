@@ -133,6 +133,12 @@ module.exports = function (bookshelf) {
       var json = m.toJSON({virtuals: false});
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
+    
+    it('does not crash when no virtuals are set - #168', function () {
+      var m = new bookshelf.Model();
+      m.set('firstName', 'Joe');
+      equal(m.get('firstName'), 'Joe');
+    });
 
   });
 };

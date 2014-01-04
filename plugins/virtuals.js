@@ -64,7 +64,7 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
       var virtuals = this.virtuals;
-      if (virtuals[attr]) {
+      if (virtuals && virtuals[attr]) {
         return virtuals[attr].get ? virtuals[attr].get.call(this) : virtuals[attr].call(this);
       }
 
