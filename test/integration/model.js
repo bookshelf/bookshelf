@@ -198,17 +198,6 @@ module.exports = function(Bookshelf) {
         equal(m.fullName, 'Joe Shmoe');
       });
 
-      it('can be accessed through `get` like normal properties', function () {
-        var m = new (Bookshelf.Model.extend({
-          virtuals: {
-            fullName: function() {
-                return this.get('firstName') + ' ' + this.get('lastName');
-            }
-          }
-        }))({firstName: 'Joe', lastName: 'Shmoe'});
-        equal(m.get('fullName'), 'Joe Shmoe');
-      });
-
       it('are included in the `toJSON` result, if `virtualsInJSON` is set to `true` on the model', function () {
         var m = new (Bookshelf.Model.extend({
           virtualsInJSON: true,
@@ -263,6 +252,32 @@ module.exports = function(Bookshelf) {
 
         var json = m.toJSON({virtuals: false});
         deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+      
+      it('are not included in the `toJSON` result, if `virtualsInJSON: false` is passed as `options` to the model constructor', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'}, {virtualsInJSON: false});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName']);
+      });
+
+      it('are included in the `toJSON` result, if `virtualsInJSON: true` is passed as `options` to the model constructor', function () {
+        var m = new (Bookshelf.Model.extend({
+          virtuals: {
+            fullName: function() {
+                return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'}, {virtualsInJSON: true});
+
+        var json = m.toJSON();
+        deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
       });
     });
     
