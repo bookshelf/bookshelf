@@ -6,6 +6,8 @@ module.exports = function (Bookshelf) {
 
   var Model = Bookshelf.Model.extend({
     outputVirtuals: true,
+    
+    virtuals: {},
 
     // If virtual properties have been defined they will be created
     // as simple getters on the model during `initialize`
