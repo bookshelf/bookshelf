@@ -1,6 +1,5 @@
 module.exports = function (Bookshelf) {
   "use strict";
-  var Backbone  = require('backbone');
   var _         = require('lodash');
   var proto     = Bookshelf.Model.prototype;
 
@@ -8,12 +7,10 @@ module.exports = function (Bookshelf) {
     outputVirtuals: true,
 
     // If virtual properties have been defined they will be created
-    // as simple getters on the model during `initialize`
-    initialize: function (attributes, options) {
+    // as simple getters on the model.
+    constructor: function (attributes, options) {
 
-      // always call the proto initialize function,
-      // in case another plugin added something
-      proto.initialize.apply(this, arguments);
+      proto.constructor.apply(this, arguments);
 
       var virtuals = this.virtuals;
       if (_.isObject(virtuals)) {
@@ -68,13 +65,13 @@ module.exports = function (Bookshelf) {
         return virtuals[attr].get ? virtuals[attr].get.call(this) : virtuals[attr].call(this);
       }
 
-      return Backbone.Model.prototype.get.apply(this, arguments);
+      return proto.get.apply(this, arguments);
     },
 
     // Allow virtuals to be set like normal properties
     set: function (key, val, options) {
       if (key == null) return this;
-      
+
       var virtuals = this.virtuals;
       var virtual = virtuals && virtuals[key];
       if (virtual && virtual.set) {
