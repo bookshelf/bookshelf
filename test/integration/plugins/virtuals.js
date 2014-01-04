@@ -1,4 +1,4 @@
-var _    = require('lodash');
+var _         = require('lodash');
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
@@ -74,13 +74,22 @@ module.exports = function (bookshelf) {
         virtuals: {
           fullName: function() {
               return this.get('firstName') + ' ' + this.get('lastName');
+          },
+          fullNameWithGetSet: {
+            get: function () {
+              return this.get('firstName') + ' ' + this.get('lastName');
+            },
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
           }
         }
       }))({firstName: 'Joe', lastName: 'Shmoe'});
 
       var json = m.toJSON();
-      console.log(json);
-      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName', 'fullNameWithGetSet']);
     });
 
     it('virtuals are not included in the `toJSON` result, if `outputVirtuals` is set to `false` or is not defined on the model', function () {
@@ -125,17 +134,5 @@ module.exports = function (bookshelf) {
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
 
-    it('virtuals are not included in the `toJSON` result, if `outputVirtuals: false` is passed as `options` to the model constructor', function () {
-      var m = new (bookshelf.Model.extend({
-        virtuals: {
-          fullName: function() {
-              return this.get('firstName') + ' ' + this.get('lastName');
-          }
-        }
-      }))({firstName: 'Joe', lastName: 'Shmoe'}, {outputVirtuals: false});
-
-      var json = m.toJSON();
-      deepEqual(_.keys(json), ['firstName', 'lastName']);
-    });
   });
 };
