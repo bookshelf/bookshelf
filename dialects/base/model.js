@@ -34,6 +34,20 @@ var ModelBase = function(attributes, options) {
 
 _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
 
+  // If virtual properties have been defined they will be created
+  // as simple getters on the model during `initialize`
+  initialize: function (attributes, options) {
+    var virtuals = this.virtuals;
+    if (_.isObject(virtuals)) {
+      for(var func in virtuals) {
+        Object.defineProperty(this, func, {
+          enumerable: true,
+          get: virtuals[func],
+        });
+      }
+    }
+  },
+  
   // Similar to the standard `Backbone` set method, but without individual
   // change events, and adding different meaning to `changed` and `previousAttributes`
   // defined as the last "sync"'ed state of the model.
@@ -75,9 +89,12 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
     return this;
   },
 
-  // Returns an object containing a shallow copy of the model attributes,
+// Returns an object containing a shallow copy of the model attributes,
   // along with the `toJSON` value of any relations,
   // unless `{shallow: true}` is passed in the `options`.
+  // Passing `{virtuals: true}` or `{virtuals: false}` in the `options`
+  // controls including virtuals on function-level and overrides the
+  // model-level setting
   toJSON: function(options) {
     var attrs = _.extend({}, this.attributes);
     if (options && options.shallow) return attrs;
@@ -92,9 +109,24 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
         attrs['_pivot_' + key] = pivot[key];
       }
     }
+
+    var includeVirtuals = this.virtualsInJSON;
+    includeVirtuals = (includeVirtuals && includeVirtuals === true);
+    var includeVirtualsOpts = options && options.virtuals;
+    includeVirtualsOpts = _.isBoolean(includeVirtualsOpts) ? includeVirtualsOpts : includeVirtuals;
+
+    if (includeVirtuals && includeVirtualsOpts) {
+      var virtuals = this.virtuals;
+      if (_.isObject(virtuals)) {
+        for(var func in virtuals) {
+          attrs[func] = this[func];
+        }
+      }
+    }
+
     return attrs;
   },
-
+  
   // **parse** converts a response into the hash of attributes to be `set` on
   // the model. The default implementation is just to pass the response along.
   parse: function(resp, options) {
