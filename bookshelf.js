@@ -89,7 +89,7 @@ _.extend(Bookshelf.prototype, Events, {
   // injecting the current instance into the plugin, which should be a module.exports.
   plugin: function(plugin) {
     if (_.isString(plugin)) {
-      plugin = require('./plugins/' + plugin);
+      require('./plugins/' + plugin)(this);
     } else if (_.isArray(plugin)) {
       _.each(plugin, this.plugin, this);
     } else {
