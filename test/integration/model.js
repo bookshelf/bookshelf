@@ -198,7 +198,6 @@ module.exports = function(Bookshelf) {
         equal(m.fullName, 'Joe Shmoe');
       });
 
-
       it('can be accessed through `get` like normal properties', function () {
         var m = new (Bookshelf.Model.extend({
           virtuals: {
