@@ -68,9 +68,8 @@ module.exports = function (bookshelf) {
       equal(m.get('lastName'), 'Shmoe');
     });
 
-    it('virtuals are included in the `toJSON` result, if `outputVirtuals` is set to `true` on the model', function () {
+    it('virtuals are included in the `toJSON` result by default', function () {
       var m = new (bookshelf.Model.extend({
-        outputVirtuals: true,
         virtuals: {
           fullName: function() {
               return this.get('firstName') + ' ' + this.get('lastName');
@@ -92,7 +91,7 @@ module.exports = function (bookshelf) {
       deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName', 'fullNameWithGetSet']);
     });
 
-    it('virtuals are not included in the `toJSON` result, if `outputVirtuals` is set to `false` or is not defined on the model', function () {
+    it('virtuals are not included in the `toJSON` result, if `outputVirtuals` is set to `false`', function () {
       var m = new (bookshelf.Model.extend({
         outputVirtuals: false,
         virtuals: {
@@ -101,7 +100,6 @@ module.exports = function (bookshelf) {
           }
         }
       }))({firstName: 'Joe', lastName: 'Shmoe'});
-
       var json = m.toJSON();
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
@@ -111,13 +109,12 @@ module.exports = function (bookshelf) {
         outputVirtuals: false,
         virtuals: {
           fullName: function() {
-              return this.get('firstName') + ' ' + this.get('lastName');
+            return this.get('firstName') + ' ' + this.get('lastName');
           }
         }
       }))({firstName: 'Joe', lastName: 'Shmoe'});
-
       var json = m.toJSON({virtuals: true});
-      deepEqual(_.keys(json), ['firstName', 'lastName']);
+      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
     });
 
     it('virtuals are not included in the `toJSON` result, if `outputVirtuals` is set to `true` but `virtuals: false` is set in the `options` for `toJSON`', function () {
@@ -133,13 +130,13 @@ module.exports = function (bookshelf) {
       var json = m.toJSON({virtuals: false});
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
-    
+
     it('does not crash when no virtuals are set - #168', function () {
       var m = new bookshelf.Model();
       m.set('firstName', 'Joe');
       equal(m.get('firstName'), 'Joe');
     });
-    
+
     it('works fine with `underscore` methods - #170', function () {
        var m = new (bookshelf.Model.extend({
         outputVirtuals: true,
