@@ -23,14 +23,21 @@ _.extend(Sync.prototype, {
   // current table name
   prefixFields: function (fields) {
     var tableName = this.syncing.tableName;
-    var prefixed  = {};
-    
-    for (var key in fields) {
-      prefixed[tableName + '.' + key] = fields[key];
-    }
+    var isArray = _.isArray(fields);
+    var prefixed = isArray ? [] : {};
+
+    _.reduce(fields, function (result, val, key) {
+      if (isArray) {
+        result.push(tableName + '.' + val);
+      } else {
+        result[tableName + '.' + key] = val;
+      }
+      return result;
+    }, prefixed);
 
     return prefixed;
   },
+
 
   // Select the first item from the database - only used by models.
   first: Promise.method(function() {
@@ -55,7 +62,14 @@ _.extend(Sync.prototype, {
       relatedData.selectConstraints(this.query, options);
     } else {
       columns = options.columns;
-      if (!_.isArray(columns)) columns = columns ? [columns] : [_.result(this.syncing, 'tableName') + '.*'];
+      if (columns) {
+        if (!_.isArray(columns)) {
+          columns = [columns];
+        }
+        columns = this.prefixFields(columns);
+      } else {
+        columns = [_.result(this.syncing, 'tableName') + '.*'];
+      }
     }
 
     // Set the query builder on the options, in-case we need to
