@@ -63,10 +63,7 @@ _.extend(Sync.prototype, {
     } else {
       columns = options.columns;
       if (columns) {
-        if (!_.isArray(columns)) {
-          columns = [columns];
-        }
-        columns = this.prefixFields(columns);
+        columns = this.prefixFields(_.isArray(columns) ? columns : [columns]);
       } else {
         columns = [_.result(this.syncing, 'tableName') + '.*'];
       }
