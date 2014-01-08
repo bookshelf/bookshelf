@@ -23,17 +23,11 @@ _.extend(Sync.prototype, {
   // current table name
   prefixFields: function (fields) {
     var tableName = this.syncing.tableName;
-    var isArray = _.isArray(fields);
-    var prefixed = isArray ? [] : {};
+    var prefixed = {};
 
-    _.reduce(fields, function (result, val, key) {
-      if (isArray) {
-        result.push(tableName + '.' + val);
-      } else {
-        result[tableName + '.' + key] = val;
-      }
-      return result;
-    }, prefixed);
+    _.each(fields, function (val, key) {
+        prefixed[tableName + '.' + key] = val;
+    });
 
     return prefixed;
   },
@@ -62,11 +56,7 @@ _.extend(Sync.prototype, {
       relatedData.selectConstraints(this.query, options);
     } else {
       columns = options.columns;
-      if (columns) {
-        columns = this.prefixFields(_.isArray(columns) ? columns : [columns]);
-      } else {
-        columns = [_.result(this.syncing, 'tableName') + '.*'];
-      }
+      if (!_.isArray(columns)) columns = columns ? [columns] : [_.result(this.syncing, 'tableName') + '.*'];
     }
 
     // Set the query builder on the options, in-case we need to
