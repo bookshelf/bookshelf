@@ -273,6 +273,15 @@ module.exports = function(Bookshelf) {
         });
         return model.fetch();
       });
+      
+      it('does not fail, when joining another table having some columns with the same names - #176',  function () {
+        var model = new Site({id: 1});
+        model.query(function (qb) {
+          qb.join('authors', 'authors.site_id', '=', 'sites.id');
+        });
+
+        return expect(model.fetch()).to.be.fulfilled;
+      });
 
     });
 
