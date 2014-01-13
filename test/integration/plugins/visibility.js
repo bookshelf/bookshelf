@@ -1,5 +1,4 @@
 var _         = require('lodash');
-var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
 module.exports = function (bookshelf) {
