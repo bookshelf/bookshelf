@@ -273,6 +273,15 @@ module.exports = function(Bookshelf) {
         });
         return model.fetch();
       });
+      
+      it('does not fail, when joining another table having some columns with the same names - #176',  function () {
+        var model = new Site({id: 1});
+        model.query(function (qb) {
+          qb.join('authors', 'authors.site_id', '=', 'sites.id');
+        });
+
+        return expect(model.fetch()).to.be.fulfilled;
+      });
 
     });
 
@@ -532,6 +541,28 @@ module.exports = function(Bookshelf) {
           return stubSync;
         };
         return m.save({item: 'test'}, {method: 'update'});
+      });
+
+      it('will accept a falsy value as an option for created and ignore it', function() {
+        var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(_.isDate(this.get('createdAt')), true);
+          equal(_.isDate(this.get('updatedAt')), false);
+          return stubSync;
+        };
+        return m.save({item: 'test'});
+      });
+
+      it('will accept a falsy value as an option for updated and ignore it', function() {
+        var m = new Bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(_.isDate(this.get('updatedAt')), true);
+          equal(_.isDate(this.get('createdAt')), false);
+          return stubSync;
+        };
+        return m.save({item: 'test'});
       });
 
     });

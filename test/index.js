@@ -38,6 +38,8 @@ describe('Unit Tests', function () {
   base.Events();
   base.Relation();
   base.Eager();
+  
+  require('./unit/sql/sync')();
 
 });
 

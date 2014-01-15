@@ -350,6 +350,13 @@ var pivotHelpers = {
     return this._handler('delete', ids, options);
   },
 
+  // Update an existing relation's pivot table entry.
+  updatePivot: function(data, options, updateWhere) {
+    options = options || {};
+    options.updateWhere = updateWhere;
+    return this._handler('update', data, options);
+  },
+
   // Selects any additional columns on the pivot table,
   // taking a hash of columns which specifies the pivot
   // column name, and the value the column should take on the
@@ -409,6 +416,37 @@ var pivotHelpers = {
         }
       });
     }
+    if (method === 'update') {
+      var where = {};
+      var otherKey = relatedData.key('otherKey');
+      var foreignKey = relatedData.key('foreignKey');
+      var updateWhere = options.updateWhere || {};
+
+      if (data[otherKey]) {
+        where[otherKey] = data[otherKey];
+      } else if(data.id) {
+        where[otherKey] = data.id;
+      }
+
+      where[foreignKey] = relatedData.parentFk;
+
+      delete data.id;
+      delete data[otherKey];
+      delete data[foreignKey];
+
+      for (var opt in updateWhere) {
+        builder = builder[opt].apply(builder, updateWhere[opt]);
+      }
+
+      return builder.where(where).update(data).then(function (numUpdated) {
+        if (options.require && options.require === true && numUpdated === 0) {
+          throw new Error('No rows were updated');
+        }
+
+        return numUpdated;
+      });
+    }
+
     return builder.insert(data).then(function() {
       collection.add(item);
     });

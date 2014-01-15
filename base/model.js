@@ -131,8 +131,8 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
     var d = new Date();
     var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
     var vals = {};
-    vals[keys[1]] = d;
-    if (this.isNew(options) && (!options || options.method !== 'update')) vals[keys[0]] = d;
+    if (keys[1]) vals[keys[1]] = d;
+    if (this.isNew(options) && keys[0] && (!options || options.method !== 'update')) vals[keys[0]] = d;
     return vals;
   },
 

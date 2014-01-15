@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "inflection": "~1.2.x",
     "trigger-then": "~0.1.1",
     "knex": "~0.5.0",
-    "bluebird": "~0.10.10-0",
+    "bluebird": ">=1.11.0",
     "lodash": "~2.4.0",
     "simple-extend": "~0.1.0",
     "create-error": "~0.1.0"
@@ -43,7 +43,8 @@
     "chai-as-promised": "~4.1.0",
     "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",
-    "sinon": "~1.7.3"
+    "sinon": "~1.7.3",
+    "node-uuid": "~1.4.1"
   },
   "author": {
     "name": "Tim Griesser",
