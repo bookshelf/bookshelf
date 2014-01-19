@@ -3,7 +3,7 @@ var _        = require('lodash');
 module.exports = function(Bookshelf) {
 
   var Knex     = require('knex');
-  var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
+  var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config.json');
   var Promise  = global.testPromise;
 
   var MySQL = Bookshelf.initialize({
