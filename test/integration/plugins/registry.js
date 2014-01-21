@@ -23,7 +23,7 @@ module.exports = function(Bookshelf) {
 		});
 
 		before(function() {
-			Bookshelf.plugin('register');
+			Bookshelf.plugin('registry');
 		});
 
 		describe('Registering Models', function() {
