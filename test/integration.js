@@ -65,7 +65,7 @@ module.exports = function(Bookshelf) {
       require('./integration/relations')(bookshelf);
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
-      require('./integration/plugins/register')(bookshelf);
+      require('./integration/plugins/registry')(bookshelf);
     });
 
   });
