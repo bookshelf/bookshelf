@@ -184,7 +184,8 @@ exports.Relation = RelationBase.extend({
 
   // Fetches all `eagerKeys` from the current relation.
   eagerKeys: function(resp) {
-    return _.uniq(_.pluck(resp, this.isInverse() ? this.key('foreignKey') : this.parentIdAttribute));
+    var key = this.isInverse() && !this.isThrough() ? this.key('foreignKey') : this.parentIdAttribute;
+    return _.uniq(_.pluck(resp, key));
   },
 
   // Generates the appropriate standard join table.
