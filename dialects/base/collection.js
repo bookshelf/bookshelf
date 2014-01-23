@@ -18,6 +18,9 @@ var CollectionBase = function(models, options) {
   if (options) _.extend(this, _.pick(options, collectionProps));
   this._reset();
   this.initialize.apply(this, arguments);
+  if (!_.isFunction(this.model)) {
+    throw new Error('A valid `model` constructor must be defined for all collections.');
+  }
   if (models) this.reset(models, _.extend({silent: true}, options));
 };
 
