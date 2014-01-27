@@ -1,63 +1,59 @@
+// Registry Plugin -
+// Create a central registry of model/collection constructors to
+// help with the circular reference problem, and for convenience in relations.
+// -----
 module.exports = function (Bookshelf) {
-  'use strict';
+  "use strict";
+  var _ = require('lodash');
 
-  var _       = require('lodash');
-
-  // Set up the methods for storing and retrieving models on the Bookshelf
-  // instance
-
-  _.extend(Bookshelf, {
-    model: function(name, Model) {
-      if (Model) {
-        this._models = this._models || {};
-        this._models[name] = Model;
-      }
-
-      return this._models[name];
-    },
-    collection: function(name, Collection) {
-      if (Collection) {
-        this._collections = this._collections || {};
-        this._collections[name] = Collection;
-      }
-
-      return this._collections[name];
+  // Set up the methods for storing and retrieving models
+  // on the Bookshelf instance.
+  Bookshelf.model = function(name, ModelCtor) {
+    if (ModelCtor) {
+      this._models = this._models || {};
+      this._models[name] = ModelCtor;
     }
-  });
+    return this._models[name];
+  };
+  Bookshelf.collection = function(name, CollectionCtor) {
+    if (CollectionCtor) {
+      this._collections = this._collections || {};
+      this._collections[name] = CollectionCtor;
+    }
+    return this._collections[name];
+  };
 
-  // Resolve a module from a string or module
+  // Check the collection or module caches for a Model or Collection constructor,
+  // returning if the input is not an object. Check for a collection first,
+  // since these are potentially used with *-to-many relation. Otherwise, check for a
+  // registered model, throwing an error if none are found.
   function resolveModel(input) {
-    // if the input is a string, try to resolve it into a module reference
     if (typeof input === 'string') {
-      // Try using a model first, falling back to a collection
-      return Bookshelf.model(input) || Bookshelf.collection(input);
-    } else {
-      // If the input is anything other than a string, return it untouched
-      return input;
+      return Bookshelf.collection(input) || Bookshelf.model(input) || (function() {
+        throw new Error('The model ' + input + ' could not be resolved from the registry plugin.');
+      })();
     }
+    return input;
   }
 
   var Model = Bookshelf.Model;
-  // Monkey patch Bookshelf.Model's relation methods
+
+  // Re-implement the `Bookshelf.Model` relation methods to include a check for the registered model.
   _.each(['hasMany', 'hasOne', 'belongsToMany', 'morphOne', 'morphMany', 'belongsTo', 'through'], function(method) {
-    // Store the original method
     var original = Model.prototype[method];
-    // Patch the method
-    Model.prototype[method] = function() {
-      // The first argument is always a model, so resolve it
-      arguments[0] = resolveModel(arguments[0]);
-      return original.apply(this, arguments);
+    Model.prototype[method] = function(Target) {
+      // The first argument is always a model, so resolve it and call the original method.
+      return original.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
     };
   });
 
-  // morphTo takes the name first, and then a variadic set of models so we
-  // can't include it with the rest of the relational methods
+  // `morphTo` takes the relation name first, and then a variadic set of models so we
+  // can't include it with the rest of the relational methods.
   var morphTo = Model.prototype.morphTo;
-  Model.prototype.morphTo = function() {
-    for (var i = 1; i < arguments.length; i++) {
-      arguments[i] = resolveModel(arguments[i]);
-    }
-    return morphTo.apply(this, arguments);
+  Model.prototype.morphTo = function(relationName) {
+    return morphTo.apply(this, [relationName].concat(_.map(_.rest(arguments), function(model) {
+      return resolveModel(model);
+    }, this)));
   };
 
 };

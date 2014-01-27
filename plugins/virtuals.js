@@ -1,3 +1,6 @@
+// Virtuals Plugin
+// Allows getting/setting virtual (computed) properties on model instances.
+// -----
 module.exports = function (Bookshelf) {
   "use strict";
   var _         = require('lodash');
@@ -9,21 +12,17 @@ module.exports = function (Bookshelf) {
     // If virtual properties have been defined they will be created
     // as simple getters on the model.
     constructor: function (attributes, options) {
-
       proto.constructor.apply(this, arguments);
-
       var virtuals = this.virtuals;
       if (_.isObject(virtuals)) {
         for (var virtualName in virtuals) {
           var getter, setter;
-
           if (virtuals[virtualName].get) {
             getter = virtuals[virtualName].get;
             setter = virtuals[virtualName].set ? virtuals[virtualName].set : undefined;
           } else {
             getter = virtuals[virtualName];
           }
-
           Object.defineProperty(this, virtualName, {
             enumerable: true,
             get: getter,

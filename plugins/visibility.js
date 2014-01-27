@@ -1,9 +1,8 @@
-// Visibility plugin - useful for hiding/showing particular
-// attributes on `toJSON`.
+// Visibility plugin -
+// Useful for hiding/showing particular attributes on `toJSON`.
 // -----
 module.exports = function(Bookshelf) {
   "use strict";
-
   var _      = require('lodash');
   var proto  = Bookshelf.Model.prototype;
   var toJSON = proto.toJSON;
