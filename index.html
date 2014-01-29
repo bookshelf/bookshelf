@@ -727,7 +727,7 @@ var Television = Bookshelf.Model.extend({
     <p id="Model-id">
       <b class="header">id</b><code>model.id</code>
       <br />
-      A special property of models, the <b>id</b> is the unique idenfifer associated
+      A special property of models, the <b>id</b> is the unique identifier associated,
       named by the <a href="#Model-idAttribute">idAttribute</a>. If you set the <b>id</b>
       in the attributes hash, it will be copied onto the model as a direct property.
       Models can be retrieved by id from collections, and the id is used in fetching models and
@@ -758,7 +758,7 @@ customer.set("telephone", "555-555-1212");
       <b class="header">fetch</b><code>model.fetch([options]).then(function(model) {...</code>
       <br />
       Fetches a model from the database, using any attributes currently set on the model
-      to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched Model,
+      to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched <tt>model</tt>,
       or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved.
     </p>
 
@@ -783,7 +783,7 @@ new Book({'ISBN-13': '9780440180296'})
       along with any specified <a href="#Model-relations">relations</a> named on the model.
       A single property, or an array of properties can be specified as a value for the <tt>withRelated</tt>
       property. The results of these relation queries will be loaded into a <tt>relations</tt> property on
-      the model, may be retreived with the <a href="#Model-related">related</a> method, and will
+      the model, may be retrieved with the <a href="#Model-related">related</a> method, and will
       be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless
       <tt>{shallow: true}</tt> is passed.
     </p>
@@ -841,7 +841,7 @@ new Posts().fetch().then(function(collection) {
       There are four types of relationships that may be defined between Models and
       Collections: <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>,
       <a href="#Model-belongsTo">belongsTo</a>, <a href="#Model-belongsToMany">belongsToMany</a>.
-      The relations are specified by created named methods on the model, which return the
+      The relations are specified by creating named methods on the model, which return the
       appropriate relation type.
     </p>
 
@@ -958,11 +958,11 @@ new Story({id: 2}).fetch({
 </pre>
 
     <p id="Model-hasOne">
-      <b class="header">hasOne</b><code>model.hasOne(Model, [foreignKey])</code>
+      <b class="header">hasOne</b><code>model.hasOne(Target, [foreignKey])</code>
       <br />
-      A one-to-one relation is a very basic relation, where the model has exactly
-      one of another <b>Model</b>, referenced by a <b>foreignKey</b> in the target <b>Model</b>.
-      By default, the foreign key is assumed to be the singular form of the current model,
+      A one-to-one relation is a very basic relation, where the <b>model</b> has exactly
+      one of another <b>Target</b> model, referenced by a <b>foreignKey</b> in the <b>Target</b> model.
+      By default, the <b>foreignkey</b> is assumed to be the singular form of the current model's <a href="#Model-tableName">tableName</a>,
       followed by <tt>_id</tt>.
     </p>
 
@@ -999,17 +999,17 @@ new Patient({id: 1}).record().fetch().then(function(model) {
       <br />
       Typically the most common relationship type, a <tt>hasMany</tt> is when the <b>model</b>
       has a "one-to-many" relationship with the <b>Target</b> model or collection. The
-      <b>model</b> is referenced by a <b>foreignKey</b>, which defaults to the
-      <a href="#Model-tableName">tableName</a> of the current model.
+      <b>model</b> is referenced by a <b>foreignKey</b> in the <b>Target</b> model, which defaults to the singular form of the current model's
+      <a href="#Model-tableName">tableName</a>, followed by <tt>_id</tt>.
     </p>
 
     <p id="Model-belongsTo">
-      <b class="header">belongsTo</b><code>model.belongsTo(Model, [otherKey])</code>
+      <b class="header">belongsTo</b><code>model.belongsTo(Target, [foreignKey])</code>
       <br />
-      The <tt>belongsTo</tt> defines an inverse one-to-one relation, where the current model is a member
-      of another <b>Model</b>, referenced by the <b>otherKey</b> in the target <b>Model</b>.
-      By default, the other key is assumed to be the singular form of the target <b>Model</b> with a
-      <tt>_id</tt> suffix.
+      The <tt>belongsTo</tt> relationship type defines an inverse one-to-one relation, where the current <b>model</b> is a member
+      of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
+      By default, the <b>foreignKey</b> is assumed to be the singular form of the <b>Target</b> model's <a href="#Model-tableName">tableName</a>,
+      followed by <tt>_id</tt>.
     </p>
 
 <pre>
@@ -1028,9 +1028,9 @@ new Book({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
 </pre>
 
     <p id="Model-belongsToMany">
-      <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [fKey], [otherKey])</code>
+      <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [foreignKey], [otherKey])</code>
       <br />
-      The <tt>belongsToMany</tt> method defines a many-to-many relation, where the current <b>Model</b>
+      The <tt>belongsToMany</tt> method defines a many-to-many relation, where the current <b>model</b>
       is joined to one ore more of a <b>Target</b> model through another <b>table</b>. The default name for
       the joining table is the two table names, joined by an underscore, ordered alphabetically. For example, a
       <tt>users</tt> table and an <tt>accounts</tt> table would have a joining table of <tt>accounts_users</tt>.
@@ -1060,10 +1060,10 @@ var User = Bookshelf.Model.extend({
 </pre>
 
     <p>
-      The default key names in the joining table are the singular version of the table name, followed by <tt>_id</tt>.
+      The default key names in the joining table are the singular versions of the model table names, followed by <tt>_id</tt>.
       So in the above case, the columns in the joining table would be <tt>user_id</tt>, <tt>account_id</tt>, and
       <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts. To
-      customize the keys or <tt>tableName</tt> used in the join table, you may specify them like so:
+      customize the keys used in, or the <tt>tableName</tt> used for the join table, you may specify them like so:
     </p>
 
 <pre>
@@ -1199,7 +1199,7 @@ Promise.all([admin1.save(), admin2.save()])
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
       <br />
-      Detach one or more related object from their pivot tables. If a model or id is passed,
+      Detach one or more related objects from their pivot tables. If a model or id is passed,
       it attempts to remove the pivot table based on that foreign key. If no parameters
       are specified, we assume we will detach all related associations.
     </p>
