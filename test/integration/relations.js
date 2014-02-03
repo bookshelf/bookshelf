@@ -32,7 +32,7 @@ module.exports = function(Bookshelf) {
     var Admins   = Collections.Admins;
     var Blogs    = Collections.Blogs;
     var Posts    = Collections.Posts;
-    var Comments = Collections.Comment;
+    var Comments = Collections.Comments;
     var Photos   = Collections.Photos;
     var Authors  = Collections.Authors;
 
@@ -475,6 +475,10 @@ module.exports = function(Bookshelf) {
 
         it('eager loads belongsToMany `through`', function() {
           return new Authors().fetch({log: true, withRelated: 'blogs'});
+        });
+
+        it('eager loads belongsTo `through`', function() {
+          return new Comments().fetch({log: true, withRelated: 'blog'});
         });
 
       });

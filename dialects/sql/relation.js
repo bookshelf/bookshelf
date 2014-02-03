@@ -241,15 +241,21 @@ exports.Relation = RelationBase.extend({
 
     // Group all of the related models for easier association with their parent models.
     var grouped = _.groupBy(related, function(model) {
-      return model.pivot ? model.pivot.get(this.key('foreignKey')) :
-        this.isInverse() ? model.id : model.get(this.key('foreignKey'));
+      if (model.pivot) {
+        return this.isInverse() && this.isThrough() ? model.pivot.id :
+          model.pivot.get(this.key('foreignKey'));
+      } else {
+        return this.isInverse() ? model.id : model.get(this.key('foreignKey'));
+      }
     }, this);
 
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     for (var i = 0, l = parentModels.length; i < l; i++) {
       model = parentModels[i];
-      var groupedKey = this.isInverse() ? model.get(this.key('foreignKey')) : model.id;
+      var groupedKey = !this.isInverse() ? model.id :
+            this.isThrough() ? model.get(this.key('throughForeignKey')) :
+            model.get(this.key('foreignKey'));
       var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);

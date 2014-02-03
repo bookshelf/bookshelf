@@ -171,6 +171,9 @@ module.exports = function(Bookshelf) {
     },
     posts: function() {
       return this.belongsTo(Post);
+    },
+    blog: function() {
+      return this.belongsTo(Blog).through(Post);
     }
   });
 
