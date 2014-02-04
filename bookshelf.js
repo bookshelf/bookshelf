@@ -16,6 +16,10 @@ var SqlModel      = require('./dialects/sql/model').Model;
 var SqlCollection = require('./dialects/sql/collection').Collection;
 var SqlRelation   = require('./dialects/sql/relation').Relation;
 
+// Bring in the model errors for easy access
+
+var Errors        = require('./dialects/base/errors').Errors;
+
 // Finally, the `Events`, which we've supplemented with a `triggerThen`
 // method to allow for asynchronous event handling via promises. We also
 // mix this into the prototypes of the main objects in the library.
@@ -70,6 +74,9 @@ var Bookshelf = function(knex) {
     Model: ModelCtor,
     Collection: CollectionCtor
   });
+
+  // Mix in the errors for easy access
+  _.extend(Bookshelf, Errors);
 
   // Grab a reference to the `knex` instance passed (or created) in this constructor,
   // for convenience.

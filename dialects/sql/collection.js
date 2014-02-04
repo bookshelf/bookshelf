@@ -7,6 +7,7 @@ var Helpers       = require('./helpers').Helpers;
 var EagerRelation = require('./eager').EagerRelation;
 
 var CollectionBase = require('../base/collection').CollectionBase;
+var Errors         = require('../base/errors');
 var Promise        = require('../base/promise').Promise;
 
 exports.Collection = CollectionBase.extend({
@@ -26,7 +27,7 @@ exports.Collection = CollectionBase.extend({
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Error('EmptyResponse');
+          if (options.require) throw new Errors.NotFoundError();
           return Promise.reject(null);
         }
       })
