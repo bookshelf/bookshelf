@@ -5,6 +5,7 @@ var Backbone = require('backbone');
 
 var Events   = require('./events').Events;
 var Promise  = require('./promise').Promise;
+var Errors   = require('./errors').Errors;
 
 // A list of properties that are omitted from the `Backbone.Model.prototype`, to create
 // a generic model base.
@@ -165,6 +166,9 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
   })
 
 });
+
+// Include the errors on the model
+_.extend(ModelBase, Errors);
 
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];
