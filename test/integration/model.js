@@ -331,7 +331,7 @@ module.exports = function(Bookshelf) {
         return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
           throw new Error('This should not succeed');
         }, function(err) {
-          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {insert: true} option?');
+          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {method: "insert"} option?');
         });
 
       });
