@@ -635,13 +635,11 @@ module.exports = function(Bookshelf) {
         Photo.prototype.sync = function () {
           return {
             first: function () {
-              return Promise.fulfilled().then(function () {
-                return [{
-                  id:1,
-                  imageable_type: 'sites',
-                  imageable_id: null
-                }];
-              });
+              return Promise.resolve([{
+                id:1,
+                imageable_type: 'sites',
+                imageable_id: null
+              }]);
             }
           };
         };
@@ -649,22 +647,18 @@ module.exports = function(Bookshelf) {
         Author.prototype.sync = function () {
           return {
             select: function () {
-              return Promise.fulfilled().then(function () {
-                return [{
-                  id:1,
-                  dummy: 'author'
-                }];
-              });
+              return Promise.resolve([{
+                id:1,
+                dummy: 'author'
+              }]);
             },
             first: function () {
-              return Promise.fulfilled().then(function () {
-                return [{
-                  id:1,
-                  first_name: 'Johannes',
-                  last_name: 'Lumpe',
-                  site_id: null
-                }];
-              });
+              return Promise.resolve([{
+                id:1,
+                first_name: 'Johannes',
+                last_name: 'Lumpe',
+                site_id: null
+              }]);
             }
           };
         };
@@ -673,20 +667,16 @@ module.exports = function(Bookshelf) {
           siteSyncCount++;
           return {
             select: function () {
-              return Promise.fulfilled().then(function () {
-                return [{
-                  id:1,
-                  dummy: 'content'
-                }];
-              });
+              return Promise.resolve([{
+                id:1,
+                dummy: 'content'
+              }]);
             },
             first: function () {
-              return Promise.fulfilled().then(function () {
-                return [{
-                  id:1,
-                  dummy: 'content'
-                }];
-              });
+              return Promise.resolve([{
+                id:1,
+                dummy: 'content'
+              }]);
             }
           };
         };
