@@ -17,11 +17,13 @@ var EagerRelation = exports.EagerRelation = EagerBase.extend({
   eagerFetch: Promise.method(function(relationName, handled, options) {
     var relatedData = handled.relatedData;
 
+    // skip eager loading for rows where the foreign key isn't set
+    if (relatedData.parentFk === null) return;
+
     if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
 
     // Call the function, if one exists, to constrain the eager loaded query.
     options.beforeFn.call(handled, handled.query());
-
     return handled
       .sync(_.extend(options, {parentResponse: this.parentResponse}))
       .select()
