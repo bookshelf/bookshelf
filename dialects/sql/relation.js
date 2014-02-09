@@ -358,9 +358,7 @@ var pivotHelpers = {
   },
 
   // Update an existing relation's pivot table entry.
-  updatePivot: function(data, options, updateWhere) {
-    options = options || {};
-    options.updateWhere = updateWhere;
+  updatePivot: function(data, options) {
     return this._handler('update', data, options);
   },
 
@@ -394,6 +392,14 @@ var pivotHelpers = {
   _processPivot: Promise.method(function(method, item, options) {
     var data = {};
     var relatedData = this.relatedData;
+
+    // Grab the `knex` query builder for the current model, and
+    // check if we have any additional constraints for the query.
+    var builder = this._builder(relatedData.joinTable());
+    if (options && options.query) {
+      Helpers.query.call(null, {_knex: builder}, [options.query]);
+    }
+
     data[relatedData.key('foreignKey')] = relatedData.parentFk;
 
     // If the item is an object, it's either a model
@@ -402,13 +408,13 @@ var pivotHelpers = {
     if (_.isObject(item)) {
       if (item instanceof ModelBase) {
         data[relatedData.key('otherKey')] = item.id;
-      } else {
+      } else if (method !== 'update') {
         _.extend(data, item);
       }
     } else if (item) {
       data[relatedData.key('otherKey')] = item;
     }
-    var builder = this._builder(relatedData.joinTable());
+
     if (options) {
       if (options.transacting) builder.transacting(options.transacting);
       if (options.debug) builder.debug();
@@ -424,32 +430,10 @@ var pivotHelpers = {
       });
     }
     if (method === 'update') {
-      var where = {};
-      var otherKey = relatedData.key('otherKey');
-      var foreignKey = relatedData.key('foreignKey');
-      var updateWhere = options.updateWhere || {};
-
-      if (data[otherKey]) {
-        where[otherKey] = data[otherKey];
-      } else if(data.id) {
-        where[otherKey] = data.id;
-      }
-
-      where[foreignKey] = relatedData.parentFk;
-
-      delete data.id;
-      delete data[otherKey];
-      delete data[foreignKey];
-
-      for (var opt in updateWhere) {
-        builder = builder[opt].apply(builder, updateWhere[opt]);
-      }
-
-      return builder.where(where).update(data).then(function (numUpdated) {
-        if (options.require && options.require === true && numUpdated === 0) {
+      return builder.where(data).update(item).then(function (numUpdated) {
+        if (options && options.require === true && numUpdated === 0) {
           throw new Error('No rows were updated');
         }
-
         return numUpdated;
       });
     }
