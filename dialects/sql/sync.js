@@ -18,17 +18,15 @@ var Sync = function(syncing, options) {
 };
 
 _.extend(Sync.prototype, {
-  
+
   // Prefix all keys of the passed in object with the
   // current table name
   prefixFields: function (fields) {
     var tableName = this.syncing.tableName;
     var prefixed = {};
-
-    _.each(fields, function (val, key) {
-        prefixed[tableName + '.' + key] = val;
-    });
-
+    for (var key in fields) {
+      prefixed[tableName + '.' + key] = fields[key];
+    }
     return prefixed;
   },
 
