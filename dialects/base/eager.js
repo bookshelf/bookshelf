@@ -16,7 +16,7 @@ var EagerBase = function(parent, parentResponse, target) {
   this.target = target;
 };
 
-EagerBase.prototype = {
+_.extend(EagerBase.prototype, {
 
   // This helper function is used internally to determine which relations
   // are necessary for fetching based on the `model.load` or `withRelated` option.
@@ -99,7 +99,7 @@ EagerBase.prototype = {
     return relatedData.eagerPair(relationName, related, models);
   }
 
-};
+});
 
 var noop = function() {};
 
