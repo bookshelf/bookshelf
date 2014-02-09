@@ -342,35 +342,27 @@ module.exports = function(Bookshelf) {
           return new Site({id: 1}).admins().detach();
         });
 
-        it('updates a single matching row inside the pivot table if an `id` is passed with the data', function() {
+        it('updates all rows inside the pivot table belonging to the current model', function() {
           var site1  = new Site({id: 1});
           return site1.admins()
-          .updatePivot({id: admin1_id, item: 'testvalue'})
-          .then(function (relation) {
-            return relation.withPivot(['item']).fetch().then(function (col) {
-              equal(col.get(admin1_id).pivot.get('item'), 'testvalue');
-              equal(col.get(admin2_id).pivot.get('item'), 'test');
+            .updatePivot({item: 'allupdated'})
+            .then(function (relation) {
+              return relation.withPivot(['item']).fetch().then(function (col) {
+                equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
+                equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
+              });
             });
-          });
-        });
-
-        it('updates all rows inside the pivot table belonging to the current model, if no `id` is passed with the data', function() {
-          var site1  = new Site({id: 1});
-          return site1.admins()
-          .updatePivot({item: 'allupdated'})
-          .then(function (relation) {
-            return relation.withPivot(['item']).fetch().then(function (col) {
-              equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
-              equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
-            });
-          });
 
         });
 
-        it('updates all rows, which match the passed in where-criterias', function() {
+        it('updates all rows, which match the passed in query-criteria', function() {
           var site1  = new Site({id: 1});
           return site1.admins()
-          .updatePivot({item: 'anotherupdate'}, null, {whereIn: ['admin_id', [admin1_id]]})
+          .updatePivot({item: 'anotherupdate'}, {
+            query: {
+              whereIn: ['admin_id', [admin1_id]]
+            }
+          })
           .then(function (relation) {
             return relation.withPivot(['item']).fetch().then(function (col) {
               equal(col.get(admin1_id).pivot.get('item'), 'anotherupdate');

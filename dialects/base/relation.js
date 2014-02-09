@@ -17,7 +17,7 @@ var RelationBase = function(type, Target, options) {
   _.extend(this, options);
 };
 
-RelationBase.prototype = {
+_.extend(RelationBase.prototype, {
 
   // Creates a new relation instance, used by the `Eager` relation in
   // dealing with `morphTo` cases, where the same relation is targeting multiple models.
@@ -37,7 +37,7 @@ RelationBase.prototype = {
   // Eager pair the models.
   eagerPair: function() {}
 
-};
+});
 
 RelationBase.extend = Backbone.Model.extend;
 
