@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.2)</span>
+      Bookshelf.js <span class="version">(0.6.3)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -328,6 +328,7 @@
       <li>&nbsp;&nbsp;- <a href="#Model-attach">attach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-detach">detach</a></li>
       <li>&nbsp;&nbsp;- <a href="#Model-withPivot">withPivot</a></li>
+      <li>&nbsp;&nbsp;- <a href="#Model-update">update</a></li>
       <li><b><a href="#Model-polymorphic-associations">Polymorphic Associations:</a></b></li>
       <li>&nbsp;&nbsp;– <a href="#Model-morphOne">morphOne</a></li>
       <li>&nbsp;&nbsp;– <a href="#Model-morphMany">morphMany</a></li>
@@ -405,8 +406,9 @@
       Plugins
     </a>
     <ul class="toc_section">
-      <li>– <a href="#Plugin-Registry">Registry</a></li>
-      <li>– <a href="#Plugin-Virtuals">Virtuals</a></li>
+      <li>– <a href="#Plugins-Registry">Registry</a></li>
+      <li>– <a href="#Plugins-Visibility">Visibility</a></li>
+      <li>– <a href="#Plugins-Virtuals">Virtuals</a></li>
     </ul>
 
     <a class="toc_title" href="#faq">
@@ -443,7 +445,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.2 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.3 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -759,7 +761,7 @@ customer.set("telephone", "555-555-1212");
       <br />
       Fetches a model from the database, using any attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched <tt>model</tt>,
-      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved.
+      or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved. If you need to constrain the query performed by fetch, you can call the <a href="#Model-query">query</a> method before calling fetch.
     </p>
 
 <pre>
@@ -1209,6 +1211,15 @@ Promise.all([admin1.save(), admin2.save()])
       <br />
       The <tt>withPivot</tt> method is used exclusively on <a href="#Model-belongsToMany">belongsToMany</a>
       relations, and allows for additional fields to be pulled from the joining table.
+    </p>
+
+    <p id="Model-updatePivot">
+      <b class="header">updatePivot</b><code>relation.updatePivot(attrs, [options])</code>
+      The <tt>updatePivot</tt> method is used exclusively on <a href="#Model-belongsToMany">belongsToMany</a>
+      relations, and allows for updating pivot rows on the joining table. If you wish to confine the update clause,
+      you may pass a <tt>query</tt> property on the options, which acts similar to the <a href="#Model-query">model.query</a> method.
+      If you are expecting an update and wish for an error (rejected promise) when no rows are updated, you can pass
+      <tt>{require: true}</tt> in the options.
     </p>
 
 <pre>
@@ -1763,13 +1774,24 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       Fetch the default set of models for this collection from the database,
       resetting the collection when they arrive. If you wish to trigger an error if the fetched collection
       is empty, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetched"</tt>
-      event will be fired when records are successfully retrieved.
+      event will be fired when records are successfully retrieved. If you need to constrain the query performed
+      by fetch, you can call the <a href="#Collection-query">query</a> method before calling fetch.
     </p>
 
     <p class="warning">
       If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
       in the <tt>options</tt> for the fetch call, or use the <a href="#Model-query">query</a> method,
       tapping into the knex <a href="http://knexjs.org/#Builder-column">column</a> method to specify which columns will be fetched.
+    </p>
+
+    <p>
+      The <tt>withRelated</tt> parameter may be specified to fetch the models of the collection,
+      eager loading any specified <a href="#Model-relations">relations</a> named on the model.
+      A single property, or an array of properties can be specified as a value for the <tt>withRelated</tt>
+      property. The results of these relation queries will be loaded into a <tt>relations</tt> property on
+      the respective models, may be retrieved with the <a href="#Model-related">related</a> method, and will
+      be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless
+      <tt>{shallow: true}</tt> is passed.
     </p>
 
     <p id="Collection-fetchOne">
@@ -2172,17 +2194,19 @@ Bookshelf.transaction(function(t) {
     <h2 id="Plugins">Plugins</h2>
 
     <ul>
-      <li id="Plugin-Registry">
+      <li id="Plugins-Registry">
         <b><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Model-Registry">Registry</a>:</b>
-
         Register models in a central location so that you can refer to them using
         a string in relations instead of having to require it every time. Helps
         deal with the challenges of circular module dependencies in Node.
       </li>
-      <li id="Plugin-Virtuals">
+      <li id="Plugins-Virtuals">
         <b><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Virtuals">Virtuals</a>:</b>
-
         Define virtual properties on your model to compute new values.
+      </li>
+      <li id="Plugins-Visibility">
+        <b><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a>:</b>
+        Specify a whitelist/blacklist of model attributes when serialized <a href="#Model-toJSON">toJSON</a>.
       </li>
     </ul>
 
@@ -2253,6 +2277,30 @@ process.stderr.on('data', function(data) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.6.3</b> &mdash; <small><i>February 9, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.2...0.6.3">Diff</a><br />
+      <ul>
+        <li>Added an <a href="updatePivot">updatePivot</a> method for updating tables on a "belongsToMany" relation. (#134, #230)</li>
+        <li>Allow mutating the options for passing constraints to eager loaded relations. (#151)</li>
+        <li>All keys of an object passed into sync are properly prefixed before sync. (#177)</li>
+        <li>Clearer error messages for debugging. (#204, #197)</li>
+        <li>Fixed error message for updates that don't affect rows. (#228)</li>
+        <li>Group by the correct key on "belongsTo.through" relations. (#214)</li>
+        <li>Ability to only use <tt>created_at</tt> or <tt>updated_at</tt> as timestamp properties. (#158)</li>
+        <li>Numerous documentation corrections, clarifications, enhancements.</li>
+        <li>Bumped Bluebird dependency to ~1.0.0.</li>
+      </ul>
+      <b>Plugins:</b>
+      <ul>
+        <li>Added the <a href="#Plugins-Registry">registry</a> plugin for registering models as strings,
+          helping with the circular dependency problem</li>
+        <li>Added the <a href="#Plugins-Virtuals">virtuals</a> plugin for getting/setting virtual (computed)
+          properties on the model.</li>
+        <li>Added the <a href="#Plugins-Visibility">visibility</a> plugin for specifying a whitelist/blacklist of
+          keys when a model is serialized with toJSON.</li>
+      </ul>
+    </p>
 
     <p>
       <b class="header">0.6.2</b> &mdash; <small><i>December 18, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.1...0.6.2">Diff</a><br />

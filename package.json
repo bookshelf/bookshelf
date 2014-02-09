@@ -5,7 +5,9 @@
   "main": "bookshelf.js",
   "scripts": {
     "test": "mocha -R spec test/index.js",
-    "doc": "groc -o docs --verbose dialects/base/collection.js dialects/**/*.js plugins/*.js bookshelf.js"
+    "doc": "groc -o docs --verbose dialects/base/collection.js dialects/**/*.js plugins/*.js bookshelf.js",
+    "release:patch": "git checkout master && export BOOKSHELF_DEV=0 && npm run-script test && npm run-script doc && git add . && git commit -m 'docs prep for release' && grunt release:patch",
+    "release:minor": "git checkout master && export BOOKSHELF_DEV=0 && npm run-script test && npm run-script doc && git add . && git commit -m 'docs prep for release' && grunt release:minor"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -25,7 +27,7 @@
     "inflection": "~1.2.x",
     "trigger-then": "~0.1.1",
     "knex": "~0.5.0",
-    "bluebird": ">=0.11.0",
+    "bluebird": "~1.0.0",
     "lodash": ">=2.0.0"
   },
   "devDependencies": {
