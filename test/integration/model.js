@@ -475,6 +475,19 @@ module.exports = function(Bookshelf) {
         });
       });
 
+      it('allows access to the query builder on the options object in the destroying event', function() {
+        var m = new Site({id: 1});
+        m.sync = function () {
+          var sync = stubSync;
+          sync.query = m.query();
+          return sync;
+        };
+        m.on('destroying', function(model, options) {
+          expect(options.query.whereIn).to.be.a.function;
+        });
+        return m.destroy();
+      });
+
     });
 
     describe('resetQuery', function() {
