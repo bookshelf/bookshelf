@@ -1213,6 +1213,14 @@ Promise.all([admin1.save(), admin2.save()])
       relations, and allows for additional fields to be pulled from the joining table.
     </p>
 
+<pre>
+var Tag = Bookshelf.Model.extend({
+  comments: function() {
+    return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
+  }
+});
+</pre>
+
     <p id="Model-updatePivot">
       <b class="header">updatePivot</b><code>relation.updatePivot(attrs, [options])</code>
       The <tt>updatePivot</tt> method is used exclusively on <a href="#Model-belongsToMany">belongsToMany</a>
@@ -1221,14 +1229,6 @@ Promise.all([admin1.save(), admin2.save()])
       If you are expecting an update and wish for an error (rejected promise) when no rows are updated, you can pass
       <tt>{require: true}</tt> in the options.
     </p>
-
-<pre>
-var Tag = Bookshelf.Model.extend({
-  comments: function() {
-    return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
-  }
-});
-</pre>
 
     <h3 id="Model-polymorphic-associations">Polymorphic Associations:</h3>
 
