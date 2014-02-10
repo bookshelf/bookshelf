@@ -129,7 +129,7 @@ exports.Model = ModelBase.extend({
     // Handle both `"key", value` and `{key: value}` -style arguments.
     if (key == null || typeof key === "object") {
       attrs = key || {};
-      options = val || {};
+      options = _.clone(val) || {};
     } else {
       (attrs = {})[key] = val;
       options = options ? _.clone(options) : {};
