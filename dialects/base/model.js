@@ -154,10 +154,14 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
   // during the "destroying" event, the model will not be destroyed.
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
+
+    var sync = this.sync(options);
+    options.query = sync.query
+
     return Promise.bind(this).then(function() {
       return this.triggerThen('destroying', this, options);
     }).then(function() {
-      return this.sync(options).del();
+      return sync.del();
     }).then(function(resp) {
       this.clear();
       return this.triggerThen('destroyed', this, resp, options);
