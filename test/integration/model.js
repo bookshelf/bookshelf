@@ -688,7 +688,7 @@ module.exports = function(Bookshelf) {
         expect(Bookshelf.Model.collection()).to.be.an.instanceOf(Bookshelf.Collection);
 
         var NewModel = Bookshelf.Model.extend({test: 1});
-        var newModelCollection = NewModel.collection([{id: 1}], {model: NewModel});
+        var newModelCollection = NewModel.collection([{id: 1}]);
 
         expect(newModelCollection).to.be.an.instanceOf(Bookshelf.Collection);
         expect(newModelCollection.at(0)).to.be.an.instanceOf(NewModel);

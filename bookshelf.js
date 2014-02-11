@@ -56,7 +56,7 @@ var Bookshelf = function(knex) {
 
   // Shortcut for creating a new collection with the current collection.
   ModelCtor.collection = function(rows, options) {
-    return new CollectionCtor((rows || []), _.extend(options, {model: this}));
+    return new CollectionCtor((rows || []), _.extend({}, options, {model: this}));
   };
 
   // The collection also references the correct `Model`, specified above, for creating
