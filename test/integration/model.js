@@ -273,7 +273,7 @@ module.exports = function(Bookshelf) {
         });
         return model.fetch();
       });
-      
+
       it('does not fail, when joining another table having some columns with the same names - #176',  function () {
         var model = new Site({id: 1});
         model.query(function (qb) {
@@ -678,6 +678,20 @@ module.exports = function(Bookshelf) {
           deepEqual(site.changed, {name: 'Changed site'});
         });
 
+      });
+
+    });
+
+    describe('Model.collection', function() {
+
+      it('creates a new collection for the current model', function() {
+        expect(Bookshelf.Model.collection()).to.be.an.instanceOf(Bookshelf.Collection);
+
+        var NewModel = Bookshelf.Model.extend({test: 1});
+        var newModelCollection = NewModel.collection([{id: 1}], {model: NewModel});
+
+        expect(newModelCollection).to.be.an.instanceOf(Bookshelf.Collection);
+        expect(newModelCollection.at(0)).to.be.an.instanceOf(NewModel);
       });
 
     });
