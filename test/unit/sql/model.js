@@ -1,5 +1,6 @@
 var Promise   = testPromise;
 var equal = require('assert').equal;
+var notStrictEqual = require('assert').notStrictEqual;
 var _ = require('lodash');
 
 module.exports = function() {
@@ -11,7 +12,7 @@ module.exports = function() {
 
   var Model = require(path.resolve(basePath + '/dialects/sql/model')).Model;
 
-  describe('Model', function () {
+  describe('Model unit', function () {
 
     describe('#save', function () {
 
@@ -21,9 +22,10 @@ module.exports = function() {
           query: {}
         };
 
-        model.sync = function () {
+        model.sync = function (opts) {
+          notStrictEqual(options, opts);
           return {
-            insert: function() {
+            insert: function(opts) {
               return Promise.resolve({});
             }
           };
@@ -32,6 +34,7 @@ module.exports = function() {
         return model.save(null, options).then(function () {
           equal(_.difference(Object.keys(options), ['query']).length, 0);
         });
+
       });
 
     });
