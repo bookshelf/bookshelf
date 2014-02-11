@@ -12,7 +12,7 @@ module.exports = function() {
 
   var Model = require(path.resolve(basePath + '/dialects/sql/model')).Model;
 
-  describe('Model unit', function () {
+  describe('SQL Model', function () {
 
     describe('#save', function () {
 
