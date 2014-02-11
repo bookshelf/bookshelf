@@ -309,8 +309,8 @@
       Model
     </a>
     <ul class="toc_section">
-      <li>– <a href="#Model-extend">extend</a></li>
-      <li>– <a href="#Model-forge">forge</a></li>
+      <li>– <i><a href="#Model-extend">extend</a></i></li>
+      <li>– <i><a href="#Model-forge">forge</a></i></li>
       <li>– <a href="#Model-constructor">constructor / initialize</a></li>
       <li>– <a href="#Model-tableName">tableName</a></li>
       <li>– <a href="#Model-idAttribute">idAttribute</a></li>
@@ -428,9 +428,7 @@
     </p>
 
     <p>
-      <b>Bookshelf</b> is a <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> ORM for Node.js,
-      built on <a href="http://knexjs.org">Knex</a> query builder.
-      It extends the Model &amp; Collection foundations of Backbone.js, providing <a href="#Bookshelf-transaction">transaction support</a>,
+      <b>Bookshelf</b> is a javascript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> and <a href="#faq-callbacks">traditional callback</a> interfaces, it extends the Model &amp; Collection patterns of Backbone.js, providing <a href="#Bookshelf-transaction">transaction support</a>,
       eager/nested-eager relation loading, <a href="#Model-polymorphic-associations">polymorphic associations</a>, and support for
       one-to-one, one-to-many, and many-to-many relations.
     </p>
@@ -490,6 +488,7 @@
       With a <a href="docs/bookshelf.html">concise, literate codebase</a>, Bookshelf is simple to
       read, understand, and extend. It doesn't force you to use any specific validation scheme,
       provides flexible and efficient relation/nested-relation loading, and first class transaction support.
+      It's a lean Object Relational Mapper, allowing you to drop down to the raw knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.
     </p>
 
     <p>
