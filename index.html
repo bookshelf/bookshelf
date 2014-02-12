@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.3)</span>
+      Bookshelf.js <span class="version">(0.6.4)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -311,6 +311,7 @@
     <ul class="toc_section">
       <li>– <i><a href="#Model-extend">extend</a></i></li>
       <li>– <i><a href="#Model-forge">forge</a></i></li>
+      <li>– <i><a href="#Model-collection">collection</a></i></li>
       <li>– <a href="#Model-constructor">constructor / initialize</a></li>
       <li>– <a href="#Model-tableName">tableName</a></li>
       <li>– <a href="#Model-idAttribute">idAttribute</a></li>
@@ -443,7 +444,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.3 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.4 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -657,6 +658,17 @@ Customer.forge({item: 'value'}).save().then(function() {
 });
 </pre>
 
+    <p id="Model-collection">
+      <b class="header">collection</b><code>Model.collection([models], [options])</code>
+      <br />
+      A simple static helper to instantiate a new <a href="#Collection">Collection</tt>, setting the current model as the collection's target.
+    </p>
+
+<pre>
+Customer.collection().fetch().then(function(collection) {
+  // ...
+})
+</pre>
 
     <p id="Model-constructor">
       <b class="header">constructor / initialize</b><code>new Model([attributes], [options])</code>
@@ -2278,7 +2290,12 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
-      <b class="header">0.6.3</b> &mdash; <small><i>February 9, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.2...0.6.3">Diff</a><br />
+      <b class="header">0.6.4</b> &mdash; <small><i>February 11, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.3...0.6.4">Diff</a><br />
+      Adds static method <a href="#Model-collection">Model.collection</a> as a shortcut for creating a collection with the current model.
+    </p>
+
+    <p>
+      <b class="header">0.6.3</b> &mdash; <small><i>February 9, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.2...0.6.3">Diff</a><br />
       <ul>
         <li>Added an <a href="updatePivot">updatePivot</a> method for updating tables on a "belongsToMany" relation. (#134, #230)</li>
         <li>Allow mutating the options for passing constraints to eager loaded relations. (#151)</li>
