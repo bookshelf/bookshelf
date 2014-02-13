@@ -75,6 +75,8 @@ exports.Relation = RelationBase.extend({
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
   key: function(keyName) {
+    this.morphType = (_.isObject(this.morphName)) ? this.morphName.type : this.morphName + '_type';
+    this.morphId   = (_.isObject(this.morphName)) ? this.morphName.id : this.morphName + '_id';
     if (this[keyName]) return this[keyName];
     if (keyName === 'otherKey') {
       return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
@@ -83,12 +85,12 @@ exports.Relation = RelationBase.extend({
       return this[keyName] = singularMemo(this.joinTable()) + '_' + this.throughIdAttribute;
     }
     if (keyName === 'foreignKey') {
-      if (this.type === 'morphTo') return this[keyName] = this.morphName + '_id';
+      if (this.type === 'morphTo') return this[keyName] = this.morphId;
       if (this.type === 'belongsTo') return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
-      if (this.isMorph()) return this[keyName] = this.morphName + '_id';
+      if (this.isMorph()) return this[keyName] = this.morphId;
       return this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
     }
-    if (keyName === 'morphKey') return this[keyName] = this.morphName + '_type';
+    if (keyName === 'morphKey') return this[keyName] = this.morphType;
     if (keyName === 'morphValue') return this[keyName] = this.parentTableName || this.targetTableName;
   },
 
