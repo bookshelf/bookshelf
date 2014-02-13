@@ -75,6 +75,8 @@ exports.Relation = RelationBase.extend({
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
   key: function(keyName) {
+    this.morphType = (_.isObject(this.morphName)) ? this.morphName.type : this.morphName + '_type';
+    this.morphId   = (_.isObject(this.morphName)) ? this.morphName.id : this.morphName + '_id';
     if (this[keyName]) return this[keyName];
     if (keyName === 'otherKey') {
       return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
