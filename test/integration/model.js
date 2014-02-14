@@ -650,7 +650,7 @@ module.exports = function(Bookshelf) {
         var model = new Bookshelf.Model();
         model.id = 1;
         equal(model.isNew(), false);
-        delete model.id;
+        model.set('id', null);
         equal(model.isNew(), true);
       });
 
