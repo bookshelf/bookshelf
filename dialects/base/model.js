@@ -156,7 +156,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
     options = options ? _.clone(options) : {};
 
     var sync = this.sync(options);
-    options.query = sync.query
+    options.query = sync.query;
 
     return Promise.bind(this).then(function() {
       return this.triggerThen('destroying', this, options);
