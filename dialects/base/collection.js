@@ -9,6 +9,7 @@ var Backbone  = require('backbone');
 var Events    = require('./events').Events;
 var Promise   = require('./promise').Promise;
 var ModelBase = require('./model').ModelBase;
+var Errors    = require('./errors').Errors;
 
 var array  = [];
 var push   = array.push;
@@ -152,6 +153,9 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
   }
 
 });
+
+// Include the errors on the collection
+_.extend(CollectionBase, Errors);
 
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];

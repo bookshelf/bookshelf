@@ -1,7 +1,6 @@
 var createError = require('create-error');
 
-var errors = {
-  NotFoundError: createError('NotFoundError')
-}
-
-exports.Errors = errors;
+exports.Errors = {
+  NotFoundError: createError('NotFoundError'),
+  EmptyError: createError('EmptyError')
+};
