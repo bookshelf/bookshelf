@@ -14,7 +14,7 @@ var Backbone = require('backbone');
 // checks you may need.
 var BaseSync = function() {};
 
-BaseSync.prototype = {
+_.extend(BaseSync.prototype, {
 
   // Return a single model object.
   first: function() {
@@ -43,7 +43,7 @@ BaseSync.prototype = {
     return Promise.fulfilled({});
   }
 
-};
+});
 
 BaseSync.extend = Backbone.Model.extend;
 

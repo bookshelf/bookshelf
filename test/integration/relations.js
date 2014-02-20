@@ -322,7 +322,7 @@ module.exports = function(Bookshelf) {
         });
 
       });
-      
+
       describe('Updating pivot tables with `updatePivot`', function () {
         var admin1_id;
         var admin2_id;
@@ -342,35 +342,27 @@ module.exports = function(Bookshelf) {
           return new Site({id: 1}).admins().detach();
         });
 
-        it('updates a single matching row inside the pivot table if an `id` is passed with the data', function() {
+        it('updates all rows inside the pivot table belonging to the current model', function() {
           var site1  = new Site({id: 1});
           return site1.admins()
-          .updatePivot({id: admin1_id, item: 'testvalue'})
-          .then(function (relation) {
-            return relation.withPivot(['item']).fetch().then(function (col) {
-              equal(col.get(admin1_id).pivot.get('item'), 'testvalue');
-              equal(col.get(admin2_id).pivot.get('item'), 'test');
+            .updatePivot({item: 'allupdated'})
+            .then(function (relation) {
+              return relation.withPivot(['item']).fetch().then(function (col) {
+                equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
+                equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
+              });
             });
-          });
-        });
-
-        it('updates all rows inside the pivot table belonging to the current model, if no `id` is passed with the data', function() {
-          var site1  = new Site({id: 1});
-          return site1.admins()
-          .updatePivot({item: 'allupdated'})
-          .then(function (relation) {
-            return relation.withPivot(['item']).fetch().then(function (col) {
-              equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
-              equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
-            });
-          });
 
         });
 
-        it('updates all rows, which match the passed in where-criterias', function() {
+        it('updates all rows, which match the passed in query-criteria', function() {
           var site1  = new Site({id: 1});
           return site1.admins()
-          .updatePivot({item: 'anotherupdate'}, null, {whereIn: ['admin_id', [admin1_id]]})
+          .updatePivot({item: 'anotherupdate'}, {
+            query: {
+              whereIn: ['admin_id', [admin1_id]]
+            }
+          })
           .then(function (relation) {
             return relation.withPivot(['item']).fetch().then(function (col) {
               equal(col.get(admin1_id).pivot.get('item'), 'anotherupdate');
@@ -617,6 +609,97 @@ module.exports = function(Bookshelf) {
               });
             });
           });
+      });
+
+    });
+
+    describe('Issue #212 - Skipping unnecessary queries', function () {
+      var oldAuthorSync;
+      var oldSiteSync;
+      var siteSyncCount = 0;
+      var author;
+
+      beforeEach(function () {
+        siteSyncCount = 0;
+      });
+
+      before(function () {
+        Photo.prototype.sync = function () {
+          return {
+            first: function () {
+              return Promise.resolve([{
+                id:1,
+                imageable_type: 'sites',
+                imageable_id: null
+              }]);
+            }
+          };
+        };
+
+        Author.prototype.sync = function () {
+          return {
+            select: function () {
+              return Promise.resolve([{
+                id:1,
+                dummy: 'author'
+              }]);
+            },
+            first: function () {
+              return Promise.resolve([{
+                id:1,
+                first_name: 'Johannes',
+                last_name: 'Lumpe',
+                site_id: null
+              }]);
+            }
+          };
+        };
+
+        Site.prototype.sync = function () {
+          siteSyncCount++;
+          return {
+            select: function () {
+              return Promise.resolve([{
+                id:1,
+                dummy: 'content'
+              }]);
+            },
+            first: function () {
+              return Promise.resolve([{
+                id:1,
+                dummy: 'content'
+              }]);
+            }
+          };
+        };
+
+      });
+
+      after(function () {
+        delete Photo.prototype.sync;
+        delete Author.prototype.sync;
+        delete Site.prototype.sync;
+      });
+
+      it('should not run a query for eagerly loaded `belongsTo` relations if the foreign key is null', function () {
+        var a = new Author({id: 1});
+
+        return a.fetch({withRelated:'site'})
+        .then(function (model) {
+          equal(siteSyncCount, 0);
+        }).catch(function (err){
+          console.log(err);
+        });
+
+      });
+
+      it('should not run a query for eagerly loaded `morphTo` relations if the foreign key is null', function () {
+        var p = new Photo({id: 1});
+
+        return p.fetch({withRelated:'imageable'})
+        .then(function () {
+          equal(siteSyncCount, 0);
+        });
       });
 
     });

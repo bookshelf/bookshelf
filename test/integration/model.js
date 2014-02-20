@@ -273,7 +273,7 @@ module.exports = function(Bookshelf) {
         });
         return model.fetch();
       });
-      
+
       it('does not fail, when joining another table having some columns with the same names - #176',  function () {
         var model = new Site({id: 1});
         model.query(function (qb) {
@@ -331,7 +331,7 @@ module.exports = function(Bookshelf) {
         return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
           throw new Error('This should not succeed');
         }, function(err) {
-          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {insert: true} option?');
+          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {method: "insert"} option?');
         });
 
       });
@@ -473,6 +473,19 @@ module.exports = function(Bookshelf) {
         return m.destroy().then(null, function(e) {
           equal(e.toString(), 'Error: You cannot destroy the first site');
         });
+      });
+
+      it('allows access to the query builder on the options object in the destroying event', function() {
+        var m = new Site({id: 1});
+        m.sync = function () {
+          var sync = stubSync;
+          sync.query = m.query();
+          return sync;
+        };
+        m.on('destroying', function(model, options) {
+          expect(options.query.whereIn).to.be.a.function;
+        });
+        return m.destroy();
       });
 
     });
@@ -637,7 +650,7 @@ module.exports = function(Bookshelf) {
         var model = new Bookshelf.Model();
         model.id = 1;
         equal(model.isNew(), false);
-        delete model.id;
+        model.set('id', null);
         equal(model.isNew(), true);
       });
 
@@ -678,6 +691,20 @@ module.exports = function(Bookshelf) {
           deepEqual(site.changed, {name: 'Changed site'});
         });
 
+      });
+
+    });
+
+    describe('Model.collection', function() {
+
+      it('creates a new collection for the current model', function() {
+        expect(Bookshelf.Model.collection()).to.be.an.instanceOf(Bookshelf.Collection);
+
+        var NewModel = Bookshelf.Model.extend({test: 1});
+        var newModelCollection = NewModel.collection([{id: 1}]);
+
+        expect(newModelCollection).to.be.an.instanceOf(Bookshelf.Collection);
+        expect(newModelCollection.at(0)).to.be.an.instanceOf(NewModel);
       });
 
     });

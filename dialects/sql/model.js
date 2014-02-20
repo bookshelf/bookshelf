@@ -130,7 +130,7 @@ exports.Model = ModelBase.extend({
     // Handle both `"key", value` and `{key: value}` -style arguments.
     if (key == null || typeof key === "object") {
       attrs = key || {};
-      options = val || {};
+      options = _.clone(val) || {};
     } else {
       (attrs = {})[key] = val;
       options = options ? _.clone(options) : {};
@@ -186,7 +186,7 @@ exports.Model = ModelBase.extend({
         if (method === 'insert' && this.id == null) {
           this.attributes[this.idAttribute] = this.id = resp[0];
         } else if (method === 'update' && resp === 0) {
-          throw new Error('No rows were affected in the update, did you mean to pass the {insert: true} option?');
+          throw new Error('No rows were affected in the update, did you mean to pass the {method: "insert"} option?');
         }
 
         // In case we need to reference the `previousAttributes` for the this

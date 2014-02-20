@@ -93,7 +93,7 @@ exports.Collection = CollectionBase.extend({
       .bind(this)
       .then(function() {
         if (relatedData && (relatedData.type === 'belongsToMany' || relatedData.isThrough())) {
-          return this.attach(model, options);
+          return this.attach(model, _.omit(options, 'query'));
         }
       })
       .then(function() {
