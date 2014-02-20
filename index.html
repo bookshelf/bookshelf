@@ -1827,9 +1827,7 @@ new Site({id:1})
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
       <br />
-      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.map</tt> call, this will call the
-      underscore <a href="http://underscorejs.org/#map">map</a> on each of the models in the collection,
-      returning a promise which will be resolved with the array of fully settled responses from the map call.
+      Shortcut for calling <tt>Promise.map(collection.models, iterator)</tt> with an optionally bound context, returning a promise which is resolved with the result of the map.
     </p>
 
 <pre>
@@ -1842,6 +1840,27 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
 }).then(function(resp) {
 
   // resp: ['1-saved', '2-saved', '3-saved']
+
+});
+</pre>
+
+    <p id="Collection-reduceThen">
+      <b class="header">reduceThen</b><code>collection.reduceThen(iterator, [memo], [context])</code>
+      <br />
+      Shortcut for calling <tt>Promise.reduce(collection.models, iterator, memo)</tt> with an optionally bound context, returning a promise which is resolved with the result of the reduce.
+    </p>
+
+<pre>
+new Collection([{id: 1}, {id: 2}, {id: 3}]).reduceThen(function(memo, model) {
+
+  return model.save().then(function() {
+    memo++;
+    return memo;
+  });
+
+}, 0).then(function(saved) {
+
+  // resp: 3
 
 });
 </pre>
