@@ -7,7 +7,6 @@ var Helpers       = require('./helpers').Helpers;
 var EagerRelation = require('./eager').EagerRelation;
 
 var ModelBase = require('../base/model').ModelBase;
-var Errors    = require('../base/errors').Errors;
 var Promise   = require('../base/promise').Promise;
 
 exports.Model = ModelBase.extend({
@@ -81,7 +80,7 @@ exports.Model = ModelBase.extend({
       // Jump the rest of the chain if the response doesn't exist...
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Errors.NotFoundError();
+          if (options.require) throw new ModelBase.NotFoundError();
           return Promise.reject(null);
         }
       })
