@@ -80,7 +80,7 @@ exports.Model = ModelBase.extend({
       // Jump the rest of the chain if the response doesn't exist...
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Error('EmptyResponse');
+          if (options.require) throw new ModelBase.NotFoundError();
           return Promise.reject(null);
         }
       })

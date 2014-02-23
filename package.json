@@ -27,6 +27,7 @@
     "inflection": "~1.2.x",
     "trigger-then": "~0.1.1",
     "knex": "~0.5.0",
+    "create-error": "~0.3.1",
     "bluebird": "~1.0.0",
     "lodash": ">=2.0.0"
   },

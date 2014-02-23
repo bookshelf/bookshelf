@@ -39,6 +39,13 @@ module.exports = function(Bookshelf) {
           .fetch();
       });
 
+      it('can require items in the response', function() {
+        return expect(Bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .query('where', 'id', '=', '1000')
+          .fetch({require: true})).to.be.rejectedWith(Bookshelf.Collection.EmptyError);
+      });
+
     });
 
     describe('fetchOne', function() {
@@ -69,7 +76,7 @@ module.exports = function(Bookshelf) {
         return expect(new Site({id:1})
           .authors()
           .query({where: {id: 40}})
-          .fetchOne({require: true})).to.be.rejected;
+          .fetchOne({require: true})).to.be.rejectedWith(Site.NotFoundError);
 
       });
 

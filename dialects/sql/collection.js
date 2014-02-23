@@ -26,7 +26,7 @@ exports.Collection = CollectionBase.extend({
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Error('EmptyResponse');
+          if (options.require) throw new CollectionBase.EmptyError();
           return Promise.reject(null);
         }
       })
