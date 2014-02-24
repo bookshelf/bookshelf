@@ -6,6 +6,17 @@ module.exports = function(Bookshelf) {
 
   describe('Relations', function() {
 
+    var output  = require('./output/Relations');
+    var dialect = Bookshelf.knex.client.dialect;
+    var json    = function(model) {
+      return JSON.parse(JSON.stringify(model));
+    };
+    var checkTest = function(ctx) {
+      return function(resp) {
+        expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);
+      };
+    };
+
     var objs        = require('./helpers/objects')(Bookshelf);
     var Relation    = objs.Relation;
     var Models      = objs.Models;
@@ -44,28 +55,31 @@ module.exports = function(Bookshelf) {
           return new Blog({id: 4})
             .fetch()
             .then(function(model) {
-              return model.site().fetch({log: true});
-            });
+              return model.site().fetch();
+            }).then(checkTest(this));
         });
 
         it('handles hasMany (posts)', function() {
           return new Blog({id: 1})
             .fetch()
             .then(function(model) {
-              return model.posts().fetch({log: true});
-            });
+              return model.posts().fetch();
+            })
+            .then(checkTest(this));
         });
 
         it('handles hasOne (meta)', function() {
           return new Site({id: 1})
             .meta()
-            .fetch({log: true});
+            .fetch()
+            .then(checkTest(this));
         });
 
         it('handles belongsToMany (posts)', function() {
           return new Author({id: 1})
             .posts()
-            .fetch({log: true});
+            .fetch()
+            .then(checkTest(this));
         });
 
       });
@@ -74,23 +88,20 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasOne" relationships correctly (site -> meta)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['meta']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "hasMany" relationships correctly (site -> authors, blogs)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['authors', 'blogs']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "belongsTo" relationships correctly (blog -> site)', function() {
           return new Blog({id: 3}).fetch({
-            log: true,
             withRelated: ['site']
-          });
+          }).then(checkTest(this));
         });
 
         // it('Throws an error if you try to fetch a related object without the necessary key', function() {
@@ -99,16 +110,14 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "belongsToMany" models correctly (post -> tags)', function() {
           return new Post({id: 1}).fetch({
-            log: true,
             withRelated: ['tags']
-          });
+          }).then(checkTest(this));
         });
 
         it('Attaches an empty related model or collection if the `EagerRelation` comes back blank', function() {
           return new Site({id: 3}).fetch({
-            log: true,
             withRelated: ['meta', 'blogs', 'authors.posts']
-          });
+          }).then(checkTest(this));
         });
 
       });
@@ -117,32 +126,28 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasOne" models correctly (sites -> meta)', function() {
           return new Sites().fetch({
-            log: true,
             withRelated: ['meta']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "belongsTo" models correctly (blogs -> site)', function() {
           return new Blogs().fetch({
-            log: true,
             withRelated: ['site']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "hasMany" models correctly (site -> blogs)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['blogs']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "belongsToMany" models correctly (posts -> tags)', function() {
           return new Posts()
             .query('where', 'blog_id', '=', 1)
             .fetch({
-              log: true,
               withRelated: ['tags']
-            });
+            }).then(checkTest(this));
         });
 
       });
@@ -151,23 +156,20 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['authors.ownPosts']
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['authors.posts']
-          });
+          }).then(checkTest(this));
         });
 
         it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function() {
           return new Site({id: 1}).fetch({
-            log: true,
             withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
-          });
+          }).then(checkTest(this));
         });
 
       });
@@ -176,9 +178,8 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)', function() {
           return new Sites().fetch({
-            log: true,
             withRelated: ['authors.ownPosts']
-          });
+          }).then(checkTest(this));
         });
 
       });
@@ -186,13 +187,13 @@ module.exports = function(Bookshelf) {
       describe('Model & Collection - load', function() {
 
         it('eager loads relations on a populated model (site -> blogs, authors.site)', function() {
-          return new Site({id: 1}).fetch({log: true}).then(function(m) {
+          return new Site({id: 1}).fetch().tap(checkTest(this)).then(function(m) {
             return m.load(['blogs', 'authors.site']);
           });
         });
 
         it('eager loads attributes on a collection (sites -> blogs, authors.site)', function() {
-          return new Sites().fetch({log: true}).then(function(c) {
+          return new Sites().fetch().tap(checkTest(this)).then(function(c) {
             return c.load(['blogs', 'authors.site']);
           });
         });
@@ -391,12 +392,14 @@ module.exports = function(Bookshelf) {
         it('works with many-to-many (user -> roles)', function() {
           return new User({uid: 1})
             .roles()
-            .fetch({log: true});
+            .fetch()
+            .tap(checkTest(this));
         });
 
         it('works with eager loaded many-to-many (user -> roles)', function() {
           return new User({uid: 1})
-            .fetch({log: true, withRelated: ['roles']});
+            .fetch({withRelated: ['roles']})
+            .tap(checkTest(this));
         });
 
       });
@@ -406,37 +409,38 @@ module.exports = function(Bookshelf) {
         it('handles morphOne (photo)', function() {
           return new Author({id: 1})
             .photo()
-            .fetch({log: true});
+            .fetch()
+            .tap(checkTest(this));
         });
 
         it('handles morphMany (photo)', function() {
           return new Site({id: 1})
             .photos()
-            .fetch({log: true});
+            .fetch().tap(checkTest(this));
         });
 
         it('handles morphTo (imageable "authors")', function() {
           return new Photo({imageable_id: 1, imageable_type: 'authors'})
             .imageable()
-            .fetch({log: true});
+            .fetch().tap(checkTest(this));
         });
 
         it('handles morphTo (imageable "sites")', function() {
           return new Photo({imageable_id: 1, imageable_type: 'sites'})
             .imageable()
-            .fetch({log: true});
+            .fetch().tap(checkTest(this));
         });
 
         it('eager loads morphMany (sites -> photos)', function() {
-          return new Sites().fetch({log: true, withRelated: ['photos']});
+          return new Sites().fetch({withRelated: ['photos']}).tap(checkTest(this));
         });
 
         it('eager loads morphTo (photos -> imageable)', function() {
-          return new Photos().fetch({log: true, withRelated: ['imageable']});
+          return new Photos().fetch({withRelated: ['imageable']}).tap(checkTest(this));
         });
 
         it('eager loads beyond the morphTo, where possible', function() {
-          return new Photos().fetch({log: true, withRelated: ['imageable.authors']});
+          return new Photos().fetch({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
       });
@@ -444,33 +448,31 @@ module.exports = function(Bookshelf) {
       describe('`through` relations', function() {
 
         it('handles hasMany `through`', function() {
-          return new Blog({id: 1}).comments().fetch({log: true});
+          return new Blog({id: 1}).comments().fetch().tap(checkTest(this));
         });
 
         it('eager loads hasMany `through`', function() {
           return new Blogs().query({where: {site_id: 1}}).fetch({
-            log: true,
             withRelated: 'comments'
-          });
+          }).then(checkTest(this));
         });
 
         it('handles hasOne `through`', function() {
-          return new Site({id: 1}).info().fetch({log: true});
+          return new Site({id: 1}).info().fetch().tap(checkTest(this));
         });
 
         it('eager loads hasOne `through`', function() {
           return new Sites().query('where', 'id', '<', 3).fetch({
-            log: true,
             withRelated: 'info'
-          });
+          }).then(checkTest(this));
         });
 
         it('eager loads belongsToMany `through`', function() {
-          return new Authors().fetch({log: true, withRelated: 'blogs'});
+          return new Authors().fetch({withRelated: 'blogs'}).tap(checkTest(this));
         });
 
         it('eager loads belongsTo `through`', function() {
-          return new Comments().fetch({log: true, withRelated: 'blog'});
+          return new Comments().fetch({withRelated: 'blog'}).tap(checkTest(this));
         });
 
       });
@@ -524,13 +526,13 @@ module.exports = function(Bookshelf) {
 
       it('#65 - should eager load correctly for models', function() {
 
-        return new Hostname({hostname: 'google.com'}).fetch({log: true, withRelated: 'instance'});
+        return new Hostname({hostname: 'google.com'}).fetch({withRelated: 'instance'}).tap(checkTest(this));
 
       });
 
       it('#65 - should eager load correctly for collections', function() {
 
-        return new Bookshelf.Collection([], {model: Hostname}).fetch({log: true,  withRelated: 'instance'});
+        return new Bookshelf.Collection([], {model: Hostname}).fetch({ withRelated: 'instance'}).tap(checkTest(this));
 
       });
 

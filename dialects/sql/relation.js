@@ -98,9 +98,9 @@ exports.Relation = RelationBase.extend({
 
     // The base select column
     if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
-      knex.columns.push(this.targetTableName + '.*');
+      knex.column(this.targetTableName + '.*');
     } else if (_.isArray(options.columns) && options.columns.length > 0) {
-      push.apply(knex.columns, options.columns);
+      knex.columns(options.columns);
     }
 
     // The `belongsToMany` and `through` relations have joins & pivot columns.
@@ -125,7 +125,7 @@ exports.Relation = RelationBase.extend({
     columns.push(this.key('foreignKey'));
     if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
     push.apply(columns, this.pivotColumns);
-    push.apply(knex.columns, _.map(columns, function(col) {
+    knex.columns(_.map(columns, function(col) {
       return joinTable + '.' + col + ' as _pivot_' + col;
     }));
   },

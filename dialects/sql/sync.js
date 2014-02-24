@@ -65,37 +65,44 @@ _.extend(Sync.prototype, {
     return Promise.bind(this).then(function() {
       return this.syncing.triggerThen('fetching', this.syncing, columns, options);
     }).then(function() {
-      return this.query.select(columns);
+      return tap(this.query.select(columns), options);
     });
   }),
 
   // Issues an `insert` command on the query - only used by models.
   insert: Promise.method(function() {
     var syncing = this.syncing;
-    return this.query
-      .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+    return tap(this.query
+      .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute), this.options);
   }),
 
   // Issues an `update` command on the query - only used by models.
   update: Promise.method(function(attrs) {
     var syncing = this.syncing, query = this.query;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (query.wheres.length === 0) {
+    if (_.where(query.statements, {type: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
-    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+    return tap(query.update(syncing.format(_.extend(Object.create(null), attrs))), this.options);
   }),
 
   // Issues a `delete` command on the query.
   del: Promise.method(function() {
     var query = this.query, syncing = this.syncing;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (query.wheres.length === 0) {
+    if (_.where(query.statements, {type: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }
-    return this.query.del();
+    return tap(this.query.del(), this.options);
   })
 
 });
+
+function tap(chain, options) {
+  if (chain.tapSql && options && options.tapSql) {
+    chain.tapSql(options.tapSql);
+  }
+  return chain;
+}
 
 exports.Sync = Sync;

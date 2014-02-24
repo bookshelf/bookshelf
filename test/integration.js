@@ -44,7 +44,6 @@ module.exports = function(Bookshelf) {
   });
 
   _.each([MySQL, PostgreSQL, SQLite3], function(bookshelf) {
-
     describe('Dialect: ' + bookshelf.knex.client.dialect, function() {
 
       before(function() {

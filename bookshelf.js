@@ -34,7 +34,7 @@ var Bookshelf = function(knex) {
 
   // If the knex isn't a `Knex` instance, we'll assume it's
   // a compatible config object and pass it through to create a new instance.
-  if (!knex.client || !(knex.client instanceof Knex.ClientBase)) {
+  if (_.isString(knex.client)) {
     knex = new Knex(knex);
   }
 

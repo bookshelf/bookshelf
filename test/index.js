@@ -1,11 +1,17 @@
 var Promise = require('../dialects/base/promise').Promise;
 
 global.testPromise = Promise;
+var testQueryCache = global.testQueryCache = [];
+var oldIt = it;
+
+it = function() {
+  testQueryCache = [];
+  return oldIt.apply(this, arguments);
+};
 
 process.stderr.on('data', function(data) {
   console.log(data);
 });
-
 
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
@@ -45,17 +51,5 @@ describe('Unit Tests', function () {
 });
 
 describe('Integration Tests', function () {
-
-  var helper = require('./integration/helpers/logger');
-
-  before(function() {
-    helper.setLib(this);
-  });
-
   require('./integration')(Bookshelf);
-
-  after(function() {
-    helper.writeResult();
-  });
-
 });

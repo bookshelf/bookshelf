@@ -357,7 +357,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -368,7 +368,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         authors: [],
         blogs: []
@@ -379,7 +379,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         },
         blogs: [],
         authors: []
@@ -408,7 +408,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     },
@@ -433,7 +433,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     },
@@ -458,7 +458,7 @@ module.exports = {
         id: 3,
         name: 'backbonejs.org',
         meta: {
-        
+
         }
       }]
     }
@@ -1828,7 +1828,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -1904,7 +1904,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -1980,7 +1980,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     }
@@ -2102,7 +2102,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -2222,7 +2222,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     },
@@ -2342,7 +2342,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageable: {
-        
+
         }
       }]
     }
@@ -2972,7 +2972,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageableParsed: {
-        
+
         }
       }]
     },
@@ -3068,7 +3068,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageableParsed: {
-        
+
         }
       }]
     },
@@ -3164,7 +3164,7 @@ module.exports = {
         imageable_id: 10,
         imageable_type: 'sites',
         imageableParsed: {
-        
+
         }
       }]
     }
