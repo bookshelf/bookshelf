@@ -63,6 +63,7 @@ module.exports = function(Bookshelf) {
       require('./integration/model')(bookshelf);
       require('./integration/collection')(bookshelf);
       require('./integration/relations')(bookshelf);
+      require('./integration/plugin')(bookshelf);
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);

@@ -96,17 +96,19 @@ _.extend(Bookshelf.prototype, Events, {
 
   // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
   // injecting the current instance into the plugin, which should be a module.exports.
-  plugin: function(plugin) {
+  plugin: function(plugin, options) {
     if (_.isString(plugin)) {
       try {
-        require('./plugins/' + plugin)(this);
+        require('./plugins/' + plugin)(this, options);
       } catch (e) {
-        require(plugin)(this);
+        require(plugin)(this, options);
       }
     } else if (_.isArray(plugin)) {
-      _.each(plugin, this.plugin, this);
+      _.each(plugin, function (plugin) {
+        this.plugin(plugin, options);
+      }, this);
     } else {
-      plugin(this);
+      plugin(this, options);
     }
     return this;
   }
