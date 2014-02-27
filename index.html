@@ -2167,6 +2167,22 @@ collection
         </ul>
       </li>
     </ul>
+    
+    <p>For <tt>fetching</tt> events, <tt>columns</tt> is an array of columns that will be passed to knex.
+    If you want to modify the columns, make sure to preserve the reference:
+    </p>
+  <pre>
+  // won't work
+  function (model, columns) {
+    columns = ['my', 'columns'];
+  }
+
+  // will work
+  function (model, columns) {
+    columns.length = 0;
+    columns.push('my', 'columns');
+  }
+  </pre>
 
   <h2 id="Utility">Utility</h2>
 
