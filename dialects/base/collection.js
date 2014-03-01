@@ -144,7 +144,7 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
 
   // Run "reduce" over the models in the collection.
   reduceThen: function(iterator, initialValue, context) {
-    return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue);
+    return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
   },
 
   fetch: function() {

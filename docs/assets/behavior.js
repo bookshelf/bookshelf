@@ -17,7 +17,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "foldPrefix": "^",
           "name": "JavaScript"
         },
-        "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/bookshelf.js",
+        "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/bookshelf.js",
         "projectPath": "bookshelf.js",
         "targetPath": "bookshelf",
         "pageTitle": "bookshelf",
@@ -29,8 +29,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.6.4",
-            "slug": "bookshelfjs-064"
+            "title": "Bookshelf.js 0.6.5",
+            "slug": "bookshelfjs-065"
           },
           "depth": 2
         }
@@ -63,7 +63,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/collection.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/collection.js",
                 "projectPath": "dialects/base/collection.js",
                 "targetPath": "dialects/base/collection",
                 "pageTitle": "dialects/base/collection",
@@ -93,7 +93,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/eager.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/eager.js",
                 "projectPath": "dialects/base/eager.js",
                 "targetPath": "dialects/base/eager",
                 "pageTitle": "dialects/base/eager",
@@ -123,7 +123,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/events.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/events.js",
                 "projectPath": "dialects/base/events.js",
                 "targetPath": "dialects/base/events",
                 "pageTitle": "dialects/base/events",
@@ -153,7 +153,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/model.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/model.js",
                 "projectPath": "dialects/base/model.js",
                 "targetPath": "dialects/base/model",
                 "pageTitle": "dialects/base/model",
@@ -183,7 +183,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/promise.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/promise.js",
                 "projectPath": "dialects/base/promise.js",
                 "targetPath": "dialects/base/promise",
                 "pageTitle": "dialects/base/promise",
@@ -203,7 +203,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/relation.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/relation.js",
                 "projectPath": "dialects/base/relation.js",
                 "targetPath": "dialects/base/relation",
                 "pageTitle": "dialects/base/relation",
@@ -233,7 +233,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/base/sync.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/sync.js",
                 "projectPath": "dialects/base/sync.js",
                 "targetPath": "dialects/base/sync",
                 "pageTitle": "dialects/base/sync",
@@ -273,7 +273,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/collection.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/collection.js",
                 "projectPath": "dialects/sql/collection.js",
                 "targetPath": "dialects/sql/collection",
                 "pageTitle": "dialects/sql/collection",
@@ -303,7 +303,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/eager.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/eager.js",
                 "projectPath": "dialects/sql/eager.js",
                 "targetPath": "dialects/sql/eager",
                 "pageTitle": "dialects/sql/eager",
@@ -333,7 +333,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/helpers.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/helpers.js",
                 "projectPath": "dialects/sql/helpers.js",
                 "targetPath": "dialects/sql/helpers",
                 "pageTitle": "dialects/sql/helpers",
@@ -363,7 +363,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/model.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/model.js",
                 "projectPath": "dialects/sql/model.js",
                 "targetPath": "dialects/sql/model",
                 "pageTitle": "dialects/sql/model",
@@ -393,7 +393,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/relation.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/relation.js",
                 "projectPath": "dialects/sql/relation.js",
                 "targetPath": "dialects/sql/relation",
                 "pageTitle": "dialects/sql/relation",
@@ -423,7 +423,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/dialects/sql/sync.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/sync.js",
                 "projectPath": "dialects/sql/sync.js",
                 "targetPath": "dialects/sql/sync",
                 "pageTitle": "dialects/sql/sync",
@@ -465,7 +465,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/plugins/exec.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/exec.js",
             "projectPath": "plugins/exec.js",
             "targetPath": "plugins/exec",
             "pageTitle": "plugins/exec",
@@ -495,7 +495,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/plugins/registry.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/registry.js",
             "projectPath": "plugins/registry.js",
             "targetPath": "plugins/registry",
             "pageTitle": "plugins/registry",
@@ -525,7 +525,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/plugins/virtuals.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/virtuals.js",
             "projectPath": "plugins/virtuals.js",
             "targetPath": "plugins/virtuals",
             "pageTitle": "plugins/virtuals",
@@ -555,7 +555,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf/plugins/visibility.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/visibility.js",
             "projectPath": "plugins/visibility.js",
             "targetPath": "plugins/visibility",
             "pageTitle": "plugins/visibility",

@@ -109,7 +109,7 @@ during the "destroying" event, the model will not be destroyed.</p></div></div><
     <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">?</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">:</span> <span class="p">{};</span>
 
     <span class="kd">var</span> <span class="nx">sync</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">sync</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
-    <span class="nx">options</span><span class="p">.</span><span class="nx">query</span> <span class="o">=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">query</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">query</span> <span class="o">=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">query</span><span class="p">;</span>
 
     <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">triggerThen</span><span class="p">(</span><span class="s1">&#39;destroying&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>

@@ -5,15 +5,15 @@ Create a central registry of model/collection constructors to</p>
   <span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;lodash&#39;</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Set up the methods for storing and retrieving models
 on the Bookshelf instance.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">model</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">ModelCtor</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_models</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_models</span> <span class="o">||</span> <span class="p">{};</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">ModelCtor</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">_models</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_models</span> <span class="o">||</span> <span class="p">{};</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">_models</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">ModelCtor</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_models</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
   <span class="p">};</span>
   <span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">collection</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">CollectionCtor</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span> <span class="o">||</span> <span class="p">{};</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">CollectionCtor</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span> <span class="o">||</span> <span class="p">{};</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">CollectionCtor</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_collections</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
