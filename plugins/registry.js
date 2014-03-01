@@ -37,6 +37,7 @@ module.exports = function (Bookshelf) {
   }
 
   var Model = Bookshelf.Model;
+  var Collection = Bookshelf.Collection;
 
   // Re-implement the `Bookshelf.Model` relation methods to include a check for the registered model.
   _.each(['hasMany', 'hasOne', 'belongsToMany', 'morphOne', 'morphMany', 'belongsTo', 'through'], function(method) {
@@ -54,6 +55,12 @@ module.exports = function (Bookshelf) {
     return morphTo.apply(this, [relationName].concat(_.map(_.rest(arguments), function(model) {
       return resolveModel(model);
     }, this)));
+  };
+
+  // The `through` method exists on the Collection as well, for `hasMany` / `belongsToMany` through relations.
+  var collectionThrough = Collection.prototype.through;
+  Collection.prototype.through = function(Target) {
+    return collectionThrough.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
   };
 
 };
