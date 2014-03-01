@@ -9,15 +9,15 @@ module.exports = function (Bookshelf) {
   // Set up the methods for storing and retrieving models
   // on the Bookshelf instance.
   Bookshelf.model = function(name, ModelCtor) {
+    this._models = this._models || {};
     if (ModelCtor) {
-      this._models = this._models || {};
       this._models[name] = ModelCtor;
     }
     return this._models[name];
   };
   Bookshelf.collection = function(name, CollectionCtor) {
+    this._collections = this._collections || {};
     if (CollectionCtor) {
-      this._collections = this._collections || {};
       this._collections[name] = CollectionCtor;
     }
     return this._collections[name];
