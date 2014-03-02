@@ -145,6 +145,25 @@ module.exports = function(Bookshelf) {
         return authors.create({first_name: 'Test', last_name: 'User'});
       });
 
+      it('should populate the nested relations with the proper keys', function() {
+
+        return new Author({id: 1}).fetch({withRelated: 'site.photos'}).then(function(author) {
+
+          return author.related('site').related('photos').create({
+            url: 'http://image.dev',
+            caption: 'this is a test image'
+          });
+
+        }).then(function(photo) {
+
+          expect(photo.get('url')).to.equal('http://image.dev');
+
+          return photo.destroy();
+
+        });
+
+      });
+
 
     });
 

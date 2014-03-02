@@ -67,7 +67,7 @@ function eagerLoadHelper(relation, relationName, handled, options) {
 
     // If there is a response, fetch additional nested eager relations, if any.
     if (resp.length > 0 && options.withRelated) {
-      var relatedModel = relatedData.createModel();
+      var relatedModel = relatedData.createModel(resp[0]);
 
       // If this is a `morphTo` relation, we need to do additional processing
       // to ensure we don't try to load any relations that don't look to exist.
