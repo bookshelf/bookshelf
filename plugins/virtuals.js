@@ -94,10 +94,10 @@ module.exports = function (Bookshelf) {
     return attrs;
   }
 
-  function setVirtual(ctx, key, value) {
-    var virtual = ctx.virtuals && ctx.virtuals[key];
+  function setVirtual(key, value) {
+    var virtual = this.virtuals && this.virtuals[key];
     if (virtual && virtual.set) {
-      virtual.set.call(ctx, value);
+      virtual.set.call(this, value);
       return this;
     }
   }
