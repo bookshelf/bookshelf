@@ -99,7 +99,9 @@ exports.Model = ModelBase.extend({
     return sync.tap(function(response) {
       return this.triggerThen('fetched', this, response, options);
     })
-    .yield(this)
+    .then(function() {
+      return options.json ? Helpers.json(this) : this;
+    })
     .caught(function(err) {
       if (err === null) return err;
       throw err;

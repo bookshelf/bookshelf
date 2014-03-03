@@ -47,6 +47,10 @@ exports.Helpers = {
       obj._knex[method].apply(obj._knex, args.slice(1));
     }
     return obj;
+  },
+
+  json: function(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 
 };

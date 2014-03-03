@@ -39,6 +39,21 @@ module.exports = function(Bookshelf) {
           .fetch();
       });
 
+      it('allows passing {json: true} in the options to return json rather than the populated collection', function() {
+        return Bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .fetch({json: true}).then(function(obj) {
+            expect(obj).to.have.length(5);
+            expect(obj[0]).to.eql({
+              "id":1,
+              "owner_id":1,
+              "blog_id":1,
+              "name":"This is a new Title!",
+              "content":"Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est."
+            });
+          });
+      });
+
     });
 
     describe('fetchOne', function() {
