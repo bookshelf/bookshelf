@@ -66,6 +66,11 @@ module.exports = function (bookshelf) {
       m.set('fullName', 'Jack Shmoe');
       equal(m.get('firstName'), 'Jack');
       equal(m.get('lastName'), 'Shmoe');
+
+      m.set({fullName: 'Peter Griffin', dogName:'Brian'});
+      equal(m.get('firstName'), 'Peter');
+      equal(m.get('lastName'), 'Griffin');
+      equal(m.get('dogName'), 'Brian');
     });
 
     it('virtuals are included in the `toJSON` result by default', function () {
