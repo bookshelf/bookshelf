@@ -67,10 +67,16 @@ module.exports = function (bookshelf) {
       equal(m.get('firstName'), 'Jack');
       equal(m.get('lastName'), 'Shmoe');
 
+      // setting virtual should not set attribute
+      equal(m.get('fullName'), undefined);
+
       m.set({fullName: 'Peter Griffin', dogName:'Brian'});
       equal(m.get('firstName'), 'Peter');
       equal(m.get('lastName'), 'Griffin');
       equal(m.get('dogName'), 'Brian');
+
+      // setting virtual should not set attribute
+      equal(m.get('fullName'), undefined);
     });
 
     it('virtuals are included in the `toJSON` result by default', function () {
