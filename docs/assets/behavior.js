@@ -11,12 +11,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "language": {
           "nameMatchers": [".js"],
           "pygmentsLexer": "javascript",
+          "multiLineComment": ["/*", "*", "*/"],
           "singleLineComment": ["//"],
+          "ignorePrefix": "}",
+          "foldPrefix": "^",
           "name": "JavaScript"
         },
-        "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/bookshelf.js",
+        "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/bookshelf.js",
         "projectPath": "bookshelf.js",
         "targetPath": "bookshelf",
+        "pageTitle": "bookshelf",
         "title": "bookshelf"
       },
       "depth": 1,
@@ -25,8 +29,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.6.7",
-            "slug": "bookshelfjs-067"
+            "title": "Bookshelf.js 0.6.8",
+            "slug": "bookshelfjs-068"
           },
           "depth": 2
         }
@@ -53,12 +57,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/collection.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/collection.js",
                 "projectPath": "dialects/base/collection.js",
                 "targetPath": "dialects/base/collection",
+                "pageTitle": "dialects/base/collection",
                 "title": "collection"
               },
               "depth": 3,
@@ -79,12 +87,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/eager.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/eager.js",
                 "projectPath": "dialects/base/eager.js",
                 "targetPath": "dialects/base/eager",
+                "pageTitle": "dialects/base/eager",
                 "title": "eager"
               },
               "depth": 3,
@@ -105,12 +117,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/events.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/events.js",
                 "projectPath": "dialects/base/events.js",
                 "targetPath": "dialects/base/events",
+                "pageTitle": "dialects/base/events",
                 "title": "events"
               },
               "depth": 3,
@@ -131,12 +147,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/model.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/model.js",
                 "projectPath": "dialects/base/model.js",
                 "targetPath": "dialects/base/model",
+                "pageTitle": "dialects/base/model",
                 "title": "model"
               },
               "depth": 3,
@@ -157,12 +177,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/promise.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/promise.js",
                 "projectPath": "dialects/base/promise.js",
                 "targetPath": "dialects/base/promise",
+                "pageTitle": "dialects/base/promise",
                 "title": "promise"
               },
               "depth": 3,
@@ -173,12 +197,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/relation.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/relation.js",
                 "projectPath": "dialects/base/relation.js",
                 "targetPath": "dialects/base/relation",
+                "pageTitle": "dialects/base/relation",
                 "title": "relation"
               },
               "depth": 3,
@@ -199,12 +227,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/base/sync.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/base/sync.js",
                 "projectPath": "dialects/base/sync.js",
                 "targetPath": "dialects/base/sync",
+                "pageTitle": "dialects/base/sync",
                 "title": "sync"
               },
               "depth": 3,
@@ -235,12 +267,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/collection.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/collection.js",
                 "projectPath": "dialects/sql/collection.js",
                 "targetPath": "dialects/sql/collection",
+                "pageTitle": "dialects/sql/collection",
                 "title": "collection"
               },
               "depth": 3,
@@ -261,12 +297,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/eager.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/eager.js",
                 "projectPath": "dialects/sql/eager.js",
                 "targetPath": "dialects/sql/eager",
+                "pageTitle": "dialects/sql/eager",
                 "title": "eager"
               },
               "depth": 3,
@@ -287,12 +327,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/helpers.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/helpers.js",
                 "projectPath": "dialects/sql/helpers.js",
                 "targetPath": "dialects/sql/helpers",
+                "pageTitle": "dialects/sql/helpers",
                 "title": "helpers"
               },
               "depth": 3,
@@ -313,12 +357,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/model.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/model.js",
                 "projectPath": "dialects/sql/model.js",
                 "targetPath": "dialects/sql/model",
+                "pageTitle": "dialects/sql/model",
                 "title": "model"
               },
               "depth": 3,
@@ -339,12 +387,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/relation.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/relation.js",
                 "projectPath": "dialects/sql/relation.js",
                 "targetPath": "dialects/sql/relation",
+                "pageTitle": "dialects/sql/relation",
                 "title": "relation"
               },
               "depth": 3,
@@ -365,12 +417,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "language": {
                   "nameMatchers": [".js"],
                   "pygmentsLexer": "javascript",
+                  "multiLineComment": ["/*", "*", "*/"],
                   "singleLineComment": ["//"],
+                  "ignorePrefix": "}",
+                  "foldPrefix": "^",
                   "name": "JavaScript"
                 },
-                "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/dialects/sql/sync.js",
+                "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/dialects/sql/sync.js",
                 "projectPath": "dialects/sql/sync.js",
                 "targetPath": "dialects/sql/sync",
+                "pageTitle": "dialects/sql/sync",
                 "title": "sync"
               },
               "depth": 3,
@@ -403,12 +459,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "language": {
               "nameMatchers": [".js"],
               "pygmentsLexer": "javascript",
+              "multiLineComment": ["/*", "*", "*/"],
               "singleLineComment": ["//"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/plugins/exec.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/exec.js",
             "projectPath": "plugins/exec.js",
             "targetPath": "plugins/exec",
+            "pageTitle": "plugins/exec",
             "title": "exec"
           },
           "depth": 2,
@@ -429,12 +489,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "language": {
               "nameMatchers": [".js"],
               "pygmentsLexer": "javascript",
+              "multiLineComment": ["/*", "*", "*/"],
               "singleLineComment": ["//"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/plugins/registry.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/registry.js",
             "projectPath": "plugins/registry.js",
             "targetPath": "plugins/registry",
+            "pageTitle": "plugins/registry",
             "title": "registry"
           },
           "depth": 2,
@@ -455,12 +519,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "language": {
               "nameMatchers": [".js"],
               "pygmentsLexer": "javascript",
+              "multiLineComment": ["/*", "*", "*/"],
               "singleLineComment": ["//"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/plugins/virtuals.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/virtuals.js",
             "projectPath": "plugins/virtuals.js",
             "targetPath": "plugins/virtuals",
+            "pageTitle": "plugins/virtuals",
             "title": "virtuals"
           },
           "depth": 2,
@@ -481,12 +549,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "language": {
               "nameMatchers": [".js"],
               "pygmentsLexer": "javascript",
+              "multiLineComment": ["/*", "*", "*/"],
               "singleLineComment": ["//"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
               "name": "JavaScript"
             },
-            "sourcePath": "/Users/tgriesser/Github/bookshelf/bookshelf/plugins/visibility.js",
+            "sourcePath": "/Users/tgriesser/github/bookshelf/bookshelf2/plugins/visibility.js",
             "projectPath": "plugins/visibility.js",
             "targetPath": "plugins/visibility",
+            "pageTitle": "plugins/visibility",
             "title": "visibility"
           },
           "depth": 2,
@@ -729,14 +801,29 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
   };
 
   buildTOCNode = function(node, metaInfo) {
-    var c, children$, discloser$, label$, node$, _i, _len, _ref, _ref1, _ref2;
+    var c, children$, clickLabel, discloser, discloser$, label$, node$, _i, _len, _ref, _ref1, _ref2;
     node$ = $("<li class=\"" + node.type + "\"/>");
+    discloser = null;
     switch (node.type) {
       case 'file':
         node$.append("<a class=\"label\" href=\"" + metaInfo.relativeRoot + node.data.targetPath + ".html\" title=\"" + node.data.projectPath + "\"><span class=\"text\">" + node.data.title + "</span></a>");
+        clickLabel = function(evt) {
+          if (evt.target === discloser) {
+            node$.toggleClass('expanded');
+            evt.preventDefault();
+            return false;
+          }
+          return selectNode(node$);
+        };
         break;
       case 'folder':
-        node$.append("<span class=\"label\"><span class=\"text\">" + node.data.title + "</span></span>");
+        node$.append("<a class=\"label\" href=\"#\"><span class=\"text\">" + node.data.title + "</span></a>");
+        clickLabel = function(evt) {
+          selectNode(node$);
+          node$.toggleClass('expanded');
+          evt.preventDefault();
+          return false;
+        };
     }
     if (((_ref = node.children) != null ? _ref.length : void 0) > 0) {
       children$ = $('<ol class="children"/>');
@@ -748,17 +835,12 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
       node$.append(children$);
     }
     label$ = node$.find('> .label');
-    label$.click(function() {
-      return selectNode(node$);
-    });
+    label$.click(clickLabel);
     discloser$ = $('<span class="discloser"/>').prependTo(label$);
     if (!(((_ref2 = node.children) != null ? _ref2.length : void 0) > 0)) {
       discloser$.addClass('placeholder');
     }
-    discloser$.click(function(evt) {
-      node$.toggleClass('expanded');
-      return evt.preventDefault();
-    });
+    discloser = discloser$.get(0);
     if (node.type === 'file') {
       fileMap[node.data.targetPath] = node$;
     }
@@ -833,7 +915,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
     search$.bind('keyup search', function(evt) {
       return searchNodes(search$.val());
     });
-    return search$.keydown(function(evt) {
+    search$.keydown(function(evt) {
       if (evt.keyCode === 27) {
         if (search$.val().trim() === '') {
           return search$.blur();
@@ -841,6 +923,15 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           return search$.val('');
         }
       }
+    });
+    return $('.code.folded').each(function(index, code) {
+      var code$;
+      code$ = $(code);
+      return code$.click(function(evt) {
+        code$.toggleClass('folded');
+        evt.preventDefault();
+        return false;
+      });
     });
   });
 
