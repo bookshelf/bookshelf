@@ -288,6 +288,13 @@ module.exports = function(Bookshelf) {
         return expect(model.fetch()).to.be.fulfilled;
       });
 
+      it('allows passing {json: true} in the options to return json rather than the populated model', function() {
+        var model = new Site({id: 1});
+        return model.fetch({json: true}).then(function(obj) {
+          expect(obj).to.eql({id: 1, name: 'knexjs.org'});
+        });
+      });
+
     });
 
     describe('save', function() {

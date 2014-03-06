@@ -49,7 +49,9 @@ exports.Collection = CollectionBase.extend({
       if (err !== null) throw err;
       this.reset([], {silent: true});
     })
-    .yield(this);
+    .then(function() {
+      return options.json ? Helpers.json(this) : this;
+    });
   }),
 
   // Fetches a single model from the collection, useful on related collections.
