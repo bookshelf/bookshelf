@@ -150,11 +150,14 @@ module.exports = function(Bookshelf) {
         return new Author({id: 1}).fetch({withRelated: 'site.photos'}).then(function(author) {
 
           return author.related('site').related('photos').create({
+            imageable_id: author.related('site').id,
             url: 'http://image.dev',
             caption: 'this is a test image'
           });
 
         }).then(function(photo) {
+
+          console.log('here');
 
           expect(photo.get('url')).to.equal('http://image.dev');
 
