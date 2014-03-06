@@ -58,6 +58,11 @@ module.exports = function(Bookshelf) {
         equal(new User().item, 'test');
       });
 
+      it('doesnt have ommitted Backbone properties', function() {
+        expect(User.prototype.changedAttributes).to.be.undefined;
+        expect((new User()).changedAttributes).to.be.undefined;
+      });
+
     });
 
     describe('forge', function() {
