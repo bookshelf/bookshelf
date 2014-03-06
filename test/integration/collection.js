@@ -156,13 +156,8 @@ module.exports = function(Bookshelf) {
           });
 
         }).then(function(photo) {
-
-          console.log('here');
-
           expect(photo.get('url')).to.equal('http://image.dev');
-
           return photo.destroy();
-
         });
 
       });
