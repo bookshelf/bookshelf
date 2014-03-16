@@ -2225,10 +2225,10 @@ Bookshelf.transaction(function(t) {
       t.commit([model.get('name'), rows.length]);
     }, t.rollback);
 
-  }).then(function(resp) {
+  }).then(function(response) {
 
     // ['Old Books', 3]
-    console.log(msg);
+    console.log(response);
 
   }, function() {
 
