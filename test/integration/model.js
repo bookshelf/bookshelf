@@ -429,10 +429,10 @@ module.exports = function(Bookshelf) {
         });
       });
 
-      it('Allows autogenerating a uuid using generateId', function() {
-        var SubSite = Models.Uuid.extend();
+      it('Allows autogenerating a uuid using newId', function() {
+        var SubSite = Models.Uuid2.extend();
         var subsite = new SubSite({name: 'testing'});
-        var uuidval = subsite.id;
+        var uuidval = subsite._newId;
         return subsite.save().then(function(model) {
           expect(model.id).to.equal(uuidval);
           expect(model.get('name')).to.equal('testing');

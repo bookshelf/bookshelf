@@ -177,6 +177,12 @@ exports.Model = ModelBase.extend({
       ])
       .bind(this)
       .then(function() {
+        // If an ID has been explicitly defined, set it now
+        if(isNew && this._newId)
+        {
+            this.set(this.idAttribute, this._newId);
+        }
+
         return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
       })
       .then(function(resp) {
