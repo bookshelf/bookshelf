@@ -1043,7 +1043,7 @@ new Book({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
       <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [foreignKey], [otherKey])</code>
       <br />
       The <tt>belongsToMany</tt> method defines a many-to-many relation, where the current <b>model</b>
-      is joined to one ore more of a <b>Target</b> model through another <b>table</b>. The default name for
+      is joined to one or more of a <b>Target</b> model through another <b>table</b>. The default name for
       the joining table is the two table names, joined by an underscore, ordered alphabetically. For example, a
       <tt>users</tt> table and an <tt>accounts</tt> table would have a joining table of <tt>accounts_users</tt>.
 
