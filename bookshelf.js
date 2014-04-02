@@ -71,7 +71,7 @@ var Bookshelf = function(knex) {
 
   // Used internally, the `Relation` helps in simplifying the relationship building,
   // centralizing all logic dealing with type & option handling.
-  var Relation = Bookshelf.Relation = SqlRelation.extend({
+  var Relation = this.Relation = SqlRelation.extend({
     Model: ModelCtor,
     Collection: CollectionCtor
   });
