@@ -1,5 +1,10 @@
 var Promise = require('../dialects/base/promise').Promise;
 
+Promise.longStackTraces();
+Promise.onPossiblyUnhandledRejection(function (err) {
+  throw err;
+});
+
 global.testPromise = Promise;
 
 process.stderr.on('data', function(data) {
