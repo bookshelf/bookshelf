@@ -171,10 +171,7 @@ exports.Model = ModelBase.extend({
       var sync = this.sync(options);
       options.query = sync.query;
 
-      return Promise.all([
-        this.triggerThen((method === 'insert' ? 'creating' : 'updating'), this, attrs, options),
-        this.triggerThen('saving', this, attrs, options)
-      ])
+      return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
       .bind(this)
       .then(function() {
         return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
@@ -194,11 +191,7 @@ exports.Model = ModelBase.extend({
 
         this._reset();
 
-        return Promise.all([
-          this.triggerThen((method === 'insert' ? 'created' : 'updated'), this, resp, options),
-          this.triggerThen('saved', this, resp, options)
-        ]);
-
+        return this.triggerThen((method === 'insert' ? 'created saved' : 'updated saved'), this, resp, options);
       });
 
     }).yield(this);
