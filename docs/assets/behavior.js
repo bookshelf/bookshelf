@@ -29,8 +29,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Bookshelf.js 0.6.8",
-            "slug": "bookshelfjs-068"
+            "title": "Bookshelf.js 0.6.9",
+            "slug": "bookshelfjs-069"
           },
           "depth": 2
         }
