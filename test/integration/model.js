@@ -411,6 +411,22 @@ module.exports = function(Bookshelf) {
         return user.save();
       });
 
+      it('rejects if the saving event throws an error', function() {
+        var Test = Bookshelf.Model.extend({
+          tableName: 'test',
+          initialize: function() {
+            this.on('saving', this.handler, this);
+          },
+          handler: function() {
+            throw new Error('Test');
+          }
+        });
+        var test = new Test;
+        return test.save().catch(function(e) {
+          expect(e.message).to.equal('Test');
+        });
+      });
+
       it('Allows setting a uuid, #24 #130', function() {
         var uuidval = uuid.v4();
         var SubSite = Models.Uuid.extend({
