@@ -250,7 +250,7 @@ module.exports = function(Bookshelf) {
 
       it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function() {
         var count = 0;
-        var model = new Site({id: 1});
+        var model = Site.forge({id: 1});
         model.on('fetched', function() {
           count++;
         });
