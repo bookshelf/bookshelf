@@ -24,14 +24,14 @@
   ],
   "dependencies": {
     "backbone": "1.1.0",
-    "inflection": "~1.2.x",
-    "trigger-then": "~0.1.1",
-    "knex": "~0.5.0",
-    "bluebird": "~1.0.0",
+    "inflection": "1.2.x",
+    "trigger-then": "0.3.x",
+    "knex": "0.5.x",
+    "bluebird": "1.2.x",
     "lodash": ">=2.0.0"
   },
   "devDependencies": {
-    "mocha": "~1.14.0",
+    "mocha": "1.18.x",
     "mysql": "~2.0.0-alpha7",
     "pg": "~2.8.2",
     "sqlite3": "~2.1.7",
@@ -39,7 +39,6 @@
     "underscore.string": "~2.3.1",
     "grunt": "~0.4.1",
     "grunt-release": "~0.6.0",
-    "mocha-as-promised": "~1.4.0",
     "chai-as-promised": "~4.1.0",
     "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",
