@@ -1891,10 +1891,12 @@ collection.invokeThen('destroy', options).then(function() {
     </p>
 
 <pre>
-new Story({id: 2}).fetch({
-  withRelated: ['comments.tags', 'comments.author', 'author']
-}).then(function(model) {
-  JSON.stringify(model);
+new Stories().fetch({
+  withRelated: 'author'
+}).tap(function(stories) {
+  if (req.withComments) return stories.load(['comments.tags', 'comments.author']);
+}).then(function() {
+  console.log(JSON.stringify(stories));
 });
 </pre>
 
