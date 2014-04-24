@@ -55,12 +55,14 @@ module.exports = function (Bookshelf) {
     },
 
     // Allow virtuals to be set like normal properties
-    set: function (key, val, options) {
-      if (key == null) return this;
-      var virtuals = this.virtuals;
-      var virtual = virtuals && virtuals[key];
-      if (virtual && virtual.set) {
-        virtual.set.call(this, val);
+    set: function(key, val, options) {
+      if (key == null) {
+        return this;
+      }
+      if (_.isObject(key)) {
+        return proto.set.call(this, _.omit(key, setVirtual, this), val, options);
+      }
+      if (setVirtual.call(this, val, key)) {
         return this;
       }
       return proto.set.apply(this, arguments);
@@ -95,6 +97,14 @@ module.exports = function (Bookshelf) {
       }
     }
     return attrs;
+  }
+
+  function setVirtual(value, key) {
+    var virtual = this.virtuals && this.virtuals[key];
+    if (virtual && virtual.set) {
+      virtual.set.call(this, value);
+      return true;
+    }
   }
 
   Bookshelf.Model = Model;

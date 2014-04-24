@@ -66,6 +66,39 @@ module.exports = function (bookshelf) {
       m.set('fullName', 'Jack Shmoe');
       equal(m.get('firstName'), 'Jack');
       equal(m.get('lastName'), 'Shmoe');
+
+      // setting virtual should not set attribute
+      equal(m.attributes['fullName'], undefined);
+
+      m.set({fullName: 'Peter Griffin', dogName:'Brian'});
+      equal(m.get('firstName'), 'Peter');
+      equal(m.get('lastName'), 'Griffin');
+      equal(m.get('dogName'), 'Brian');
+
+      // setting virtual should not set attribute
+      equal(m.attributes['fullName'], undefined);
+    });
+
+    it('allows virtual properties to be set in the constructor', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            get: function () {
+              return this.get('firstName') + ' ' + this.get('lastName');
+            },
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
+          }
+        }
+      }))({fullName: 'Peter Griffin', dogName:'Brian'});
+
+      equal(m.get('firstName'), 'Peter');
+      equal(m.get('lastName'), 'Griffin');
+      equal(m.get('dogName'), 'Brian');
+      equal(m.attributes['fullName'], undefined);
     });
 
     it('virtuals are included in the `toJSON` result by default', function () {

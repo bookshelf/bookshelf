@@ -132,14 +132,19 @@ _.extend(CollectionBase.prototype, _.omit(Backbone.Collection.prototype, collect
     return new this.model(attrs, options);
   },
 
-  // Convenience method for map, returning a `Promise.all` promise.
+  // Run "Promise.map" over the models
   mapThen: function(iterator, context) {
-    return Promise.all(this.map(iterator, context));
+    return Promise.bind(context).thenReturn(this.models).map(iterator);
   },
 
   // Convenience method for invoke, returning a `Promise.all` promise.
   invokeThen: function() {
     return Promise.all(this.invoke.apply(this, arguments));
+  },
+
+  // Run "reduce" over the models in the collection.
+  reduceThen: function(iterator, initialValue, context) {
+    return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
   },
 
   fetch: function() {

@@ -285,7 +285,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.4)</span>
+      Bookshelf.js <span class="version">(0.6.10)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -444,7 +444,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.4 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.10 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -502,8 +502,7 @@
     <h2 id="installation">Installation</h2>
 
     <p>
-      All dependencies are specified in package.json file but include <tt>underscore</tt>, <tt>when</tt>, and <tt>knex</tt> libraries.
-      You'll then need to install either <tt>mysql</tt>, <tt>pg</tt>, or <tt>sqlite3</tt> from npm. It is advisable to install your own copy
+      You'll  need to install either <tt>mysql</tt>, <tt>pg</tt>, or <tt>sqlite3</tt> from npm. It is advisable to install your own copy
       of Knex as well if you wish to build any custom queries outside of the ORM.
     </p>
 
@@ -643,7 +642,7 @@ var Customer = Bookshelf.Model.extend({
 </pre>
 
     <p id="Model-forge">
-      <b class="header">forge</b><code>Bookshelf.Model.forge(/* args */)</code>
+      <b class="header">forge</b><code>Bookshelf.Model.forge([attributes], [options])</code>
       <br />
       A simple helper function to instantiate a new <tt>Model</tt> without needing <tt>new</tt>.
     </p>
@@ -1044,7 +1043,7 @@ new Book({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
       <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [foreignKey], [otherKey])</code>
       <br />
       The <tt>belongsToMany</tt> method defines a many-to-many relation, where the current <b>model</b>
-      is joined to one ore more of a <b>Target</b> model through another <b>table</b>. The default name for
+      is joined to one or more of a <b>Target</b> model through another <b>table</b>. The default name for
       the joining table is the two table names, joined by an underscore, ordered alphabetically. For example, a
       <tt>users</tt> table and an <tt>accounts</tt> table would have a joining table of <tt>accounts_users</tt>.
 
@@ -1697,7 +1696,7 @@ modelB.isNew(); // false
     </p>
 
     <p id="Collection-forge">
-      <b class="header">forge</b><code>Bookshelf.Collection.forge(/* args */)</code>
+      <b class="header">forge</b><code>Bookshelf.Collection.forge([models], [options])</code>
       <br />
       A simple helper function to instantiate a new <tt>Collection</tt> without needing <tt>new</tt>.
     </p>
@@ -1827,9 +1826,7 @@ new Site({id:1})
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
       <br />
-      Shortcut for calling <tt>Promise.all</tt> around a <tt>collection.map</tt> call, this will call the
-      underscore <a href="http://underscorejs.org/#map">map</a> on each of the models in the collection,
-      returning a promise which will be resolved with the array of fully settled responses from the map call.
+      Shortcut for calling <tt>Promise.map(collection.models, iterator)</tt> with an optionally bound context, returning a promise which is resolved with the result of the map.
     </p>
 
 <pre>
@@ -1842,6 +1839,27 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
 }).then(function(resp) {
 
   // resp: ['1-saved', '2-saved', '3-saved']
+
+});
+</pre>
+
+    <p id="Collection-reduceThen">
+      <b class="header">reduceThen</b><code>collection.reduceThen(iterator, [memo], [context])</code>
+      <br />
+      Shortcut for calling <tt>Promise.reduce(collection.models, iterator, memo)</tt> with an optionally bound context, returning a promise which is resolved with the result of the reduce.
+    </p>
+
+<pre>
+new Collection([{id: 1}, {id: 2}, {id: 3}]).reduceThen(function(memo, model) {
+
+  return model.save().then(function() {
+    memo++;
+    return memo;
+  });
+
+}, 0).then(function(saved) {
+
+  // resp: 3
 
 });
 </pre>
@@ -1873,10 +1891,12 @@ collection.invokeThen('destroy', options).then(function() {
     </p>
 
 <pre>
-new Story({id: 2}).fetch({
-  withRelated: ['comments.tags', 'comments.author', 'author']
-}).then(function(model) {
-  JSON.stringify(model);
+new Stories().fetch({
+  withRelated: 'author'
+}).tap(function(stories) {
+  if (req.withComments) return stories.load(['comments.tags', 'comments.author']);
+}).then(function() {
+  console.log(JSON.stringify(stories));
 });
 </pre>
 
@@ -2149,6 +2169,22 @@ collection
       </li>
     </ul>
 
+    <p>For <tt>fetching</tt> events, <tt>columns</tt> is an array of columns that will be passed to knex.
+    If you want to modify the columns, make sure to preserve the reference:
+    </p>
+  <pre>
+  // won't work
+  function (model, columns) {
+    columns = ['my', 'columns'];
+  }
+
+  // will work
+  function (model, columns) {
+    columns.length = 0;
+    columns.push('my', 'columns');
+  }
+  </pre>
+
   <h2 id="Utility">Utility</h2>
 
     <p id="Bookshelf-knex">
@@ -2190,10 +2226,10 @@ Bookshelf.transaction(function(t) {
       t.commit([model.get('name'), rows.length]);
     }, t.rollback);
 
-  }).then(function(resp) {
+  }).then(function(response) {
 
     // ['Old Books', 3]
-    console.log(msg);
+    console.log(response);
 
   }, function() {
 
@@ -2288,6 +2324,46 @@ process.stderr.on('data', function(data) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.6.10</b> &mdash; <small><i>April 3, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.9...0.6.10">Diff</a><br />
+      <ul>
+        <li>Bumping dependencies, including upgrading to Bluebird 1.2, trigger-then 0.3, fixing an erroneous "unhandledRejection" (#310).</li>
+        <li><tt>fetchOne</tt> properly resets the query on the collection, (#300).</li>
+      </ul>
+    </p>
+
+    <p>
+      <b class="header">0.6.9</b> &mdash; <small><i>April 3, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.8...0.6.9">Diff</a><br />
+      Only prefix model fields with the "tableName" after format has been called, (#308).
+    </p>
+
+    <p>
+      <b class="header">0.6.8</b> &mdash; <small><i>March 6, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.7...0.6.8">Diff</a><br />
+      <ul>
+        <li>Virtuals plugin may now accept a hash of attributes to set.</li>
+        <li>Properly fix issue addressed in 0.6.7.</li>
+      </ul>
+    </p>
+
+    <p>
+      <b class="header">0.6.7</b> &mdash; <small><i>March 2, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.6...0.6.7">Diff</a><br />
+      Bugfix for edge case for eager loaded relations and <tt>relatedData</tt> settings.
+    </p>
+
+    <p>
+      <b class="header">0.6.6</b> &mdash; <small><i>March 1, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.5...0.6.6">Diff</a><br />
+      Bugfix for registry plugin, resolving correct models for "through" relations. (#260)
+    </p>
+
+    <p>
+      <b class="header">0.6.5</b> &mdash; <small><i>February 28, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.4...0.6.5">Diff</a><br />
+      <ul>
+        <li>Added <a href="#Collection-reduceThen">reduceThen</a> as a passthrough to Bluebird's "reduce" method with models.</li>
+        <li>Options are now passed to "plugin" method. (#254)</li>
+        <li>Bugfix for registry plugin. (#259)</li>
+      </ul>
+    </p>
 
     <p>
       <b class="header">0.6.4</b> &mdash; <small><i>February 11, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.3...0.6.4">Diff</a><br />

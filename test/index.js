@@ -1,5 +1,10 @@
 var Promise = require('../dialects/base/promise').Promise;
 
+Promise.longStackTraces();
+Promise.onPossiblyUnhandledRejection(function (err) {
+  throw err;
+});
+
 global.testPromise = Promise;
 var testQueryCache = global.testQueryCache = [];
 var oldIt = it;
@@ -15,13 +20,6 @@ process.stderr.on('data', function(data) {
 
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
-
-if (process.argv.pop() === 'test/index.js') {
-  var mocha     = require('mocha');
-  require("mocha-as-promised")(mocha);
-} else {
-  require("mocha-as-promised")();
-}
 
 global.sinon = require("sinon");
 

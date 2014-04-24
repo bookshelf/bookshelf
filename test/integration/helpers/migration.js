@@ -26,13 +26,13 @@ module.exports = function(Bookshelf) {
 
       schema.createTable('sitesmeta', function(table) {
         table.increments('id');
-        table.integer('site_id');
+        table.integer('site_id').notNullable();
         table.text('description');
       }),
 
       schema.createTable('info', function(table) {
         table.increments('id');
-        table.integer('meta_id');
+        table.integer('meta_id').notNullable();
         table.text('other_description');
       }),
 
@@ -45,36 +45,36 @@ module.exports = function(Bookshelf) {
 
       schema.createTable('admins_sites', function(table) {
         table.increments('id');
-        table.integer('admin_id');
-        table.integer('site_id');
+        table.integer('admin_id').notNullable();
+        table.integer('site_id').notNullable();
         table.string('item').defaultTo('test');
       }),
 
       schema.createTable('blogs', function(table) {
         table.increments('id');
-        table.integer('site_id');
+        table.integer('site_id').notNullable();
         table.string('name');
       }),
 
       schema.createTable('authors', function(table) {
         table.increments('id');
-        table.integer('site_id');
+        table.integer('site_id').notNullable();
         table.string('first_name');
         table.string('last_name');
       }),
 
       schema.createTable('posts', function(table) {
         table.increments('id');
-        table.integer('owner_id');
-        table.integer('blog_id');
+        table.integer('owner_id').notNullable();
+        table.integer('blog_id').notNullable();
         table.string('name');
         table.text('content');
       }),
 
       schema.createTable('authors_posts', function(table) {
         table.increments('id');
-        table.integer('author_id');
-        table.integer('post_id');
+        table.integer('author_id').notNullable();
+        table.integer('post_id').notNullable();
       }),
 
       schema.createTable('tags', function(table) {
@@ -84,13 +84,13 @@ module.exports = function(Bookshelf) {
 
       schema.createTable('posts_tags', function(table) {
         table.increments('id');
-        table.integer('post_id');
-        table.integer('tag_id');
+        table.integer('post_id').notNullable();
+        table.integer('tag_id').notNullable();
       }),
 
       schema.createTable('comments', function(table) {
         table.increments('id');
-        table.integer('post_id');
+        table.integer('post_id').notNullable();
         table.string('name');
         table.string('email');
         table.text('comment');
@@ -107,15 +107,15 @@ module.exports = function(Bookshelf) {
       }),
 
       schema.createTable('users_roles', function(table) {
-        table.integer('rid');
-        table.integer('uid');
+        table.integer('rid').notNullable();
+        table.integer('uid').notNullable();
       }),
 
       schema.createTable('photos', function(table) {
         table.increments('id');
         table.string('url');
         table.string('caption');
-        table.integer('imageable_id');
+        table.integer('imageable_id').notNullable();
         table.string('imageable_type');
       }),
 
@@ -126,13 +126,13 @@ module.exports = function(Bookshelf) {
 
       schema.createTable('Settings', function(table) {
         table.increments('id');
-        table.integer('Customer_id');
+        table.integer('Customer_id').notNullable();
         table.string('data', 64);
       }),
 
       schema.createTable('hostnames', function(table){
         table.string('hostname');
-        table.integer('instance_id');
+        table.integer('instance_id').notNullable();
         table.enu('route', ['annotate','submit']);
       }),
 

@@ -1,10 +1,10 @@
 {
   "name": "bookshelf",
-  "version": "0.6.4",
+  "version": "0.6.10",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3, influenced by Backbone.js",
   "main": "bookshelf.js",
   "scripts": {
-    "test": "mocha -b -R spec test/index.js",
+    "test": "mocha -b --check-leaks -R spec test/index.js",
     "doc": "groc -o docs --verbose dialects/base/collection.js dialects/**/*.js plugins/*.js bookshelf.js",
     "release:patch": "git checkout master && export BOOKSHELF_DEV=0 && npm run-script test && npm run-script doc && git add . && git commit -m 'docs prep for release' && grunt release:patch",
     "release:minor": "git checkout master && export BOOKSHELF_DEV=0 && npm run-script test && npm run-script doc && git add . && git commit -m 'docs prep for release' && grunt release:minor"
@@ -23,15 +23,15 @@
     "active record"
   ],
   "dependencies": {
-    "backbone": "~1.1.0",
-    "inflection": "~1.2.x",
-    "trigger-then": "~0.1.1",
+    "backbone": "1.1.0",
+    "inflection": "1.2.x",
+    "trigger-then": "0.3.x",
     "knex": "0.5.x",
-    "bluebird": "~1.0.0",
+    "bluebird": "1.2.x",
     "lodash": ">=2.0.0"
   },
   "devDependencies": {
-    "mocha": "~1.14.0",
+    "mocha": "1.18.x",
     "mysql": "~2.0.0-alpha7",
     "pg": "~2.8.2",
     "sqlite3": "~2.1.7",
@@ -39,7 +39,6 @@
     "underscore.string": "~2.3.1",
     "grunt": "~0.4.1",
     "grunt-release": "~0.6.0",
-    "mocha-as-promised": "~1.4.0",
     "chai-as-promised": "~4.1.0",
     "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",

@@ -42,12 +42,14 @@ model-level setting</p></div></div><div class="code"><div class="wrapper">    <s
         <span class="k">return</span> <span class="nx">getVirtual</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">attr</span><span class="p">);</span>
       <span class="p">}</span>
       <span class="k">return</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">get</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-    <span class="p">},</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Allow virtuals to be set like normal properties</p></div></div><div class="code"><div class="wrapper">    <span class="nx">set</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">virtuals</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">virtuals</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">virtual</span> <span class="o">=</span> <span class="nx">virtuals</span> <span class="o">&amp;&amp;</span> <span class="nx">virtuals</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">virtual</span> <span class="o">&amp;&amp;</span> <span class="nx">virtual</span><span class="p">.</span><span class="nx">set</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">virtual</span><span class="p">.</span><span class="nx">set</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
+    <span class="p">},</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Allow virtuals to be set like normal properties</p></div></div><div class="code"><div class="wrapper">    <span class="nx">set</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">set</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">omit</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">setVirtual</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">setVirtual</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
       <span class="p">}</span>
       <span class="k">return</span> <span class="nx">proto</span><span class="p">.</span><span class="nx">set</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
@@ -76,6 +78,14 @@ model-level setting</p></div></div><div class="code"><div class="wrapper">    <s
       <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">attrs</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">setVirtual</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">virtual</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">virtuals</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">virtuals</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">virtual</span> <span class="o">&amp;&amp;</span> <span class="nx">virtual</span><span class="p">.</span><span class="nx">set</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">virtual</span><span class="p">.</span><span class="nx">set</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
   <span class="p">}</span>
 
   <span class="nx">Bookshelf</span><span class="p">.</span><span class="nx">Model</span> <span class="o">=</span> <span class="nx">Model</span><span class="p">;</span>

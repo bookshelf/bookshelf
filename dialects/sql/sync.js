@@ -21,7 +21,7 @@ _.extend(Sync.prototype, {
 
   // Prefix all keys of the passed in object with the
   // current table name
-  prefixFields: function (fields) {
+  prefixFields: function(fields) {
     var tableName = this.syncing.tableName;
     var prefixed = {};
     for (var key in fields) {
@@ -33,9 +33,9 @@ _.extend(Sync.prototype, {
 
   // Select the first item from the database - only used by models.
   first: Promise.method(function() {
-    this.query.where(this.syncing.format(
-      _.extend(Object.create(null), this.prefixFields(this.syncing.attributes)))
-    ).limit(1);
+    this.query.where(this.prefixFields(this.syncing.format(
+      _.extend(Object.create(null), this.syncing.attributes)
+    ))).limit(1);
     return this.select();
   }),
 

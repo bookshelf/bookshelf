@@ -1,4 +1,4 @@
-// Bookshelf.js 0.6.4
+// Bookshelf.js 0.6.10
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -71,7 +71,7 @@ var Bookshelf = function(knex) {
 
   // Used internally, the `Relation` helps in simplifying the relationship building,
   // centralizing all logic dealing with type & option handling.
-  var Relation = Bookshelf.Relation = SqlRelation.extend({
+  var Relation = this.Relation = SqlRelation.extend({
     Model: ModelCtor,
     Collection: CollectionCtor
   });
@@ -87,7 +87,7 @@ var Bookshelf = function(knex) {
 _.extend(Bookshelf.prototype, Events, {
 
   // Keep in sync with `package.json`.
-  VERSION: '0.6.4',
+  VERSION: '0.6.10',
 
   // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
   transaction: function() {
@@ -96,17 +96,19 @@ _.extend(Bookshelf.prototype, Events, {
 
   // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
   // injecting the current instance into the plugin, which should be a module.exports.
-  plugin: function(plugin) {
+  plugin: function(plugin, options) {
     if (_.isString(plugin)) {
       try {
-        require('./plugins/' + plugin)(this);
+        require('./plugins/' + plugin)(this, options);
       } catch (e) {
-        require(plugin)(this);
+        require(plugin)(this, options);
       }
     } else if (_.isArray(plugin)) {
-      _.each(plugin, this.plugin, this);
+      _.each(plugin, function (plugin) {
+        this.plugin(plugin, options);
+      }, this);
     } else {
-      plugin(this);
+      plugin(this, options);
     }
     return this;
   }

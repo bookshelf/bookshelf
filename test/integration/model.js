@@ -58,6 +58,11 @@ module.exports = function(Bookshelf) {
         equal(new User().item, 'test');
       });
 
+      it('doesnt have ommitted Backbone properties', function() {
+        expect(User.prototype.changedAttributes).to.be.undefined;
+        expect((new User()).changedAttributes).to.be.undefined;
+      });
+
     });
 
     describe('forge', function() {
@@ -246,7 +251,7 @@ module.exports = function(Bookshelf) {
 
       it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function() {
         var count = 0;
-        var model = new Site({id: 1});
+        var model = Site.forge({id: 1});
         model.on('fetched', function() {
           count++;
         });
@@ -406,6 +411,22 @@ module.exports = function(Bookshelf) {
           });
         });
         return user.save();
+      });
+
+      it('rejects if the saving event throws an error', function() {
+        var Test = Bookshelf.Model.extend({
+          tableName: 'test',
+          initialize: function() {
+            this.on('saving', this.handler, this);
+          },
+          handler: function() {
+            throw new Error('Test');
+          }
+        });
+        var test = new Test;
+        return test.save().catch(function(e) {
+          expect(e.message).to.equal('Test');
+        });
       });
 
       it('Allows setting a uuid, #24 #130', function() {
@@ -642,7 +663,7 @@ module.exports = function(Bookshelf) {
         var model = new Bookshelf.Model();
         model.id = 1;
         equal(model.isNew(), false);
-        delete model.id;
+        model.set('id', null);
         equal(model.isNew(), true);
       });
 

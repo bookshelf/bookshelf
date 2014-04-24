@@ -11,34 +11,73 @@ module.exports = function() {
   var Sync = require(path.resolve(basePath + '/dialects/sql/sync')).Sync;
 
   describe('Sync', function() {
-    var noop = function() {};
-    var stubSyncing = {
-      query: noop,
-      resetQuery: function () {
-        return {
-          tableName: 'testtable'
-        };
-      }
+
+    var stubSync = function() {
+      var qd = [];
+      var stubQuery = function() {
+        qd.push(_.toArray(arguments));
+        return this;
+      };
+      return {
+        tableName: 'testtable',
+        queryData: qd,
+        query: function() {
+          return {
+            where: stubQuery,
+            limit: stubQuery
+          };
+        },
+        resetQuery: function () {
+          return this;
+        }
+      };
     };
+
     describe('prefixFields', function () {
-      var sync = new Sync(stubSyncing);
 
       it('should prefix all keys of the passed in object with the tablename', function () {
+
+        var sync = new Sync(stubSync());
+
         var attributes = {
           'some': 'column',
           'another': 'column'
         };
 
-        var isPrefixed = _.isEqual(sync.prefixFields(attributes), {
+        expect(sync.prefixFields(attributes)).to.eql({
           'testtable.some':'column',
           'testtable.another':'column'
         });
 
-        expect(isPrefixed).to.be.true;
+      });
+
+      it('should run after format', function() {
+
+        var sync = new Sync(_.extend(stubSync(), {
+          format: function(attrs) {
+            var data = {};
+            for (var key in attrs) {
+              data[key.toLowerCase()] = attrs[key];
+            }
+            return data;
+          },
+          attributes: {
+            'Some': 'column',
+            'Another': 'column'
+          }
+        }));
+        sync.select = function() {
+          expect(this.syncing.queryData[0]).to.eql([{
+            "testtable.some": "column",
+            "testtable.another": "column"
+          }]);
+        };
+        return sync.first();
 
       });
 
     });
+
 
   });
 

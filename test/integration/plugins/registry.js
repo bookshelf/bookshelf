@@ -76,8 +76,8 @@ module.exports = function(Bookshelf) {
 
 		});
 
-		describe('Monkey Patched Relations', function() {
-				
+		describe('Custom Relations', function() {
+
 			beforeEach(function() {
 				var related = this.relatedModel = Bookshelf.model('Related', Bookshelf.Model.extend({
 					tableName: 'related'
@@ -97,6 +97,9 @@ module.exports = function(Bookshelf) {
 					},
 					_morphTo: function() {
 						return this.morphTo('morphable', 'Related', 'Related');
+					},
+					throughTest: function() {
+						return this.hasMany('CRelated').through('Related');
 					}
 				});
 				this.model = new Model();
@@ -117,6 +120,11 @@ module.exports = function(Bookshelf) {
 			it('applies the resolved model to the original method', function() {
 				this.model._hasOne();
 				sinon.assert.calledWith(this.hasOne, this.relatedModel);
+			});
+
+			it('allows for *-through relations', function() {
+				var relation = this.model.throughTest();
+				expect(relation.relatedData.throughTableName).to.equal('related');
 			});
 
 			describe('morphTo', function() {

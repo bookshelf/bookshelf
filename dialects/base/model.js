@@ -14,6 +14,9 @@ var modelOmitted = [
   'urlRoot', '_validate'
 ];
 
+// List of attributes attached directly from the `options` passed to the constructor.
+var modelProps = ['tableName', 'hasTimestamps'];
+
 // The "ModelBase" is similar to the 'Active Model' in Rails,
 // it defines a standard interface from which other objects may
 // inherit.
@@ -32,7 +35,7 @@ var ModelBase = function(attributes, options) {
   this.initialize.apply(this, arguments);
 };
 
-_.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
+_.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Events, {
 
   // Similar to the standard `Backbone` set method, but without individual
   // change events, and adding different meaning to `changed` and `previousAttributes`
@@ -156,7 +159,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
     options = options ? _.clone(options) : {};
 
     var sync = this.sync(options);
-    options.query = sync.query
+    options.query = sync.query;
 
     return Promise.bind(this).then(function() {
       return this.triggerThen('destroying', this, options);
@@ -169,9 +172,6 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype), Events, {
   })
 
 });
-
-// List of attributes attached directly from the `options` passed to the constructor.
-var modelProps = ['tableName', 'hasTimestamps'];
 
 ModelBase.extend  = Backbone.Model.extend;
 
