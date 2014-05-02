@@ -48,7 +48,7 @@ var Bookshelf = function(knex) {
     _relation: function(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
-          _.result(this, 'tableName') + ' ' + type + 'relation');
+          _.result(this, 'tableName') + ' ' + type + ' relation');
       }
       return new Relation(type, Target, options);
     }
