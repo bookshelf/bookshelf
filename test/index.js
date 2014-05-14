@@ -14,12 +14,12 @@ process.stderr.on('data', function(data) {
 var Bookshelf = require('../bookshelf');
 var base      = require('./base');
 
-global.sinon = require("sinon");
+global.sinon = require('sinon');
 
-var chai = global.chai = require("chai");
+var chai = global.chai = require('chai');
 
-chai.use(require("chai-as-promised"));
-chai.use(require("sinon-chai"));
+chai.use(require('chai-as-promised'));
+chai.use(require('sinon-chai'));
 chai.should();
 
 global.expect         = chai.expect;
