@@ -3,14 +3,19 @@
 // help with the circular reference problem, and for convenience in relations.
 // -----
 module.exports = function (Bookshelf) {
-  "use strict";
+  'use strict';
   var _ = require('lodash');
+
+  function preventOverwrite(store, name) {
+    if (store[name]) throw new Error(name + ' is already defined in the registry');
+  }
 
   // Set up the methods for storing and retrieving models
   // on the Bookshelf instance.
   Bookshelf.model = function(name, ModelCtor) {
     if (ModelCtor) {
       this._models = this._models || {};
+      preventOverwrite(this._models, name);
       this._models[name] = ModelCtor;
     }
     return this._models[name];
@@ -18,6 +23,7 @@ module.exports = function (Bookshelf) {
   Bookshelf.collection = function(name, CollectionCtor) {
     if (CollectionCtor) {
       this._collections = this._collections || {};
+      preventOverwrite(this._collections, name);
       this._collections[name] = CollectionCtor;
     }
     return this._collections[name];
