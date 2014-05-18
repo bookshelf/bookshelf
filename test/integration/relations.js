@@ -703,6 +703,22 @@ module.exports = function(Bookshelf) {
       });
 
     });
+    
+    
+    describe('Issue #353 - wrong key set on a belongsTo relation', function() {
+
+      it('should not set the foreign key on the target model when saving', function() {
+        return new Blog({id: 4})
+        .fetch()
+        .then(function(model) {
+          return model.site().fetch();
+        })
+        .then(function (site) {
+          return site.save();
+        });
+      });
+
+    });
 
   });
 
