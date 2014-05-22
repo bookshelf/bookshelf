@@ -356,6 +356,15 @@
       <li>– <a href="#Model-sync">sync</a></li>
     </ul>
 
+    <a class="toc_title" href="#Associations">
+      Associations
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Associations-one-to-one">One-to-one</a></li>
+      <li>– <a href="#Associations-one-to-many">One-to-many</a></li>
+      <li>– <a href="#Associations-many-to-many">Many-to-many</a></li>
+    </ul>
+
     <a class="toc_title" href="#Collection">
       Collection
     </a>
@@ -431,7 +440,7 @@
     <p>
       <b>Bookshelf</b> is a javascript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> and <a href="#faq-callbacks">traditional callback</a> interfaces, it extends the Model &amp; Collection patterns of Backbone.js, providing <a href="#Bookshelf-transaction">transaction support</a>,
       eager/nested-eager relation loading, <a href="#Model-polymorphic-associations">polymorphic associations</a>, and support for
-      one-to-one, one-to-many, and many-to-many relations.
+      <a href="#Associations-one-to-one">one-to-one</a>, <a href="#Associations-one-to-many">one-to-many</a>, and <a href="#Associations-many-to-many">many-to-many</a> relations.
     </p>
 
     <p>
@@ -852,6 +861,10 @@ new Posts().fetch().then(function(collection) {
     <h3 id="Model-relation-types">Relation Types:</h3>
 
     <p>
+      Relationships are used to create <a href="#Associations">associations between models</a>.
+    </p>
+
+    <p>
       There are four types of relationships that may be defined between Models and
       Collections: <a href="#Model-hasOne">hasOne</a>, <a href="#Model-hasMany">hasMany</a>,
       <a href="#Model-belongsTo">belongsTo</a>, <a href="#Model-belongsToMany">belongsToMany</a>.
@@ -1020,8 +1033,11 @@ new Patient({id: 1}).record().fetch().then(function(model) {
     <p id="Model-belongsTo">
       <b class="header">belongsTo</b><code>model.belongsTo(Target, [foreignKey])</code>
       <br />
-      The <tt>belongsTo</tt> relationship type defines an inverse one-to-one relation, where the current <b>model</b> is a member
-      of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
+      The <tt>belongsTo</tt> relationship is used when a <b>model</b> is a member of another <b>Target</b> model. It can be used in a
+      <a href="#Associations-one-to-one">one-to-one</a> associations as the inverse of a <a href="#Model-hasOne">hasOne</a>. It can also used in
+      <a href="#Associations-one-to-many">one-to-many</a> associations as the inverse of a <a href="#Model-hasMany">hasMany</a>
+      (and is the <i>one</i> side of that association). In both cases, the <tt>belongsTo</tt>
+      relationship is used for a <b>model</b> that is a member of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
       By default, the <b>foreignKey</b> is assumed to be the singular form of the <b>Target</b> model's <a href="#Model-tableName">tableName</a>,
       followed by <tt>_id</tt>.
     </p>
@@ -1681,6 +1697,184 @@ modelB.isNew(); // false
       <br />
       Creates and returns a new <tt>Bookshelf.Sync</tt> instance. Can be overridden for custom behavior.
     </p>
+
+    <h2 id="Associations">Associations</h2>
+
+    <p>
+      Bookshelf handles  one-to-one, one-to-many, and many-to-many associations by defining relationships
+      on models.
+    </p>
+
+    <h3 id="Associations-one-to-one">One-to-one</h3>
+
+    <p>
+      One-to-one associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
+      <a href="#Model-hasOne">hasOne</a>.
+    </p>
+
+<pre>
+var Book, Summary;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  summary: function() {
+    return this.hasOne(Summary);
+  }
+});
+
+Summary = Bookshelf.Model.extend({
+  tableName: 'summaries',
+  book: function() {
+    return this.belongsTo(Book);
+  }
+});
+</pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre>
+exports.up = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() {
+      return knex.schema.createTable('books', function(table) {
+        table.increments('id').primary();
+        table.string('name');
+      });
+    })
+    .then(function() {
+      return knex.schema.createTable('summaries', function(table) {
+        table.increments('id').primary();
+        table.string('details');
+        table.integer('book_id').unique().notNullable()
+          .references('id').inTable('books');
+      });
+    });
+};
+
+exports.down = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() { return knex.schema.dropTable('summaries'); })
+    .then(function() { return knex.schema.dropTable('books'); });
+};
+</pre>
+
+    <h3 id="Associations-one-to-many">One-to-many</h3>
+
+    <p>
+      One-to-many associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
+      <a href="#Model-hasMany">hasMany</a>.
+    </p>
+
+<pre>
+var Book, Page;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  pages: function() {
+    return this.hasMany(Page);
+  }
+});
+
+Page = Bookshelf.Model.extend({
+  tableName: 'pages',
+  book: function() {
+    return this.belongsTo(Book);
+  }
+});
+</pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre>
+exports.up = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() {
+      return knex.schema.createTable('books', function(table) {
+        table.increments('id').primary();
+        table.string('name');
+      });
+    })
+    .then(function() {
+      return knex.schema.createTable('pages', function(table) {
+        table.increments('id').primary();
+        table.string('content');
+        table.integer('book_id').notNullable()
+          .references('id').inTable('books');
+      });
+    });
+};
+
+exports.down = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() { return knex.schema.dropTable('pages'); })
+    .then(function() { return knex.schema.dropTable('books'); });
+};
+</pre>
+
+    <h3 id="Associations-many-to-many">Many-to-many</h3>
+
+    <p>
+      Many-to-many associations can be created with <a href="#Model-belongsToMany">belongsToMany</a>.
+    </p>
+
+<pre>
+var Book, Author;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  authors: function() {
+    return this.belongsToMany(Author);
+  }
+});
+
+Author = Bookshelf.Model.extend({
+  tableName: 'authors',
+  books: function() {
+    return this.belongsToMany(Book);
+  }
+});
+</pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre>
+exports.up = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() {
+      return knex.schema.createTable('books', function(table) {
+        table.increments('id').primary();
+        table.string('name');
+      });
+    })
+    .then(function() {
+      return knex.schema.createTable('authors', function(table) {
+        table.increments('id').primary();
+        table.string('name');
+      });
+    })
+    .then(function() {
+      return knex.schema.createTable('authors_books', function(table) {
+        table.integer('author_id').notNullable()
+          .references('id').inTable('authors');
+        table.integer('book_id').notNullable()
+          .references('id').inTable('books');
+      });
+    });
+};
+
+exports.down = function(knex, Promise) {
+  return Promise.resolve() // start promise chain
+    .then(function() { return knex.schema.dropTable('authors_books'); })
+    .then(function() { return knex.schema.dropTable('authors'); })
+    .then(function() { return knex.schema.dropTable('books'); });
+};
+</pre>
 
     <h2 id="Collection">Bookshelf.Collection</h2>
 
