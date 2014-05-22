@@ -1742,23 +1742,31 @@ Summary = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
+  var createBooks = function() {
     return knex.schema.createTable('books', function(table) {
       table.increments('id').primary();
       table.string('name');
-    })
-    .then(function() {
-      return knex.schema.createTable('summaries', function(table) {
-        table.increments('id').primary();
-        table.string('details');
-        table.integer('book_id').unique().notNullable()
-          .references('id').inTable('books');
-      });
     });
+  };
+  var createSummaries = function() {
+    return knex.schema.createTable('summaries', function(table) {
+      table.increments('id').primary();
+      table.string('details');
+      table.integer('book_id').unique().notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createSummaries);
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('summaries')
-    .then(function() { return knex.schema.dropTable('books'); });
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropSummaries = function() {
+    return knex.schema.dropTable('summaries');
+  };
+  return dropSummaries().then(dropBooks);
 };
 </code></pre>
 
@@ -1793,23 +1801,31 @@ Page = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
+  var createBooks = function() {
     return knex.schema.createTable('books', function(table) {
       table.increments('id').primary();
       table.string('name');
-    })
-    .then(function() {
-      return knex.schema.createTable('pages', function(table) {
-        table.increments('id').primary();
-        table.string('content');
-        table.integer('book_id').notNullable()
-          .references('id').inTable('books');
-      });
     });
+  };
+  var createPages = function() {
+    return knex.schema.createTable('pages', function(table) {
+      table.increments('id').primary();
+      table.string('content');
+      table.integer('book_id').notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createPages);
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('pages')
-    .then(function() { return knex.schema.dropTable('books'); });
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropPages = function() {
+    return knex.schema.dropTable('pages');
+  };
+  return dropPages().then(dropBooks);
 };
 </code></pre>
 
@@ -1843,30 +1859,40 @@ Author = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
+  var createBooks = function() {
     return knex.schema.createTable('books', function(table) {
       table.increments('id').primary();
       table.string('name');
-    })
-    .then(function() {
-      return knex.schema.createTable('authors', function(table) {
-        table.increments('id').primary();
-        table.string('name');
-      });
-    })
-    .then(function() {
-      return knex.schema.createTable('authors_books', function(table) {
-        table.integer('author_id').notNullable()
-          .references('id').inTable('authors');
-        table.integer('book_id').notNullable()
-          .references('id').inTable('books');
-      });
     });
+  };
+  var createAuthors = function() {
+    return knex.schema.createTable('authors', function(table) {
+      table.increments('id').primary();
+      table.string('name');
+    });
+  };
+  var createJoinTable = function() {
+    return knex.schema.createTable('authors_books', function(table) {
+      table.integer('author_id').notNullable()
+        .references('id').inTable('authors');
+      table.integer('book_id').notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createAuthors).then(createJoinTable);
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('authors_books')
-    .then(function() { return knex.schema.dropTable('authors'); })
-    .then(function() { return knex.schema.dropTable('books'); });
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropAuthors = function() {
+    return knex.schema.dropTable('authors');
+  };
+  var dropJoinTable = function() {
+    return knex.schema.dropTable('authors_books');
+  };
+  return dropJoinTable().then(dropAuthors).then(dropBooks);
 };
 </code></pre>
 
