@@ -1742,12 +1742,9 @@ Summary = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() {
-      return knex.schema.createTable('books', function(table) {
-        table.increments('id').primary();
-        table.string('name');
-      });
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
     })
     .then(function() {
       return knex.schema.createTable('summaries', function(table) {
@@ -1760,8 +1757,7 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() { return knex.schema.dropTable('summaries'); })
+  return knex.schema.dropTable('summaries')
     .then(function() { return knex.schema.dropTable('books'); });
 };
 </code></pre>
@@ -1797,12 +1793,9 @@ Page = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() {
-      return knex.schema.createTable('books', function(table) {
-        table.increments('id').primary();
-        table.string('name');
-      });
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
     })
     .then(function() {
       return knex.schema.createTable('pages', function(table) {
@@ -1815,8 +1808,7 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() { return knex.schema.dropTable('pages'); })
+  return knex.schema.dropTable('pages')
     .then(function() { return knex.schema.dropTable('books'); });
 };
 </code></pre>
@@ -1851,12 +1843,9 @@ Author = Bookshelf.Model.extend({
 
 <pre><code>
 exports.up = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() {
-      return knex.schema.createTable('books', function(table) {
-        table.increments('id').primary();
-        table.string('name');
-      });
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
     })
     .then(function() {
       return knex.schema.createTable('authors', function(table) {
@@ -1875,8 +1864,7 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return Promise.resolve() // start promise chain
-    .then(function() { return knex.schema.dropTable('authors_books'); })
+  return knex.schema.dropTable('authors_books')
     .then(function() { return knex.schema.dropTable('authors'); })
     .then(function() { return knex.schema.dropTable('books'); });
 };
