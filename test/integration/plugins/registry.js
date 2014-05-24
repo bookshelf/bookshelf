@@ -1,7 +1,5 @@
-var assert = require('assert'),
-    equal  = assert.equal,
-    _      = require('lodash'),
-    sinon  = require('sinon');
+var expect = require('chai').expect;
+var sinon  = require('sinon');
 
 module.exports = function(Bookshelf) {
 
@@ -17,7 +15,7 @@ module.exports = function(Bookshelf) {
 			this.morphTo.restore();
 		});
 
-		beforeEach(function() {
+		beforeEach(function () {
 			this.hasOne.reset();
 			this.morphTo.reset();
 		});
@@ -37,16 +35,15 @@ module.exports = function(Bookshelf) {
 			});
 
 			it('returns the registered model', function() {
-				equal(this.model, this.Model);
+				expect(this.model).to.equal(this.Model);
 			});
 
 			it('assigns the model the name', function() {
-				equal(Bookshelf.model('Model'), this.Model);
+				expect(Bookshelf.model('Model')).to.equal(this.Model);
 			});
 
-			it('overwrites when there is a name conflict', function() {
-				Bookshelf.model('Model', Bookshelf.Model);
-				equal(Bookshelf.model('Model'), Bookshelf.Model);
+			it('throws when there is a name conflict', function() {
+				expect(Bookshelf.model.bind(Bookshelf, 'Model', Bookshelf.Model)).to.throw();
 			});
 
 		});
@@ -62,16 +59,15 @@ module.exports = function(Bookshelf) {
 			});
 
 			it('returns the registered collection', function() {
-				equal(this.collection, this.Collection);
+				expect(this.collection).to.equal(this.Collection);
 			});
 
 			it('gives the collection a name', function() {
-				equal(Bookshelf.collection('Collection'), this.Collection);
+				expect(Bookshelf.collection('Collection')).to.equal(this.Collection);
 			});
 
-			it('overwrites the collection when there is a name conflict', function() {
-				Bookshelf.collection('Collection', Bookshelf.Collection);
-				equal(Bookshelf.collection('Collection'), Bookshelf.Collection);
+			it('throws when there is a name conflict', function() {
+				expect(Bookshelf.collection.bind(Bookshelf, 'Collection', Bookshelf.Collection)).to.throw();
 			});
 
 		});
@@ -105,21 +101,26 @@ module.exports = function(Bookshelf) {
 				this.model = new Model();
 			});
 
+			afterEach(function () {
+				delete Bookshelf._models;
+				delete Bookshelf._collections;
+			});
+
 			it('resolves a string name to a model', function() {
-				equal(this.model._hasOne().relatedData.target, this.relatedModel);
+				expect(this.model._hasOne().relatedData.target).to.equal(this.relatedModel);
 			});
 
 			it('falls back to a collection if no model is found', function() {
-				equal(this.model._hasMany().relatedData.target, this.relatedCollection);
+				expect(this.model._hasMany().relatedData.target).to.equal(this.relatedCollection);
 			});
 
 			it('can still accept a model constructor', function() {
-				equal(this.model._normalHasOne().relatedData.target, this.relatedModel);
+				expect(this.model._normalHasOne().relatedData.target).to.equal(this.relatedModel);
 			});
 
 			it('applies the resolved model to the original method', function() {
 				this.model._hasOne();
-				sinon.assert.calledWith(this.hasOne, this.relatedModel);
+				expect(this.hasOne).to.have.been.calledWith(this.relatedModel);
 			});
 
 			it('allows for *-through relations', function() {
@@ -137,7 +138,7 @@ module.exports = function(Bookshelf) {
 					try {
 						this.model._morphTo();
 					} catch (e) {
-						sinon.assert.calledWith(this.morphTo, 'morphable', this.relatedModel, this.relatedModel);
+						expect(this.morphTo).to.have.been.calledWith('morphable', this.relatedModel, this.relatedModel);
 					}
 				});
 
