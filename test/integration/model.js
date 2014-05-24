@@ -450,6 +450,20 @@ module.exports = function(Bookshelf) {
         });
       });
 
+      it('Allows autogenerating a uuid using newId', function() {
+        var SubSite = Models.Uuid2.extend();
+        var subsite = new SubSite({name: 'testing'});
+        var uuidval = subsite._newId;
+        return subsite.save().then(function(model) {
+          expect(model.id).to.equal(uuidval);
+          expect(model.get('name')).to.equal('testing');
+        }).then(function() {
+          return new SubSite({uuid: uuidval}).fetch();
+        }).then(function(model) {
+          expect(model.get('name')).to.equal('testing');
+        });
+      });
+
     });
 
     describe('destroy', function() {
@@ -666,13 +680,25 @@ module.exports = function(Bookshelf) {
     });
 
     describe('isNew', function() {
+      var Instance = Models.Instance;
 
-      it('uses the idAttribute to determine if the model isNew', function(){
-        var model = new Bookshelf.Model();
-        model.id = 1;
-        equal(model.isNew(), false);
-        model.set('id', null);
-        equal(model.isNew(), true);
+      it('returns true when a new model is instantiated', function(){
+        var instance = new Instance();
+        equal(instance.isNew(), true);
+      });
+
+      it('returns false after a new model is saved', function(ok){
+        var instance = new Instance();
+        equal(instance.isNew(), true);
+        instance.save().then(function(instance){
+            equal(instance.isNew(), false);
+            ok();
+        }).catch(ok);
+      });
+
+      it('returns false when an id is explicitly set', function(){
+        var instance = new Instance({id: '56'});
+        equal(instance.isNew(), false);
       });
 
     });

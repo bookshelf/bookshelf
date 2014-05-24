@@ -31,6 +31,9 @@ var ModelBase = function(attributes, options) {
     _.extend(this, _.pick(options, modelProps));
     if (options.parse) attrs = this.parse(attrs, options) || {};
   }
+  if (this.newId) {
+    this._newId = this.newId();
+  }
   this.set(attrs, options);
   this.initialize.apply(this, arguments);
 };

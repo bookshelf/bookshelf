@@ -1,3 +1,4 @@
+var uuid = require('node-uuid');
 
 // All Models & Collections Used in the Tests
 // (sort of mimics a simple multi-site blogging engine)
@@ -27,6 +28,14 @@ module.exports = function(Bookshelf) {
 
   var Uuid = Bookshelf.Model.extend({
     idAttribute: 'uuid',
+    tableName: 'uuid_test'
+  });
+
+  var Uuid2 = Bookshelf.Model.extend({
+    idAttribute: 'uuid',
+    newId: function(){
+      return uuid.v4();
+    },
     tableName: 'uuid_test'
   });
 
@@ -263,7 +272,8 @@ module.exports = function(Bookshelf) {
       Settings: Settings,
       Instance: Instance,
       Hostname: Hostname,
-      Uuid: Uuid
+      Uuid: Uuid,
+      Uuid2: Uuid2
     },
     Collections: {
       Sites: Sites,
