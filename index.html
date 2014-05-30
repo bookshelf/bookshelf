@@ -1678,9 +1678,11 @@ modelB.isNew(); // false
     <p id="Model-hasChanged">
       <b class="header">hasChanged</b><code>model.hasChanged([attribute])</code>
       <br />
-      Checks whether an attribute has changed since the last <a href="#Model-fetch">fetch</a>,
-      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>. If an <b>attribute</b>
-      is passed, returns <tt>true</tt> if that specific attribute has changed.
+      Returns <tt>true</tt> if <em>any</em> attribute has changed since the last
+      <a href="#Model-fetch">fetch</a>, <a href="#Model-save">save</a>,
+      or <a href="#Model-destroy">destroy</a>.
+      If an <b>attribute</b> is passed, returns <tt>true</tt> only
+      if that specific attribute has changed.
     </p>
 
     <p id="Model-previous">
