@@ -750,7 +750,14 @@ var Television = Bookshelf.Model.extend({
     <p id="Model-idAttribute">
       <b class="header">idAttribute</b><code>model.idAttribute</code>
       <br />
-      A database row's unique identifier (typically an auto-incrementing primary key) is stored under this attribute.
+      This tells the model which attribute to expect as
+      the unique identifier for each database row
+      (typically an auto-incrementing primary key named <b>id</b>).
+      Note that if you are using <b>parse</b> and <b>format</b>
+      (to have your model's attributes in <tt>camelCase</tt>,
+      but your database's columns in <tt>snake_case</tt>, for example)
+      this refers to the name returned by <b>parse</b> (<tt>myId</tt>),
+      not the database column (<tt>my_id</tt>).
     </p>
 
     <p id="Model-id">
@@ -1678,9 +1685,11 @@ modelB.isNew(); // false
     <p id="Model-hasChanged">
       <b class="header">hasChanged</b><code>model.hasChanged([attribute])</code>
       <br />
-      Checks whether an attribute has changed since the last <a href="#Model-fetch">fetch</a>,
-      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>. If an <b>attribute</b>
-      is passed, returns <tt>true</tt> if that specific attribute has changed.
+      Returns <tt>true</tt> if <em>any</em> attribute has changed since the last
+      <a href="#Model-fetch">fetch</a>, <a href="#Model-save">save</a>,
+      or <a href="#Model-destroy">destroy</a>.
+      If an <b>attribute</b> is passed, returns <tt>true</tt> only
+      if that specific attribute has changed.
     </p>
 
     <p id="Model-previous">
