@@ -22,11 +22,13 @@
     "datamapper",
     "active record"
   ],
+  "peerDependencies": {
+    "knex": "0.5.x"
+  },
   "dependencies": {
     "backbone": "1.1.0",
     "inflection": "1.2.x",
     "trigger-then": "0.3.x",
-    "knex": "0.5.x",
     "bluebird": "1.2.x",
     "lodash": ">=2.0.0"
   },
@@ -43,7 +45,8 @@
     "chai": "~1.8.0",
     "sinon-chai": "~2.4.0",
     "sinon": "~1.7.3",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "knex": "0.5.x"
   },
   "author": {
     "name": "Tim Griesser",

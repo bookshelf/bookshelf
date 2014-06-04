@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="canonical" href="http://bookshelfjs.org" />
   <link rel="icon" href="docs/images/favicon.ico" />
-  <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+  <link rel="stylesheet" href="/docs/assets/highlight.min.css">
   <title>Bookshelf.js - a Javascript ORM for Node.js for PostgreSQL, MySQL, and SQLite3</title>
   <style>
     body {
@@ -291,7 +291,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.10)</span>
+      Bookshelf.js <span class="version">(0.6.11)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -459,7 +459,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.10 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.11 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -562,7 +562,7 @@ $ npm install sqlite3
       Bookshelf.initialize is the initializing function that must be called prior to using Bookshelf, accepting either an initialized
       <a href="http://knexjs.org">Knex</a> client, or a hash of parameters to be passed along to <a href="http://knexjs.org/#initialize">Knex.initialize</a>.
       The knex documentation provides a number of examples for different databases.
-      
+
     </p>
 
 <pre><code>
@@ -2551,6 +2551,12 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
+      <b class="header">0.6.11</b> &mdash; <small><i>June 4, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.10...0.6.11">Diff</a><br />
+      Temporarily add knex to <tt>peerDependencies</tt> until 0.7 is released to support knex 0.6 and there exists
+      a better internal method of doing a semver check.
+    </p>
+
+    <p>
       <b class="header">0.6.10</b> &mdash; <small><i>April 3, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.9...0.6.10">Diff</a><br />
       <ul>
         <li>Bumping dependencies, including upgrading to Bluebird 1.2, trigger-then 0.3, fixing an erroneous "unhandledRejection" (#310).</li>
@@ -2891,7 +2897,7 @@ user.fetch({withRelated: ['accounts', {
     </p>
 
   </div>
-  <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+  <script src="/docs/assets/highlight.min.js"></script>
   <script>hljs.configure({ languages: ['javascript'] }); hljs.initHighlightingOnLoad();</script>
   <script src="docs/assets/ga.js" type="text/javascript" charset="utf-8"></script>
 </body>
