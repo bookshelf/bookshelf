@@ -291,7 +291,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.11)</span>
+      Bookshelf.js <span class="version">(0.6.12)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -459,7 +459,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.11 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.12 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2551,9 +2551,16 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
+      <b class="header">0.6.12</b> &mdash; <small><i>June 5, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.11...0.6.12">Diff</a><br />
+      Fix for eager loaded belongsTo relation bug with custom parse/format (#377).
+    </p>
+
+
+    <p>
       <b class="header">0.6.11</b> &mdash; <small><i>June 4, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.10...0.6.11">Diff</a><br />
       Temporarily add knex to <tt>peerDependencies</tt> until 0.7 is released to support knex 0.6 and there exists
       a better internal method of doing a semver check.
+      Fix for belongsTo relation bug (#353).
     </p>
 
     <p>
@@ -2648,6 +2655,10 @@ process.stderr.on('data', function(data) {
         <li>Switched from underscore to lodash, for semver reliability.</li>
       </ul>
     </p>
+
+    <p><a href="#" class="js-change-log" style="text-align:center">Show Full Change log</a></p>
+
+    <div class="change-log" style="display:none">
 
     <p>
       <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />
@@ -2896,9 +2907,21 @@ user.fetch({withRelated: ['accounts', {
       Initial Bookshelf release.
     </p>
 
+    </div>
+
   </div>
   <script src="/docs/assets/highlight.min.js"></script>
   <script>hljs.configure({ languages: ['javascript'] }); hljs.initHighlightingOnLoad();</script>
-  <script src="docs/assets/ga.js" type="text/javascript" charset="utf-8"></script>
+  <script src="docs/assets/ga.js" charset="utf-8"></script>
+  <script src="docs/assets/jquery.min.js"></script>
+  <script>
+  // Don't show the full change log.
+  $(".js-change-log").on('click', function(e) {
+    e.preventDefault();
+    $(this).remove();
+    $('.change-log').show();
+  });
+  </script>
+
 </body>
 </html>
