@@ -253,9 +253,13 @@ exports.Relation = RelationBase.extend({
     // keeping the `relatedData` on the new related instance.
     for (var i = 0, l = parentModels.length; i < l; i++) {
       model = parentModels[i];
-      var groupedKey = !this.isInverse() ? model.id :
-            this.isThrough() ? model.get(this.key('throughForeignKey')) :
-            model.get(this.key('foreignKey'));
+      var groupedKey;
+      if (!this.isInverse()) {
+        groupedKey = model.id;
+      } else {
+        var formatted = model.format(model.attributes);
+        groupedKey = this.isThrough() ? formatted[this.key('throughForeignKey')] : formatted[this.key('foreignKey')];
+      }
       var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);

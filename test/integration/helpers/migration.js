@@ -6,7 +6,8 @@ var drops = [
   'admins_sites', 'authors', 'authors_posts',
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
   'users', 'roles', 'photos', 'users_roles', 'info',
-  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test'
+  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
+  'parsed_users', 'tokens'
 ];
 
 module.exports = function(Bookshelf) {
@@ -144,6 +145,17 @@ module.exports = function(Bookshelf) {
       schema.createTable('uuid_test', function(table) {
         table.uuid('uuid');
         table.string('name');
+      }),
+
+      schema.createTable('parsed_users', function(table) {
+        table.increments();
+        table.string('name');
+      }),
+
+      schema.createTable('tokens', function(table) {
+        table.increments();
+        table.string('parsed_user_id');
+        table.string('token');
       })
 
     ]);

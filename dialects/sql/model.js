@@ -111,7 +111,7 @@ exports.Model = ModelBase.extend({
   load: Promise.method(function(relations, options) {
     return Promise.bind(this)
       .then(function() {
-        return [this.toJSON({shallow: true})];
+        return [this.format(this.attributes)];
       })
       .then(handleEager(_.extend({}, options, {
         shallow: true,

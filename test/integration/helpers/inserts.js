@@ -205,7 +205,11 @@ module.exports = function(bookshelf) {
       {id: 3, name: 'search engine'},
       {id: 4, name: 'not used'},
       {id: 10, name: 'computers'},
-    ])
+    ]),
+
+    knex('parsed_users').insert({id: 10, name: 'test'}),
+
+    knex('tokens').insert({parsed_user_id: 10, token: 'testing'})
 
   ]).then(null, function(e) {
     console.log(e.stack);
