@@ -6,7 +6,9 @@ module.exports = function(Bookshelf) {
   var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
   var Promise  = global.testPromise;
 
-  var MySQL = Bookshelf.initialize({
+  var pg = require('knex')({client: 'postgres', connection: config.postgres});
+  var sqlite3 = require('knex')({client: 'sqlite3', connection: config.sqlite3});
+  var mysql = require('knex')({
     client: 'mysql',
     connection: config.mysql,
     pool: {
@@ -18,29 +20,13 @@ module.exports = function(Bookshelf) {
     }
   });
 
-  var PostgreSQL = Bookshelf.initialize({
-    client: 'postgres',
-    connection: config.postgres,
-  });
-
-  var SQLite3 = Bookshelf.initialize({
-    client: 'sqlite3',
-    connection: config.sqlite3,
-  });
-
-  var knexSqlite3 = Knex.initialize({
-    client: 'sqlite3',
-    connection: config.sqlite3
-  });
-
-  it('should allow creating a Bookshelf client from a Knex instance', function() {
-    var bookshelf = Bookshelf.initialize(knexSqlite3);
-    expect(bookshelf.knex).to.equal(knexSqlite3);
-  });
+  var MySQL = require('bookshelf')(mysql);
+  var PostgreSQL = require('bookshelf')(pg);
+  var SQLite3 = require('bookshelf')(sqlite3);
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
-    var bookshelf = new Bookshelf(knexSqlite3);
-    expect(bookshelf.knex).to.equal(knexSqlite3);
+    var bookshelf = new Bookshelf(sqlite3);
+    expect(bookshelf.knex).to.equal(sqlite3);
   });
 
   _.each([MySQL, PostgreSQL, SQLite3], function(bookshelf) {

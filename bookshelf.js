@@ -1,4 +1,4 @@
-// Bookshelf.js 0.6.12
+// Bookshelf.js 0.7.0
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -19,12 +19,16 @@ var SqlRelation   = require('./lib/relation').Relation;
 // Finally, the `Events`, which we've supplemented with a `triggerThen`
 // method to allow for asynchronous event handling via promises. We also
 // mix this into the prototypes of the main objects in the library.
-var Events        = require('./lib/base/events').Events;
+var Events = require('./lib/base/events').Events;
 
 // Constructor for a new `Bookshelf` object, it accepts
 // an active `knex` instance and initializes the appropriate
 // `Model` and `Collection` constructors for use in the current instance.
 var Bookshelf = function(knex) {
+
+  if (_.isPlainObject(knex)) {
+    console.warn('Initializing Bookshelf with a config object is deprecated, please pass an initialized knex.js instance.');
+  }
 
   // Allows you to construct the library with either `Bookshelf(opts)`
   // or `new Bookshelf(opts)`.
