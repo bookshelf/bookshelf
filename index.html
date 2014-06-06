@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="canonical" href="http://bookshelfjs.org" />
   <link rel="icon" href="docs/images/favicon.ico" />
+  <link rel="stylesheet" href="/docs/assets/highlight.min.css">
   <title>Bookshelf.js - a Javascript ORM for Node.js for PostgreSQL, MySQL, and SQLite3</title>
   <style>
     body {
@@ -204,6 +205,11 @@
         border-left: 4px solid #bbb; border-top: 0; border-bottom: 0;
         margin: 0px 0 25px;
       }
+      pre code.hljs {
+        background: inherit;
+        margin-left: inherit;
+        margin-top: -1em;
+      }
       img.example_image {
         margin: 0px auto;
       }
@@ -285,7 +291,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.10)</span>
+      Bookshelf.js <span class="version">(0.6.12)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -354,6 +360,15 @@
       <li>– <a href="#Model-previous">previous</a></li>
       <li>– <a href="#Model-previousAttributes">previousAttributes</a></li>
       <li>– <a href="#Model-sync">sync</a></li>
+    </ul>
+
+    <a class="toc_title" href="#Associations">
+      Associations
+    </a>
+    <ul class="toc_section">
+      <li>– <a href="#Associations-one-to-one">One-to-one</a></li>
+      <li>– <a href="#Associations-one-to-many">One-to-many</a></li>
+      <li>– <a href="#Associations-many-to-many">Many-to-many</a></li>
     </ul>
 
     <a class="toc_title" href="#Collection">
@@ -431,7 +446,7 @@
     <p>
       <b>Bookshelf</b> is a javascript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both <a href="http://promises-aplus.github.com/promises-spec/">promise based</a> and <a href="#faq-callbacks">traditional callback</a> interfaces, it extends the Model &amp; Collection patterns of Backbone.js, providing <a href="#Bookshelf-transaction">transaction support</a>,
       eager/nested-eager relation loading, <a href="#Model-polymorphic-associations">polymorphic associations</a>, and support for
-      one-to-one, one-to-many, and many-to-many relations.
+      <a href="#Associations-one-to-one">one-to-one</a>, <a href="#Associations-one-to-many">one-to-many</a>, and <a href="#Associations-many-to-many">many-to-many</a> relations.
     </p>
 
     <p>
@@ -444,7 +459,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.10 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.6.12 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -546,9 +561,11 @@ $ npm install sqlite3
     <p>
       Bookshelf.initialize is the initializing function that must be called prior to using Bookshelf, accepting either an initialized
       <a href="http://knexjs.org">Knex</a> client, or a hash of parameters to be passed along to <a href="http://knexjs.org/#initialize">Knex.initialize</a>.
+      The knex documentation provides a number of examples for different databases.
+
     </p>
 
-<pre>
+<pre><code>
 var MySql = Bookshelf.initialize({
   client: 'mysql',
   connection: {
@@ -556,14 +573,14 @@ var MySql = Bookshelf.initialize({
     user     : 'your_database_user',
     password : 'your_database_password',
     database : 'myapp_test',
-    charset  : 'utf8'
+    charset  : 'UTF8_GENERAL_CI'
   }
 });
 
 var User = MySql.Model.extend({
   tableName: 'users'
 });
-</pre>
+</code></pre>
 
   <p>
     An initialize should only ever happen once in your application, as it creates a connection pool for the current database, you should use the instance returned from the initialize call throughout your library.
@@ -571,7 +588,7 @@ var User = MySql.Model.extend({
     You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow is to set the client as a property on the Bookshelf library when your application starts, so you can easily reference it later:
   </p>
 
-<pre>
+<pre><code>
 // When the app starts
 var Bookshelf  = require('bookshelf');
 Bookshelf.PG = Bookshelf.initialize({
@@ -587,7 +604,7 @@ var Bookshelf = require('bookshelf').PG;
 var Post = Bookshelf.Model.extend({
   // ...
 });
-</pre>
+</code></pre>
 
     <h2 id="Model">Bookshelf.Model</h2>
 
@@ -611,7 +628,7 @@ var Post = Bookshelf.Model.extend({
       with <b>extend</b> can be further extended and subclassed as far as you like.
     </p>
 
-<pre>
+<pre><code>
 var Customer = Bookshelf.Model.extend({
 
   initialize: function() { ... },
@@ -621,7 +638,7 @@ var Customer = Bookshelf.Model.extend({
   login: function() { ... }
 
 });
-</pre>
+</code></pre>
 
     <p class="warning">
         Brief aside on <tt>super</tt>: JavaScript does not provide
@@ -631,7 +648,7 @@ var Customer = Bookshelf.Model.extend({
         parent object's implementation, you'll have to explicitly call it, along these lines:
     </p>
 
-<pre>
+<pre><code>
 var Customer = Bookshelf.Model.extend({
   set: function() {
     ...
@@ -639,7 +656,7 @@ var Customer = Bookshelf.Model.extend({
     ...
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-forge">
       <b class="header">forge</b><code>Bookshelf.Model.forge([attributes], [options])</code>
@@ -647,7 +664,7 @@ var Customer = Bookshelf.Model.extend({
       A simple helper function to instantiate a new <tt>Model</tt> without needing <tt>new</tt>.
     </p>
 
-<pre>
+<pre><code>
 var Customer = Bookshelf.Model.extend({
   tableName: 'customers'
 });
@@ -655,7 +672,7 @@ var Customer = Bookshelf.Model.extend({
 Customer.forge({item: 'value'}).save().then(function() {
   // ...
 });
-</pre>
+</code></pre>
 
     <p id="Model-collection">
       <b class="header">collection</b><code>Model.collection([models], [options])</code>
@@ -663,11 +680,11 @@ Customer.forge({item: 'value'}).save().then(function() {
       A simple static helper to instantiate a new <a href="#Collection">Collection</a>, setting the current model as the collection's target.
     </p>
 
-<pre>
+<pre><code>
 Customer.collection().fetch().then(function(collection) {
   // ...
 })
-</pre>
+</code></pre>
 
     <p id="Model-constructor">
       <b class="header">constructor / initialize</b><code>new Model([attributes], [options])</code>
@@ -678,12 +695,12 @@ Customer.collection().fetch().then(function(collection) {
       the model is created.
     </p>
 
-<pre>
+<pre><code>
 new Book({
   title: "One Thousand and One Nights",
   author: "Scheherazade"
 });
-</pre>
+</code></pre>
 
     <p>
       In rare cases, if you're looking to get fancy,
@@ -691,7 +708,7 @@ new Book({
       you to replace the actual constructor function for your model.
     </p>
 
-<pre>
+<pre><code>
 var Books = Bookshelf.Model.extend({
 
   tableName: 'documents',
@@ -704,7 +721,7 @@ var Books = Bookshelf.Model.extend({
   }
 
 });
-</pre>
+</code></pre>
 
     <p>
       The<tt>tableName</tt> and <tt>hasTimestamps</tt> properties
@@ -724,16 +741,23 @@ var Books = Bookshelf.Model.extend({
       refers to the database table name the model will query against.
     </p>
 
-<pre>
+<pre><code>
 var Television = Bookshelf.Model.extend({
   tableName: 'televisions'
 });
-</pre>
+</code></pre>
 
     <p id="Model-idAttribute">
       <b class="header">idAttribute</b><code>model.idAttribute</code>
       <br />
-      A database row's unique identifier (typically an auto-incrementing primary key) is stored under this attribute.
+      This tells the model which attribute to expect as
+      the unique identifier for each database row
+      (typically an auto-incrementing primary key named <b>id</b>).
+      Note that if you are using <b>parse</b> and <b>format</b>
+      (to have your model's attributes in <tt>camelCase</tt>,
+      but your database's columns in <tt>snake_case</tt>, for example)
+      this refers to the name returned by <b>parse</b> (<tt>myId</tt>),
+      not the database column (<tt>my_id</tt>).
     </p>
 
     <p id="Model-id">
@@ -753,11 +777,11 @@ var Television = Bookshelf.Model.extend({
       change the model's state, a <tt>"change"</tt> event will be triggered. You may also pass individual keys and values.
     </p>
 
-<pre>
+<pre><code>
 customer.set({first_name: "Joe", last_name: "Customer"});
 
 customer.set("telephone", "555-555-1212");
-</pre>
+</code></pre>
 
     <p id="Model-get">
       <b class="header">get</b><code>model.get(attribute)</code>
@@ -774,7 +798,7 @@ customer.set("telephone", "555-555-1212");
       or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved. If you need to constrain the query performed by fetch, you can call the <a href="#Model-query">query</a> method before calling fetch.
     </p>
 
-<pre>
+<pre><code>
 // select * from `books` where `ISBN-13` = '9780440180296'
 new Book({'ISBN-13': '9780440180296'})
   .fetch()
@@ -782,7 +806,7 @@ new Book({'ISBN-13': '9780440180296'})
     // outputs 'Slaughterhouse Five'
     console.log(model.get('title'));
   });
-</pre>
+</code></pre>
 
     <p class="warning">
       If you'd like to only fetch specific columns, you may specify a <tt>columns</tt> property,
@@ -800,7 +824,7 @@ new Book({'ISBN-13': '9780440180296'})
       <tt>{shallow: true}</tt> is passed.
     </p>
 
-<pre>
+<pre><code>
 var Book = Bookshelf.Model.extend({
   tableName: 'books',
   editions: function() {
@@ -818,7 +842,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
   console.log(book.related('editions').toJSON());
   console.log(book.toJSON());
 });
-</pre>
+</code></pre>
 
     <p id="Model-load">
       <b class="header">load</b><code>model.load(relations, [options]).then(function(model) {...</code>
@@ -828,7 +852,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
       may be used to specify deep eager loading.
     </p>
 
-<pre>
+<pre><code>
 new Posts().fetch().then(function(collection) {
   collection.at(0)
   .load(['author', 'content', 'comments.tags'])
@@ -845,9 +869,13 @@ new Posts().fetch().then(function(collection) {
     {tags: [...]}, {tags: [...]}
   ]
 }
-</pre>
+</code></pre>
 
     <h3 id="Model-relation-types">Relation Types:</h3>
+
+    <p>
+      Relationships are used to create <a href="#Associations">associations between models</a>.
+    </p>
 
     <p>
       There are four types of relationships that may be defined between Models and
@@ -857,7 +885,7 @@ new Posts().fetch().then(function(collection) {
       appropriate relation type.
     </p>
 
-<pre>
+<pre><code>
 var Summary = Bookshelf.Model.extend({tableName: 'summaries'});
 
 var Author = Bookshelf.Model.extend({tableName: 'authors'});
@@ -889,14 +917,14 @@ new Book({id: 1}).summary().fetch().then(function(summary) {
   console.log(summary.toJSON());
 });
 
-</pre>
+</code></pre>
 
     <p>
       Relations may also be loaded eagerly, by specifying a <tt>withRelated</tt> option
       during the fetch call.
     </p>
 
-<pre>
+<pre><code>
 new Book({id: 2}).fetch({
   withRelated: ['summary', 'owner', 'pages', 'author']
 }).then(function(book) {
@@ -906,7 +934,7 @@ new Book({id: 2}).fetch({
     console.log(owner.toJSON());
   }
 });
-</pre>
+</code></pre>
 
     <p>
       You may also want to eagerly load related models on a model or collection after it has already been fetched.
@@ -914,7 +942,7 @@ new Book({id: 2}).fetch({
       loaded on the model or collection.
     </p>
 
-<pre>
+<pre><code>
 var accounts = new Accounts();
 accounts.fetch()
   .then(function(collection) {
@@ -926,14 +954,14 @@ accounts.fetch()
       current_account: model
     });
   });
-</pre>
+</code></pre>
 
 
     <p>
       Nested eager loads may be performed, by separating the nested relations with <tt>'.'</tt>.
     </p>
 
-<pre>
+<pre><code>
 new Story({id: 2}).fetch({
   withRelated: ['comments.tags', 'comments.author', 'author']
 }).then(function(model) {
@@ -951,7 +979,7 @@ new Story({id: 2}).fetch({
     {tags: [...], author: {...}}
   ]
 }
-</pre>
+</code></pre>
 
     <p>
       An object may be passed as a relation, where the first argument is the key and the second a function
@@ -959,7 +987,7 @@ new Story({id: 2}).fetch({
       Knex query builder object as the first argument.
     </p>
 
-<pre>
+<pre><code>
 new Story({id: 2}).fetch({
   withRelated: ['comments.tags', 'comments.author', {
     'author': function(qb) {
@@ -967,7 +995,7 @@ new Story({id: 2}).fetch({
     }
   }]
 }).then(...
-</pre>
+</code></pre>
 
     <p id="Model-hasOne">
       <b class="header">hasOne</b><code>model.hasOne(Target, [foreignKey])</code>
@@ -978,7 +1006,7 @@ new Story({id: 2}).fetch({
       followed by <tt>_id</tt>.
     </p>
 
-<pre>
+<pre><code>
 var Record = Bookshelf.Model.extend({
   tableName: 'health_records'
 });
@@ -999,7 +1027,7 @@ new Patient({id: 1}).related('record').fetch().then(function(model) {
 new Patient({id: 1}).record().fetch().then(function(model) {
   ...
 });
-</pre>
+</code></pre>
 
     <p>
       If the foreign key is different than the one assumed by the query builder, you may specify
@@ -1018,13 +1046,16 @@ new Patient({id: 1}).record().fetch().then(function(model) {
     <p id="Model-belongsTo">
       <b class="header">belongsTo</b><code>model.belongsTo(Target, [foreignKey])</code>
       <br />
-      The <tt>belongsTo</tt> relationship type defines an inverse one-to-one relation, where the current <b>model</b> is a member
-      of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
+      The <tt>belongsTo</tt> relationship is used when a <b>model</b> is a member of another <b>Target</b> model. It can be used in a
+      <a href="#Associations-one-to-one">one-to-one</a> associations as the inverse of a <a href="#Model-hasOne">hasOne</a>. It can also used in
+      <a href="#Associations-one-to-many">one-to-many</a> associations as the inverse of a <a href="#Model-hasMany">hasMany</a>
+      (and is the <i>one</i> side of that association). In both cases, the <tt>belongsTo</tt>
+      relationship is used for a <b>model</b> that is a member of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
       By default, the <b>foreignKey</b> is assumed to be the singular form of the <b>Target</b> model's <a href="#Model-tableName">tableName</a>,
       followed by <tt>_id</tt>.
     </p>
 
-<pre>
+<pre><code>
 var Book = Bookshelf.Model.extend({
   tableName: 'books',
   author: function() {
@@ -1037,7 +1068,7 @@ var Book = Bookshelf.Model.extend({
 new Book({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
   console.log(JSON.stringify(book.related('author')));
 });
-</pre>
+</code></pre>
 
     <p id="Model-belongsToMany">
       <b class="header">belongsToMany</b><code>model.belongsToMany(Target, [table], [foreignKey], [otherKey])</code>
@@ -1047,7 +1078,7 @@ new Book({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
       the joining table is the two table names, joined by an underscore, ordered alphabetically. For example, a
       <tt>users</tt> table and an <tt>accounts</tt> table would have a joining table of <tt>accounts_users</tt>.
 
-<pre>
+<pre><code>
 var Account = Bookshelf.Model.extend({
   tableName: 'accounts'
 });
@@ -1069,7 +1100,7 @@ var User = Bookshelf.Model.extend({
   }
 
 });
-</pre>
+</code></pre>
 
     <p>
       The default key names in the joining table are the singular versions of the model table names, followed by <tt>_id</tt>.
@@ -1078,16 +1109,16 @@ var User = Bookshelf.Model.extend({
       customize the keys used in, or the <tt>tableName</tt> used for the join table, you may specify them like so:
     </p>
 
-<pre>
+<pre><code>
 this.belongsToMany(Account, 'users_accounts', 'userid', 'accountid');
-</pre>
+</code></pre>
 
     <p>
       If you wish to create a <tt>belongsToMany</tt> association where the joining table has a primary key, and
       more information about the model, you may create a belongsToMany <a href="#Model-through">through</a> relation:
     </p>
 
-<pre>
+<pre><code>
 var Doctor = Bookshelf.Model.extend({
 
   patients: function() {
@@ -1115,7 +1146,7 @@ var Patient = Bookshelf.Model.extend({
   }
 
 });
-</pre>
+</code></pre>
 
     <p id="Model-through">
       <b class="header">through</b><code>.through(JoinModel, [throughFk], [otherKey])</code>
@@ -1130,7 +1161,7 @@ var Patient = Bookshelf.Model.extend({
       chapters. Consider the following examples:
     </p>
 
-<pre>
+<pre><code>
 var Book = Bookshelf.Model.extend({
 
   tableName: 'books',
@@ -1171,7 +1202,7 @@ var Paragraph = Bookshelf.Model.extend({
   }
 
 });
-</pre>
+</code></pre>
 
     <p>
       The "through" table creates a pivot model, which it assigns to <tt>model.pivot</tt> after it is created.
@@ -1186,16 +1217,16 @@ var Paragraph = Bookshelf.Model.extend({
       Creates &amp; saves a new model and attaches the model with the related model.
     </p>
 
-<pre>
+<pre><code>
 new Site({id: 1}).related('admins').attach([1, 2]);
-</pre>
+</code></pre>
 
   <p>
     The attach function may also take one or more models to attach to the current
     model:
   </p>
 
-<pre>
+<pre><code>
 var admin1 = new Admin({username: 'user1', password: 'test'});
 var admin2 = new Admin({username: 'user2', password: 'test'});
 
@@ -1206,7 +1237,7 @@ Promise.all([admin1.save(), admin2.save()])
       new Site({id: 2}).admins().attach(admin2)
     ]);
   })
-</pre>
+</code></pre>
 
     <p id="Model-detach">
       <b class="header">detach</b><code>relation.detach(ids, [options])</code>
@@ -1223,13 +1254,13 @@ Promise.all([admin1.save(), admin2.save()])
       relations, and allows for additional fields to be pulled from the joining table.
     </p>
 
-<pre>
+<pre><code>
 var Tag = Bookshelf.Model.extend({
   comments: function() {
     return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-updatePivot">
       <b class="header">updatePivot</b><code>relation.updatePivot(attrs, [options])</code>
@@ -1248,7 +1279,7 @@ var Tag = Bookshelf.Model.extend({
       to either a <tt>Site</tt> model or a <tt>Post</tt> model. Here’s how this could be declared:
     </p>
 
-<pre>
+<pre><code>
 var Site = Bookshelf.Model.extend({
   tableName: 'sites',
   photo: function() {
@@ -1269,7 +1300,7 @@ var Photo = Bookshelf.Model.extend({
     return this.morphTo('imageable', Site, Author);
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-morphOne">
       <b class="header">morphOne</b><code>model.morphOne(Target, name, [morphValue])</code>
@@ -1282,14 +1313,14 @@ var Photo = Bookshelf.Model.extend({
       column than the <a href="#Model-tableName">tableName</a>.
     </p>
 
-<pre>
+<pre><code>
 var Site = Bookshelf.Model.extend({
   tableName: 'sites',
   photo: function() {
     return this.morphOne(Photo, 'imageable');
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-morphMany">
       <b class="header">morphMany</b><code>model.morphMany(Target, name, [morphValue])</code>
@@ -1299,14 +1330,14 @@ var Site = Bookshelf.Model.extend({
       a different value in the <tt>_type</tt> column than the <a href="#Model-tableName">tableName</a>.
     </p>
 
-<pre>
+<pre><code>
 var Post = Bookshelf.Model.extend({
   tableName: 'posts',
   photos: function() {
     return this.morphMany(Photo, 'imageable');
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-morphTo">
       <b class="header">morphTo</b><code>model.morphTo(name, targets*)</code>
@@ -1316,14 +1347,14 @@ var Post = Bookshelf.Model.extend({
       polymorphic relation.
     </p>
 
-<pre>
+<pre><code>
 var Photo = Bookshelf.Model.extend({
   tableName: 'photos',
   imageable: function() {
     return this.morphTo('imageable', Site, Author);
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-relations">
       <b class="header">relations</b><code>model.relations</code>
@@ -1344,7 +1375,7 @@ var Photo = Bookshelf.Model.extend({
       nor as a method on the model.
     </p>
 
-<pre>
+<pre><code>
 new Photo({id: 1}).fetch({
   withRelated: ['account']
 }).then(function(photo) {
@@ -1355,7 +1386,7 @@ new Photo({id: 1}).fetch({
     }
   }
 });
-</pre>
+</code></pre>
 
     <p id="Model-relatedData">
       <b class="header">relatedData</b><code>model.relatedData</code>
@@ -1377,25 +1408,25 @@ new Photo({id: 1}).fetch({
       a <tt>{defaults: true}</tt> option may be specified to also merge with the default values.
     </p>
 
-<pre>
+<pre><code>
 new Post({name: 'New Article'}).save().then(function(model) {
   // ...
 });
-</pre>
+</code></pre>
 
     <p>
       If you only wish to update with the <b>params</b> passed to the <tt>save</tt>, you may pass
       a <tt>{patch: true}</tt> flag to the database:
     </p>
 
-<pre>
+<pre><code>
 // update authors set "bio" = 'Short user bio' where "id" = 1
 new Author({id: 1, first_name: 'User'})
   .save({bio: 'Short user bio'}, {patch: true})
   .then(function(model) {
     // ...
   });
-</pre>
+</code></pre>
 
     <p>
       Several events fired on the model when saving: a <tt>"creating"</tt>, or <tt>"updating"</tt>
@@ -1438,7 +1469,7 @@ new Author({id: 1, first_name: 'User'})
       are applied before an "insert" query, rather than during object creation.
     </p>
 
-<pre>
+<pre><code>
 var Meal = Bookshelf.Model.extend({
   tableName: 'meals',
   defaults: {
@@ -1451,7 +1482,7 @@ var Meal = Bookshelf.Model.extend({
 new Meal().save().then(function(meal) {
   alert("Dessert will be " + meal.get('dessert'));
 });
-</pre>
+</code></pre>
 
     <p class="warning">
       Remember that in JavaScript, objects are passed by reference, so if you
@@ -1468,7 +1499,7 @@ new Meal().save().then(function(meal) {
       model are left intact.
     </p>
 
-<pre>
+<pre><code>
 // Example of a "format" to convert camelCase to snake_case when saving, using `underscore.string`
 model.format = function(attrs) {
   return _.reduce(attrs, function(memo, val, key) {
@@ -1476,7 +1507,7 @@ model.format = function(attrs) {
     return memo;
   }, {});
 };
-</pre>
+</code></pre>
 
     <p id="Model-parse">
       <b class="header">parse</b><code>model.parse(response, [options])</code>
@@ -1491,7 +1522,7 @@ model.format = function(attrs) {
       in a <tt>sqlite3</tt> database response.
     </p>
 
-<pre>
+<pre><code>
 // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
 model.parse = function(attrs) {
   return _.reduce(attrs, function(memo, val, key) {
@@ -1499,7 +1530,7 @@ model.parse = function(attrs) {
     return memo;
   }, {});
 };
-</pre>
+</code></pre>
 
     <p id="Model-toJSON">
       <b class="header">toJSON</b><code>model.toJSON([options])</code>
@@ -1511,7 +1542,7 @@ model.parse = function(attrs) {
       <a href="https://developer.mozilla.org/en/JSON#toJSON()_method">JavaScript API for <b>JSON.stringify</b></a>.
     </p>
 
-<pre>
+<pre><code>
 var artist = new Bookshelf.Model({
   firstName: "Wassily",
   lastName: "Kandinsky"
@@ -1521,7 +1552,7 @@ artist.set({birthday: "December 16, 1866"});
 
 console.log(JSON.stringify(artist));
 // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
-</pre>
+</code></pre>
 
     <p id="Model-Backbone-Methods">
       <b class="header">Additional Backbone Methods (4)</b>
@@ -1555,11 +1586,11 @@ console.log(JSON.stringify(artist));
       <li><a href="http://underscorejs.org/#omit">omit</a></li>
     </ul>
 
-<pre>
+<pre><code>
 user.pick('first_name', 'last_name', 'email');
 
 chapters.keys().join(', ');
-</pre>
+</code></pre>
 
     <p id="Model-query">
       <b class="header">query</b><code>model.query([method], [*parameters])</code>
@@ -1572,7 +1603,7 @@ chapters.keys().join(', ');
       model.
     </p>
 
-<pre>
+<pre><code>
 model
   .query('where', 'other_id', '=', '5')
   .fetch()
@@ -1587,7 +1618,7 @@ model.query(function(qb) {
 
 var qb = model.query();
     qb.where({id: 1}).select().then(function(resp) {...
-</pre>
+</code></pre>
 
     <p id="Model-resetQuery">
       <b class="header">resetQuery</b><code>model.resetQuery()</code>
@@ -1605,11 +1636,11 @@ var qb = model.query();
       key for the "created at" value and the second for the "updated at" value.
     </p>
 
-<pre>
+<pre><code>
 var PostModel = Bookshelf.Model.extend({
   hasTimestamps: ['createdAt', 'updatedAt']
 });
-</pre>
+</code></pre>
 
     <p id="Model-timestamp">
       <b class="header">timestamp</b><code>model.timestamp(options)</code>
@@ -1635,13 +1666,13 @@ var PostModel = Bookshelf.Model.extend({
       is considered "new".
     </p>
 
-<pre>
+<pre><code>
 var modelA = new Bookshelf.Model();
 modelA.isNew(); // true
 
 var modelB = new Bookshelf.Model({id: 1});
 modelB.isNew(); // false
-</pre>
+</code></pre>
 
     <p id="Model-changed">
       <b class="header">changed</b><code>model.changed</code>
@@ -1654,9 +1685,11 @@ modelB.isNew(); // false
     <p id="Model-hasChanged">
       <b class="header">hasChanged</b><code>model.hasChanged([attribute])</code>
       <br />
-      Checks whether an attribute has changed since the last <a href="#Model-fetch">fetch</a>,
-      <a href="#Model-save">save</a>, or <a href="#Model-destroy">destroy</a>. If an <b>attribute</b>
-      is passed, returns <tt>true</tt> if that specific attribute has changed.
+      Returns <tt>true</tt> if <em>any</em> attribute has changed since the last
+      <a href="#Model-fetch">fetch</a>, <a href="#Model-save">save</a>,
+      or <a href="#Model-destroy">destroy</a>.
+      If an <b>attribute</b> is passed, returns <tt>true</tt> only
+      if that specific attribute has changed.
     </p>
 
     <p id="Model-previous">
@@ -1680,6 +1713,198 @@ modelB.isNew(); // false
       Creates and returns a new <tt>Bookshelf.Sync</tt> instance. Can be overridden for custom behavior.
     </p>
 
+    <h2 id="Associations">Associations</h2>
+
+    <p>
+      Bookshelf handles  one-to-one, one-to-many, and many-to-many associations by defining relationships
+      on models.
+    </p>
+
+    <h3 id="Associations-one-to-one">One-to-one</h3>
+
+    <p>
+      One-to-one associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
+      <a href="#Model-hasOne">hasOne</a>.
+    </p>
+
+<pre><code>
+var Book, Summary;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  summary: function() {
+    return this.hasOne(Summary);
+  }
+});
+
+Summary = Bookshelf.Model.extend({
+  tableName: 'summaries',
+  book: function() {
+    return this.belongsTo(Book);
+  }
+});
+</code></pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre><code>
+exports.up = function(knex, Promise) {
+  var createBooks = function() {
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
+    });
+  };
+  var createSummaries = function() {
+    return knex.schema.createTable('summaries', function(table) {
+      table.increments('id').primary();
+      table.string('details');
+      table.integer('book_id').unique().notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createSummaries);
+};
+
+exports.down = function(knex, Promise) {
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropSummaries = function() {
+    return knex.schema.dropTable('summaries');
+  };
+  return dropSummaries().then(dropBooks);
+};
+</code></pre>
+
+    <h3 id="Associations-one-to-many">One-to-many</h3>
+
+    <p>
+      One-to-many associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
+      <a href="#Model-hasMany">hasMany</a>.
+    </p>
+
+<pre><code>
+var Book, Page;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  pages: function() {
+    return this.hasMany(Page);
+  }
+});
+
+Page = Bookshelf.Model.extend({
+  tableName: 'pages',
+  book: function() {
+    return this.belongsTo(Book);
+  }
+});
+</code></pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre><code>
+exports.up = function(knex, Promise) {
+  var createBooks = function() {
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
+    });
+  };
+  var createPages = function() {
+    return knex.schema.createTable('pages', function(table) {
+      table.increments('id').primary();
+      table.string('content');
+      table.integer('book_id').notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createPages);
+};
+
+exports.down = function(knex, Promise) {
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropPages = function() {
+    return knex.schema.dropTable('pages');
+  };
+  return dropPages().then(dropBooks);
+};
+</code></pre>
+
+    <h3 id="Associations-many-to-many">Many-to-many</h3>
+
+    <p>
+      Many-to-many associations can be created with <a href="#Model-belongsToMany">belongsToMany</a>.
+    </p>
+
+<pre><code>
+var Book, Author;
+
+Book = Bookshelf.Model.extend({
+  tableName: 'books',
+  authors: function() {
+    return this.belongsToMany(Author);
+  }
+});
+
+Author = Bookshelf.Model.extend({
+  tableName: 'authors',
+  books: function() {
+    return this.belongsToMany(Book);
+  }
+});
+</code></pre>
+
+    <p>
+      A Knex migration for the above relationship could be created with:
+    </p>
+
+<pre><code>
+exports.up = function(knex, Promise) {
+  var createBooks = function() {
+    return knex.schema.createTable('books', function(table) {
+      table.increments('id').primary();
+      table.string('name');
+    });
+  };
+  var createAuthors = function() {
+    return knex.schema.createTable('authors', function(table) {
+      table.increments('id').primary();
+      table.string('name');
+    });
+  };
+  var createJoinTable = function() {
+    return knex.schema.createTable('authors_books', function(table) {
+      table.integer('author_id').notNullable()
+        .references('id').inTable('authors');
+      table.integer('book_id').notNullable()
+        .references('id').inTable('books');
+    });
+  };
+  return createBooks().then(createAuthors).then(createJoinTable);
+};
+
+exports.down = function(knex, Promise) {
+  var dropBooks = function() {
+    return knex.schema.dropTable('books');
+  };
+  var dropAuthors = function() {
+    return knex.schema.dropTable('authors');
+  };
+  var dropJoinTable = function() {
+    return knex.schema.dropTable('authors_books');
+  };
+  return dropJoinTable().then(dropAuthors).then(dropBooks);
+};
+</code></pre>
+
     <h2 id="Collection">Bookshelf.Collection</h2>
 
     <p>
@@ -1701,7 +1926,7 @@ modelB.isNew(); // false
       A simple helper function to instantiate a new <tt>Collection</tt> without needing <tt>new</tt>.
     </p>
 
-<pre>
+<pre><code>
 var Promise = require('bluebird');
 var Accounts = Bookshelf.Collection.extend({
   model: Account
@@ -1715,7 +1940,7 @@ var accounts = Accounts.forge([
 Promise.all(accounts.invoke('save')).then(function() {
   // collection models should now be saved...
 });
-</pre>
+</code></pre>
 
     <p id="Collection-model">
       <b class="header">model</b><code>collection.model</code>
@@ -1728,11 +1953,11 @@ Promise.all(accounts.invoke('save')).then(function() {
       attribute may not be a polymorphic model.
     </p>
 
-<pre>
+<pre><code>
 var Trilogy = Bookshelf.Collection.extend({
   model: Book
 });
-</pre>
+</code></pre>
 
     <p id="Collection-constructor">
       <b class="header">constructor / initialize</b><code>new Collection([models], [options])</code>
@@ -1745,9 +1970,9 @@ var Trilogy = Bookshelf.Collection.extend({
       created.
     </p>
 
-<pre>
+<pre><code>
 var tabs = new TabSet([tab1, tab2, tab3]);
-</pre>
+</code></pre>
 
     <p id="Collection-models">
       <b class="header">models</b><code>collection.models</code>
@@ -1812,7 +2037,7 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       where you would only like to return a single model from the associated collection.
     </p>
 
-<pre>
+<pre><code>
 // select * from authors where site_id = 1 and id = 2 limit 1;
 new Site({id:1})
   .authors()
@@ -1821,7 +2046,7 @@ new Site({id:1})
   .then(function(model) {
     ... //
   });
-</pre>
+</code></pre>
 
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
@@ -1829,7 +2054,7 @@ new Site({id:1})
       Shortcut for calling <tt>Promise.map(collection.models, iterator)</tt> with an optionally bound context, returning a promise which is resolved with the result of the map.
     </p>
 
-<pre>
+<pre><code>
 new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
 
   return model.save().then(function() {
@@ -1841,7 +2066,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
   // resp: ['1-saved', '2-saved', '3-saved']
 
 });
-</pre>
+</code></pre>
 
     <p id="Collection-reduceThen">
       <b class="header">reduceThen</b><code>collection.reduceThen(iterator, [memo], [context])</code>
@@ -1849,7 +2074,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).mapThen(function(model) {
       Shortcut for calling <tt>Promise.reduce(collection.models, iterator, memo)</tt> with an optionally bound context, returning a promise which is resolved with the result of the reduce.
     </p>
 
-<pre>
+<pre><code>
 new Collection([{id: 1}, {id: 2}, {id: 3}]).reduceThen(function(memo, model) {
 
   return model.save().then(function() {
@@ -1862,7 +2087,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).reduceThen(function(memo, model) {
   // resp: 3
 
 });
-</pre>
+</code></pre>
 
     <p id="Collection-invokeThen">
       <b class="header">invokeThen</b><code>collection.invokeThen(method, args*)</code>
@@ -1872,7 +2097,7 @@ new Collection([{id: 1}, {id: 2}, {id: 3}]).reduceThen(function(memo, model) {
       of responses all async (and sync) behavior has settled. Useful for bulk saving or deleting models:
     </p>
 
-<pre>
+<pre><code>
 collection.invokeThen('save', null, options).then(function() {
   // ... all models in the collection have been saved
 });
@@ -1880,7 +2105,7 @@ collection.invokeThen('save', null, options).then(function() {
 collection.invokeThen('destroy', options).then(function() {
   // ... all models in the collection have been destroyed
 });
-</pre>
+</code></pre>
 
     <p id="Collection-load">
       <b class="header">load</b><code>collection.load(relations, options).then(function(collection) {...</code>
@@ -1890,7 +2115,7 @@ collection.invokeThen('destroy', options).then(function() {
       loads can be specified by separating the nested relations with <tt>'.'</tt>.
     </p>
 
-<pre>
+<pre><code>
 new Stories().fetch({
   withRelated: 'author'
 }).tap(function(stories) {
@@ -1898,7 +2123,7 @@ new Stories().fetch({
 }).then(function() {
   console.log(JSON.stringify(stories));
 });
-</pre>
+</code></pre>
 
     <p id="Collection-add">
       <b class="header">add</b><code>collection.add(models, [options])</code>
@@ -1923,7 +2148,7 @@ ships.add([
   {name: "Flying Dutchman"},
   {name: "Black Pearl"}
 ]);
-</pre>
+</code></pre>
 
     <p class="warning">
       Note that adding the same model (a model with the same <tt>id</tt>) to
@@ -1960,7 +2185,7 @@ ships.add([
       <tt>{add: false}</tt>, <tt>{remove: false}</tt>, or <tt>{merge: false}</tt>.
     </p>
 
-<pre>
+<pre><code>
 var vanHalen = new Backbone.Collection([eddie, alex, stone, roth]);
 
 vanHalen.set([eddie, alex, stone, hagar]);
@@ -1968,7 +2193,7 @@ vanHalen.set([eddie, alex, stone, hagar]);
 // Fires a "remove" event for roth, and an "add" event for "hagar".
 // Updates any of stone, alex, and eddie's attributes that may have
 // changed over the years.
-</pre>
+</code></pre>
 
     <p id="Collection-get">
       <b class="header">get</b><code>collection.get(id)</code>
@@ -1977,9 +2202,9 @@ vanHalen.set([eddie, alex, stone, hagar]);
       a <a href="#Model-cid">cid</a>, or by passing in a <b>model</b>.
     </p>
 
-<pre>
+<pre><code>
 var book = library.get(110);
-</pre>
+</code></pre>
 
     <p id="Collection-at">
       <b class="header">at</b><code>collection.at(index)</code>
@@ -2000,7 +2225,7 @@ var book = library.get(110);
       model.
     </p>
 
-<pre>
+<pre><code>
 var qb = collection.query();
     qb.where({id: 1}).select().then(function(resp) {...
 
@@ -2015,7 +2240,7 @@ collection
   .then(function(collection) {
     ...
   });
-</pre>
+</code></pre>
 
     <p id="Collection-resetQuery">
       <b class="header">resetQuery</b><code>collection.resetQuery()</code>
@@ -2172,7 +2397,7 @@ collection
     <p>For <tt>fetching</tt> events, <tt>columns</tt> is an array of columns that will be passed to knex.
     If you want to modify the columns, make sure to preserve the reference:
     </p>
-  <pre>
+  <pre><code>
   // won't work
   function (model, columns) {
     columns = ['my', 'columns'];
@@ -2183,7 +2408,7 @@ collection
     columns.length = 0;
     columns.push('my', 'columns');
   }
-  </pre>
+  </code></pre>
 
   <h2 id="Utility">Utility</h2>
 
@@ -2203,7 +2428,7 @@ collection
       transaction is rolled back.
     </p>
 
-<pre>
+<pre><code>
 var Promise = require('bluebird');
 
 Bookshelf.transaction(function(t) {
@@ -2236,7 +2461,7 @@ Bookshelf.transaction(function(t) {
     console.log('Error saving the books.');
 
   });
-</pre>
+</code></pre>
 
     <h2 id="Plugins">Plugins</h2>
 
@@ -2288,11 +2513,11 @@ Bookshelf.transaction(function(t) {
       Bookshelf uses it's own copy of the "bluebird" promise library, you can read up <a href="https://github.com/petkaantonov/bluebird#error-handling">here</a> for more on debugging these promises... but in short, adding:
     </p>
 
-<pre>
+<pre><code>
 process.stderr.on('data', function(data) {
   console.log(data);
 });
-</pre>
+</code></pre>
 
     <p>At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
     </p>
@@ -2324,6 +2549,19 @@ process.stderr.on('data', function(data) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.6.12</b> &mdash; <small><i>June 5, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.11...0.6.12">Diff</a><br />
+      Fix for eager loaded belongsTo relation bug with custom parse/format (#377).
+    </p>
+
+
+    <p>
+      <b class="header">0.6.11</b> &mdash; <small><i>June 4, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.10...0.6.11">Diff</a><br />
+      Temporarily add knex to <tt>peerDependencies</tt> until 0.7 is released to support knex 0.6 and there exists
+      a better internal method of doing a semver check.
+      Fix for belongsTo relation bug (#353).
+    </p>
 
     <p>
       <b class="header">0.6.10</b> &mdash; <small><i>April 3, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.9...0.6.10">Diff</a><br />
@@ -2417,6 +2655,10 @@ process.stderr.on('data', function(data) {
         <li>Switched from underscore to lodash, for semver reliability.</li>
       </ul>
     </p>
+
+    <p><a href="#" class="js-change-log" style="text-align:center">Show Full Change log</a></p>
+
+    <div class="change-log" style="display:none">
 
     <p>
       <b class="header">0.5.8</b> &mdash; <small><i>November 24, 2013</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8">Diff</a><br />
@@ -2579,11 +2821,11 @@ process.stderr.on('data', function(data) {
       with a function, to constrain the eager queries:
     </p>
 
-<pre>
+<pre><code>
 user.fetch({withRelated: ['accounts', {
   'accounts.settings': function(qb) { qb.where('status', 'enabled'); }
 }, 'other_data']}).then(...
-</pre>
+</code></pre>
 
     <p>
       <b class="header">0.2.1</b> &mdash; <small><i>June 26, 2013</i></small><br />
@@ -2665,7 +2907,21 @@ user.fetch({withRelated: ['accounts', {
       Initial Bookshelf release.
     </p>
 
+    </div>
+
   </div>
-  <script src="docs/assets/ga.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/docs/assets/highlight.min.js"></script>
+  <script>hljs.configure({ languages: ['javascript'] }); hljs.initHighlightingOnLoad();</script>
+  <script src="docs/assets/ga.js" charset="utf-8"></script>
+  <script src="docs/assets/jquery.min.js"></script>
+  <script>
+  // Don't show the full change log.
+  $(".js-change-log").on('click', function(e) {
+    e.preventDefault();
+    $(this).remove();
+    $('.change-log').show();
+  });
+  </script>
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-// Bookshelf.js 0.6.10
+// Bookshelf.js 0.6.12
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -48,7 +48,7 @@ var Bookshelf = function(knex) {
     _relation: function(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
-          _.result(this, 'tableName') + ' ' + type + 'relation');
+          _.result(this, 'tableName') + ' ' + type + ' relation');
       }
       return new Relation(type, Target, options);
     }
@@ -87,7 +87,7 @@ var Bookshelf = function(knex) {
 _.extend(Bookshelf.prototype, Events, {
 
   // Keep in sync with `package.json`.
-  VERSION: '0.6.10',
+  VERSION: '0.6.12',
 
   // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
   transaction: function() {
