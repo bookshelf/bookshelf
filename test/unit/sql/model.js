@@ -10,7 +10,7 @@ module.exports = function() {
   var path     = require('path');
   var basePath = process.cwd();
 
-  var Model = require(path.resolve(basePath + '/dialects/sql/model')).Model;
+  var Model = require(path.resolve(basePath + '/lib/model')).Model;
 
   describe('SQL Model', function () {
 

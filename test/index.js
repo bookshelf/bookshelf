@@ -1,4 +1,4 @@
-var Promise = require('../dialects/base/promise').Promise;
+var Promise = require('../lib/base/promise').Promise;
 
 Promise.longStackTraces();
 Promise.onPossiblyUnhandledRejection(function (err) {
