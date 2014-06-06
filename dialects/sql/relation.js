@@ -9,7 +9,7 @@ var ModelBase    = require('../base/model').ModelBase;
 var RelationBase = require('../base/relation').RelationBase;
 var Promise      = require('../base/promise').Promise;
 
-var push = [].push;
+var push         = [].push;
 
 exports.Relation = RelationBase.extend({
 
@@ -97,10 +97,14 @@ exports.Relation = RelationBase.extend({
     var resp = options.parentResponse;
 
     // The base select column
-    if (knex.columns.length === 0 && (!options.columns || options.columns.length === 0)) {
-      knex.column(this.targetTableName + '.*');
-    } else if (_.isArray(options.columns) && options.columns.length > 0) {
+    if (_.isArray(options.columns)) {
       knex.columns(options.columns);
+    }
+
+    var currentColumns = _.findWhere(knex._statements, {grouping: 'columns'});
+
+    if (!currentColumns || currentColumns.length === 0) {
+      knex.column(this.targetTableName + '.*');
     }
 
     // The `belongsToMany` and `through` relations have joins & pivot columns.
@@ -253,9 +257,13 @@ exports.Relation = RelationBase.extend({
     // keeping the `relatedData` on the new related instance.
     for (var i = 0, l = parentModels.length; i < l; i++) {
       model = parentModels[i];
-      var groupedKey = !this.isInverse() ? model.id :
-            this.isThrough() ? model.get(this.key('throughForeignKey')) :
-            model.get(this.key('foreignKey'));
+      var groupedKey;
+      if (!this.isInverse()) {
+        groupedKey = model.id;
+      } else {
+        var formatted = model.format(model.attributes);
+        groupedKey = this.isThrough() ? formatted[this.key('throughForeignKey')] : formatted[this.key('foreignKey')];
+      }
       var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);

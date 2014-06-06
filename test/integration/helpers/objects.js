@@ -3,6 +3,9 @@
 // (sort of mimics a simple multi-site blogging engine)
 module.exports = function(Bookshelf) {
 
+  var _ = require('lodash');
+  _.str = require('underscore.string');
+
   function _parsed (attributes) {
     var parsed = {};
     Object.keys(attributes).forEach(function (name) {
@@ -242,6 +245,32 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var ParsedModel = Bookshelf.Model.extend({
+    format: function (attrs) {
+      return _.transform(attrs, function (result, val, key) {
+        result[_.str.underscored(key)] = val;
+      });
+    },
+    parse: function (attrs) {
+      return _.transform(attrs, function (result, val, key) {
+        result[_.str.camelize(key)] = val;
+      });
+    }
+  });
+
+  // Has columns: id, user_id, token
+  var UserTokenParsed = ParsedModel.extend({
+    tableName: 'tokens',
+    user: function () {
+      return this.belongsTo(UserParsed);
+    }
+  });
+
+  // Has columns: id, email, first_name, last_name
+  var UserParsed = ParsedModel.extend({
+    tableName: 'parsed_users',
+  });
+
   return {
     Models: {
       Site: Site,
@@ -256,6 +285,8 @@ module.exports = function(Bookshelf) {
       Comment: Comment,
       Tag: Tag,
       User: User,
+      UserParsed: UserParsed,
+      UserTokenParsed: UserTokenParsed,
       Role: Role,
       Photo: Photo,
       Info: Info,

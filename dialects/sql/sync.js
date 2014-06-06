@@ -80,7 +80,7 @@ _.extend(Sync.prototype, {
   update: Promise.method(function(attrs) {
     var syncing = this.syncing, query = this.query;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (_.where(query.statements, {type: 'where'}).length === 0) {
+    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
     return tap(query.update(syncing.format(_.extend(Object.create(null), attrs))), this.options);
@@ -90,7 +90,7 @@ _.extend(Sync.prototype, {
   del: Promise.method(function() {
     var query = this.query, syncing = this.syncing;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (_.where(query.statements, {type: 'where'}).length === 0) {
+    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }
     return tap(this.query.del(), this.options);

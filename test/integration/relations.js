@@ -38,6 +38,9 @@ module.exports = function(Bookshelf) {
     var Instance   = Models.Instance;
     var Hostname   = Models.Hostname;
 
+    var UserParsed = Models.UserParsed;
+    var UserTokenParsed = Models.UserTokenParsed;
+
     // Collections
     var Sites    = Collections.Sites;
     var Admins   = Collections.Admins;
@@ -579,7 +582,7 @@ module.exports = function(Bookshelf) {
 
     });
 
-    describe('Issue #97 - Eager loading on parsed models', function() {
+    describe('Issue #97, #377 - Eager loading on parsed models', function() {
 
       it('correctly pairs eager-loaded models before parse()', function () {
         return Promise.all([
@@ -612,6 +615,23 @@ module.exports = function(Bookshelf) {
             });
           });
       });
+
+      it('eager fetches belongsTo correctly on a dual parse', function() {
+        return UserTokenParsed.forge({token: 'testing'}).fetch({
+          withRelated: ['user']
+        }).then(function (model) {
+          expect(model.related('user').get('id')).to.equal(10);
+        });
+      });
+
+      it('eager fetches belongsTo correctly on a dual parse', function() {
+        return UserTokenParsed.forge({token: 'testing'}).fetch().then(function(model) {
+          return model.load('user');
+        }).then(function(model) {
+          expect(model.related('user').get('id')).to.equal(10);
+        });
+      });
+
 
     });
 
@@ -701,6 +721,22 @@ module.exports = function(Bookshelf) {
         return p.fetch({withRelated:'imageable'})
         .then(function () {
           equal(siteSyncCount, 0);
+        });
+      });
+
+    });
+
+
+    describe('Issue #353 - wrong key set on a belongsTo relation', function() {
+
+      it('should not set the foreign key on the target model when saving', function() {
+        return new Blog({id: 4})
+        .fetch()
+        .then(function(model) {
+          return model.site().fetch();
+        })
+        .then(function (site) {
+          return site.save();
         });
       });
 

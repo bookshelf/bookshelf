@@ -8,7 +8,7 @@ exports.Helpers = {
   // Sets the constraints necessary during a `model.save` call.
   saveConstraints: function(model, relatedData) {
     var data = {};
-    if (relatedData && relatedData.type && relatedData.type !== 'belongsToMany') {
+    if (relatedData && relatedData.type && relatedData.type !== 'belongsToMany' && relatedData.type !== 'belongsTo') {
       data[relatedData.key('foreignKey')] = relatedData.parentFk || model.get(relatedData.key('foreignKey'));
       if (relatedData.isMorph()) data[relatedData.key('morphKey')] = relatedData.key('morphValue');
     }
