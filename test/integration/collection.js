@@ -90,7 +90,7 @@ module.exports = function(Bookshelf) {
 
       it('creates a new instance of Sync', function(){
         var model = new Bookshelf.Model();
-        expect(model.sync(model)).to.be.an.instanceOf(require('../../lib/sync').Sync);
+        expect(model.sync(model)).to.be.an.instanceOf(require('../../lib/sync'));
       });
 
     });
@@ -158,7 +158,6 @@ module.exports = function(Bookshelf) {
       it('should populate the nested relations with the proper keys', function() {
 
         return new Author({id: 1}).fetch({withRelated: 'site.photos'}).then(function(author) {
-
           return author.related('site').related('photos').create({
             imageable_id: author.related('site').id,
             url: 'http://image.dev',

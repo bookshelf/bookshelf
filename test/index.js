@@ -1,4 +1,4 @@
-var Promise = require('../lib/base/promise').Promise;
+var Promise = require('../lib/base/promise');
 
 Promise.longStackTraces();
 Promise.onPossiblyUnhandledRejection(function (err) {

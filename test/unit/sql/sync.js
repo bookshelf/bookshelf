@@ -8,7 +8,7 @@ module.exports = function() {
   var path     = require('path');
   var basePath = process.cwd();
 
-  var Sync = require(path.resolve(basePath + '/lib/sync')).Sync;
+  var Sync = require(path.resolve(basePath + '/lib/sync'));
 
   describe('Sync', function() {
 
