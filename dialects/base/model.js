@@ -81,6 +81,8 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Ev
   // Returns an object containing a shallow copy of the model attributes,
   // along with the `toJSON` value of any relations,
   // unless `{shallow: true}` is passed in the `options`.
+  // Also includes _pivot_ keys for relations unless `{noPivot: true}` 
+  // is passed in `options`.
   toJSON: function(options) {
     var attrs = _.extend({}, this.attributes);
     if (options && options.shallow) return attrs;
@@ -89,6 +91,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Ev
       var relation = relations[key];
       attrs[key] = relation.toJSON ? relation.toJSON() : relation;
     }
+    if (options && options.noPivot) return attrs;
     if (this.pivot) {
       var pivot = this.pivot.attributes;
       for (key in pivot) {
