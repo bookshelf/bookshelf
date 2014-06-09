@@ -453,7 +453,7 @@ var Books = bookshelf.Model.extend({
   constructor: function() {
     bookshelf.Model.apply(this, arguments);
     this.on('saving', function(model, attrs, options) {
-      options.query('where', 'type', '=', 'book');
+      options.query.where('type', '=', 'book');
     });
   }
 
