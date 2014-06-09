@@ -8082,6 +8082,128 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
+},{}],"create-error":[function(require,module,exports){
+module.exports=require('f/LBa2');
+},{}],"f/LBa2":[function(require,module,exports){
+//     create-error.js 0.3.1
+//     (c) 2013 Tim Griesser
+//     This source may be freely distributed under the MIT license.
+(function(factory) {
+
+"use strict";
+
+// A simple utility for subclassing the "Error"
+// object in multiple environments, while maintaining
+// relevant stack traces, messages, and prototypes.
+factory(function() {
+
+var toString = Object.prototype.toString;
+
+// Creates an new error type with a "name",
+// and any additional properties that should be set
+// on the error instance.
+return function() {
+  var args = new Array(arguments.length);
+  for (var i = 0; i < args.length; ++i) {
+    args[i] = arguments[i];
+  }
+  var name       = getName(args);
+  var target     = getTarget(args);
+  var properties = getProps(args);
+  function ErrorCtor(message, obj) {
+    attachProps(this, properties);
+    attachProps(this, obj);
+    this.message = (message || this.message);
+    if (message instanceof Error) {
+      this.message = message.message;
+      this.stack = message.stack;
+    } else if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+  function Err() { this.constructor = ErrorCtor; }
+  Err.prototype = target['prototype'];
+  ErrorCtor.prototype = new Err();
+  ErrorCtor.prototype.name = ('' + name) || 'CustomError';
+  return ErrorCtor;
+};
+
+// Just a few helpers to clean up the function above
+// https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
+function getName(args) {
+  if (args.length === 0) return '';
+  return isError(args[0]) ? (args[1] || '') : args[0];
+}
+function getTarget(args) {
+  if (args.length === 0) return Error;
+  return isError(args[0]) ? args[0] : Error;
+}
+function getProps(args) {
+  if (args.length === 0) return null;
+  return isError(args[0]) ? args[2] : args[1];
+}
+function inheritedKeys(obj) {
+  var ret = [];
+  for (var key in obj) {
+    ret.push(key);
+  }
+  return ret;
+}
+
+// Right now we're just assuming that a function in the first argument is an error.
+function isError(obj) {
+  return (typeof obj === "function");
+}
+
+// We don't need the full underscore check here, since it should either be
+// an object-literal, or nothing at all.
+function isObject(obj) {
+  return (obj && typeof obj === "object" && toString.call(obj) === "[object Object]");
+}
+
+// Used to attach attributes to the error object in the constructor.
+function attachProps(context, target) {
+  if (isObject(target)) {
+    var keys = inheritedKeys(target);
+    for (var i = 0, l = keys.length; i < l; ++i) {
+      context[keys[i]] = clone(target[keys[i]]);
+    }
+  }
+}
+
+// Don't need the full-out "clone" mechanism here, since if you're
+// trying to set things other than empty arrays/objects on your
+// sub-classed `Error` object, you're probably doing it wrong.
+function clone(target) {
+  if (target == null || typeof target !== "object") return target;
+  var cloned = target.constructor ? target.constructor() : Object.create(null);
+  for (var attr in target) {
+    if (target.hasOwnProperty(attr)) {
+      cloned[attr] = target[attr];
+    }
+  }
+  return cloned;
+}
+
+});
+
+// Boilerplate UMD definition block...
+})(function(createErrorLib) {
+  if (typeof define === "function" && define.amd) {
+    define(createErrorLib);
+  } else if (typeof exports === 'object') {
+    module.exports = createErrorLib();
+  } else {
+    var root = this;
+    var lastcreateError = root.createError;
+    var createError = root.createError = createErrorLib();
+    createError.noConflict = function() {
+      root.createError = lastcreateError;
+      return createError;
+    };
+  }
+});
+
 },{}],"inflection":[function(require,module,exports){
 module.exports=require('ccvB8p');
 },{}],"ccvB8p":[function(require,module,exports){
@@ -8764,7 +8886,7 @@ if (typeof Object.create === 'function') {
 },{}],"Diadwk":[function(require,module,exports){
 (function (global){
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Knex=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-// Knex.js  0.6.2
+// Knex.js  0.6.5
 // --------------
 
 //     (c) 2014 Tim Griesser
@@ -8844,7 +8966,7 @@ Knex.initialize = function(config) {
 
   // The `__knex__` is used if you need to duck-type check whether this
   // is a knex builder, without a full on `instanceof` check.
-  knex.VERSION = knex.__knex__  = '0.6.2';
+  knex.VERSION = knex.__knex__  = '0.6.5';
   knex.raw = function(sql, bindings) {
     var raw = new client.Raw(sql, bindings);
     raw.on('query', function(data) {
@@ -8918,6 +9040,8 @@ Knex.initialize = function(config) {
     schema[key] = function() {
       if (!client.SchemaBuilder) client.initSchema();
       var builder = new client.SchemaBuilder();
+
+      if (config.__transactor__) builder.transacting(config.__transactor__);
 
       // Passthrough all "query" events to the knex object.
       builder.on('query', function(data) {
@@ -11576,6 +11700,7 @@ client.Transaction = Transaction_SQLite3;
 // WebSQL
 // -------
 var inherits = _dereq_('inherits');
+var _        = _dereq_('lodash');
 
 var Client_SQLite3 = _dereq_('../sqlite3/index');
 var Promise = _dereq_('../../promise');
@@ -11621,7 +11746,7 @@ Client_WebSQL.prototype.acquireConnection = function() {
 Client_WebSQL.prototype.releaseConnection = Promise.method(function(connection) {});
 
 module.exports = Client_WebSQL;
-},{"../../promise":51,"../sqlite3/index":32,"./runner":45,"inherits":72}],45:[function(_dereq_,module,exports){
+},{"../../promise":51,"../sqlite3/index":32,"./runner":45,"inherits":72,"lodash":"K2RcUv"}],45:[function(_dereq_,module,exports){
 // Runner
 // -------
 module.exports = function(client) {
@@ -11633,6 +11758,7 @@ _dereq_('../sqlite3/runner')(client);
 var Runner_SQLite3 = client.Runner;
 
 var inherits = _dereq_('inherits');
+var _        = _dereq_('lodash');
 
 // Inherit from the `Runner` constructor's prototype,
 // so we can add the correct `then` method.
@@ -11687,7 +11813,7 @@ Runner_WebSQL.prototype.processResponse = function(obj) {
 client.Runner = Runner_WebSQL;
 
 };
-},{"../../promise":51,"../sqlite3/runner":37,"inherits":72}],46:[function(_dereq_,module,exports){
+},{"../../promise":51,"../sqlite3/runner":37,"inherits":72,"lodash":"K2RcUv"}],46:[function(_dereq_,module,exports){
 // Mixed into the query compiler & schema pieces. Assumes a `grammar`
 // property exists on the current object.
 var _            = _dereq_('lodash');
@@ -13411,12 +13537,13 @@ Runner.prototype.finishTransaction = Promise.method(function(action, containerOb
   }
 
   return query.then(function(resp) {
+    msg = (msg === void 0) ? resp : msg;
     switch (action) {
       case 0:
-        dfd.fulfill(msg || resp);
+        dfd.fulfill(msg);
         break;
       case 1:
-        dfd.reject(msg || resp);
+        dfd.reject(msg);
         break;
     }
 
@@ -13758,6 +13885,9 @@ SchemaCompiler.prototype.toSQL = function() {
   }
   return this.sequence;
 };
+SchemaCompiler.prototype.raw = function(sql, bindings) {
+  this.sequence.push(new this.client.Raw(sql, bindings).toSQL());
+};
 
 module.exports = SchemaCompiler;
 },{}],62:[function(_dereq_,module,exports){
@@ -13813,7 +13943,7 @@ module.exports = {
 };
 },{"./builder":58,"./columnbuilder":59,"./columncompiler":60,"./compiler":61,"./tablebuilder":64,"./tablecompiler":65,"lodash":"K2RcUv"}],63:[function(_dereq_,module,exports){
 module.exports = ['table', 'createTable', 'editTable', 'dropTable',
-  'dropTableIfExists',  'renameTable', 'hasTable', 'hasColumn'];
+  'dropTableIfExists',  'renameTable', 'hasTable', 'hasColumn', 'raw'];
 },{}],64:[function(_dereq_,module,exports){
 // TableBuilder
 
@@ -14278,7 +14408,7 @@ Transaction.prototype.initiateDeferred = function(transactor) {
   // and it's got the transaction object we're running for this, assume
   // the rollback and commit are chained to this object's success / failure.
   if (result && result.then && typeof result.then === 'function') {
-    result.then(transactor.commit).catch(transactor.rollback);
+    result.then(function(val) { transactor.commit(val); }).catch(function(err) { transactor.rollback(err); });
   }
 
   // Return the promise for the entire transaction.

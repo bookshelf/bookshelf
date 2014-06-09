@@ -5,7 +5,7 @@ Bookshelf is a Node.js ORM with support for PostgreSQL, MySQL / MariaDB, and SQL
 It is built atop the <a href="http://knexjs.org">Knex Query Builder</a>,
 and is strongly influenced by the Model and Collection foundations of Backbone.js.
 
-It features [transaction support](http://bookshelfjs.org/#Bookshelf-transaction), one-to-one, one-to-many, and many-to-many relations.
+It features [transaction support](http://bookshelfjs.org/#Bookshelf-transaction), one-to-one, one-to-many, many-to-many, and polymorphic relations.
 
 For Docs, License, Tests, FAQ, and other information, see: http://bookshelfjs.org.
 

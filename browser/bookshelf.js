@@ -15,22 +15,24 @@ var Bookshelf = function() {
 // an active `knex` instance and initializes the appropriate
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
-
-  var bookshelf = {};
+  var bookshelf  = {
+    VERSION: '0.7.0'
+  };
 
   var _          = _dereq_('lodash');
   var inherits   = _dereq_('inherits');
   var semver     = _dereq_('semver');
 
-  // Finally, the `Events`, which we've supplemented with a `triggerThen`
+  // We've supplemented `Events` with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
   // mix this into the prototypes of the main objects in the library.
   var Events = _dereq_('./lib/base/events');
 
-  // All local dependencies... These are the main objects that
-  // need to be augmented in the constructor to work properly.
+  // All core modules required for the bookshelf instance.
   var BookshelfModel      = _dereq_('./lib/model');
   var BookshelfCollection = _dereq_('./lib/collection');
+  var BookshelfRelation   = _dereq_('./lib/relation');
+  var Errors              = _dereq_('./lib/errors');
 
   // If the knex isn't a `Knex` instance, we'll assume it's
   // a compatible config object and pass it through to create a new instance.
@@ -54,6 +56,9 @@ Bookshelf.initialize = function(knex) {
   inherits(Model, BookshelfModel);
   inherits(Collection, BookshelfCollection);
 
+  _.extend(Model, BookshelfModel);
+  _.extend(Collection, BookshelfCollection);
+
   Model.prototype._builder =
   Collection.prototype._builder = function(tableName) {
     var builder  = knex(tableName);
@@ -66,8 +71,14 @@ Bookshelf.initialize = function(knex) {
   // The collection also references the correct `Model`, specified above, for creating
   // new `Model` instances in the collection.
   Collection.prototype.model = Model;
+  Model.prototype.Collection = Collection;
 
-  var Relation = _dereq_('./lib/relation')(Model, Collection);
+  function Relation() {
+    BookshelfRelation.apply(this, arguments);
+  }
+  inherits(Relation, BookshelfRelation);
+  Relation.prototype.Model = Model;
+  Relation.prototype.Collection = Collection;
 
   // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
   // mixing in the correct `builder` method, as well as the `relation` method,
@@ -88,7 +99,7 @@ Bookshelf.initialize = function(knex) {
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
   // `Events` object. It also contains the version number, and a `Transaction` method
   // referencing the correct version of `knex` passed into the object.
-  _.extend(bookshelf, Events, {
+  _.extend(bookshelf, Events, Errors, {
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
     transaction: function() {
@@ -129,6 +140,16 @@ Bookshelf.initialize = function(knex) {
     return (Object(obj) === obj ? obj : inst);
   };
 
+  // Attach `where`, `query`, and `fetchAll` as static methods.
+  ['where', 'query'].forEach(function(method) {
+    Model[method] =
+    Collection[method] = function() {
+      var model = this.forge();
+      return model[method].apply(model, arguments);
+    };
+  });
+  Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
+
   Model.extend = Collection.extend = _dereq_('simple-extend');
 
   return bookshelf;
@@ -136,7 +157,7 @@ Bookshelf.initialize = function(knex) {
 
 // Finally, export `Bookshelf` to the world.
 module.exports = Bookshelf;
-},{"./lib/base/events":4,"./lib/collection":8,"./lib/model":11,"./lib/relation":12,"inherits":"oxw+vU","lodash":"K2RcUv","semver":"OpuoOF","simple-extend":"vZYVcT"}],2:[function(_dereq_,module,exports){
+},{"./lib/base/events":4,"./lib/collection":8,"./lib/errors":10,"./lib/model":12,"./lib/relation":13,"inherits":"oxw+vU","lodash":"K2RcUv","semver":"OpuoOF","simple-extend":"vZYVcT"}],2:[function(_dereq_,module,exports){
 // Base Collection
 // ---------------
 
@@ -578,10 +599,8 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Ev
   // during the "destroying" event, the model will not be destroyed.
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
-
     var sync = this.sync(options);
     options.query = sync.query;
-
     return Promise.bind(this).then(function() {
       return this.triggerThen('destroying', this, options);
     }).then(function() {
@@ -598,7 +617,6 @@ ModelBase.extend = _dereq_('simple-extend');
 
 module.exports = ModelBase;
 },{"./events":4,"./promise":6,"backbone":"5kFNoY","lodash":"K2RcUv","simple-extend":"vZYVcT"}],6:[function(_dereq_,module,exports){
-
 var Promise = _dereq_('bluebird');
 
 Promise.prototype.yield = Promise.prototype.return;
@@ -623,7 +641,7 @@ var CollectionBase = _dereq_('./collection');
 function RelationBase(type, Target, options) {
   this.type = type;
   if (this.target = Target) {
-    this.targetTableName = _.result(Target.prototype, 'tableName');
+    this.targetTableName   = _.result(Target.prototype, 'tableName');
     this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
   }
   _.extend(this, options);
@@ -657,12 +675,13 @@ module.exports = RelationBase;
 },{"./collection":2,"backbone":"5kFNoY","lodash":"K2RcUv"}],8:[function(_dereq_,module,exports){
 // Collection
 // ---------------
-var _             = _dereq_('lodash');
-var inherits      = _dereq_('inherits');
+var _              = _dereq_('lodash');
+var inherits       = _dereq_('inherits');
 
-var Sync          = _dereq_('./sync');
-var Helpers       = _dereq_('./helpers');
-var EagerRelation = _dereq_('./eager');
+var Sync           = _dereq_('./sync');
+var Helpers        = _dereq_('./helpers');
+var EagerRelation  = _dereq_('./eager');
+var Errors         = _dereq_('./errors');
 
 var CollectionBase = _dereq_('./base/collection');
 var Promise        = _dereq_('./base/promise');
@@ -672,7 +691,7 @@ function BookshelfCollection() {
 }
 inherits(BookshelfCollection, CollectionBase);
 
-_.extend(BookshelfCollection.prototype, {
+_.extend(BookshelfCollection.prototype, Errors, {
 
   // Used to define passthrough relationships - `hasOne`, `hasMany`,
   // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
@@ -689,7 +708,7 @@ _.extend(BookshelfCollection.prototype, {
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Error('EmptyResponse');
+          if (options.require) throw new Errors.EmptyError('EmptyResponse');
           return Promise.reject(null);
         }
       })
@@ -731,7 +750,7 @@ _.extend(BookshelfCollection.prototype, {
     options = _.extend({}, options, {shallow: true, withRelated: relations});
     return new EagerRelation(this.models, this.toJSON(options), new this.model())
       .fetch(options)
-      .yield(this);
+      .return(this);
   }),
 
   // Shortcut for creating a new model, saving, and adding to the collection.
@@ -750,7 +769,6 @@ _.extend(BookshelfCollection.prototype, {
       model._knex = this._knex;
       this.resetQuery();
     }
-
     return Helpers
       .saveConstraints(model, relatedData)
       .save(null, options)
@@ -760,10 +778,8 @@ _.extend(BookshelfCollection.prototype, {
           return this.attach(model, _.omit(options, 'query'));
         }
       })
-      .then(function() {
-        this.add(model, options);
-        return model;
-      });
+      .then(function() { this.add(model, options); })
+      .return(model);
   }),
 
   // Reset the query builder, called internally
@@ -800,7 +816,7 @@ _.extend(BookshelfCollection.prototype, {
 });
 
 module.exports = BookshelfCollection;
-},{"./base/collection":2,"./base/promise":6,"./eager":9,"./helpers":10,"./sync":13,"inherits":"oxw+vU","lodash":"K2RcUv"}],9:[function(_dereq_,module,exports){
+},{"./base/collection":2,"./base/promise":6,"./eager":9,"./errors":10,"./helpers":11,"./sync":14,"inherits":"oxw+vU","lodash":"K2RcUv"}],9:[function(_dereq_,module,exports){
 // EagerRelation
 // ---------------
 var _         = _dereq_('lodash');
@@ -910,7 +926,20 @@ _.extend(EagerRelation.prototype, {
 });
 
 module.exports = EagerRelation;
-},{"./base/eager":3,"./base/promise":6,"./helpers":10,"inherits":"oxw+vU","lodash":"K2RcUv"}],10:[function(_dereq_,module,exports){
+},{"./base/eager":3,"./base/promise":6,"./helpers":11,"inherits":"oxw+vU","lodash":"K2RcUv"}],10:[function(_dereq_,module,exports){
+var createError = _dereq_('create-error');
+
+module.exports = {
+
+  // Thrown when the model is not found and {require: true} is passed in the fetch options
+  NotFoundError: createError('NotFoundError'),
+
+  // Thrown when the collection is empty and {require: true} is passed in model.fetchAll or
+  // collection.fetch
+  EmptyError: createError('EmptyError')
+
+};
+},{"create-error":"f/LBa2"}],11:[function(_dereq_,module,exports){
 // Helpers
 // ---------------
 var _ = _dereq_('lodash');
@@ -963,19 +992,19 @@ module.exports = {
 
 };
 
-},{"lodash":"K2RcUv"}],11:[function(_dereq_,module,exports){
+},{"lodash":"K2RcUv"}],12:[function(_dereq_,module,exports){
 // Model
 // ---------------
-var _         = _dereq_('lodash');
-var inherits  = _dereq_('inherits');
+var _              = _dereq_('lodash');
+var inherits       = _dereq_('inherits');
 
 var Sync           = _dereq_('./sync');
 var Helpers        = _dereq_('./helpers');
 var EagerRelation  = _dereq_('./eager');
-var BookshelfModel = _dereq_('./base/model');
+var Errors         = _dereq_('./errors');
 
-var ModelBase = _dereq_('./base/model');
-var Promise   = _dereq_('./base/promise');
+var ModelBase      = _dereq_('./base/model');
+var Promise        = _dereq_('./base/promise');
 
 function BookshelfModel() {
   ModelBase.apply(this, arguments);
@@ -1053,7 +1082,7 @@ _.extend(BookshelfModel.prototype, {
       // Jump the rest of the chain if the response doesn't exist...
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new Error('EmptyResponse');
+          if (options.require) throw new Errors.NotFoundError('EmptyResponse');
           return Promise.reject(null);
         }
       })
@@ -1080,6 +1109,23 @@ _.extend(BookshelfModel.prototype, {
         throw err;
       });
   }),
+
+  // Shortcut for creating a collection and fetching the associated models.
+  fetchAll: function(options) {
+    var collection = this.constructor.collection();
+    collection._knex = this.query().clone();
+    this.resetQuery();
+    if (this.relatedData) collection.relatedData = this.relatedData;
+    var model = this;
+    return collection
+      .on('fetching', function(collection, columns, options) {
+        return model.triggerThen('fetching:collection', collection, columns, options);
+      })
+      .on('fetched', function(collection, resp, options) {
+        return model.triggerThen('fetched:collection', collection, resp, options);
+      })
+      .fetch(options);
+  },
 
   // Eager loads relationships onto an already populated `Model` instance.
   load: Promise.method(function(relations, options) {
@@ -1182,9 +1228,16 @@ _.extend(BookshelfModel.prototype, {
     return this;
   },
 
-  // Returns an instance of the query builder.
+  // Tap into the "query chain" for this model.
   query: function() {
     return Helpers.query(this, _.toArray(arguments));
+  },
+
+  // Add the most common conditional directly to the model, everything else
+  // can be accessed with the `query` method.
+  where: function() {
+    var args = _.toArray(arguments);
+    return this.query.apply(this, ['where'].concat(args));
   },
 
   // Creates and returns a new `Sync` instance.
@@ -1217,11 +1270,9 @@ _.extend(BookshelfModel.prototype, {
 });
 
 module.exports = BookshelfModel;
-},{"./base/model":5,"./base/promise":6,"./eager":9,"./helpers":10,"./sync":13,"inherits":"oxw+vU","lodash":"K2RcUv"}],12:[function(_dereq_,module,exports){
+},{"./base/model":5,"./base/promise":6,"./eager":9,"./errors":10,"./helpers":11,"./sync":14,"inherits":"oxw+vU","lodash":"K2RcUv"}],13:[function(_dereq_,module,exports){
 // Relation
 // ---------------
-module.exports = function(Model, Collection) {
-
 var _          = _dereq_('lodash');
 var inherits   = _dereq_('inherits');
 var inflection = _dereq_('inflection');
@@ -1447,7 +1498,7 @@ _.extend(BookshelfRelation.prototype, {
     // Allows us to just use a model, but create a temporary
     // collection for a "*-many" relation.
     if (Target.prototype instanceof ModelBase) {
-      Target = Collection.extend({
+      Target = this.Collection.extend({
         model: Target
       });
     }
@@ -1522,7 +1573,7 @@ _.extend(BookshelfRelation.prototype, {
       }
       model.attributes = keep;
       if (!_.isEmpty(data)) {
-        model.pivot = through ? through.set(data, {silent: true}) : new Model(data, {
+        model.pivot = through ? through.set(data, {silent: true}) : new this.Model(data, {
           tableName: this.joinTable()
         });
       }
@@ -1679,10 +1730,8 @@ var pivotHelpers = {
 
 };
 
-return BookshelfRelation;
-
-};
-},{"./base/model":5,"./base/promise":6,"./base/relation":7,"./helpers":10,"inflection":"ccvB8p","inherits":"oxw+vU","lodash":"K2RcUv"}],13:[function(_dereq_,module,exports){
+module.exports = BookshelfRelation;
+},{"./base/model":5,"./base/promise":6,"./base/relation":7,"./helpers":11,"inflection":"ccvB8p","inherits":"oxw+vU","lodash":"K2RcUv"}],14:[function(_dereq_,module,exports){
 // Sync
 // ---------------
 var _       = _dereq_('lodash');
@@ -1694,7 +1743,7 @@ var Promise = _dereq_('./base/promise');
 // If the `transacting` option is set, the query is assumed to be
 // part of a transaction, and this information is passed along to `Knex`.
 var Sync = function(syncing, options) {
-  options || (options = {});
+  options = options || {};
   this.query   = syncing.query();
   this.syncing = syncing.resetQuery();
   this.options = options;
@@ -1749,15 +1798,14 @@ _.extend(Sync.prototype, {
     return Promise.bind(this).then(function() {
       return this.syncing.triggerThen('fetching', this.syncing, columns, options);
     }).then(function() {
-      return tap(this.query.select(columns), options);
+      return this.query.select(columns);
     });
   }),
 
   // Issues an `insert` command on the query - only used by models.
   insert: Promise.method(function() {
     var syncing = this.syncing;
-    return tap(this.query
-      .insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute), this.options);
+    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
   }),
 
   // Issues an `update` command on the query - only used by models.
@@ -1767,7 +1815,7 @@ _.extend(Sync.prototype, {
     if (_.where(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
-    return tap(query.update(syncing.format(_.extend(Object.create(null), attrs))), this.options);
+    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
   }),
 
   // Issues a `delete` command on the query.
@@ -1777,20 +1825,12 @@ _.extend(Sync.prototype, {
     if (_.where(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }
-    return tap(this.query.del(), this.options);
+    return this.query.del();
   })
 
 });
 
-function tap(chain, options) {
-  if (chain.tapSql && options && options.tapSql) {
-    chain.tapSql(options.tapSql);
-  }
-  return chain;
-}
-
 module.exports = Sync;
-
 },{"./base/promise":6,"lodash":"K2RcUv"}]},{},[1])
 (1)
 });

@@ -40,12 +40,8 @@
       Introduction
     </a>
 
-    <a class="toc_title" href="#upgrading">
-      Upgrading
-    </a>
-
-    <a class="toc_title" href="#Initialize">
-      Initialize
+    <a class="toc_title" href="#installation">
+      Installation
     </a>
 
     <a class="toc_title" href="#Model">
@@ -196,8 +192,7 @@
 
     <p>
       The project is <a href="http://github.com/tgriesser/bookshelf/">hosted on GitHub</a>,
-      and the <a href="docs/bookshelf.html">annotated source code</a> is available,
-      as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
+      and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
     <h2>Latest Release: 0.7.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
@@ -258,8 +253,8 @@
     <h2 id="installation">Installation</h2>
 
     <p>
-      You'll  need to install either <tt>mysql</tt>, <tt>pg</tt>, or <tt>sqlite3</tt> from npm. It is advisable to install your own copy
-      of Knex as well if you wish to build any custom queries outside of the ORM.
+      You'll need to install a copy of <a href="http://knexjs.org">knex.js</a>, and either <tt>mysql</tt>,
+      <tt>pg</tt>, or <tt>sqlite3</tt> from npm.
     </p>
 
 <pre>
@@ -272,33 +267,6 @@ $ npm install mysql
 $ npm install mariasql
 $ npm install sqlite3
 </pre>
-
-    <h2 id="upgrading">Upgrading</h2>
-
-    <p>
-      If you are upgrading Bookshelf from 0.3.x to 0.5.x, you'll notice that some things have broken.
-      Luckily, with a few quick fixes to your code, you should be up and runnning in no-time.
-      <ul>
-        <li>
-          Global state is no longer stored in the library, an instance is returned from <tt>Bookshelf.initialize</tt>,
-          so you will need to call this once and then reference this <tt>Bookshelf</tt> client elsewhere in your application.
-          See the <a href="#Initialize">initialize</a> section for more information.
-        </li>
-        <li>
-          Lowercasing of <tt>Bookshelf.initialize</tt>, <tt>Bookshelf.knex</tt>, <tt>Bookshelf.transaction</tt>.
-        </li>
-        <li>
-          During the lifecycle events, such as "fetching", "saving", or "destroying", the model no-longer contains the active
-          query builder instance at the time it is saved. If you need to modify the query builder chain inside of an event handler,
-          you may now use <tt>options.query</tt> inside the event handlers.
-        </li>
-        <li>
-          Other smaller bugfixes &amp; changes noted in the <a href="#changelog">Change Log</a>
-        </li>
-      </ul>
-    </p>
-
-    <h2 id="Initialize">Initialization</h2>
 
     <p>
       The Bookshelf library is initialized by passing an initialized
@@ -326,7 +294,7 @@ var User = bookshelf.Model.extend({
 </code></pre>
 
   <p>
-    An initialize should only ever happen once in your application, as it creates a connection pool for the current database, you should use the instance returned from the initialize call throughout your library.
+    This initialization should likely only ever happen once in your application, as it creates a connection pool for the current database, you should use the <tt>bookshelf</tt> instance returned throughout your library.
 
     You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow if you're using <b>express.js</b> is to set the client as a property on the app instance when your application starts, so you can easily reference it later:
   </p>
@@ -339,7 +307,7 @@ var bookshelf = require('bookshelf')(knex);
 
 app.set('bookshelf', bookshelf);
 
-// elsewhere, to use the client:
+// elsewhere, to use the bookshelf client:
 var bookshelf = app.get('bookshelf');
 
 var Post = bookshelf.Model.extend({
@@ -357,7 +325,7 @@ var Post = bookshelf.Model.extend({
     </p>
 
     <p id="Model-extend">
-      <b class="header">extend</b><code>bookshelf.Model.extend(properties, [classProperties])</code>
+      <b class="header">extend</b><code>bookshelf.Model.extend([protoProps], [classProperties])</code>
       <br />
       To create a <b>Model</b> class of your own, you extend <b>bookshelf.Model</b>
       and provide instance <b>properties</b>, as well as optional
@@ -370,15 +338,43 @@ var Post = bookshelf.Model.extend({
     </p>
 
 <pre><code>
+var checkit  = require('checkit');
+var Promise  = require('bluebird');
+var bcrypt   = Promise.promisifyAll(require('bcrypt'));
+
 var Customer = bookshelf.Model.extend({
 
-  initialize: function() { ... },
+  initialize: function() {
+    this.on('saving', this.validateSave)
+  },
 
-  account: function() { ... },
+  validateSave: function() {
+    return checkit(rules).run(this.attributes);
+  },
 
-  login: function() { ... }
+  account: function() {
+    return this.belongsTo(Account);
+  },
+
+}, {
+
+  login: Promise.method(function(email, password) {
+    if (!email || !password) throw new Error('Email and password are both required');
+    return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
+      return bcrypt.compareAsync(customer.get('password'), password);
+    });
+  })
 
 });
+
+Customer.login(email, password)
+  .then(function(customer) {
+    res.json(customer.omit('password'));
+  }).catch(Customer.NotFoundError, function() {
+    res.json(400, {error: email + ' not found'});
+  }).catch(function(err) {
+    console.error(err);
+  });
 </code></pre>
 
     <p class="warning">
@@ -1339,8 +1335,25 @@ user.pick('first_name', 'last_name', 'email');
 chapters.keys().join(', ');
 </code></pre>
 
+    <p id="Model-where">
+      <b class="header">where</b><code>Model.where / model.where([parameters])</code>
+      <br />
+      The <tt>where</tt> method is used as convenience for the most common <a href="#Model-query">query</a>
+      method, adding a where clause to the builder. Any additional knex methods may be accessed
+      using the <a href="#Model-query">query method</a>.
+    </p>
+
+<pre><code>
+model
+  .where({other_id: 5})
+  .fetch()
+  .then(function(model) {
+    ...
+  });
+</code></pre>
+
     <p id="Model-query">
-      <b class="header">query</b><code>model.query([method], [*parameters])</code>
+      <b class="header">query</b><code>Model.query / model.query([method], [*parameters])</code>
       <br />
       The <tt>query</tt> method is used to tap into the underlying <a href="http://knexjs.org">Knex</a>
       query builder instance for the current model. If called with no arguments, it will return the query
@@ -1353,6 +1366,13 @@ chapters.keys().join(', ');
 <pre><code>
 model
   .query('where', 'other_id', '=', '5')
+  .fetch()
+  .then(function(model) {
+    ...
+  });
+
+model
+  .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
   .fetch()
   .then(function(model) {
     ...
@@ -1470,8 +1490,8 @@ modelB.isNew(); // false
     <h3 id="Associations-one-to-one">One-to-one</h3>
 
     <p>
-      One-to-one associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
-      <a href="#Model-hasOne">hasOne</a>.
+      One-to-one associations can be created with <a href="#Model-belongsTo">belongsTo</a>,
+      <a href="#Model-hasOne">hasOne</a>, and <a href="#Model-morphOne">morphOne</a> relation types.
     </p>
 
 <pre><code>
@@ -1517,8 +1537,8 @@ exports.down = function(knex, Promise) {
     <h3 id="Associations-one-to-many">One-to-many</h3>
 
     <p>
-      One-to-many associations can be created with <a href="#Model-belongsTo">belongsTo</a> and
-      <a href="#Model-hasMany">hasMany</a>.
+      One-to-many associations can be created with <a href="#Model-belongsTo">belongsTo</a>,
+      <a href="#Model-hasMany">hasMany</a>, <a href="#Model-morphMany">morphMany</a> / <a href="#Model-morphTo">morphTo</a>, and some of the <a href="#Model-through">through</a> relation types.
     </p>
 
 <pre><code>
@@ -1562,7 +1582,7 @@ exports.down = function(knex, Promise) {
     <h3 id="Associations-many-to-many">Many-to-many</h3>
 
     <p>
-      Many-to-many associations can be created with <a href="#Model-belongsToMany">belongsToMany</a>.
+      Many-to-many associations can be created with <a href="#Model-belongsToMany">belongsToMany</a>, and <a href="#Model-through">through</a> relation types.
     </p>
 
 <pre><code>
@@ -2248,8 +2268,6 @@ process.stderr.on('data', function(data) {
 
     <h2 id="changelog">Change Log</h2>
 
-    <p><a href="#" class="js-change-log" style="text-align:center">Show Full Change log</a></p>
-
     <p>
       <b class="header">0.7.0</b> &mdash; <small><i>June 9, 2014</i></small><br />
       <ul>
@@ -2260,8 +2278,6 @@ process.stderr.on('data', function(data) {
         <li>Upgrade to support knex 0.6.x</li>
       </ul>
     </p>
-
-    <div class="change-log" style="display:none">
 
     <p>
       <b class="header">0.6.12</b> &mdash; <small><i>June 5, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.11...0.6.12">Diff</a><br />
@@ -2295,6 +2311,10 @@ process.stderr.on('data', function(data) {
         <li>Properly fix issue addressed in 0.6.7.</li>
       </ul>
     </p>
+
+    <p><a href="#" class="js-change-log" style="text-align:center">Show Full Change log</a></p>
+
+    <div class="change-log" style="display:none">
 
     <p>
       <b class="header">0.6.7</b> &mdash; <small><i>March 2, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.6.6...0.6.7">Diff</a><br />

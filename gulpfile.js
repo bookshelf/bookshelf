@@ -8,7 +8,8 @@ var Promise    = require('bluebird');
 var path       = require('path');
 var fs         = Promise.promisifyAll(require('fs'));
 
-var externals      = ['lodash', 'bluebird', 'knex', 'backbone', 'trigger-then', 'inflection', 'inherits', 'simple-extend', 'semver'];
+var externals      = ['lodash', 'bluebird', 'knex', 'backbone', 'trigger-then',
+  'create-error', 'inflection', 'inherits', 'simple-extend', 'semver'];
 var alwaysExcluded = [];
 
 function ensureOutputDirectory() {
@@ -65,13 +66,13 @@ gulp.task('build:deps', buildDependencies);
 gulp.task('jshint', shell.task(['npm run jshint']));
 gulp.task('test', ['jshint'], shell.task(['npm run test']));
 
-gulp.task('bump-version', function() {
+gulp.task('bump', function() {
   var type = argv.type || 'patch';
   return gulp.src('./package.json')
     .pipe(bump({type: type}))
     .pipe(gulp.dest('./'));
 });
-gulp.task('release', ['bump-version'], function() {
+gulp.task('release', function() {
   return fs.readFileAsync('./package.json')
     .bind(JSON)
     .then(JSON.parse)
