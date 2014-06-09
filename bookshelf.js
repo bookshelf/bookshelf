@@ -14,7 +14,9 @@ var Bookshelf = function() {
 // an active `knex` instance and initializes the appropriate
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
-  var bookshelf  = {};
+  var bookshelf  = {
+    VERSION: '0.7.0'
+  };
 
   var _          = require('lodash');
   var inherits   = require('inherits');

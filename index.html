@@ -27,7 +27,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.6.12)</span>
+      Bookshelf.js <span class="version">(0.7.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -176,7 +176,7 @@
 
   </div>
 
-  <a href="https://github.com/tgriesser/knex"><img style="position: fixed; top: 0; right: 0; border: 0;" src="/docs/images/github.png" alt="Fork me on GitHub"></a>
+  <a href="https://github.com/tgriesser/bookshelf"><img style="position: fixed; top: 0; right: 0; border: 0;" src="/docs/images/github.png" alt="Fork me on GitHub"></a>
 
   <div class="container">
 
@@ -200,7 +200,7 @@
       as well as a full <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.6.12 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.7.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -766,12 +766,12 @@ var Patient = bookshelf.Model.extend({
 });
 
 // select * from `health_records` where `patient_id` = 1;
-Patient.where({id: 1}).related('record').fetch().then(function(model) {
+new Patient({id: 1}).related('record').fetch().then(function(model) {
   ...
 });
 
 // alternatively, if you don't need the relation loaded on the patient's relations hash:
-Patient.where({id: 1}).record().fetch().then(function(model) {
+new Patient({id: 1}).record().fetch().then(function(model) {
   ...
 });
 </code></pre>
@@ -2255,8 +2255,9 @@ process.stderr.on('data', function(data) {
       <ul>
         <li>Added <a href="#Model-fetchAll">fetchAll</a>, for fetching a collection of models from a model.</li>
         <li>Added <a href="#Model-where">where</a>, as a shortcut for the most commonly used <a href="#Model-query">query method</a>.</li>
-        <li>Upgrade to support knex 0.6.x</li>
         <li>Initializing via a plain options object is deprecated, you must now pass in an initialized knex instance.</li>
+        <li>Adding typed errors (#221).</li>
+        <li>Upgrade to support knex 0.6.x</li>
       </ul>
     </p>
 
