@@ -33,7 +33,8 @@
     "lodash": ">=2.0.0",
     "simple-extend": "0.1.0",
     "inherits": "~2.0.1",
-    "semver": "~2.3.0"
+    "semver": "~2.3.0",
+    "create-error": "~0.3.1"
   },
   "devDependencies": {
     "minimist": "~0.0.9",

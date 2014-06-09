@@ -20,16 +20,16 @@ Bookshelf.initialize = function(knex) {
   var inherits   = require('inherits');
   var semver     = require('semver');
 
-  // Finally, the `Events`, which we've supplemented with a `triggerThen`
+  // We've supplemented `Events` with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
   // mix this into the prototypes of the main objects in the library.
   var Events = require('./lib/base/events');
 
-  // All local dependencies... These are the main objects that
-  // need to be augmented in the constructor to work properly.
+  // All core modules required for the bookshelf instance.
   var BookshelfModel      = require('./lib/model');
   var BookshelfCollection = require('./lib/collection');
   var BookshelfRelation   = require('./lib/relation');
+  var Errors              = require('./lib/errors');
 
   // If the knex isn't a `Knex` instance, we'll assume it's
   // a compatible config object and pass it through to create a new instance.
@@ -52,6 +52,9 @@ Bookshelf.initialize = function(knex) {
   };
   inherits(Model, BookshelfModel);
   inherits(Collection, BookshelfCollection);
+
+  _.extend(Model, BookshelfModel);
+  _.extend(Collection, BookshelfCollection);
 
   Model.prototype._builder =
   Collection.prototype._builder = function(tableName) {
@@ -93,7 +96,7 @@ Bookshelf.initialize = function(knex) {
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
   // `Events` object. It also contains the version number, and a `Transaction` method
   // referencing the correct version of `knex` passed into the object.
-  _.extend(bookshelf, Events, {
+  _.extend(bookshelf, Events, Errors, {
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
     transaction: function() {

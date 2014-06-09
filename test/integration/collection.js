@@ -162,6 +162,16 @@ module.exports = function(bookshelf) {
 
       });
 
+      it('can require items in the response', function() {
+        return expect(bookshelf.Collection.extend({tableName: 'posts'})
+          .query('where', {id: '1000'})
+          .fetch({require: true})
+          .catch(function(err) {
+            expect(err.message).to.equal('EmptyError');
+            throw err;
+          }))
+          .to.be.rejectedWith(bookshelf.Collection.EmptyError);
+      });
 
     });
 
