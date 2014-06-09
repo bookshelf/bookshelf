@@ -79,7 +79,14 @@ gulp.task('release', ['bump-version'], function() {
       return shell.task([
         'git add -u',
         'git commit -m "release ' + json.version + '"',
-        'git tag ' + json.version
+        'git tag ' + json.version,
+        'npm publish',
+        'git push',
+        'git push --tags',
+        'git checkout gh-pages',
+        'git merge master',
+        'git push',
+        'git checkout master'
       ])();
     });
 });

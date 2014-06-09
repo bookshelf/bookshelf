@@ -1,13 +1,13 @@
 var Promise = global.testPromise;
 
-module.exports = function(Bookshelf) {
+module.exports = function(bookshelf) {
 
   describe('Collection', function() {
 
     var Backbone = require('backbone');
 
     var output  = require('./output/Collection');
-    var dialect = Bookshelf.knex.client.dialect;
+    var dialect = bookshelf.knex.client.dialect;
     var json    = function(model) {
       return JSON.parse(JSON.stringify(model));
     };
@@ -17,8 +17,7 @@ module.exports = function(Bookshelf) {
       };
     };
 
-    var Models      = require('./helpers/objects')(Bookshelf).Models;
-    var Collections = require('./helpers/objects')(Bookshelf).Collections;
+    var Models      = require('./helpers/objects')(bookshelf).Models;
 
     // Models
     var Site     = Models.Site;
@@ -33,18 +32,10 @@ module.exports = function(Bookshelf) {
     var Role     = Models.Role;
     var Photo    = Models.Photo;
 
-    // Collections
-    var Sites    = Collections.Sites;
-    var Admins   = Collections.Admins;
-    var Blogs    = Collections.Blogs;
-    var Posts    = Collections.Posts;
-    var Comments = Collections.Comment;
-    var Photos   = Collections.Photos;
-
     describe('fetch', function() {
 
       it ('fetches the models in a collection', function() {
-        return Bookshelf.Collection.extend({tableName: 'posts'})
+        return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
           .fetch()
           .tap(checkTest(this));
@@ -89,7 +80,7 @@ module.exports = function(Bookshelf) {
     describe('sync', function() {
 
       it('creates a new instance of Sync', function(){
-        var model = new Bookshelf.Model();
+        var model = new bookshelf.Model();
         expect(model.sync(model)).to.be.an.instanceOf(require('../../lib/sync'));
       });
 
@@ -99,7 +90,7 @@ module.exports = function(Bookshelf) {
 
       it('creates and saves a new model instance, saving it to the collection', function () {
 
-        return new Sites().create({name: 'google.com'}).then(function(model) {
+        return Site.collection().create({name: 'google.com'}).then(function(model) {
           expect(model.get('name')).to.equal('google.com');
           return model.destroy();
         });

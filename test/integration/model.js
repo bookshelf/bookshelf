@@ -7,12 +7,12 @@ var Promise = global.testPromise;
 var equal = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
-module.exports = function(Bookshelf) {
+module.exports = function(bookshelf) {
 
   describe('Model', function() {
 
     var Backbone  = require('backbone');
-    var Models    = require('./helpers/objects')(Bookshelf).Models;
+    var Models    = require('./helpers/objects')(bookshelf).Models;
 
     var stubSync = {
       first:  function() { return Promise.resolve({}); },
@@ -24,7 +24,7 @@ module.exports = function(Bookshelf) {
 
     describe('extend/constructor/initialize', function() {
 
-      var User = Bookshelf.Model.extend({
+      var User = bookshelf.Model.extend({
         idAttribute: 'user_id',
         getData: function() { return 'test'; }
       }, {
@@ -49,10 +49,10 @@ module.exports = function(Bookshelf) {
       });
 
       it('accepts a custom `constructor` property', function() {
-        var User = Bookshelf.Model.extend({
+        var User = bookshelf.Model.extend({
           constructor: function() {
             this.item = 'test';
-            Bookshelf.Model.apply(this, arguments);
+            bookshelf.Model.apply(this, arguments);
           }
         });
         equal(new User().item, 'test');
@@ -68,7 +68,7 @@ module.exports = function(Bookshelf) {
     describe('forge', function() {
 
       it('should create a new model instance', function() {
-        var User = Bookshelf.Model.extend({
+        var User = bookshelf.Model.extend({
           tableName: 'users'
         });
         var user = User.forge();
@@ -80,12 +80,12 @@ module.exports = function(Bookshelf) {
     describe('id, idAttribute', function() {
 
       it('should attach the id as a property on the model', function() {
-        var test = new Bookshelf.Model({id: 1});
+        var test = new bookshelf.Model({id: 1});
         equal(test.id, (1));
       });
 
       it('should reference idAttribute as the key for model.id', function() {
-        var Test = Bookshelf.Model.extend({
+        var Test = bookshelf.Model.extend({
           idAttribute: '_id'
         });
         var test2 = new Test({_id: 2});
@@ -99,7 +99,7 @@ module.exports = function(Bookshelf) {
       it('should use the same get method as the Backbone library', function() {
         var attached = ['get'];
         _.each(attached, function(item) {
-          deepEqual(Bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
+          deepEqual(bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
         });
       });
 
@@ -109,11 +109,11 @@ module.exports = function(Bookshelf) {
 
       var model;
       beforeEach(function() {
-        model = new Bookshelf.Model();
+        model = new bookshelf.Model();
       });
 
       it('returns the Knex builder when no arguments are passed', function() {
-        equal((model.query() instanceof Bookshelf.knex.client.QueryBuilder), true);
+        equal((model.query() instanceof bookshelf.knex.client.QueryBuilder), true);
       });
 
       it('calls Knex builder method with the first argument, returning the model', function() {
@@ -158,7 +158,7 @@ module.exports = function(Bookshelf) {
 
     describe('tableName', function() {
 
-      var table = new Bookshelf.Model({}, {tableName: 'customers'});
+      var table = new bookshelf.Model({}, {tableName: 'customers'});
 
       it('can be passed in the initialize options', function() {
         equal(table.tableName, 'customers');
@@ -174,15 +174,15 @@ module.exports = function(Bookshelf) {
     describe('toJSON', function() {
 
       it('includes the idAttribute in the hash', function() {
-        var m = new (Bookshelf.Model.extend({
+        var m = new (bookshelf.Model.extend({
           idAttribute: '_id'
         }))({'_id': 1, 'name': 'Joe'});
         deepEqual(m.toJSON(), {'_id': 1, 'name': 'Joe'});
       });
 
       it('includes the relations loaded on the model, unless {shallow: true} is passed.', function() {
-        var m = new Bookshelf.Model({id: 1, name: 'Test'});
-        m.relations = {someList: new Bookshelf.Collection([{id:1}, {id:2}])};
+        var m = new bookshelf.Model({id: 1, name: 'Test'});
+        m.relations = {someList: new bookshelf.Collection([{id:1}, {id:2}])};
         var json = m.toJSON();
         deepEqual(_.keys(json), ['id', 'name', 'someList']);
         equal(json.someList.length, 2);
@@ -299,7 +299,7 @@ module.exports = function(Bookshelf) {
 
         return new Site({name: 'Fourth Site'}).save().then(function(m) {
           equal(m.get('id'), 4);
-          return new Bookshelf.Collection(null, {model: Site}).fetch();
+          return new bookshelf.Collection(null, {model: Site}).fetch();
         })
         .then(function(c) {
           equal(c.last().id, 4);
@@ -311,7 +311,7 @@ module.exports = function(Bookshelf) {
       it('updates an existing object', function() {
         return new Site({id: 4, name: 'Fourth Site Updated'}).save()
           .then(function() {
-            return new Bookshelf.Collection(null, {model: Site}).fetch();
+            return new bookshelf.Collection(null, {model: Site}).fetch();
           })
           .then(function(c) {
             equal(c.last().id, 4);
@@ -323,7 +323,7 @@ module.exports = function(Bookshelf) {
       it('allows passing a method to save, to call insert or update explicitly', function() {
         return new Site({id: 5, name: 'Fifth site, explicity created'}).save(null, {method: 'insert'})
         .then(function() {
-          return new Bookshelf.Collection(null, {model: Site}).fetch();
+          return Site.fetchAll();
         })
         .then(function(c) {
           equal(c.length, 5);
@@ -348,7 +348,7 @@ module.exports = function(Bookshelf) {
 
       it('does not constrain on the `id` during update unless defined', function() {
 
-        var m = new Bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
+        var m = new bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
         var query = m.query();
         query.update = function() {
           equal(_.where(this._statements, {grouping: 'where'}).length, 1);
@@ -357,7 +357,7 @@ module.exports = function(Bookshelf) {
 
         return m.save(null, {method: 'update'}).then(function() {
 
-          var m2 = new Bookshelf.Model({id: 1}).query({where: {uuid: 'testing'}});
+          var m2 = new bookshelf.Model({id: 1}).query({where: {uuid: 'testing'}});
           var query2 = m2.query();
           query2.update = function() {
             equal(_.where(this._statements, {grouping: 'where'}).length, 2);
@@ -372,7 +372,7 @@ module.exports = function(Bookshelf) {
 
       it('allows {patch: true} as an option for only updating passed data', function() {
 
-        var user = new Bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
+        var user = new bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
         var query = user.query();
 
         query.then = function(onFulfilled, onRejected) {
@@ -392,7 +392,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('fires saving and creating and then saves', function() {
-        var user   = new Bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
+        var user   = new bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
         var query  = user.query();
         var events = 0;
         user.sync  = function() {
@@ -414,7 +414,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('rejects if the saving event throws an error', function() {
-        var Test = Bookshelf.Model.extend({
+        var Test = bookshelf.Model.extend({
           tableName: 'test',
           initialize: function() {
             this.on('saving', this.handler, this);
@@ -461,7 +461,7 @@ module.exports = function(Bookshelf) {
       it('issues a delete to the Knex, returning a promise', function() {
 
         return new Site({id: 5}).destroy().then(function() {
-          return new Bookshelf.Collection(null, {model: Site}).fetch();
+          return new bookshelf.Collection(null, {model: Site}).fetch();
         })
         .then(function(c) {
           equal(c.length, 4);
@@ -516,7 +516,7 @@ module.exports = function(Bookshelf) {
     describe('resetQuery', function() {
 
       it('deletes the `_builder` property, resetting the model query builder', function() {
-        var m = new Bookshelf.Model().query('where', {id: 1});
+        var m = new bookshelf.Model().query('where', {id: 1});
         equal(_.where(m.query()._statements, {grouping: 'where'}).length, 1);
         m.resetQuery();
         equal(_.where(m.query()._statements, {grouping: 'where'}).length, 0);
@@ -526,7 +526,7 @@ module.exports = function(Bookshelf) {
     describe('hasTimestamps', function() {
 
       it('will set the created_at and updated_at columns if true', function() {
-        var m = new (Bookshelf.Model.extend({hasTimestamps: true}))();
+        var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), true);
@@ -537,7 +537,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('only sets the updated_at for existing models', function() {
-        var m1 = new (Bookshelf.Model.extend({hasTimestamps: true}))();
+        var m1 = new (bookshelf.Model.extend({hasTimestamps: true}))();
         m1.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('updated_at')), true);
@@ -547,7 +547,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('allows passing hasTimestamps in the options hash', function() {
-        var m = new Bookshelf.Model(null, {hasTimestamps: true});
+        var m = new bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), true);
@@ -558,7 +558,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('allows custom keys for the created at & update at values', function() {
-        var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', 'updatedAt']});
+        var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', 'updatedAt']});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('createdAt')), true);
@@ -569,7 +569,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('does not set created_at when {method: "update"} is passed', function() {
-        var m = new Bookshelf.Model(null, {hasTimestamps: true});
+        var m = new bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('created_at')), false);
@@ -580,7 +580,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('will accept a falsy value as an option for created and ignore it', function() {
-        var m = new Bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
+        var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('createdAt')), true);
@@ -591,7 +591,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('will accept a falsy value as an option for updated and ignore it', function() {
-        var m = new Bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
+        var m = new bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
         m.sync = function() {
           equal(this.get('item'), 'test');
           equal(_.isDate(this.get('updatedAt')), true);
@@ -606,8 +606,8 @@ module.exports = function(Bookshelf) {
     describe('timestamp', function() {
 
       it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function() {
-        var m  = new Bookshelf.Model();
-        var m1 = new Bookshelf.Model({id: 1});
+        var m  = new bookshelf.Model();
+        var m1 = new bookshelf.Model({id: 1});
         var ts  = m.timestamp();
         var ts2 = m1.timestamp();
         equal(_.isDate(ts.created_at), true);
@@ -620,7 +620,7 @@ module.exports = function(Bookshelf) {
     describe('defaults', function() {
 
       it('assigns defaults on save, rather than initialize', function() {
-        var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
+        var Item = bookshelf.Model.extend({defaults: {item: 'test'}});
         var item = new Item({newItem: 'test2'});
         deepEqual(item.toJSON(), {newItem: 'test2'});
         item.sync = function() {
@@ -631,7 +631,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('only assigns defaults when creating a model, unless {defaults: true} is passed in the save options', function() {
-        var Item = Bookshelf.Model.extend({defaults: {item: 'test'}});
+        var Item = bookshelf.Model.extend({defaults: {item: 'test'}});
         var item = new Item({id: 1, newItem: 'test2'});
         deepEqual(item.toJSON(), {id: 1, newItem: 'test2'});
         item.sync = function() {
@@ -652,7 +652,7 @@ module.exports = function(Bookshelf) {
     describe('sync', function() {
 
       it('creates a new instance of Sync', function(){
-        var model = new Bookshelf.Model();
+        var model = new bookshelf.Model();
         equal((model.sync(model) instanceof require('../../lib/sync')), true);
       });
     });
@@ -660,7 +660,7 @@ module.exports = function(Bookshelf) {
     describe('isNew', function() {
 
       it('uses the idAttribute to determine if the model isNew', function(){
-        var model = new Bookshelf.Model();
+        var model = new bookshelf.Model();
         model.id = 1;
         equal(model.isNew(), false);
         model.set('id', null);
@@ -711,12 +711,12 @@ module.exports = function(Bookshelf) {
     describe('Model.collection', function() {
 
       it('creates a new collection for the current model', function() {
-        expect(Bookshelf.Model.collection()).to.be.an.instanceOf(Bookshelf.Collection);
+        expect(bookshelf.Model.collection()).to.be.an.instanceOf(bookshelf.Collection);
 
-        var NewModel = Bookshelf.Model.extend({test: 1});
+        var NewModel = bookshelf.Model.extend({test: 1});
         var newModelCollection = NewModel.collection([{id: 1}]);
 
-        expect(newModelCollection).to.be.an.instanceOf(Bookshelf.Collection);
+        expect(newModelCollection).to.be.an.instanceOf(bookshelf.Collection);
         expect(newModelCollection.at(0)).to.be.an.instanceOf(NewModel);
       });
 

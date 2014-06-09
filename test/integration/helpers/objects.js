@@ -1,4 +1,3 @@
-
 // All Models & Collections Used in the Tests
 // (sort of mimics a simple multi-site blogging engine)
 module.exports = function(Bookshelf) {
@@ -63,18 +62,9 @@ module.exports = function(Bookshelf) {
     parse: _parsed
   });
 
-  var Sites = Bookshelf.Collection.extend({
-    model: Site
-  });
-
   var Admin = Bookshelf.Model.extend({
     tableName: 'admins',
     hasTimestamps: true
-  });
-
-  // All admins for a site.
-  var Admins = Bookshelf.Collection.extend({
-    model: Admin
   });
 
   // Author of a blog post.
@@ -102,10 +92,6 @@ module.exports = function(Bookshelf) {
     parse: _parsed
   });
 
-  var Authors = Bookshelf.Collection.extend({
-    model: Author
-  });
-
   // A blog for a site.
   var Blog = Bookshelf.Model.extend({
     tableName: 'blogs',
@@ -125,12 +111,8 @@ module.exports = function(Bookshelf) {
       if (!attrs.title) return 'A title is required.';
     },
     comments: function() {
-      return this.hasMany(Comments).through(Post);
+      return this.hasMany(Comment).through(Post);
     }
-  });
-
-  var Blogs = Bookshelf.Collection.extend({
-    model: Blog
   });
 
   // An individual post on a blog.
@@ -178,10 +160,6 @@ module.exports = function(Bookshelf) {
     blog: function() {
       return this.belongsTo(Blog).through(Post);
     }
-  });
-
-  var Comments = Bookshelf.Collection.extend({
-    model: Comment
   });
 
   var Tag = Bookshelf.Model.extend({
@@ -295,15 +273,6 @@ module.exports = function(Bookshelf) {
       Instance: Instance,
       Hostname: Hostname,
       Uuid: Uuid
-    },
-    Collections: {
-      Sites: Sites,
-      Admins: Admins,
-      Posts: Posts,
-      Blogs: Blogs,
-      Comments: Comments,
-      Photos: Photos,
-      Authors: Authors
     }
   };
 

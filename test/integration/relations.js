@@ -20,7 +20,6 @@ module.exports = function(Bookshelf) {
     var objs        = require('./helpers/objects')(Bookshelf);
     var Relation    = objs.Relation;
     var Models      = objs.Models;
-    var Collections = objs.Collections;
 
     // Models
     var Site       = Models.Site;
@@ -40,15 +39,6 @@ module.exports = function(Bookshelf) {
 
     var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
-
-    // Collections
-    var Sites    = Collections.Sites;
-    var Admins   = Collections.Admins;
-    var Blogs    = Collections.Blogs;
-    var Posts    = Collections.Posts;
-    var Comments = Collections.Comments;
-    var Photos   = Collections.Photos;
-    var Authors  = Collections.Authors;
 
     describe('Bookshelf Relations', function() {
 
@@ -128,13 +118,13 @@ module.exports = function(Bookshelf) {
       describe('Eager Loading - Collections', function() {
 
         it('eager loads "hasOne" models correctly (sites -> meta)', function() {
-          return new Sites().fetch({
+          return Site.fetchAll({
             withRelated: ['meta']
           }).then(checkTest(this));
         });
 
         it('eager loads "belongsTo" models correctly (blogs -> site)', function() {
-          return new Blogs().fetch({
+          return Blog.fetchAll({
             withRelated: ['site']
           }).then(checkTest(this));
         });
@@ -146,11 +136,8 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads "belongsToMany" models correctly (posts -> tags)', function() {
-          return new Posts()
-            .query('where', 'blog_id', '=', 1)
-            .fetch({
-              withRelated: ['tags']
-            }).then(checkTest(this));
+          return Post.where('blog_id', 1).fetchAll({withRelated: ['tags']})
+            .then(checkTest(this));
         });
 
       });
@@ -180,7 +167,7 @@ module.exports = function(Bookshelf) {
       describe('Nested Eager Loading - Collections', function() {
 
         it('eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)', function() {
-          return new Sites().fetch({
+          return Site.fetchAll({
             withRelated: ['authors.ownPosts']
           }).then(checkTest(this));
         });
@@ -196,7 +183,7 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads attributes on a collection (sites -> blogs, authors.site)', function() {
-          return new Sites().fetch().tap(checkTest(this)).then(function(c) {
+          return Site.fetchAll().tap(checkTest(this)).then(function(c) {
             return c.load(['blogs', 'authors.site']);
           });
         });
@@ -435,15 +422,15 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads morphMany (sites -> photos)', function() {
-          return new Sites().fetch({withRelated: ['photos']}).tap(checkTest(this));
+          return new Site().fetchAll({withRelated: ['photos']}).tap(checkTest(this));
         });
 
         it('eager loads morphTo (photos -> imageable)', function() {
-          return new Photos().fetch({withRelated: ['imageable']}).tap(checkTest(this));
+          return Photo.fetchAll({withRelated: ['imageable']}).tap(checkTest(this));
         });
 
         it('eager loads beyond the morphTo, where possible', function() {
-          return new Photos().fetch({withRelated: ['imageable.authors']}).tap(checkTest(this));
+          return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
       });
@@ -455,9 +442,13 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads hasMany `through`', function() {
-          return new Blogs().query({where: {site_id: 1}}).fetch({
+          return Blog.where({site_id: 1}).fetchAll({
             withRelated: 'comments'
           }).then(checkTest(this));
+        });
+
+        it('eager loads hasMany `through` using where / fetchAll', function() {
+          return Blog.where('site_id', 1).fetchAll({withRelated: 'comments'}).then(checkTest(this));
         });
 
         it('handles hasOne `through`', function() {
@@ -465,17 +456,17 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads hasOne `through`', function() {
-          return new Sites().query('where', 'id', '<', 3).fetch({
+          return Site.where('id', '<', 3).fetchAll({
             withRelated: 'info'
           }).then(checkTest(this));
         });
 
         it('eager loads belongsToMany `through`', function() {
-          return new Authors().fetch({withRelated: 'blogs'}).tap(checkTest(this));
+          return Author.fetchAll({withRelated: 'blogs'}).tap(checkTest(this));
         });
 
         it('eager loads belongsTo `through`', function() {
-          return new Comments().fetch({withRelated: 'blog'}).tap(checkTest(this));
+          return new Comment().fetchAll({withRelated: 'blog'}).tap(checkTest(this));
         });
 
       });
@@ -605,7 +596,7 @@ module.exports = function(Bookshelf) {
       });
 
       it('parses eager-loaded morphTo relations (model)', function () {
-        return new Photos().fetch({ withRelated: 'imageableParsed.meta', log: true })
+        return Photo.fetchAll({ withRelated: 'imageableParsed.meta', log: true })
           .then(function (photos) {
             photos.forEach(function(photo) {
               var attrs = photo.related('imageableParsed').attributes;

@@ -2447,6 +2447,71 @@ module.exports = {
       }]
     }
   },
+  'eager loads hasMany `through` using where / fetchAll': {
+    mysql: {
+      result: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        site_id: 1,
+        name: 'Main Site Blog',
+        comments: [{
+          id: 1,
+          post_id: 1,
+          name: '(blank)',
+          email: 'test@example.com',
+          comment: 'this is neat.',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }]
+      },{
+        id: 2,
+        site_id: 1,
+        name: 'Alternate Site Blog',
+        comments: []
+      }]
+    }
+  },
   'handles hasOne `through`': {
     mysql: {
       result: {

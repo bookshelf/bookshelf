@@ -14,8 +14,7 @@ var Bookshelf = function() {
 // an active `knex` instance and initializes the appropriate
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
-
-  var bookshelf = {};
+  var bookshelf  = {};
 
   var _          = require('lodash');
   var inherits   = require('inherits');
@@ -30,6 +29,7 @@ Bookshelf.initialize = function(knex) {
   // need to be augmented in the constructor to work properly.
   var BookshelfModel      = require('./lib/model');
   var BookshelfCollection = require('./lib/collection');
+  var BookshelfRelation   = require('./lib/relation');
 
   // If the knex isn't a `Knex` instance, we'll assume it's
   // a compatible config object and pass it through to create a new instance.
@@ -65,8 +65,14 @@ Bookshelf.initialize = function(knex) {
   // The collection also references the correct `Model`, specified above, for creating
   // new `Model` instances in the collection.
   Collection.prototype.model = Model;
+  Model.prototype.Collection = Collection;
 
-  var Relation = require('./lib/relation')(Model, Collection);
+  function Relation() {
+    BookshelfRelation.apply(this, arguments);
+  }
+  inherits(Relation, BookshelfRelation);
+  Relation.prototype.Model = Model;
+  Relation.prototype.Collection = Collection;
 
   // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
   // mixing in the correct `builder` method, as well as the `relation` method,
@@ -127,6 +133,16 @@ Bookshelf.initialize = function(knex) {
     var obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   };
+
+  // Attach `where`, `query`, and `fetchAll` as static methods.
+  ['where', 'query'].forEach(function(method) {
+    Model[method] =
+    Collection[method] = function() {
+      var model = this.forge();
+      return model[method].apply(model, arguments);
+    };
+  });
+  Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
 
   Model.extend = Collection.extend = require('simple-extend');
 
