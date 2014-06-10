@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -22,9 +22,6 @@
     "datamapper",
     "active record"
   ],
-  "peerDependencies": {
-    "knex": "0.6.x"
-  },
   "dependencies": {
     "backbone": "1.1.0",
     "inflection": "~1.3.5",
@@ -44,7 +41,7 @@
     "gulp-bump": "^0.1.8",
     "gulp-git": "^0.4.2",
     "gulp-shell": "^0.2.5",
-    "knex": "0.6.x",
+    "knex": "0.6.10",
     "mocha": "~1.20.1",
     "mysql": "~2.3.2",
     "pg": "~3.3.0",

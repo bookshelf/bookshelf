@@ -1,4 +1,4 @@
-// Bookshelf.js 0.7.0
+// Bookshelf.js 0.7.1
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -15,7 +15,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.0'
+    VERSION: '0.7.1'
   };
 
   var _          = require('lodash');
@@ -41,7 +41,7 @@ Bookshelf.initialize = function(knex) {
     knex = new require('knex')(knex);
   }
 
-  var range = '>=0.6.0';
+  var range = '>=0.6.10';
   if (!semver.satisfies(knex.VERSION, range)) {
     throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
   }
