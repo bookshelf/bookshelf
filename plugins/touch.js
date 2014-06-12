@@ -15,7 +15,6 @@ var updatedBelongsToMany = function (relation, key, update, collection) {
   // where using `whereIn`
   return relation.query()
   .update(update)
-  .debug()
   .whereIn(key, _.pluck(collection.models, id));
 };
 
