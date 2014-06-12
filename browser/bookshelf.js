@@ -1,5 +1,5 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Bookshelf=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-// Bookshelf.js 0.7.1
+// Bookshelf.js 0.7.2
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -16,7 +16,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.1'
+    VERSION: '0.7.2'
   };
 
   var _          = _dereq_('lodash');
@@ -39,7 +39,7 @@ Bookshelf.initialize = function(knex) {
   // This behavior is now deprecated.
   if (_.isPlainObject(knex)) {
     console.warn('Initializing Bookshelf with a config object is deprecated, please pass an initialized knex.js instance.');
-    knex = new _dereq_('knex')(knex);
+    knex = _dereq_('knex')(knex);
   }
 
   var range = '>=0.6.10';
@@ -157,7 +157,7 @@ Bookshelf.initialize = function(knex) {
 
 // Finally, export `Bookshelf` to the world.
 module.exports = Bookshelf;
-},{"./lib/base/events":4,"./lib/collection":8,"./lib/errors":10,"./lib/model":12,"./lib/relation":13,"inherits":"oxw+vU","lodash":"K2RcUv","semver":"OpuoOF","simple-extend":"vZYVcT"}],2:[function(_dereq_,module,exports){
+},{"./lib/base/events":4,"./lib/collection":8,"./lib/errors":10,"./lib/model":12,"./lib/relation":13,"inherits":"oxw+vU","knex":"+7L5HO","lodash":"K2RcUv","semver":"OpuoOF","simple-extend":"vZYVcT"}],2:[function(_dereq_,module,exports){
 // Base Collection
 // ---------------
 
@@ -1131,7 +1131,7 @@ _.extend(BookshelfModel.prototype, {
   load: Promise.method(function(relations, options) {
     return Promise.bind(this)
       .then(function() {
-        return [this.format(this.attributes)];
+        return [this.format(_.extend(Object.create(null), this.attributes))];
       })
       .then(function(response) {
         return this._handleEager(response, _.extend({}, options, {
@@ -1538,7 +1538,7 @@ _.extend(BookshelfRelation.prototype, {
       if (!this.isInverse()) {
         groupedKey = model.id;
       } else {
-        var formatted = model.format(model.attributes);
+        var formatted = model.format(_.extend(Object.create(null), model.attributes));
         groupedKey = this.isThrough() ? formatted[this.key('throughForeignKey')] : formatted[this.key('foreignKey')];
       }
       var relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);

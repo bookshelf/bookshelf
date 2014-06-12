@@ -1,4 +1,4 @@
-// Bookshelf.js 0.7.1
+// Bookshelf.js 0.7.2
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -15,7 +15,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.1'
+    VERSION: '0.7.2'
   };
 
   var _          = require('lodash');
@@ -38,7 +38,7 @@ Bookshelf.initialize = function(knex) {
   // This behavior is now deprecated.
   if (_.isPlainObject(knex)) {
     console.warn('Initializing Bookshelf with a config object is deprecated, please pass an initialized knex.js instance.');
-    knex = new require('knex')(knex);
+    knex = require('knex')(knex);
   }
 
   var range = '>=0.6.10';
