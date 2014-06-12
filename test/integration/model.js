@@ -222,7 +222,7 @@ module.exports = function(bookshelf) {
       // TODO: better way to test this.
       it('calls format when saving', function() {
 
-        var M = Backbone.Model.extend({
+        var M = bookshelf.Model.extend({
           tableName: 'test',
           format: function(attrs) {
             return _.reduce(attrs, function(memo, val, key) {
@@ -241,6 +241,19 @@ module.exports = function(bookshelf) {
         };
         return m.save();
 
+      });
+
+      it('does not mutate attributes on format', function() {
+
+        var M = bookshelf.Model.extend({
+          tableName: 'sites',
+          format: function(attrs) {
+            assert.ok(attrs !== this.attributes);
+            return attrs;
+          }
+        });
+
+        return M.forge({id: 1}).fetch().call('load');
       });
 
     });
