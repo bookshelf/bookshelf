@@ -23,7 +23,6 @@
     "active record"
   ],
   "dependencies": {
-    "backbone": "1.1.0",
     "inflection": "~1.3.5",
     "trigger-then": "0.3.x",
     "bluebird": "~2.0.5",

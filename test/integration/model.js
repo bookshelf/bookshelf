@@ -94,17 +94,6 @@ module.exports = function(bookshelf) {
 
     });
 
-    describe('get', function() {
-
-      it('should use the same get method as the Backbone library', function() {
-        var attached = ['get'];
-        _.each(attached, function(item) {
-          deepEqual(bookshelf.Model.prototype[item], Backbone.Model.prototype[item]);
-        });
-      });
-
-    });
-
     describe('query', function() {
 
       var model;
