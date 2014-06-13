@@ -15,6 +15,7 @@ var updatedBelongsToMany = function (relation, key, update, collection) {
   // where using `whereIn`
   return relation.query()
   .update(update)
+  .debug()
   .whereIn(key, _.pluck(collection.models, id));
 };
 
@@ -46,20 +47,21 @@ module.exports = function(Bookshelf) {
           continue;
         }
 
-        var query = relation.query();
+        var query;
         var updateTimestampKey = Array.isArray(timestamps) ? timestamps[1] : 'updated_at';
         var update = {};
         update[updateTimestampKey] = updateTime;
 
         if (relationType.indexOf('belongsToMany') !== -1) {
           var relatedId = relatedData.targetIdAttribute;
-          relation.fetch()
+          query = relation.fetch()
           .then(updatedBelongsToMany.bind(null, relation, relatedId, update));
         } else {
+          query = relation.query();
           relatedData.whereClauses(query);
+          query.debug();
           query.update(update);
         }
-
         toTouch.push(
           query
         );
