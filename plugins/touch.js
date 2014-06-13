@@ -15,7 +15,6 @@ var updatedBelongsToMany = function (relation, key, update, collection) {
   // where using `whereIn`
   return relation.query()
   .update(update)
-  .debug()
   .whereIn(key, _.pluck(collection.models, id));
 };
 
@@ -59,7 +58,6 @@ module.exports = function(Bookshelf) {
         } else {
           query = relation.query();
           relatedData.whereClauses(query);
-          query.debug();
           query.update(update);
         }
         toTouch.push(
