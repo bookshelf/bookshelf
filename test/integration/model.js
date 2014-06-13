@@ -676,9 +676,6 @@ module.exports = function(bookshelf) {
       it('will return the previous value of an attribute the last time it was synced', function() {
         var count = 0;
         var model = new Models.Site({id: 1});
-        model.on('change', function() {
-          count++;
-        });
         equal(model.previous('id'), void 0);
 
         return model.fetch().then(function() {
@@ -688,7 +685,7 @@ module.exports = function(bookshelf) {
           equal(model.previous('id'), 1);
           deepEqual(model.changed, {id: 2});
           model.set('id', 1);
-          equal(count, 1);
+          deepEqual(model.changed, {});
         });
 
       });
