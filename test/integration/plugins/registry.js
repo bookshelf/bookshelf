@@ -31,15 +31,19 @@ module.exports = function(Bookshelf) {
 				this.Model = Bookshelf.Model.extend({
 					tableName: 'records'
 				});
-				this.model = Bookshelf.model('Model', this.Model);
+				this.ModelObj = Bookshelf.model('Model', this.Model);
 			});
 
 			it('returns the registered model', function() {
-				expect(this.model).to.equal(this.Model);
+				expect(this.ModelObj).to.equal(this.Model);
 			});
 
 			it('assigns the model the name', function() {
 				expect(Bookshelf.model('Model')).to.equal(this.Model);
+			});
+
+			it('assigns the tableName', function() {
+				expect(Bookshelf.model('Model').prototype.tableName).to.equal('records');
 			});
 
 			it('throws when there is a name conflict', function() {
@@ -47,6 +51,37 @@ module.exports = function(Bookshelf) {
 			});
 
 		});
+
+		describe('Registering Models with plain object', function() {
+			var noop = function() {};
+
+			beforeEach(function() {
+				Bookshelf._models = {};
+				this.Model = Bookshelf.model('Model', {
+					tableName: 'records'
+				}, {
+					noop: noop
+				});
+			});
+
+			it('assigns the model the name', function() {
+				expect(Bookshelf.model('Model')).to.equal(this.Model);
+			});
+
+			it('assigns the tableName', function() {
+				expect(Bookshelf.model('Model').prototype.tableName).to.equal('records');
+			});
+
+			it('assigns static props', function() {
+				expect(Bookshelf.model('Model').noop).to.equal(noop);
+			});
+
+			it('throws when there is a name conflict', function() {
+				expect(Bookshelf.model.bind(Bookshelf, 'Model', Bookshelf.Model)).to.throw();
+			});
+
+		});
+
 
 		describe('Registering Collections', function() {
 
