@@ -11,7 +11,6 @@ module.exports = function(bookshelf) {
 
   describe('Model', function() {
 
-    var Backbone  = require('backbone');
     var Models    = require('./helpers/objects')(bookshelf).Models;
 
     var stubSync = {

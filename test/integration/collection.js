@@ -4,8 +4,6 @@ module.exports = function(bookshelf) {
 
   describe('Collection', function() {
 
-    var Backbone = require('backbone');
-
     var output  = require('./output/Collection');
     var dialect = bookshelf.knex.client.dialect;
     var json    = function(model) {
