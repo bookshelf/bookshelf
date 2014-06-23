@@ -150,6 +150,8 @@ Bookshelf.initialize = function(knex) {
   Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
 
   Model.extend = Collection.extend = require('simple-extend');
+  Model.NotFoundError = Errors.NotFoundError;
+  Collection.EmptyError = Errors.EmptyError;
 
   return bookshelf;
 };
