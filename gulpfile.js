@@ -8,7 +8,7 @@ var Promise    = require('bluebird');
 var path       = require('path');
 var fs         = Promise.promisifyAll(require('fs'));
 
-var externals      = ['lodash', 'bluebird', 'knex', 'backbone', 'trigger-then',
+var externals      = ['events', 'buffer', 'lodash', 'bluebird', 'knex', 'backbone', 'trigger-then',
   'create-error', 'inflection', 'inherits', 'simple-extend', 'semver'];
 var alwaysExcluded = [];
 
