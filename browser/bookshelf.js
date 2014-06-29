@@ -1,5 +1,5 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Bookshelf=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-// Bookshelf.js 0.7.5
+// Bookshelf.js 0.7.6
 // ---------------
 
 //     (c) 2013 Tim Griesser
@@ -16,7 +16,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.5'
+    VERSION: '0.7.6'
   };
 
   var _          = _dereq_('lodash');
@@ -523,14 +523,17 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Ev
   // Returns an object containing a shallow copy of the model attributes,
   // along with the `toJSON` value of any relations,
   // unless `{shallow: true}` is passed in the `options`.
+  // Also includes _pivot_ keys for relations unless `{omitPivot: true}` 
+  // is passed in `options`.
   toJSON: function(options) {
     var attrs = _.extend({}, this.attributes);
     if (options && options.shallow) return attrs;
     var relations = this.relations;
     for (var key in relations) {
       var relation = relations[key];
-      attrs[key] = relation.toJSON ? relation.toJSON() : relation;
+      attrs[key] = relation.toJSON ? relation.toJSON(options) : relation;
     }
+    if (options && options.omitPivot) return attrs;
     if (this.pivot) {
       var pivot = this.pivot.attributes;
       for (key in pivot) {
@@ -616,6 +619,7 @@ _.extend(ModelBase.prototype, _.omit(Backbone.Model.prototype, modelOmitted), Ev
 ModelBase.extend = _dereq_('simple-extend');
 
 module.exports = ModelBase;
+
 },{"./events":4,"./promise":6,"backbone":"5kFNoY","lodash":"K2RcUv","simple-extend":"vZYVcT"}],6:[function(_dereq_,module,exports){
 var Promise = _dereq_('bluebird');
 
