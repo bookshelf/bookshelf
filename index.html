@@ -2217,6 +2217,15 @@ Bookshelf.transaction(function(t) {
       <p>This is only an issue if you're eager loading data with <tt>load</tt> without first fetching the original model.
       <tt>Model({id: '1'}).fetch({withRelated: [relations...]})</tt> should work just fine.
     </p>
+    
+    <p id="faq-process-exit">
+      <b class="header">My process won't exit after my script is finished, why?</b>
+      The issue here is, that <tt>Knex</tt> - the database abstraction layer used by <tt>Bookshelf</tt> -
+      uses connection pooling and thus keeps the database connection open. If you want your process to exit after your
+      script has finished, you will have to call <tt>knex.destroy(cb)</tt>. It is also mentioned over at
+      the <a href="http://knexjs.org/#Installation-pooling">Knex docs</a>, which you can refer to for
+      more information.
+    </p>
 
     <p id="faq-debug">
       <b class="header">How do I debug?</b><br />
