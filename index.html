@@ -2219,7 +2219,7 @@ Bookshelf.transaction(function(t) {
     </p>
     
     <p id="faq-process-exit">
-      <b class="header">My process won't exit after my script is finished, why?</b>
+      <b class="header">My process won't exit after my script is finished, why?</b><br />
       The issue here is, that <tt>Knex</tt> - the database abstraction layer used by <tt>Bookshelf</tt> -
       uses connection pooling and thus keeps the database connection open. If you want your process to exit after your
       script has finished, you will have to call <tt>knex.destroy(cb)</tt>. It is also mentioned over at
