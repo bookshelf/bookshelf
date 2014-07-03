@@ -582,7 +582,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
 </code></pre>
 
     <p id="Model-fetchAll">
-      <b class="header">fetchAll</b><code>model.fetchAll([options]).then(function(collection) {...</code>
+      <b class="header">fetchAll</b><code>Model.fetchAll / model.fetchAll([options]).then(function(collection) {...</code>
       <br />
       Fetches a <a href="#Collection">collection</a> of models from the database, using any <a href="#Model-query">query</a> parameters currently set on the model to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched <tt>collection</tt>. If you wish to trigger an error if no models are found, pass <tt>{require: true}</tt> as one of the options to the fetchAll call. A <tt>"fetching"</tt> event will be fired just before the collection is fetched; a good place to hook into for validations. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved. If you need to constrain the query performed by fetch, you can call the <a href="#Model-query">query</a> method before calling fetch.
     </p>
