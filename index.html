@@ -345,7 +345,7 @@ var bcrypt   = Promise.promisifyAll(require('bcrypt'));
 var Customer = bookshelf.Model.extend({
 
   initialize: function() {
-    this.on('saving', this.validateSave)
+    this.on('saving', this.validateSave())
   },
 
   validateSave: function() {
