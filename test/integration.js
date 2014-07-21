@@ -20,9 +20,9 @@ module.exports = function(Bookshelf) {
     }
   });
 
-  var MySQL = require('bookshelf')(mysql);
-  var PostgreSQL = require('bookshelf')(pg);
-  var SQLite3 = require('bookshelf')(sqlite3);
+  var MySQL = require('../bookshelf')(mysql);
+  var PostgreSQL = require('../bookshelf')(pg);
+  var SQLite3 = require('../bookshelf')(sqlite3);
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
     var bookshelf = new Bookshelf(sqlite3);
