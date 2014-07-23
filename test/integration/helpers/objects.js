@@ -13,6 +13,14 @@ module.exports = function(Bookshelf) {
     return parsed;
   }
 
+  function _format (attributes) {
+    var formatted = {};
+    Object.keys(attributes).forEach(function (name) {
+      formatted[name.replace('_parsed', '')] = attributes[name];
+    });
+    return formatted;
+  }
+
   var Info = Bookshelf.Model.extend({
     tableName: 'info'
   });
@@ -58,8 +66,13 @@ module.exports = function(Bookshelf) {
   });
 
   // A SiteParsed appends "_parsed" to each field name on fetch
+  // and removes "_parsed" when formatted
   var SiteParsed = Site.extend({
-    parse: _parsed
+    parse: _parsed,
+    format: _format,
+    photos: function() {
+      return this.morphMany(PhotoParsed, 'imageable');
+    }
   });
 
   var Admin = Bookshelf.Model.extend({
@@ -88,8 +101,13 @@ module.exports = function(Bookshelf) {
   });
 
   // A AuthorParsed appends "_parsed" to each field name on fetch
+  // and removes "_parsed" when formatted
   var AuthorParsed = Author.extend({
-    parse: _parsed
+    parse: _parsed,
+    format: _format,
+    photos: function() {
+      return this.morphMany(PhotoParsed, 'imageable');
+    }
   });
 
   // A blog for a site.
@@ -193,7 +211,14 @@ module.exports = function(Bookshelf) {
     imageableParsed: function() {
       return this.morphTo('imageable', SiteParsed, AuthorParsed);
     }
-   });
+  });
+
+  // A PhotoParsed appends "_parsed" to each field name on fetch
+  // and removes "_parsed" when formatted
+  var PhotoParsed = Photo.extend({
+    parse: _parsed,
+    format: _format
+  });
 
   var Photos = Bookshelf.Collection.extend({
     model: Photo
@@ -267,6 +292,7 @@ module.exports = function(Bookshelf) {
       UserTokenParsed: UserTokenParsed,
       Role: Role,
       Photo: Photo,
+      PhotoParsed: PhotoParsed,
       Info: Info,
       Customer: Customer,
       Settings: Settings,
