@@ -22,20 +22,21 @@ module.exports = function(Bookshelf) {
     var Models      = objs.Models;
 
     // Models
-    var Site       = Models.Site;
-    var SiteMeta   = Models.SiteMeta;
-    var Admin      = Models.Admin;
-    var Author     = Models.Author;
-    var Blog       = Models.Blog;
-    var Post       = Models.Post;
-    var Comment    = Models.Comment;
-    var Tag        = Models.Tag;
-    var User       = Models.User;
-    var Role       = Models.Role;
-    var Photo      = Models.Photo;
-    var Customer   = Models.Customer;
-    var Instance   = Models.Instance;
-    var Hostname   = Models.Hostname;
+    var Site         = Models.Site;
+    var SiteMeta     = Models.SiteMeta;
+    var Admin        = Models.Admin;
+    var Author       = Models.Author;
+    var Blog         = Models.Blog;
+    var Post         = Models.Post;
+    var Comment      = Models.Comment;
+    var Tag          = Models.Tag;
+    var User         = Models.User;
+    var Role         = Models.Role;
+    var Photo        = Models.Photo;
+    var PhotoParsed  = Models.PhotoParsed;
+    var Customer     = Models.Customer;
+    var Instance     = Models.Instance;
+    var Hostname     = Models.Hostname;
 
     var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
@@ -412,6 +413,12 @@ module.exports = function(Bookshelf) {
         it('handles morphTo (imageable "authors")', function() {
           return new Photo({imageable_id: 1, imageable_type: 'authors'})
             .imageable()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('handles morphTo (imageble "authors", PhotoParsed)', function() {
+          return new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+            .imageableParsed()
             .fetch().tap(checkTest(this));
         });
 

@@ -1616,6 +1616,32 @@ module.exports = {
       }
     }
   },
+  'handles morphTo (imageble "authors", PhotoParsed)': {
+    mysql: {
+      result: {
+        id_parsed: 1,
+        site_id_parsed: 1,
+        first_name_parsed: 'Tim',
+        last_name_parsed: 'Griesser'
+      }
+    },
+    postgresql: {
+      result: {
+        id_parsed: 1,
+        site_id_parsed: 1,
+        first_name_parsed: 'Tim',
+        last_name_parsed: 'Griesser'
+      }
+    },
+    sqlite3: {
+      result: {
+        id_parsed: 1,
+        site_id_parsed: 1,
+        first_name_parsed: 'Tim',
+        last_name_parsed: 'Griesser'
+      }
+    }
+  },
   'handles morphTo (imageable "sites")': {
     mysql: {
       result: {
