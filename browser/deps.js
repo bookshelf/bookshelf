@@ -8077,24 +8077,19 @@ function Buffer (subject, encoding, noZero) {
 
   var type = typeof subject
 
-  // Workaround: node's base64 implementation allows for non-padded strings
-  // while base64-js does not.
-  if (encoding === 'base64' && type === 'string') {
-    subject = stringtrim(subject)
-    while (subject.length % 4 !== 0) {
-      subject = subject + '='
-    }
-  }
-
   // Find the length
   var length
   if (type === 'number')
-    length = coerce(subject)
-  else if (type === 'string')
+    length = subject > 0 ? subject >>> 0 : 0
+  else if (type === 'string') {
+    if (encoding === 'base64')
+      subject = base64clean(subject)
     length = Buffer.byteLength(subject, encoding)
-  else if (type === 'object')
-    length = coerce(subject.length) // assume that object is array-like
-  else
+  } else if (type === 'object' && subject !== null) { // assume object is array-like
+    if (subject.type === 'Buffer' && Array.isArray(subject.data))
+      subject = subject.data
+    length = +subject.length > 0 ? Math.floor(+subject.length) : 0
+  } else
     throw new Error('First argument needs to be a number, array or string.')
 
   var buf
@@ -8155,7 +8150,7 @@ Buffer.isEncoding = function (encoding) {
 }
 
 Buffer.isBuffer = function (b) {
-  return !!(b !== null && b !== undefined && b._isBuffer)
+  return !!(b != null && b._isBuffer)
 }
 
 Buffer.byteLength = function (str, encoding) {
@@ -8502,8 +8497,27 @@ function utf16leSlice (buf, start, end) {
 
 Buffer.prototype.slice = function (start, end) {
   var len = this.length
-  start = clamp(start, len, 0)
-  end = clamp(end, len, len)
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len;
+    if (start < 0)
+      start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0)
+      end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start)
+    end = start
 
   if (Buffer._useTypedArrays) {
     return Buffer._augment(this.subarray(start, end))
@@ -9040,28 +9054,21 @@ Buffer._augment = function (arr) {
   return arr
 }
 
+var INVALID_BASE64_RE = /[^+\/0-9A-z]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
 function stringtrim (str) {
   if (str.trim) return str.trim()
   return str.replace(/^\s+|\s+$/g, '')
-}
-
-// slice(start, end)
-function clamp (index, len, defaultValue) {
-  if (typeof index !== 'number') return defaultValue
-  index = ~~index;  // Coerce to integer.
-  if (index >= len) return len
-  if (index >= 0) return index
-  index += len
-  if (index >= 0) return index
-  return 0
-}
-
-function coerce (length) {
-  // Coerce length to a number (possibly NaN), round up
-  // in case it's fractional (e.g. 123.456) then do a
-  // double negate to coerce a NaN to 0. Easy, right?
-  length = ~~Math.ceil(+length)
-  return length < 0 ? 0 : length
 }
 
 function isArray (subject) {
@@ -9886,7 +9893,15 @@ module.exports=require('ccvB8p');
  * A port of inflection-js to node.js module.
  */
 
-( function ( root ){
+( function ( root, factory ){
+  if( typeof define === 'function' && define.amd ){
+    define([], factory );
+  }else if( typeof exports === 'object' ){
+    module.exports = factory();
+  }else{
+    root.inflection = factory();
+  }
+}( this, function (){
 
   /**
    * @description This is a list of nouns that use the same form for both singular and plural.
@@ -10045,7 +10060,7 @@ module.exports=require('ccvB8p');
    *
    *     this._apply_rules( 'cows', singular_rules ); // === 'cow'
    */
-    _apply_rules : function( str, rules, skip, override ){
+    _apply_rules : function ( str, rules, skip, override ){
       if( override ){
         str = override;
       }else{
@@ -10077,8 +10092,8 @@ module.exports=require('ccvB8p');
    * @function
    * @param {Array} arr The subject array.
    * @param {Object} item Object to locate in the Array.
-   * @param {Number} fromIndex Starts checking from this position in the Array.(optional)
-   * @param {Function} compareFunc Function used to compare Array item vs passed item.(optional)
+   * @param {Number} from_index Starts checking from this position in the Array.(optional)
+   * @param {Function} compare_func Function used to compare Array item vs passed item.(optional)
    * @returns {Number} Return index position in the Array of the passed item.
    * @example
    *
@@ -10087,17 +10102,17 @@ module.exports=require('ccvB8p');
    *     inflection.indexOf([ 'hi','there' ], 'guys' ); // === -1
    *     inflection.indexOf([ 'hi','there' ], 'hi' ); // === 0
    */
-    indexOf : function( arr, item, fromIndex, compareFunc ){
-      if( !fromIndex ){
-        fromIndex = -1;
+    indexOf : function ( arr, item, from_index, compare_func ){
+      if( !from_index ){
+        from_index = -1;
       }
 
       var index = -1;
-      var i     = fromIndex;
+      var i     = from_index;
       var j     = arr.length;
 
       for( ; i < j; i++ ){
-        if( arr[ i ]  === item || compareFunc && compareFunc( arr[ i ], item )){
+        if( arr[ i ]  === item || compare_func && compare_func( arr[ i ], item )){
           index = i;
           break;
         }
@@ -10157,7 +10172,7 @@ module.exports=require('ccvB8p');
    * @public
    * @function
    * @param {String} str The subject string.
-   * @param {Boolean} lowFirstLetter Default is to capitalize the first letter of the results.(optional)
+   * @param {Boolean} low_first_letter Default is to capitalize the first letter of the results.(optional)
    *                                 Passing true will lowercase it.
    * @returns {String} Lower case underscored words will be returned in camel case.
    *                  additionally '/' is translated to '::'
@@ -10168,7 +10183,7 @@ module.exports=require('ccvB8p');
    *     inflection.camelize( 'message_properties' ); // === 'MessageProperties'
    *     inflection.camelize( 'message_properties', true ); // === 'messageProperties'
    */
-    camelize : function ( str, lowFirstLetter ){
+    camelize : function ( str, low_first_letter ){
       var str_path = str.split( '/' );
       var i        = 0;
       var j        = str_path.length;
@@ -10185,7 +10200,7 @@ module.exports=require('ccvB8p');
           }
 
           first = str_arr[ k ].charAt( 0 );
-          first = lowFirstLetter && i === 0 && k === 0
+          first = low_first_letter && i === 0 && k === 0
             ? first.toLowerCase() : first.toUpperCase();
           str_arr[ k ] = first + str_arr[ k ].substring( 1 );
         }
@@ -10203,7 +10218,7 @@ module.exports=require('ccvB8p');
    * @public
    * @function
    * @param {String} str The subject string.
-   * @param {Boolean} allUpperCase Default is to lowercase and add underscore prefix.(optional)
+   * @param {Boolean} all_upper_case Default is to lowercase and add underscore prefix.(optional)
    *                  Passing true will return as entered.
    * @returns {String} Camel cased words are returned as lower cased and underscored.
    *                  additionally '::' is translated to '/'.
@@ -10215,8 +10230,8 @@ module.exports=require('ccvB8p');
    *     inflection.underscore( 'messageProperties' ); // === 'message_properties'
    *     inflection.underscore( 'MP', true ); // === 'MP'
    */
-    underscore : function ( str, allUpperCase ){
-      if( allUpperCase && str === str.toUpperCase()) return str;
+    underscore : function ( str, all_upper_case ){
+      if( all_upper_case && str === str.toUpperCase()) return str;
 
       var str_path = str.split( '::' );
       var i        = 0;
@@ -10237,7 +10252,7 @@ module.exports=require('ccvB8p');
    * @public
    * @function
    * @param {String} str The subject string.
-   * @param {Boolean} lowFirstLetter Default is to capitalize the first letter of the results.(optional)
+   * @param {Boolean} low_first_letter Default is to capitalize the first letter of the results.(optional)
    *                                 Passing true will lowercase it.
    * @returns {String} Lower case underscored words will be returned in humanized form.
    * @example
@@ -10247,12 +10262,12 @@ module.exports=require('ccvB8p');
    *     inflection.humanize( 'message_properties' ); // === 'Message properties'
    *     inflection.humanize( 'message_properties', true ); // === 'message properties'
    */
-    humanize : function( str, lowFirstLetter ){
+    humanize : function ( str, low_first_letter ){
       str = str.toLowerCase();
       str = str.replace( id_suffix, '' );
       str = str.replace( underbar, ' ' );
 
-      if( !lowFirstLetter ){
+      if( !low_first_letter ){
         str = inflector.capitalize( str );
       }
 
@@ -10410,7 +10425,7 @@ module.exports=require('ccvB8p');
    * @public
    * @function
    * @param {String} str The subject string.
-   * @param {Boolean} dropIdUbar Default is to seperate id with an underbar at the end of the class name,
+   * @param {Boolean} drop_id_ubar Default is to seperate id with an underbar at the end of the class name,
                                  you can pass true to skip it.(optional)
    * @returns {String} Underscored plural nouns become the camel cased singular form.
    * @example
@@ -10420,9 +10435,9 @@ module.exports=require('ccvB8p');
    *     inflection.foreign_key( 'MessageBusProperty' ); // === 'message_bus_property_id'
    *     inflection.foreign_key( 'MessageBusProperty', true ); // === 'message_bus_propertyid'
    */
-    foreign_key : function( str, dropIdUbar ){
+    foreign_key : function ( str, drop_id_ubar ){
       str = inflector.demodulize( str );
-      str = inflector.underscore( str ) + (( dropIdUbar ) ? ( '' ) : ( '_' )) + 'id';
+      str = inflector.underscore( str ) + (( drop_id_ubar ) ? ( '' ) : ( '_' )) + 'id';
 
       return str;
     },
@@ -10503,28 +10518,10 @@ module.exports=require('ccvB8p');
 /**
  * @public
  */
-  inflector.version = '1.3.6';
+  inflector.version = '1.3.8';
 
-  // browser support
-  // requirejs
-  if( typeof define !== 'undefined' ){
-    return define( function ( require, exports, module ){
-      module.exports = inflector;
-    });
-  }
-
-  // browser support
-  // normal usage
-  if( typeof exports === 'undefined' ){
-    root.inflection = inflector;
-    return;
-  }
-
-/**
- * Exports module.
- */
-  module.exports = inflector;
-})( this );
+  return inflector;
+}));
 
 },{}],"inherits":[function(require,module,exports){
 module.exports=require('oxw+vU');
@@ -10556,7 +10553,7 @@ if (typeof Object.create === 'function') {
 },{}],"Diadwk":[function(require,module,exports){
 (function (global){
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Knex=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-// Knex.js  0.6.16
+// Knex.js  0.6.22
 // --------------
 
 //     (c) 2014 Tim Griesser
@@ -10624,10 +10621,6 @@ Knex.initialize = function(config) {
   function knex(tableName) {
     var qb = new client.QueryBuilder;
     if (config.__transactor__) qb.transacting(config.__transactor__);
-    // Passthrough all "query" events to the knex object.
-    qb.on('query', function(data) {
-      knex.emit('query', data);
-    });
     return tableName ? qb.table(tableName) : qb;
   }
 
@@ -10639,23 +10632,17 @@ Knex.initialize = function(config) {
 
   // The `__knex__` is used if you need to duck-type check whether this
   // is a knex builder, without a full on `instanceof` check.
-  knex.VERSION = knex.__knex__  = '0.6.16';
+  knex.VERSION = knex.__knex__  = '0.6.21';
   knex.raw = function(sql, bindings) {
     var raw = new client.Raw(sql, bindings);
-    raw.on('query', function(data) {
-      knex.emit('query', data);
-    });
+    if (config.__transactor__) raw.transacting(config.__transactor__);
     return raw;
   };
 
   // Runs a new transaction, taking a container and returning a promise
   // for when the transaction is resolved.
   knex.transaction = function(container) {
-    var trx = new client.Transaction(container);
-    trx.on('query', function(data) {
-      knex.emit('query', data);
-    });
-    return trx;
+    return new client.Transaction(container);
   };
 
   // Convenience method for tearing down the pool.
@@ -10679,8 +10666,9 @@ Knex.initialize = function(config) {
   if (config.__client__) {
     client = config.__client__;
   } else {
+    
     // Build the "client"
-    var clientName = config.client;
+    var clientName = config.client || config.dialect;
     if (!Clients[clientName]) {
       throw new Error(clientName + ' is not a valid Knex client, did you misspell it?');
     }
@@ -10689,6 +10677,14 @@ Knex.initialize = function(config) {
     };
     Dialect = Clients[clientName]();
     client  = new Dialect(config);
+
+    // Passthrough all "start" and "query" events to the knex object.
+    client.on('start', function(obj) {
+      knex.emit('start', obj);
+    });
+    client.on('query', function(obj) {
+      knex.emit('query', obj);
+    });
   }
 
   // Allow chaining methods from the root object, before
@@ -10713,13 +10709,7 @@ Knex.initialize = function(config) {
     schema[key] = function() {
       if (!client.SchemaBuilder) client.initSchema();
       var builder = new client.SchemaBuilder();
-
       if (config.__transactor__) builder.transacting(config.__transactor__);
-
-      // Passthrough all "query" events to the knex object.
-      builder.on('query', function(data) {
-        knex.emit('query', data);
-      });
       return builder[key].apply(builder, arguments);
     };
   });
@@ -10748,6 +10738,8 @@ module.exports = Knex;
 // ------
 var Promise    = _dereq_('./promise');
 var _          = _dereq_('lodash');
+var inherits   = _dereq_('inherits');
+var EventEmitter = _dereq_('events').EventEmitter;
 
 // The base client provides the general structure
 // for a dialect specific client object. The client
@@ -10760,6 +10752,7 @@ function Client(config) {
   this.initQuery();
   this.migrationConfig = _.clone(config && config.migrations);
 }
+inherits(Client, EventEmitter);
 
 // Set the "isDebugging" flag on the client to "true" to log
 // all queries run by the client.
@@ -10795,7 +10788,7 @@ Client.prototype.database = function() {
 };
 
 module.exports = Client;
-},{"./promise":53,"lodash":"K2RcUv"}],3:[function(_dereq_,module,exports){
+},{"./promise":53,"events":"T9Wsc/","inherits":"oxw+vU","lodash":"K2RcUv"}],3:[function(_dereq_,module,exports){
 // MariaSQL Client
 // -------
 var inherits = _dereq_('inherits');
@@ -11820,7 +11813,7 @@ Client_MySQL2.prototype.initRunner = function() {
 // Get a raw connection, called by the `pool` whenever a new
 // connection needs to be added to the pool.
 Client_MySQL2.prototype.acquireRawConnection = function() {
-  var connection = mysql2.createConnection(_.pick(this.connectionSettings, 'user', 'database', 'connection'));
+  var connection = mysql2.createConnection(_.pick(this.connectionSettings, configOptions));
   return new Promise(function(resolver, rejecter) {
     connection.connect(function(err) {
       if (err) return rejecter(err);
@@ -11828,6 +11821,8 @@ Client_MySQL2.prototype.acquireRawConnection = function() {
     });
   });
 };
+
+var configOptions = ['user', 'database', 'host', 'password', 'ssl', 'connection', 'stream'];
 
 module.exports = Client_MySQL2;
 },{"../../promise":53,"../mysql":6,"./runner":19,"inherits":"oxw+vU","lodash":"K2RcUv"}],19:[function(_dereq_,module,exports){
@@ -11857,10 +11852,10 @@ Runner_MySQL2.prototype._stream = Promise.method(function(sql, stream, options) 
   return new Promise(function(resolver, rejecter) {
     stream.on('error', rejecter);
     stream.on('end', resolver);
-    return runner.query().map(function(row) {
+    return runner.query(sql).map(function(row) {
       stream.write(row);
-    }).catch(function() {
-      stream.emit('error');
+    }).catch(function(err) {
+      stream.emit('error', err);
     }).then(function() {
       stream.end();
     });
@@ -12267,14 +12262,16 @@ function Runner_PG() {
 inherits(Runner_PG, Runner);
 
 var PGQueryStream;
-Runner_PG.prototype._stream = Promise.method(function(sql, stream, options) {
+Runner_PG.prototype._stream = Promise.method(function(obj, stream, options) {
   PGQueryStream = PGQueryStream || _dereq_('pg-query-stream');
-    var runner = this;
-    return new Promise(function(resolver, rejecter) {
-      stream.on('error', rejecter);
-      stream.on('end', resolver);
-      runner.connection.query(new PGQueryStream(sql.sql, sql.bindings, options)).pipe(stream);
-    });
+  var runner = this;
+  var sql = obj.sql = utils.pgBindings(obj.sql);
+  if (this.isDebugging()) this.debug(obj);
+  return new Promise(function(resolver, rejecter) {
+    stream.on('error', rejecter);
+    stream.on('end', resolver);
+    runner.connection.query(new PGQueryStream(sql, obj.bindings, options)).pipe(stream);
+  });
 });
 
 // Runs the query on the specified connection, providing the bindings
@@ -13049,10 +13046,10 @@ Runner_SQLite3.prototype._stream = Promise.method(function(sql, stream, options)
   return new Promise(function(resolver, rejecter) {
     stream.on('error', rejecter);
     stream.on('end', resolver);
-    return runner.query().map(function(row) {
+    return runner.query(sql).map(function(row) {
       stream.write(row);
-    }).catch(function() {
-      stream.emit('error');
+    }).catch(function(err) {
+      stream.emit('error', err);
     }).then(function() {
       stream.end();
     });
@@ -13086,6 +13083,7 @@ Runner_SQLite3.prototype.processResponse = function(obj) {
 client.Runner = Runner_SQLite3;
 
 };
+
 },{"../../helpers":49,"../../promise":53,"../../runner":59,"inherits":"oxw+vU","lodash":"K2RcUv"}],40:[function(_dereq_,module,exports){
 // SQLite3: Column Builder & Compiler
 // -------
@@ -13726,7 +13724,7 @@ Formatter.prototype.columnize = function(target) {
 Formatter.prototype.operator = function(value) {
   var raw;
   if (raw = this.checkRaw(value)) return raw;
-  if (!_.contains(this.operators, value)) {
+  if (!_.contains(this.operators, (value || '').toLowerCase())) {
     throw new TypeError('The operator "' + value + '" is not permitted');
   }
   return value;
@@ -13888,7 +13886,7 @@ Target.prototype.pipe = function(writable) {
 
 // Creates a method which "coerces" to a promise, by calling a
 // "then" method on the current `Target`
-_.each(['bind', 'catch', 'spread', 'otherwise', 'tap', 'thenReturn',
+_.each(['bind', 'catch', 'spread', 'otherwise', 'map', 'reduce', 'tap', 'thenReturn',
   'return', 'yield', 'ensure', 'nodeify', 'exec'], function(method) {
   Target.prototype[method] = function() {
     var then = this.then();
@@ -14014,11 +14012,10 @@ function QueryBuilder() {
   // Internal flags used in the builder.
   this._joinFlag  = 'inner';
   this._boolFlag  = 'and';
+
+  this.and = this;
 }
 inherits(QueryBuilder, EventEmitter);
-
-// Valid values for the `order by` clause generation.
-var orderBys = ['asc', 'desc'];
 
 QueryBuilder.prototype.toString = function() {
   return this.toQuery();
@@ -14255,6 +14252,7 @@ QueryBuilder.prototype.whereWrapped = function(callback) {
 
 // Adds a `where exists` clause to the query.
 QueryBuilder.prototype.whereExists = function(callback, not) {
+  not = this._not() || not;
   this._statements.push({
     grouping: 'where',
     type: 'whereExists',
@@ -14282,6 +14280,7 @@ QueryBuilder.prototype.orWhereNotExists = function(callback) {
 
 // Adds a `where in` clause to the query.
 QueryBuilder.prototype.whereIn = function(column, values, not) {
+  not = this._not() || not;
   this._statements.push({
     grouping: 'where',
     type: 'whereIn',
@@ -14310,6 +14309,7 @@ QueryBuilder.prototype.orWhereNotIn = function(column, values) {
 
 // Adds a `where null` clause to the query.
 QueryBuilder.prototype.whereNull = function(column, not) {
+  not = this._not() || not;
   this._statements.push({
     grouping: 'where',
     type: 'whereNull',
@@ -14343,6 +14343,7 @@ QueryBuilder.prototype.whereBetween = function(column, values, not) {
   if (values.length !== 2) {
     return this._errors.push(new Error('You must specify 2 values for the whereBetween clause'));
   }
+  not = this._not() || not;
   this._statements.push({
     grouping: 'where',
     type: 'whereBetween',
@@ -14370,23 +14371,47 @@ QueryBuilder.prototype.orWhereNotBetween = function(column, values) {
 };
 
 // Adds a `group by` clause to the query.
-QueryBuilder.prototype.groupBy = function() {
+QueryBuilder.prototype.groupBy = function(item) {
+  if (item instanceof Raw) {
+    return this.groupByRaw.apply(this, arguments);
+  }
   this._statements.push({
     grouping: 'group',
+    type: 'groupByBasic',
     value: helpers.normalizeArr.apply(null, arguments)
+  });
+  return this;
+};
+
+// Adds a raw `group by` clause to the query.
+QueryBuilder.prototype.groupByRaw = function(sql, bindings) {
+  var raw = (sql instanceof Raw ? sql : new Raw(sql, bindings));
+  this._statements.push({
+    grouping: 'group',
+    type: 'groupByRaw',
+    value: raw
   });
   return this;
 };
 
 // Adds a `order by` clause to the query.
 QueryBuilder.prototype.orderBy = function(column, direction) {
-  if (!(direction instanceof Raw)) {
-    if (!_.contains(orderBys, (direction || '').toLowerCase())) direction = 'asc';
-  }
   this._statements.push({
     grouping: 'order',
+    type: 'orderByBasic',
     value: column,
     direction: direction
+  });
+  return this;
+};
+
+// Add a raw `order by` clause to the query.
+QueryBuilder.prototype.orderByRaw = function(sql, bindings) {
+  var raw = (sql instanceof Raw ? sql : new Raw(sql, bindings));
+  this._statements.push({
+    grouping: 'order',
+    type: 'orderByRaw',
+    value: raw
   });
   return this;
 };
@@ -14633,6 +14658,17 @@ QueryBuilder.prototype._bool = function(val) {
   return ret;
 };
 
+// Helper to get or set the "notFlag" value.
+QueryBuilder.prototype._not = function(val) {
+  if (arguments.length === 1) {
+    this._notFlag = val;
+    return this;
+  }
+  var ret = this._notFlag;
+  this._notFlag = false;
+  return ret;
+};
+
 // Helper to get or set the "joinFlag" value.
 QueryBuilder.prototype._joinType = function (val) {
   if (arguments.length === 1) {
@@ -14654,6 +14690,19 @@ QueryBuilder.prototype._aggregate = function(method, column) {
   });
   return this;
 };
+
+Object.defineProperty(QueryBuilder.prototype, 'or', {
+  get: function () {
+    return this._bool('or');
+  }
+});
+
+
+Object.defineProperty(QueryBuilder.prototype, 'not', {
+  get: function () {
+    return this._not(true);
+  }
+});
 
 // Attach all of the top level promise methods that should be chainable.
 _dereq_('../interface')(QueryBuilder);
@@ -14927,10 +14976,14 @@ QueryCompiler.prototype._groupsOrders = function(type) {
   if (!items) return '';
   var sql = [];
   for (var i = 0, l = items.length; i < l; i++) {
-    var item = items[i];
-    var str = this.formatter.columnize(item.value);
-    if (type === 'order') {
-      str += ' ' + this.formatter.direction(item.direction);
+    var str, item = items[i];
+    if (item.value instanceof Raw) {
+      str = this.formatter.checkRaw(item.value);
+    } else {
+      str = this.formatter.columnize(item.value);
+      if (type === 'order') {
+        str += ' ' + this.formatter.direction(item.direction);
+      }
     }
     sql.push(str);
   }
@@ -15049,6 +15102,7 @@ function JoinClause(table, type) {
   this.table    = table;
   this.joinType = type;
   this.clauses  = [];
+  this.and = this;
 }
 
 JoinClause.prototype.grouping = 'join';
@@ -15089,6 +15143,12 @@ JoinClause.prototype._bool = function(bool) {
   this._boolFlag = 'and';
   return ret;
 };
+
+Object.defineProperty(JoinClause.prototype, 'or', {
+  get: function () {
+    return this._bool('or');
+  }
+});
 
 module.exports = JoinClause;
 },{}],57:[function(_dereq_,module,exports){
@@ -15135,7 +15195,9 @@ module.exports = [
   'orWhereBetween',
   'orWhereNotBetween',
   'groupBy',
+  'groupByRaw',
   'orderBy',
+  'orderByRaw',
   'union',
   'unionAll',
   'having',
@@ -15240,11 +15302,36 @@ Runner.prototype.run = Promise.method(function() {
     .then(this.ensureConnection)
     .then(function(connection) {
       this.connection = connection;
+
+      // Emit a "start" event on both the builder and the client,
+      // allowing us to listen in on any events. We fire on the "client"
+      // before building the SQL, and on the builder after building the SQL
+      // in case we want to determine at how long it actually
+      // took to build the query.
+      this.client.emit('start', this.builder);
       var sql = this.builder.toSQL();
+      this.builder.emit('start', this.builder);
+
       if (_.isArray(sql)) {
         return this.queryArray(sql);
       }
       return this.query(sql);
+    })
+
+    // If there are any "error" listeners, we fire an error event
+    // and then re-throw the error to be eventually handled by
+    // the promise chain. Useful if you're wrapping in a custom `Promise`.
+    .catch(function(err) {
+      if (this.builder._events && this.builder._events.error) {
+        this.builder.emit('error', err);
+      }
+      throw err;
+    })
+
+    // Fire a single "end" event on the builder when
+    // all queries have successfully completed.
+    .tap(function() {
+      this.builder.emit('end');
     })
     .finally(this.cleanupConnection);
 });
@@ -15252,7 +15339,7 @@ Runner.prototype.run = Promise.method(function() {
 // Stream the result set, by passing through to the dialect's streaming
 // capabilities. If the options are
 var PassThrough;
-Runner.prototype.stream = Promise.method(function(options, handler) {
+Runner.prototype.stream = function(options, handler) {
   // If we specify stream(handler).then(...
   if (arguments.length === 1) {
     if (_.isFunction(options)) {
@@ -15260,6 +15347,9 @@ Runner.prototype.stream = Promise.method(function(options, handler) {
       options = {};
     }
   }
+
+  // Determines whether we emit an error or throw here.
+  var hasHandler = _.isFunction(handler);
 
   // Lazy-load the "PassThrough" dependency.
   PassThrough = PassThrough || _dereq_('readable-stream').PassThrough;
@@ -15271,8 +15361,8 @@ Runner.prototype.stream = Promise.method(function(options, handler) {
       var sql = this.builder.toSQL();
       var err = new Error('The stream may only be used with a single query statement.');
       if (_.isArray(sql)) {
+        if (hasHandler) throw err;
         stream.emit('error', err);
-        throw err;
       }
       return sql;
     }).then(function(sql) {
@@ -15282,12 +15372,12 @@ Runner.prototype.stream = Promise.method(function(options, handler) {
   // If a function is passed to handle the stream, send the stream
   // there and return the promise, otherwise just return the stream
   // and the promise will take care of itsself.
-  if (_.isFunction(handler)) {
+  if (hasHandler) {
     handler(stream);
     return promise;
   }
   return stream;
-});
+};
 
 // Allow you to pipe the stream to a writable stream.
 Runner.prototype.pipe = function(writable) {
@@ -15300,6 +15390,7 @@ Runner.prototype.pipe = function(writable) {
 Runner.prototype.query = Promise.method(function(obj) {
   obj.__cid = this.connection.__cid;
   this.builder.emit('query', obj);
+  this.client.emit('query', obj);
   return this._query(obj).bind(this).then(this.processResponse);
 });
 
@@ -23447,6 +23538,10 @@ SemVer.prototype.inc = function(release) {
       this.inc('pre');
       break;
     case 'prepatch':
+      // If this is already a prerelease, it will bump to the next version
+      // drop any prereleases that might already exist, since they are not
+      // relevant at this point.
+      this.prerelease.length = 0
       this.inc('patch');
       this.inc('pre');
       break;
