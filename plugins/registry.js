@@ -10,6 +10,8 @@ module.exports = function (bookshelf) {
     if (store[name]) throw new Error(name + ' is already defined in the registry');
   }
 
+  bookshelf.registry = bookshelf.registry || {};
+
   // Set up the methods for storing and retrieving models
   // on the bookshelf instance.
   bookshelf.model = function(name, ModelCtor, staticProps) {
@@ -21,7 +23,7 @@ module.exports = function (bookshelf) {
       }
       this._models[name] = ModelCtor;
     }
-    return this._models[name];
+    return (this._models[name] = this._models[name] || bookshelf.resolve(name));
   };
   bookshelf.collection = function(name, CollectionCtor, staticProps) {
     this._collections = this._collections || Object.create(null);
@@ -32,8 +34,11 @@ module.exports = function (bookshelf) {
       }
       this._collections[name] = CollectionCtor;
     }
-    return this._collections[name];
+    return (this._collections[name] = this._collections[name] || bookshelf.resolve(name));
   };
+
+  // Provide a custom function to resolve the location of a model or collection.
+  bookshelf.resolve = function(name) { return void 0; };
 
   // Check the collection or module caches for a Model or Collection constructor,
   // returning if the input is not an object. Check for a collection first,

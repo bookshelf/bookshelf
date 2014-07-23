@@ -180,5 +180,21 @@ module.exports = function(Bookshelf) {
 			});
 
 		});
+
+		describe('bookshelf.resolve', function() {
+			
+			it('resolves the path to a model with a custom function', function() {
+				var one = Bookshelf.Model.extend({});
+				var two = Bookshelf.Model.extend({});
+				Bookshelf.resolve = function(name) {
+					return (name === 'one' ? one : name === 'two' ? two : void 0);
+				};
+				expect(Bookshelf.model('one')).to.equal(one);
+				expect(Bookshelf.model('two')).to.equal(two);
+				expect(Bookshelf.model('three')).to.equal(void 0);
+			});
+
+		});
+
 	});
 };
