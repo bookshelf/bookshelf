@@ -664,7 +664,8 @@ new Book({id: 1}).summary().fetch().then(function(summary) {
 
     <p>
       Relations may also be loaded eagerly, by specifying a <tt>withRelated</tt> option
-      during the fetch call.
+      during the fetch call.  Note that the call to related will successfully return an object regardless of whether or not such a 
+      relation exists.  To check for the existence of a related object, use the id.
     </p>
 
 <pre><code>
@@ -673,7 +674,7 @@ new Book({id: 2}).fetch({
 }).then(function(book) {
   console.log(book.toJSON());
   var owner = book.related('owner');
-  if (owner) {
+  if (owner.id) {
     console.log(owner.toJSON());
   }
 });
