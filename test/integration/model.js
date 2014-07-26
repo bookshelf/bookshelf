@@ -592,6 +592,18 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'}, {method: 'update'});
       });
 
+      it('sets created_at when {method: "insert"} is passed', function() {
+        var m = new bookshelf.Model(null, {hasTimestamps: true});
+        m.sync = function() {
+          equal(this.id, 1);
+          equal(this.get('item'), 'test');
+          equal(_.isDate(this.get('created_at')), true);
+          equal(_.isDate(this.get('updated_at')), true);
+          return stubSync;
+        };
+        return m.save({id: 1, item: 'test'}, {method: 'insert'});
+      });
+
       it('will accept a falsy value as an option for created and ignore it', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
         m.sync = function() {
