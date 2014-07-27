@@ -1406,6 +1406,8 @@ var qb = model.query();
 
 <pre><code>
 var PostModel = bookshelf.Model.extend({
+  // If, for example, you snakify in your `format` function (from model to db)
+  // and camelize in `parse` (from db to model), then you would camelize your model like so:
   hasTimestamps: ['createdAt', 'updatedAt']
 });
 </code></pre>
