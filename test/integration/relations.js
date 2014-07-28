@@ -422,6 +422,14 @@ module.exports = function(Bookshelf) {
             .fetch().tap(checkTest(this));
         });
 
+        it('has no side effects for morphTo (imageable "authors", PhotoParsed)', function() {
+          var photoParsed = new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+          return photoParsed.imageableParsed().fetch()
+          .then( function() {
+            return photoParsed.fetch()
+          }).then(checkTest(this));
+        });
+
         it('handles morphTo (imageable "sites")', function() {
           return new Photo({imageable_id: 1, imageable_type: 'sites'})
             .imageable()

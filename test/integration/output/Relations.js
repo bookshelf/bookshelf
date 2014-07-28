@@ -1642,6 +1642,35 @@ module.exports = {
       }
     }
   },
+  'has no side effects for morphTo (imageable "authors", PhotoParsed)': {
+    mysql: {
+      result: {
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+      }
+    },
+    postgresql: {
+      result: {
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+      }
+    },
+    sqlite3: {
+      result: {
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
+      }
+    }
+  },
   'handles morphTo (imageable "sites")': {
     mysql: {
       result: {
