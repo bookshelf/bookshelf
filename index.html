@@ -664,7 +664,7 @@ new Book({id: 1}).summary().fetch().then(function(summary) {
 
     <p>
       Relations may also be loaded eagerly, by specifying a <tt>withRelated</tt> option
-      during the fetch call.  Note that the call to related will successfully return an object regardless of whether or not such a 
+      during the fetch call.  Note that the call to related will successfully return an object regardless of whether or not such a
       relation exists.  To check for the existence of a related object, use the id.
     </p>
 
@@ -1413,11 +1413,12 @@ var PostModel = bookshelf.Model.extend({
     <p id="Model-timestamp">
       <b class="header">timestamp</b><code>model.timestamp(options)</code>
       <br />
-      Sets the timestamp attributes on the model, if <tt>hasTimestamps</tt> is set to true.
-      The default implementation is to check if the model <a href="#Model-isNew">isNew</a> and
-      set the <tt>created_at</tt> and <tt>updated_at</tt> attributes to the current date if it is new,
-      and just the <tt>updated_at</tt> attribute if it isn't. You may override this method if you
-      wish to use different column names or types for the timestamps.
+      Sets the timestamp attributes on the model, if <tt>hasTimestamps</tt> is set to true or an array.
+      The default implementation is to check if the model <a href="#Model-isNew">isNew</a> or if
+      <tt>{method: 'insert'}</tt> is provided as an option and set the <tt>created_at</tt> and
+      <tt>updated_at</tt> attributes to the current date if it is being inserted, and just the
+      <tt>updated_at</tt> attribute if it's being updated. You may override this method if you wish to
+      use different column names or types for the timestamps.
     </p>
 
     <p id="Model-clone">
@@ -2218,7 +2219,7 @@ Bookshelf.transaction(function(t) {
       <p>This is only an issue if you're eager loading data with <tt>load</tt> without first fetching the original model.
       <tt>Model({id: '1'}).fetch({withRelated: [relations...]})</tt> should work just fine.
     </p>
-    
+
     <p id="faq-process-exit">
       <b class="header">My process won't exit after my script is finished, why?</b><br />
       The issue here is that <tt>Knex</tt>, the database abstraction layer used by <tt>Bookshelf</tt>,
@@ -2289,7 +2290,7 @@ process.stderr.on('data', function(data) {
 
     <p>
       <b class="header">0.7.6</b> &mdash; <small><i>June 29, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.5...0.7.6">Diff</a><br />
-      Add <tt>omitPivot</tt> flag on toJSON options for omitting the <tt>_pivot_</tt> keys in <tt>through</tt> and 
+      Add <tt>omitPivot</tt> flag on toJSON options for omitting the <tt>_pivot_</tt> keys in <tt>through</tt> and
       <tt>belongsToMany</tt> relations (#404).
     </p>
 
