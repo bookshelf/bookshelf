@@ -110,6 +110,7 @@ module.exports = function(Bookshelf) {
     .createTable('Settings', function(table) {
       table.increments('id');
       table.integer('Customer_id').notNullable();
+      table.bool('isActive').notNullable().defaultTo(true);
       table.string('data', 64);
     })
     .createTable('hostnames', function(table){

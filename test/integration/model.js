@@ -189,6 +189,12 @@ module.exports = function(bookshelf) {
         var shallow = m.toJSON({shallow:true});
         deepEqual(_.keys(shallow), ['id', 'name']);
       });
+
+      it('should contain native boolean types', function() {
+        var m = new (bookshelf.Model.extend({
+        }))({'isTrue': true, 'isFalse': false});
+        deepEqual(m.toJSON(), {'isTrue': true, 'isFalse': false});
+      });
     });
 
     describe('parse', function() {

@@ -224,7 +224,13 @@ module.exports = function(Bookshelf) {
     model: Photo
   });
 
-  var Settings = Bookshelf.Model.extend({ tableName: 'Settings' });
+  var Settings = Bookshelf.Model.extend({
+    tableName: 'Settings',
+    parse: function(attrs) {
+      attrs.isActive = Boolean(attrs.isActive === 1);
+      return attrs;
+    }
+  });
 
   var Customer = Bookshelf.Model.extend({
     tableName: 'Customer',
