@@ -199,6 +199,34 @@ module.exports = function(Bookshelf) {
           ]);
         });
 
+        it('has an attaching event, which will fail if an error is thrown', function(){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          return admin1.save().then(function() {
+            site1.related('admins').on('attaching', function() {
+              throw new Error('This failed');
+            });
+
+            expect(site1.related('admins').attach(admin1)).to.be.rejected;
+          });
+        });
+
+        it('has an detaching event, which will fail if an error is thrown', function(){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          return admin1.save().then(function() {
+            site1.related('admins').on('detaching', function() {
+              throw new Error('This failed');
+            });
+
+            return site1.related('admins').attach(admin1);
+          }).then(function() {
+            expect(site1.related('admins').detach(admin1)).to.be.rejected;
+          });
+        });
+
         it('provides "attach" for creating or attaching records', function() {
 
           var site1  = new Site({id: 1});
@@ -210,6 +238,7 @@ module.exports = function(Bookshelf) {
           return Promise.all([admin1.save(), admin2.save()])
             .then(function() {
               admin1_id = admin1.id;
+
               return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
                 site2.related('admins').attach(admin2)
