@@ -1084,7 +1084,7 @@ var Post = bookshelf.Model.extend({
 </code></pre>
 
     <p id="Model-morphTo">
-      <b class="header">morphTo</b><code>model.morphTo(name, targets*)</code>
+      <b class="header">morphTo</b><code>model.morphTo(name, [columnNames], targets*)</code>
       <br />
       The <b>morphTo</b> relation is used to specify the inverse of the "morphOne" or "morphMany" relations,
       where the <b>targets</b> (constructors) must be passed to signify which models are the potential opposite end of the
@@ -1095,7 +1095,23 @@ var Post = bookshelf.Model.extend({
 var Photo = bookshelf.Model.extend({
   tableName: 'photos',
   imageable: function() {
-    return this.morphTo('imageable', Site, Author);
+    return this.morphTo('imageable', Site, Post);
+  }
+});
+</code></pre>
+    
+    <p>
+      Optionally, if you wish to use column names other than the <b>name</b> suffixed with <tt>_type</tt> and <tt>_id</tt>
+      (for example, if you use a different naming convention in your database), you may specify custom <b>columnNames</b>.
+      This argument, when specified, expects an array containing the substitute <tt>_type</tt> and <tt>_id</tt> columns,
+      respectively.
+    </p>
+    
+<pre><code>
+var Photo = bookshelf.Model.extend({
+  tableName: 'photos',
+  imageable: function() {
+    return this.morphTo('imageable', ["ImageableType", "ImageableId"], Site, Post);
   }
 });
 </code></pre>
