@@ -1041,7 +1041,7 @@ var Post = bookshelf.Model.extend({
 var Photo = bookshelf.Model.extend({
   tableName: 'photos',
   imageable: function() {
-    return this.morphTo('imageable', Site, Author);
+    return this.morphTo('imageable', Site, Post);
   }
 });
 </code></pre>
