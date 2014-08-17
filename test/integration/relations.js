@@ -241,7 +241,19 @@ module.exports = function(Bookshelf) {
 
               return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
-                site2.related('admins').attach(admin2)
+                site2.related('admins').attach(admin2),
+                site1.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 2);
+                    });
+                }),
+                site2.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                })
               ]);
             })
             .then(function(resp) {
@@ -271,15 +283,21 @@ module.exports = function(Bookshelf) {
               return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 1);
                 }),
                 admins2.detach().then(function(c) {
                   expect(admins2).to.have.length(0);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 0);
+                }),
+                admins1.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                }),
+                admins2.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 0);
+                    });
                 })
               ]);
             });
@@ -298,7 +316,19 @@ module.exports = function(Bookshelf) {
               admin1_id = admin1.id;
               return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
-                site2.related('admins').attach(admin2)
+                site2.related('admins').attach(admin2),
+                site1.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 2);
+                    });
+                }),
+                site2.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                })
               ]);
             })
             .then(function(resp) {
@@ -328,15 +358,21 @@ module.exports = function(Bookshelf) {
               return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 1);
                 }),
                 admins2.detach().then(function(c) {
                   expect(admins2).to.have.length(0);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 0);
+                }),
+                admins1.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                }),
+                admins2.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 0);
+                    });
                 })
               ]);
             });
