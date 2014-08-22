@@ -280,7 +280,7 @@ module.exports = function(bookshelf) {
       it('has a fetching event, which will fail if an error is thrown or if a rejected promise is provided', function() {
         var model = new Site({id: 1});
         model.on('fetching', function() {
-          throw new Error("This failed");
+          throw new Error('This failed');
         });
         return expect(model.fetch()).to.be.rejected;
       });
