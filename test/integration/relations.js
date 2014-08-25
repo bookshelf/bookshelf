@@ -32,6 +32,7 @@ module.exports = function(Bookshelf) {
     var Tag          = Models.Tag;
     var User         = Models.User;
     var Role         = Models.Role;
+    var Thumbnail    = Models.Thumbnail;
     var Photo        = Models.Photo;
     var PhotoParsed  = Models.PhotoParsed;
     var Customer     = Models.Customer;
@@ -446,6 +447,44 @@ module.exports = function(Bookshelf) {
 
         it('eager loads beyond the morphTo, where possible', function() {
           return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
+        });
+
+
+        it('handles morphOne with custom columnNames (thumbnail)', function() {
+          return new Author({id: 1})
+            .thumbnail()
+            .fetch()
+            .tap(checkTest(this));
+        });
+
+        it('handles morphMany with custom columnNames (thumbnail)', function() {
+          return new Site({id: 1})
+            .thumbnails()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('handles morphTo with custom columnNames (imageable "authors")', function() {
+          return new Thumbnail({ImageableId: 1, ImageableType: 'authors'})
+            .imageable()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('handles morphTo with custom columnNames (imageable "sites")', function() {
+          return new Thumbnail({ImageableId: 1, ImageableType: 'sites'})
+            .imageable()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('eager loads morphMany with custom columnNames (sites -> thumbnails)', function() {
+          return new Site().fetchAll({withRelated: ['thumbnails']}).tap(checkTest(this));
+        });
+
+        it('eager loads morphTo with custom columnNames (thumbnails -> imageable)', function() {
+          return Thumbnail.fetchAll({withRelated: ['imageable']}).tap(checkTest(this));
+        });
+
+        it('eager loads beyond the morphTo with custom columnNames, where possible', function() {
+          return Thumbnail.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
       });

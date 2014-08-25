@@ -179,6 +179,38 @@ module.exports = function(bookshelf) {
       imageable_type: 'sites'
     }]),
 
+    knex('thumbnails').insert([{
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 1,
+      ImageableType: 'authors'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 2,
+      ImageableType: 'authors'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 1,
+      ImageableType: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 1,
+      ImageableType: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 2,
+      ImageableType: 'sites'
+    }, {
+      caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+      url: 'https://www.google.com/images/srpr/logo4w.png',
+      ImageableId: 2,
+      ImageableType: 'sites'
+    }]),
+
     knex('users').insert({uid: 1, username: 'root'}),
 
     knex('roles').insert({rid: 4, name: 'admin'}),

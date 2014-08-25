@@ -103,6 +103,17 @@ module.exports = function(Bookshelf) {
       table.integer('imageable_id').notNullable();
       table.string('imageable_type');
     })
+    /* The following table is for testing non-standard morphTo column name
+     * specification. The breaking of naming convention is intentional.
+     * Changing it back to snake_case will break the tests!
+     */
+    .createTable('thumbnails', function(table) {
+      table.increments('id');
+      table.string('url');
+      table.string('caption');
+      table.integer('ImageableId').notNullable();
+      table.string('ImageableType');
+    })
     .createTable('Customer', function(table) {
       table.increments('id');
       table.string('name');

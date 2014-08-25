@@ -51,6 +51,9 @@ module.exports = function(Bookshelf) {
     photos: function() {
       return this.morphMany(Photo, 'imageable');
     },
+    thumbnails: function() {
+      return this.morphMany(Thumbnail, 'imageable', ["ImageableType", "ImageableId"]);
+    },
     blogs: function() {
       return this.hasMany(Blog);
     },
@@ -88,6 +91,9 @@ module.exports = function(Bookshelf) {
     },
     photo: function() {
       return this.morphOne(Photo, 'imageable');
+    },
+    thumbnail: function() {
+      return this.morphOne(Thumbnail, 'imageable', ["ImageableType", "ImageableId"]);
     },
     posts: function() {
       return this.belongsToMany(Post);
@@ -213,6 +219,13 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var Thumbnail = Bookshelf.Model.extend({
+    tableName: 'thumbnails',
+    imageable: function() {
+      return this.morphTo('imageable', ["ImageableType", "ImageableId"], Site, Author);
+    }
+  });
+
   // A PhotoParsed appends "_parsed" to each field name on fetch
   // and removes "_parsed" when formatted
   var PhotoParsed = Photo.extend({
@@ -293,6 +306,7 @@ module.exports = function(Bookshelf) {
       Role: Role,
       Photo: Photo,
       PhotoParsed: PhotoParsed,
+      Thumbnail: Thumbnail,
       Info: Info,
       Customer: Customer,
       Settings: Settings,

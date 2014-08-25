@@ -1046,8 +1046,20 @@ var Photo = bookshelf.Model.extend({
 });
 </code></pre>
 
+    <p>
+      Optionally, if you wish to use column names other than the <b>name</b> suffixed with <tt>_type</tt> and <tt>_id</tt>
+      (for example, if you use a different naming convention in your database), you may specify custom <b>columnNames</b>.
+      This argument, when specified, expects an array containing the substitute <tt>_type</tt> and <tt>_id</tt> columns,
+      respectively.
+    </p>
+
+    <p>
+      Note that any custom <b>columnNames</b> must be specified on both ends of the relationship! Examples are provided
+      for each of the polymorphic relationship types individually.
+    </p>
+
     <p id="Model-morphOne">
-      <b class="header">morphOne</b><code>model.morphOne(Target, name, [morphValue])</code>
+      <b class="header">morphOne</b><code>model.morphOne(Target, name, [columnNames], [morphValue])</code>
       <br />
       The <b>morphOne</b> is used to signify a polymorphic relation with another <b>Target</b> model,
       where the <b>name</b> of the model is used to determine which database table keys are used.
@@ -1066,8 +1078,27 @@ var Site = bookshelf.Model.extend({
 });
 </code></pre>
 
+    <p>
+      And with custom columnNames:
+    </p>
+
+<pre><code>
+var Site = bookshelf.Model.extend({
+  tableName: 'sites',
+  photo: function() {
+    return this.morphOne(Photo, 'imageable', ["ImageableType", "ImageableId"]);
+  }
+});
+</code></pre>
+
+    <p>
+      Note that both <b>columnNames</b> and <b>morphValue</b> are optional arguments. How your argument is treated
+      when only one is specified, depends on the type. If your argument is an array, it will be assumed to contain
+      custom <b>columnNames</b>. If it's not, it will be assumed to indicate a <b>morphValue</b>.
+    </p>
+
     <p id="Model-morphMany">
-      <b class="header">morphMany</b><code>model.morphMany(Target, name, [morphValue])</code>
+      <b class="header">morphMany</b><code>model.morphMany(Target, name, [columnNames], [morphValue])</code>
       <br />
       The <b>morphMany</b> property is essentially the same as a morphOne, but creating a collection rather than a
       model (similar to a hasOne vs. hasMany relation). The <b>morphValue</b> may be optionally set to store/retrieve
@@ -1082,6 +1113,23 @@ var Post = bookshelf.Model.extend({
   }
 });
 </code></pre>
+
+    <p>
+      And with custom columnNames:
+    </p>
+
+<pre><code>
+var Post = bookshelf.Model.extend({
+  tableName: 'posts',
+  photos: function() {
+    return this.morphMany(Photo, 'imageable', ["ImageableType", "ImageableId"]);
+  }
+});
+</code></pre>
+
+    <p>
+      The same argument parsing rules apply as for <b>morphOne</b>.
+    </p>
 
     <p id="Model-morphTo">
       <b class="header">morphTo</b><code>model.morphTo(name, [columnNames], targets*)</code>
@@ -1099,14 +1147,11 @@ var Photo = bookshelf.Model.extend({
   }
 });
 </code></pre>
-    
+
     <p>
-      Optionally, if you wish to use column names other than the <b>name</b> suffixed with <tt>_type</tt> and <tt>_id</tt>
-      (for example, if you use a different naming convention in your database), you may specify custom <b>columnNames</b>.
-      This argument, when specified, expects an array containing the substitute <tt>_type</tt> and <tt>_id</tt> columns,
-      respectively.
+      And with custom columnNames:
     </p>
-    
+
 <pre><code>
 var Photo = bookshelf.Model.extend({
   tableName: 'photos',
