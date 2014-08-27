@@ -640,7 +640,7 @@ var Book = bookshelf.Model.extend({
     return this.hasOne(Summary);
   },
   owner: function() {
-    return this.belongsTo(Author);
+    return this.belongsTo(Owner);
   },
   pages: function() {
     return this.hasMany(Pages);
