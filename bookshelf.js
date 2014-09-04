@@ -60,7 +60,7 @@ Bookshelf.initialize = function(knex) {
 
   Model.prototype._builder =
   Collection.prototype._builder = function(tableName) {
-    var builder  = knex(tableName);
+    var builder  = bookshelf.knex(tableName);
     var instance = this;
     return builder.on('query', function(data) {
       instance.trigger('query', data);
