@@ -6,6 +6,6 @@
 * Use the same coding style as the rest of the
 [codebase](https://github.com/tgriesser/bookshelf/blob/master/bookshelf.js).
 
-* Files in the `/browser` folder are build automatically. You don't need to edit them.
+* Files in the `/browser` folder are built automatically. You don't need to edit them.
 
 * All pull requests should be made to the `master` branch.
