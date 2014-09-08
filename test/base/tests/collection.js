@@ -90,6 +90,21 @@ module.exports = function() {
         collection.set([{some_id: 3, name: 'WontAdd'}], {add: false});
         equal(collection.get(3), undefined);
       });
+
+      it('should support large arrays', function() {
+        var count = 200000;
+        var models = [];
+        var i;
+
+        for (i = 0; i < count; ++i) {
+          models.push(new collection.model({
+            some_id: i, 
+            name: 'Large-' + i
+          }));
+        }
+        collection.set(models, {add: true, remove: false, merge: false});
+        equal(collection.get(count - 1).get('name'), 'Large-' + (count - 1));
+      });
     });
 
     it('should use the `reset` method, to reset the collection', function() {
