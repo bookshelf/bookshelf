@@ -120,6 +120,20 @@ module.exports = function(bookshelf) {
                 expect(photo.get('imageable_type')).to.equal('sites');
                 expect(photo.get('url')).to.equal('http://image.dev');
               });
+          })
+          // The following is for testing custom columnNames.
+          .then(function() {
+            return new Site({id: 10})
+              .thumbnails()
+              .create({
+                url: 'http://image.dev',
+                caption: 'this is a test image'
+              })
+              .then(function(photo) {
+                expect(photo.get('ImageableId')).to.equal(10);
+                expect(photo.get('ImageableType')).to.equal('sites');
+                expect(photo.get('url')).to.equal('http://image.dev');
+              });
           });
 
       });
