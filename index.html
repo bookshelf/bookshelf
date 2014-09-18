@@ -559,6 +559,7 @@ new Book({'ISBN-13': '9780440180296'})
       the model, may be retrieved with the <a href="#Model-related">related</a> method, and will
       be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless
       <tt>{shallow: true}</tt> is passed.
+      You can specify <tt>withRelatedColumns</tt> in order to only fetch specific columns.
     </p>
 
 <pre><code>
@@ -573,7 +574,8 @@ var Book = bookshelf.Model.extend({
 })
 
 new Book({'ISBN-13': '9780440180296'}).fetch({
-  withRelated: ['genre', 'editions']
+  withRelated: ['genre', 'editions'],
+  withRelatedColumns: {genre: ['id']}
 }).then(function(book) {
   console.log(book.related('genre').toJSON());
   console.log(book.related('editions').toJSON());
@@ -1813,6 +1815,7 @@ var tabs = new TabSet([tab1, tab2, tab3]);
       the respective models, may be retrieved with the <a href="#Model-related">related</a> method, and will
       be serialized as properties on a <a href="#Model-toJSON">toJSON</a> call unless
       <tt>{shallow: true}</tt> is passed.
+      You can specify <tt>withRelatedColumns</tt> in order to only fetch specific columns.
     </p>
 
     <p id="Collection-fetchOne">

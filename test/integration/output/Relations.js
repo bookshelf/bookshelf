@@ -159,6 +159,38 @@ module.exports = {
       }
     }
   },
+  'eager loads "hasOne" relationships withRelatedColumns correctly (site -> meta)': {
+    mysql: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      }
+    }
+  },
   'eager loads "hasMany" relationships correctly (site -> authors, blogs)': {
     mysql: {
       result: {
@@ -453,6 +485,77 @@ module.exports = {
           id: 2,
           site_id: 2,
           description: 'This is a description for the Bookshelfjs Site'
+        }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+
+        }
+      }]
+    }
+  },
+  'eager loads "hasOne" models withRelatedColumns correctly (sites -> meta)': {
+    mysql: {
+      result: [{
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      },{
+        id: 2,
+        name: 'bookshelfjs.org',
+        meta: {
+          id: 2,
+          site_id: 2,
+        }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      },{
+        id: 2,
+        name: 'bookshelfjs.org',
+        meta: {
+          id: 2,
+          site_id: 2,
+        }
+      },{
+        id: 3,
+        name: 'backbonejs.org',
+        meta: {
+
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        name: 'knexjs.org',
+        meta: {
+          id: 1,
+          site_id: 1,
+        }
+      },{
+        id: 2,
+        name: 'bookshelfjs.org',
+        meta: {
+          id: 2,
+          site_id: 2,
         }
       },{
         id: 3,
