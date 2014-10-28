@@ -1,5 +1,5 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Bookshelf=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// Bookshelf.js 0.7.8
+// Bookshelf.js 0.7.9
 // ---------------
 
 //     (c) 2014 Tim Griesser
@@ -16,7 +16,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.8'
+    VERSION: '0.7.9'
   };
 
   var _          = require('lodash');
@@ -1437,6 +1437,12 @@ _.extend(BookshelfRelation.prototype, {
   selectConstraints: function(knex, options) {
     var resp = options.parentResponse;
 
+    // The `belongsToMany` and `through` relations have joins & pivot columns.
+    if (this.isJoined()) this.joinClauses(knex);
+
+    // Call the function, if one exists, to constrain the eager loaded query.
+    if (options._beforeFn) options._beforeFn.call(knex, knex);
+
     // The base select column
     if (_.isArray(options.columns)) {
       knex.columns(options.columns);
@@ -1448,12 +1454,8 @@ _.extend(BookshelfRelation.prototype, {
       knex.column(this.targetTableName + '.*');
     }
 
-    // The `belongsToMany` and `through` relations have joins & pivot columns.
-    if (this.isJoined()) {
-      this.joinClauses(knex);
-      this.joinColumns(knex);
-    }
-
+    if (this.isJoined()) this.joinColumns(knex);
+    
     // If this is a single relation and we're not eager loading,
     // limit the query to a single item.
     if (this.isSingle() && !resp) knex.limit(1);
@@ -1856,28 +1858,28 @@ _.extend(Sync.prototype, {
   select: Promise.method(function() {
     var columns, sync = this,
       options = this.options, relatedData = this.syncing.relatedData;
+    var knex = this.query;
 
     // Inject all appropriate select costraints dealing with the relation
     // into the `knex` query builder for the current instance.
     if (relatedData) {
-      relatedData.selectConstraints(this.query, options);
+      relatedData.selectConstraints(knex, options);
     } else {
       columns = options.columns;
+      // Call the function, if one exists, to constrain the eager loaded query.
+      if (options._beforeFn) options._beforeFn.call(knex, knex);
       if (!_.isArray(columns)) columns = columns ? [columns] : [_.result(this.syncing, 'tableName') + '.*'];
     }
 
     // Set the query builder on the options, in-case we need to
     // access in the `fetching` event handlers.
-    options.query = this.query;
-
-    // Call the function, if one exists, to constrain the eager loaded query.
-    if (options._beforeFn) options._beforeFn.call(this.syncing, options.query);
+    options.query = knex;
 
     // Trigger a `fetching` event on the model, and then select the appropriate columns.
     return Promise.bind(this).then(function() {
       return this.syncing.triggerThen('fetching', this.syncing, columns, options);
     }).then(function() {
-      return this.query.select(columns);
+      return knex.select(columns);
     });
   }),
 
