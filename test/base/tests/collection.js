@@ -92,6 +92,8 @@ module.exports = function() {
       });
 
       it('should support large arrays', function() {
+        this.timeout(15000);
+
         var count = 200000;
         var models = [];
         var i;

@@ -27,7 +27,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.7.7)</span>
+      Bookshelf.js <span class="version">(0.7.8)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -195,7 +195,7 @@
       and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.7.7 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.7.8 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2344,6 +2344,18 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
+      <b class="header">0.7.8</b> &mdash; <small><i>Oct 28, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.7...0.7.8">Diff</a><br />
+    </p>
+    <ul>
+      <li>Timestamp <tt>created_at</tt> is now saved with any insert.</li>
+      <li>Fix for regression created by #429.</li>
+      <li>New events, <tt>attaching</tt>, <tt>attached</tt>, <tt>detaching</tt>, <tt>detached</tt> #452.</li>
+      <li>Ability to specify custom column names in morphTo, #454</li>
+      <li>Fix for stack overflow with model list as arguments, #482</li>
+      <li>Modified location of eager fetch query constraints internally.</li>
+    </ul>
+
+    <p>
       <b class="header">0.7.7</b> &mdash; <small><i>July 23, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.6...0.7.7">Diff</a><br />
     </p>
     <ul>
@@ -2755,7 +2767,7 @@ user.fetch({withRelated: ['accounts', {
   <script src="/docs/assets/highlight.min.js"></script>
   <script src="docs/assets/ga.js" charset="utf-8"></script>
   <script src="docs/assets/jquery.min.js"></script>
-  <script src="/browser/deps.js"></script>
+  <script src="/browser/knex.js"></script>
   <script src="/browser/bookshelf.js"></script>
 
   <script>
@@ -2764,7 +2776,7 @@ user.fetch({withRelated: ['accounts', {
   });
   hljs.initHighlightingOnLoad();
 
-  var knex = require('knex')({client: 'websql'});
+  var knex = Knex({client: 'websql'});
   var bookshelf = Bookshelf(knex);
 
   // Don't show the full change log.

@@ -7,7 +7,7 @@ var drops = [
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
   'users', 'roles', 'photos', 'users_roles', 'info',
   'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
-  'parsed_users', 'tokens'
+  'parsed_users', 'tokens', 'thumbnails'
 ];
 
 module.exports = function(Bookshelf) {
