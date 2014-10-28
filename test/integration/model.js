@@ -747,6 +747,31 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('model.once', function() {
+
+      var Post = Models.Post;
+
+      it('event.once return a promise', function() {
+
+          var p = new Post({id: 1});
+          p.once('event', function() {
+              return Promise.resolve(1);
+          });
+
+          var promise = p.triggerThen('event');
+
+          equal(promise instanceof Promise, true);
+
+          promise.then(function(result) {
+              equal(result, 1);
+          });
+
+          return promise;
+
+      });
+
+    });
+
   });
 
 };
