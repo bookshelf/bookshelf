@@ -438,13 +438,25 @@ module.exports = EagerBase;
 var Promise     = require('./promise');
 var Backbone    = require('backbone');
 var triggerThen = require('trigger-then');
+var _           = require('lodash');
+
+Backbone.Events.once = function(name, callback, context) {
+    //if (!eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
+    var self = this;
+    var once = _.once(function() {
+        self.off(name, once);
+        return callback.apply(this, arguments);
+    });
+    once._callback = callback;
+    return this.on(name, once, context);
+};
 
 // Mixin the `triggerThen` function into all relevant Backbone objects,
 // so we can have event driven async validations, functions, etc.
 triggerThen(Backbone, Promise);
 
 module.exports = Backbone.Events;
-},{"./promise":6,"backbone":15,"trigger-then":133}],5:[function(require,module,exports){
+},{"./promise":6,"backbone":15,"lodash":130,"trigger-then":133}],5:[function(require,module,exports){
 // Base Model
 // ---------------
 var _        = require('lodash');
@@ -1079,15 +1091,15 @@ _.extend(BookshelfModel.prototype, {
   // Defines the opposite end of a `morphOne` or `morphMany` relationship, where
   // the alternate end of the polymorphic model is defined.
   morphTo: function(morphName) {
+    var columnNames, remainder;
     if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
     if (_.isArray(arguments[1])) {
-      var columnNames = arguments[1];
-      var remainder = _.rest(arguments, 2);
+      columnNames = arguments[1];
+      remainder = _.rest(arguments, 2);
     } else {
-      var columnNames = null;
-      var remainder = _.rest(arguments);
+      columnNames = null;
+      remainder = _.rest(arguments);
     }
-
     return this._relation('morphTo', null, {morphName: morphName, columnNames: columnNames, candidates: remainder}).init(this);
   },
 
@@ -1394,6 +1406,7 @@ _.extend(BookshelfRelation.prototype, {
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
   key: function(keyName) {
+    var idKeyName;
     if (this[keyName]) return this[keyName];
     if (keyName === 'otherKey') {
       return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
@@ -1403,12 +1416,12 @@ _.extend(BookshelfRelation.prototype, {
     }
     if (keyName === 'foreignKey') {
       if (this.type === 'morphTo') {
-        var idKeyName = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
+        idKeyName = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
         return this[keyName] = idKeyName;
       }
       if (this.type === 'belongsTo') return this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
       if (this.isMorph()) {
-        var idKeyName = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
+        idKeyName = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
         return this[keyName] = idKeyName;
       }
       return this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
@@ -14458,65 +14471,453 @@ function clone(target) {
    * @private
    */
   var uncountable_words = [
-    'equipment', 'information', 'rice', 'money', 'species',
-    'series', 'fish', 'sheep', 'moose', 'deer', 'news'
+    'access',
+    'accommodation',
+    'adulthood',
+    'advertising',
+    'advice',
+    'aggression',
+    'aid',
+    'air',
+    'aircraft',
+    'alcohol',
+    'anger',
+    'applause',
+    'arithmetic',
+    'art',
+    'assistance',
+    'athletics',
+    'attention',
+
+    'bacon',
+    'baggage',
+    'ballet',
+    'beauty',
+    'beef',
+    'beer',
+    'behavior',
+    'biology',
+    // 'billiards',
+    'blood',
+    'botany',
+    // 'bowels',
+    'bread',
+    'business',
+    'butter',
+
+    'carbon',
+    'cardboard',
+    'cash',
+    'chalk',
+    'chaos',
+    'chess',
+    'crossroads',
+    'countryside',
+
+    'damage',
+    'dancing',
+    'danger',
+    'deer',
+    'delight',
+    'dessert',
+    'dignity',
+    'dirt',
+    'distribution',
+    'dust',
+
+    'economics',
+    'education',
+    'electricity',
+    'employment',
+    'energy',
+    'engineering',
+    'enjoyment',
+    'entertainment',
+    'envy',
+    'equipment',
+    'ethics',
+    'evidence',
+    'evolution',
+
+    'failure',
+    'faith',
+    'fame',
+    'fiction',
+    // 'fish',
+    'flour',
+    'flu',
+    'food',
+    'freedom',
+    'fruit',
+    'fuel',
+    'fun',
+    // 'funeral',
+    'furniture',
+
+    'gallows',
+    'garbage',
+    'garlic',
+    'gas',
+    'genetics',
+    'glass',
+    'gold',
+    'golf',
+    'gossip',
+    'grammar',
+    'grass',
+    'gratitude',
+    'grief',
+    'ground',
+    'guilt',
+    'gymnastics',
+
+    'hair',
+    'happiness',
+    'hardware',
+    'harm',
+    'hate',
+    'hatred',
+    'health',
+    'heat',
+    'height',
+    'help',
+    'homework',
+    'honesty',
+    'honey',
+    'hospitality',
+    'housework',
+    'humour',
+    'hunger',
+    'hydrogen',
+
+    'ice',
+    'importance',
+    'inflation',
+    'information',
+    'injustice',
+    'innocence',
+    'intelligence',
+    'iron',
+    'irony',
+
+    'jam',
+    'jealousy',
+    'jelly',
+    'jewelry',
+    'joy',
+    'judo',
+    'juice',
+    'justice',
+
+    'karate',
+    'kindness',
+    'knowledge',
+
+    'labour',
+    'lack',
+    'land',
+    'laughter',
+    'lava',
+    'leather',
+    'leisure',
+    'lightning',
+    'linguine',
+    'linguini',
+    'linguistics',
+    'literature',
+    'litter',
+    'livestock',
+    'logic',
+    'loneliness',
+    'love',
+    'luck',
+    'luggage',
+
+    'macaroni',
+    'machinery',
+    'magic',
+    'mail',
+    'management',
+    'mankind',
+    'marble',
+    'mathematics',
+    'mayonnaise',
+    'measles',
+    'meat',
+    'metal',
+    'methane',
+    'milk',
+    'money',
+    // 'moose',
+    'mud',
+    'music',
+    'mumps',
+
+    'nature',
+    'news',
+    'nitrogen',
+    'nonsense',
+    'nurture',
+    'nutrition',
+
+    'obedience',
+    'obesity',
+    'oil',
+    'oxygen',
+
+    'paper',
+    'passion',
+    'pasta',
+    'patience',
+    'permission',
+    'physics',
+    'poetry',
+    'pollution',
+    'poverty',
+    'power',
+    'pride',
+    'production',
+    'progress',
+    'pronunciation',
+    'psychology',
+    'publicity',
+    'punctuation',
+
+    'quality',
+    'quantity',
+    'quartz',
+
+    'racism',
+    'rain',
+    'recreation',
+    'relaxation',
+    'reliability',
+    'research',
+    'respect',
+    'revenge',
+    'rice',
+    'rubbish',
+    'rum',
+
+    'safety',
+    'salad',
+    'salt',
+    'sand',
+    'satire',
+    'scenery',
+    'seafood',
+    'seaside',
+    'series',
+    'shame',
+    'sheep',
+    'shopping',
+    'silence',
+    'sleep',
+    // 'slang'
+    'smoke',
+    'smoking',
+    'snow',
+    'soap',
+    'software',
+    'soil',
+    'sorrow',
+    'soup',
+    'spaghetti',
+    'speed',
+    'species',
+    'spelling',
+    'sport',
+    'steam',
+    'strength',
+    'stuff',
+    'stupidity',
+    'success',
+    'sugar',
+    'sunshine',
+    'symmetry',
+
+    'tea',
+    'tennis',
+    'thirst',
+    'thunder',
+    'timber',
+    'time',
+    'toast',
+    'tolerance',
+    'trade',
+    'traffic',
+    'transportation',
+    'travel',
+    'trust',
+
+    'understanding',
+    'underwear',
+    'unemployment',
+    'unity',
+    'usage',
+
+    'validity',
+    'veal',
+    'vegetation',
+    'vegetarianism',
+    'vengeance',
+    'violence',
+    'vision',
+    'vitality',
+
+    'warmth',
+    'water',
+    'wealth',
+    'weather',
+    'weight',
+    'welfare',
+    'wheat',
+    'whiskey',
+    'width',
+    'wildlife',
+    'wine',
+    'wisdom',
+    'wood',
+    'wool',
+    'work',
+
+    'yeast',
+    'yoga',
+
+    'zinc',
+    'zoology'
   ];
 
   /**
    * @description These rules translate from the singular form of a noun to its plural form.
    * @private
    */
+
+  var regex = {
+    plural : {
+      men       : new RegExp( '^(m)en$'    , 'gi' ),
+      people    : new RegExp( '(pe)ople$'  , 'gi' ),
+      children  : new RegExp( '(child)ren$', 'gi' ),
+      tia       : new RegExp( '([ti])a$'   , 'gi' ),
+      analyses  : new RegExp( '((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$','gi' ),
+      hives     : new RegExp( '(hi|ti)ves$'       , 'gi' ),
+      curves    : new RegExp( '(curve)s$'         , 'gi' ),
+      lrves     : new RegExp( '([lr])ves$'        , 'gi' ),
+      foves     : new RegExp( '([^fo])ves$'       , 'gi' ),
+      movies    : new RegExp( '(m)ovies$'         , 'gi' ),
+      aeiouyies : new RegExp( '([^aeiouy]|qu)ies$', 'gi' ),
+      series    : new RegExp( '(s)eries$'         , 'gi' ),
+      xes       : new RegExp( '(x|ch|ss|sh)es$'   , 'gi' ),
+      mice      : new RegExp( '([m|l])ice$'       , 'gi' ),
+      buses     : new RegExp( '(bus)es$'          , 'gi' ),
+      oes       : new RegExp( '(o)es$'            , 'gi' ),
+      shoes     : new RegExp( '(shoe)s$'          , 'gi' ),
+      crises    : new RegExp( '(cris|ax|test)es$' , 'gi' ),
+      octopi    : new RegExp( '(octop|vir)i$'     , 'gi' ),
+      aliases   : new RegExp( '(alias|status)es$' , 'gi' ),
+      summonses : new RegExp( '^(summons)es$'     , 'gi' ),
+      oxen      : new RegExp( '^(ox)en'           , 'gi' ),
+      matrices  : new RegExp( '(matr)ices$'       , 'gi' ),
+      vertices  : new RegExp( '(vert|ind)ices$'   , 'gi' ),
+      feet      : new RegExp( '^feet$'            , 'gi' ),
+      teeth     : new RegExp( '^teeth$'           , 'gi' ),
+      geese     : new RegExp( '^geese$'           , 'gi' ),
+      quizzes   : new RegExp( '(quiz)zes$'        , 'gi' ),
+      whereases : new RegExp( '^(whereas)es$'     , 'gi' ),
+      ss        : new RegExp( 'ss$'               , 'gi' ),
+      s         : new RegExp( 's$'                , 'gi' )
+    },
+
+    singular : {
+      man     : new RegExp( '^(m)an$'               , 'gi' ),
+      person  : new RegExp( '(pe)rson$'             , 'gi' ),
+      child   : new RegExp( '(child)$'              , 'gi' ),
+      ox      : new RegExp( '^(ox)$'                , 'gi' ),
+      axis    : new RegExp( '(ax|test)is$'          , 'gi' ),
+      octopus : new RegExp( '(octop|vir)us$'        , 'gi' ),
+      alias   : new RegExp( '(alias|status)$'       , 'gi' ),
+      summons : new RegExp( '^(summons)$'           , 'gi' ),
+      bus     : new RegExp( '(bu)s$'                , 'gi' ),
+      buffalo : new RegExp( '(buffal|tomat|potat)o$', 'gi' ),
+      tium    : new RegExp( '([ti])um$'             , 'gi' ),
+      sis     : new RegExp( 'sis$'                  , 'gi' ),
+      ffe     : new RegExp( '(?:([^f])fe|([lr])f)$' , 'gi' ),
+      hive    : new RegExp( '(hi|ti)ve$'            , 'gi' ),
+      aeiouyy : new RegExp( '([^aeiouy]|qu)y$'      , 'gi' ),
+      x       : new RegExp( '(x|ch|ss|sh)$'         , 'gi' ),
+      matrix  : new RegExp( '(matr)ix$'             , 'gi' ),
+      vertex  : new RegExp( '(vert|ind)ex$'         , 'gi' ),
+      mouse   : new RegExp( '([m|l])ouse$'          , 'gi' ),
+      foot    : new RegExp( '^foot$'                , 'gi' ),
+      tooth   : new RegExp( '^tooth$'               , 'gi' ),
+      goose   : new RegExp( '^goose$'               , 'gi' ),
+      quiz    : new RegExp( '(quiz)$'               , 'gi' ),
+      whereas : new RegExp( '^(whereas)$'           , 'gi' ),
+      s       : new RegExp( 's$'                    , 'gi' ),
+      common  : new RegExp( '$'                     , 'gi' )
+    }
+  };
+
   var plural_rules = [
 
     // do not replace if its already a plural word
-    [ new RegExp( '(m)en$',      'gi' )],
-    [ new RegExp( '(pe)ople$',   'gi' )],
-    [ new RegExp( '(child)ren$', 'gi' )],
-    [ new RegExp( '([ti])a$',    'gi' )],
-    [ new RegExp( '((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$','gi' )],
-    [ new RegExp( '(hive)s$',           'gi' )],
-    [ new RegExp( '(tive)s$',           'gi' )],
-    [ new RegExp( '(curve)s$',          'gi' )],
-    [ new RegExp( '([lr])ves$',         'gi' )],
-    [ new RegExp( '([^fo])ves$',        'gi' )],
-    [ new RegExp( '([^aeiouy]|qu)ies$', 'gi' )],
-    [ new RegExp( '(s)eries$',          'gi' )],
-    [ new RegExp( '(m)ovies$',          'gi' )],
-    [ new RegExp( '(x|ch|ss|sh)es$',    'gi' )],
-    [ new RegExp( '([m|l])ice$',        'gi' )],
-    [ new RegExp( '(bus)es$',           'gi' )],
-    [ new RegExp( '(o)es$',             'gi' )],
-    [ new RegExp( '(shoe)s$',           'gi' )],
-    [ new RegExp( '(cris|ax|test)es$',  'gi' )],
-    [ new RegExp( '(octop|vir)i$',      'gi' )],
-    [ new RegExp( '(alias|status)es$',  'gi' )],
-    [ new RegExp( '^(ox)en',            'gi' )],
-    [ new RegExp( '(vert|ind)ices$',    'gi' )],
-    [ new RegExp( '(matr)ices$',        'gi' )],
-    [ new RegExp( '(quiz)zes$',         'gi' )],
+    [ regex.plural.men       ],
+    [ regex.plural.people    ],
+    [ regex.plural.children  ],
+    [ regex.plural.tia       ],
+    [ regex.plural.analyses  ],
+    [ regex.plural.hives     ],
+    [ regex.plural.curves    ],
+    [ regex.plural.lrves     ],
+    [ regex.plural.foves     ],
+    [ regex.plural.aeiouyies ],
+    [ regex.plural.series    ],
+    [ regex.plural.movies    ],
+    [ regex.plural.xes       ],
+    [ regex.plural.mice      ],
+    [ regex.plural.buses     ],
+    [ regex.plural.oes       ],
+    [ regex.plural.shoes     ],
+    [ regex.plural.crises    ],
+    [ regex.plural.octopi    ],
+    [ regex.plural.aliases   ],
+    [ regex.plural.summonses ],
+    [ regex.plural.oxen      ],
+    [ regex.plural.matrices  ],
+    [ regex.plural.feet      ],
+    [ regex.plural.teeth     ],
+    [ regex.plural.geese     ],
+    [ regex.plural.quizzes   ],
+    [ regex.plural.whereases ],
 
     // original rule
-    [ new RegExp( '(m)an$', 'gi' ),                 '$1en' ],
-    [ new RegExp( '(pe)rson$', 'gi' ),              '$1ople' ],
-    [ new RegExp( '(child)$', 'gi' ),               '$1ren' ],
-    [ new RegExp( '^(ox)$', 'gi' ),                 '$1en' ],
-    [ new RegExp( '(ax|test)is$', 'gi' ),           '$1es' ],
-    [ new RegExp( '(octop|vir)us$', 'gi' ),         '$1i' ],
-    [ new RegExp( '(alias|status)$', 'gi' ),        '$1es' ],
-    [ new RegExp( '(bu)s$', 'gi' ),                 '$1ses' ],
-    [ new RegExp( '(buffal|tomat|potat)o$', 'gi' ), '$1oes' ],
-    [ new RegExp( '([ti])um$', 'gi' ),              '$1a' ],
-    [ new RegExp( 'sis$', 'gi' ),                   'ses' ],
-    [ new RegExp( '(?:([^f])fe|([lr])f)$', 'gi' ),  '$1$2ves' ],
-    [ new RegExp( '(hive)$', 'gi' ),                '$1s' ],
-    [ new RegExp( '([^aeiouy]|qu)y$', 'gi' ),       '$1ies' ],
-    [ new RegExp( '(x|ch|ss|sh)$', 'gi' ),          '$1es' ],
-    [ new RegExp( '(matr|vert|ind)ix|ex$', 'gi' ),  '$1ices' ],
-    [ new RegExp( '([m|l])ouse$', 'gi' ),           '$1ice' ],
-    [ new RegExp( '(quiz)$', 'gi' ),                '$1zes' ],
+    [ regex.singular.man    , '$1en' ],
+    [ regex.singular.person , '$1ople' ],
+    [ regex.singular.child  , '$1ren' ],
+    [ regex.singular.ox     , '$1en' ],
+    [ regex.singular.axis   , '$1es' ],
+    [ regex.singular.octopus, '$1i' ],
+    [ regex.singular.alias  , '$1es' ],
+    [ regex.singular.summons, '$1es' ],
+    [ regex.singular.bus    , '$1ses' ],
+    [ regex.singular.buffalo, '$1oes' ],
+    [ regex.singular.tium   , '$1a' ],
+    [ regex.singular.sis    , 'ses' ],
+    [ regex.singular.ffe    , '$1$2ves' ],
+    [ regex.singular.hive   , '$1ves' ],
+    [ regex.singular.aeiouyy, '$1ies' ],
+    [ regex.singular.x      , '$1es' ],
+    [ regex.singular.matrix , '$1ices' ],
+    [ regex.singular.vertex , '$1ices' ],
+    [ regex.singular.mouse  , '$1ice' ],
+    [ regex.singular.foot   , 'feet' ],
+    [ regex.singular.tooth  , 'teeth' ],
+    [ regex.singular.goose  , 'geese' ],
+    [ regex.singular.quiz   , '$1zes' ],
+    [ regex.singular.whereas, '$1es' ],
 
-    [ new RegExp( 's$', 'gi' ), 's' ],
-    [ new RegExp( '$', 'gi' ),  's' ]
+    [ regex.singular.s     , 's' ],
+    [ regex.singular.common, 's' ]
   ];
 
   /**
@@ -14526,53 +14927,63 @@ function clone(target) {
   var singular_rules = [
 
     // do not replace if its already a singular word
-    [ new RegExp( '(m)an$',                 'gi' )],
-    [ new RegExp( '(pe)rson$',              'gi' )],
-    [ new RegExp( '(child)$',               'gi' )],
-    [ new RegExp( '^(ox)$',                 'gi' )],
-    [ new RegExp( '(ax|test)is$',           'gi' )],
-    [ new RegExp( '(octop|vir)us$',         'gi' )],
-    [ new RegExp( '(alias|status)$',        'gi' )],
-    [ new RegExp( '(bu)s$',                 'gi' )],
-    [ new RegExp( '(buffal|tomat|potat)o$', 'gi' )],
-    [ new RegExp( '([ti])um$',              'gi' )],
-    [ new RegExp( 'sis$',                   'gi' )],
-    [ new RegExp( '(?:([^f])fe|([lr])f)$',  'gi' )],
-    [ new RegExp( '(hive)$',                'gi' )],
-    [ new RegExp( '([^aeiouy]|qu)y$',       'gi' )],
-    [ new RegExp( '(x|ch|ss|sh)$',          'gi' )],
-    [ new RegExp( '(matr|vert|ind)ix|ex$',  'gi' )],
-    [ new RegExp( '([m|l])ouse$',           'gi' )],
-    [ new RegExp( '(quiz)$',                'gi' )],
+    [ regex.singular.man     ],
+    [ regex.singular.person  ],
+    [ regex.singular.child   ],
+    [ regex.singular.ox      ],
+    [ regex.singular.axis    ],
+    [ regex.singular.octopus ],
+    [ regex.singular.alias   ],
+    [ regex.singular.summons ],
+    [ regex.singular.bus     ],
+    [ regex.singular.buffalo ],
+    [ regex.singular.tium    ],
+    [ regex.singular.sis     ],
+    [ regex.singular.ffe     ],
+    [ regex.singular.hive    ],
+    [ regex.singular.aeiouyy ],
+    [ regex.singular.x       ],
+    [ regex.singular.matrix  ],
+    [ regex.singular.mouse   ],
+    [ regex.singular.foot    ],
+    [ regex.singular.tooth   ],
+    [ regex.singular.goose   ],
+    [ regex.singular.quiz    ],
+    [ regex.singular.whereas ],
 
     // original rule
-    [ new RegExp( '(m)en$', 'gi' ),                                                       '$1an' ],
-    [ new RegExp( '(pe)ople$', 'gi' ),                                                    '$1rson' ],
-    [ new RegExp( '(child)ren$', 'gi' ),                                                  '$1' ],
-    [ new RegExp( '([ti])a$', 'gi' ),                                                     '$1um' ],
-    [ new RegExp( '((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$','gi' ), '$1$2sis' ],
-    [ new RegExp( '(hive)s$', 'gi' ),                                                     '$1' ],
-    [ new RegExp( '(tive)s$', 'gi' ),                                                     '$1' ],
-    [ new RegExp( '(curve)s$', 'gi' ),                                                    '$1' ],
-    [ new RegExp( '([lr])ves$', 'gi' ),                                                   '$1f' ],
-    [ new RegExp( '([^fo])ves$', 'gi' ),                                                  '$1fe' ],
-    [ new RegExp( '(m)ovies$', 'gi' ),                                                    '$1ovie' ],
-    [ new RegExp( '([^aeiouy]|qu)ies$', 'gi' ),                                           '$1y' ],
-    [ new RegExp( '(s)eries$', 'gi' ),                                                    '$1eries' ],
-    [ new RegExp( '(x|ch|ss|sh)es$', 'gi' ),                                              '$1' ],
-    [ new RegExp( '([m|l])ice$', 'gi' ),                                                  '$1ouse' ],
-    [ new RegExp( '(bus)es$', 'gi' ),                                                     '$1' ],
-    [ new RegExp( '(o)es$', 'gi' ),                                                       '$1' ],
-    [ new RegExp( '(shoe)s$', 'gi' ),                                                     '$1' ],
-    [ new RegExp( '(cris|ax|test)es$', 'gi' ),                                            '$1is' ],
-    [ new RegExp( '(octop|vir)i$', 'gi' ),                                                '$1us' ],
-    [ new RegExp( '(alias|status)es$', 'gi' ),                                            '$1' ],
-    [ new RegExp( '^(ox)en', 'gi' ),                                                      '$1' ],
-    [ new RegExp( '(vert|ind)ices$', 'gi' ),                                              '$1ex' ],
-    [ new RegExp( '(matr)ices$', 'gi' ),                                                  '$1ix' ],
-    [ new RegExp( '(quiz)zes$', 'gi' ),                                                   '$1' ],
-    [ new RegExp( 'ss$', 'gi' ),                                                          'ss' ],
-    [ new RegExp( 's$', 'gi' ),                                                           '' ]
+    [ regex.plural.men      , '$1an' ],
+    [ regex.plural.people   , '$1rson' ],
+    [ regex.plural.children , '$1' ],
+    [ regex.plural.tia      , '$1um' ],
+    [ regex.plural.analyses , '$1$2sis' ],
+    [ regex.plural.hives    , '$1ve' ],
+    [ regex.plural.curves   , '$1' ],
+    [ regex.plural.lrves    , '$1f' ],
+    [ regex.plural.foves    , '$1fe' ],
+    [ regex.plural.movies   , '$1ovie' ],
+    [ regex.plural.aeiouyies, '$1y' ],
+    [ regex.plural.series   , '$1eries' ],
+    [ regex.plural.xes      , '$1' ],
+    [ regex.plural.mice     , '$1ouse' ],
+    [ regex.plural.buses    , '$1' ],
+    [ regex.plural.oes      , '$1' ],
+    [ regex.plural.shoes    , '$1' ],
+    [ regex.plural.crises   , '$1is' ],
+    [ regex.plural.octopi   , '$1us' ],
+    [ regex.plural.aliases  , '$1' ],
+    [ regex.plural.summonses, '$1' ],
+    [ regex.plural.oxen     , '$1' ],
+    [ regex.plural.matrices , '$1ix' ],
+    [ regex.plural.vertices , '$1ex' ],
+    [ regex.plural.feet     , 'foot' ],
+    [ regex.plural.teeth    , 'tooth' ],
+    [ regex.plural.geese    , 'goose' ],
+    [ regex.plural.quizzes  , '$1' ],
+    [ regex.plural.whereases, '$1' ],
+
+    [ regex.plural.ss, 'ss' ],
+    [ regex.plural.s , '' ]
   ];
 
   /**
@@ -14715,6 +15126,41 @@ function clone(target) {
     },
 
 
+  /**
+   * This function will pluralize or singularlize a String appropriately based on an integer value
+   * @public
+   * @function
+   * @param {String} str The subject string.
+   * @param {Number} count The number to base pluralization off of.
+   * @param {String} singular Overrides normal output with said String.(optional)
+   * @param {String} plural Overrides normal output with said String.(optional)
+   * @returns {String} English language nouns are returned in the plural or singular form based on the count.
+   * @example
+   *
+   *     var inflection = require( 'inflection' );
+   *
+   *     inflection.inflect( 'people' 1 ); // === 'person'
+   *     inflection.inflect( 'octopi' 1 ); // === 'octopus'
+   *     inflection.inflect( 'Hats' 1 ); // === 'Hat'
+   *     inflection.inflect( 'guys', 1 , 'person' ); // === 'person'
+   *     inflection.inflect( 'person', 2 ); // === 'people'
+   *     inflection.inflect( 'octopus', 2 ); // === 'octopi'
+   *     inflection.inflect( 'Hat', 2 ); // === 'Hats'
+   *     inflection.inflect( 'person', 2, null, 'guys' ); // === 'guys'
+   */
+    inflect : function ( str, count, singular, plural ){
+      count = parseInt( count, 10 );
+
+      if( isNaN( count )) return str;
+
+      if( count === 0 || count > 1 ){
+        return inflector._apply_rules( str, plural_rules, uncountable_words, plural );
+      }else{
+        return inflector._apply_rules( str, singular_rules, uncountable_words, singular );
+      }
+    },
+
+
 
   /**
    * This function adds camelization support to every String object.
@@ -14847,11 +15293,11 @@ function clone(target) {
 
 
   /**
-   * This function adds dasherization support to every String object.
+   * This function replaces underscores with dashes in the string.
    * @public
    * @function
    * @param {String} str The subject string.
-   * @returns {String} Replaces all spaces or underbars with dashes.
+   * @returns {String} Replaces all spaces or underscores with dashes.
    * @example
    *
    *     var inflection = require( 'inflection' );
@@ -15067,7 +15513,7 @@ function clone(target) {
 /**
  * @public
  */
-  inflector.version = '1.3.8';
+  inflector.version = '1.5.1';
 
   return inflector;
 }));
@@ -28862,18 +29308,18 @@ var XRANGEPLAIN = R++;
 src[XRANGEPLAIN] = '[v=\\s]*(' + src[XRANGEIDENTIFIER] + ')' +
                    '(?:\\.(' + src[XRANGEIDENTIFIER] + ')' +
                    '(?:\\.(' + src[XRANGEIDENTIFIER] + ')' +
-                   '(?:(' + src[PRERELEASE] + ')' +
-                   ')?)?)?';
+                   '(?:' + src[PRERELEASE] + ')?' +
+                   src[BUILD] + '?' +
+                   ')?)?';
 
 var XRANGEPLAINLOOSE = R++;
 src[XRANGEPLAINLOOSE] = '[v=\\s]*(' + src[XRANGEIDENTIFIERLOOSE] + ')' +
                         '(?:\\.(' + src[XRANGEIDENTIFIERLOOSE] + ')' +
                         '(?:\\.(' + src[XRANGEIDENTIFIERLOOSE] + ')' +
-                        '(?:(' + src[PRERELEASELOOSE] + ')' +
-                        ')?)?)?';
+                        '(?:' + src[PRERELEASELOOSE] + ')?' +
+                        src[BUILD] + '?' +
+                        ')?)?';
 
-// >=2.x, for example, means >=2.0.0-0
-// <1.x would be the same as "<1.0.0-0", though.
 var XRANGE = R++;
 src[XRANGE] = '^' + src[GTLT] + '\\s*' + src[XRANGEPLAIN] + '$';
 var XRANGELOOSE = R++;
@@ -28970,7 +29416,7 @@ function valid(version, loose) {
 
 exports.clean = clean;
 function clean(version, loose) {
-  var s = parse(version, loose);
+  var s = parse(version.trim().replace(/^[=v]+/, ''), loose);
   return s ? s.version : null;
 }
 
@@ -29079,36 +29525,55 @@ SemVer.prototype.comparePre = function(other) {
 
 // preminor will bump the version up to the next minor release, and immediately
 // down to pre-release. premajor and prepatch work the same way.
-SemVer.prototype.inc = function(release) {
+SemVer.prototype.inc = function(release, identifier) {
   switch (release) {
     case 'premajor':
-      this.inc('major');
-      this.inc('pre');
+      this.prerelease.length = 0;
+      this.patch = 0;
+      this.minor = 0;
+      this.major++;
+      this.inc('pre', identifier);
       break;
     case 'preminor':
-      this.inc('minor');
-      this.inc('pre');
+      this.prerelease.length = 0;
+      this.patch = 0;
+      this.minor++;
+      this.inc('pre', identifier);
       break;
     case 'prepatch':
       // If this is already a prerelease, it will bump to the next version
       // drop any prereleases that might already exist, since they are not
       // relevant at this point.
-      this.prerelease.length = 0
-      this.inc('patch');
-      this.inc('pre');
+      this.prerelease.length = 0;
+      this.inc('patch', identifier);
+      this.inc('pre', identifier);
       break;
     // If the input is a non-prerelease version, this acts the same as
     // prepatch.
     case 'prerelease':
       if (this.prerelease.length === 0)
-        this.inc('patch');
-      this.inc('pre');
+        this.inc('patch', identifier);
+      this.inc('pre', identifier);
       break;
+
     case 'major':
-      this.major++;
-      this.minor = -1;
+      // If this is a pre-major version, bump up to the same major version.
+      // Otherwise increment major.
+      // 1.0.0-5 bumps to 1.0.0
+      // 1.1.0 bumps to 2.0.0
+      if (this.minor !== 0 || this.patch !== 0 || this.prerelease.length === 0)
+        this.major++;
+      this.minor = 0;
+      this.patch = 0;
+      this.prerelease = [];
+      break;
     case 'minor':
-      this.minor++;
+      // If this is a pre-minor version, bump up to the same minor version.
+      // Otherwise increment minor.
+      // 1.2.0-5 bumps to 1.2.0
+      // 1.2.1 bumps to 1.3.0
+      if (this.patch !== 0 || this.prerelease.length === 0)
+        this.minor++;
       this.patch = 0;
       this.prerelease = [];
       break;
@@ -29121,7 +29586,7 @@ SemVer.prototype.inc = function(release) {
         this.patch++;
       this.prerelease = [];
       break;
-    // This probably shouldn't be used publically.
+    // This probably shouldn't be used publicly.
     // 1.0.0 "pre" would become 1.0.0-0 which is the wrong direction.
     case 'pre':
       if (this.prerelease.length === 0)
@@ -29137,6 +29602,15 @@ SemVer.prototype.inc = function(release) {
         if (i === -1) // didn't increment anything
           this.prerelease.push(0);
       }
+      if (identifier) {
+        // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
+        // 1.2.0-beta.fooblz or 1.2.0-beta bumps to 1.2.0-beta.0
+        if (this.prerelease[0] === identifier) {
+          if (isNaN(this.prerelease[1]))
+            this.prerelease = [identifier, 0];
+        } else
+          this.prerelease = [identifier, 0];
+      }
       break;
 
     default:
@@ -29147,9 +29621,14 @@ SemVer.prototype.inc = function(release) {
 };
 
 exports.inc = inc;
-function inc(version, release, loose) {
+function inc(version, release, loose, identifier) {
+  if (typeof(loose) === 'string') {
+    identifier = loose;
+    loose = undefined;
+  }
+
   try {
-    return new SemVer(version, loose).inc(release).version;
+    return new SemVer(version, loose).inc(release, identifier).version;
   } catch (er) {
     return null;
   }
@@ -29242,8 +29721,16 @@ exports.cmp = cmp;
 function cmp(a, op, b, loose) {
   var ret;
   switch (op) {
-    case '===': ret = a === b; break;
-    case '!==': ret = a !== b; break;
+    case '===':
+      if (typeof a === 'object') a = a.version;
+      if (typeof b === 'object') b = b.version;
+      ret = a === b;
+      break;
+    case '!==':
+      if (typeof a === 'object') a = a.version;
+      if (typeof b === 'object') b = b.version;
+      ret = a !== b;
+      break;
     case '': case '=': case '==': ret = eq(a, b, loose); break;
     case '!=': ret = neq(a, b, loose); break;
     case '>': ret = gt(a, b, loose); break;
@@ -29275,6 +29762,8 @@ function Comparator(comp, loose) {
     this.value = '';
   else
     this.value = this.operator + this.semver.version;
+
+  ;
 }
 
 var ANY = {};
@@ -29292,21 +29781,8 @@ Comparator.prototype.parse = function(comp) {
   // if it literally is just '>' or '' then allow anything.
   if (!m[2])
     this.semver = ANY;
-  else {
+  else
     this.semver = new SemVer(m[2], this.loose);
-
-    // <1.2.3-rc DOES allow 1.2.3-beta (has prerelease)
-    // >=1.2.3 DOES NOT allow 1.2.3-beta
-    // <=1.2.3 DOES allow 1.2.3-beta
-    // However, <1.2.3 does NOT allow 1.2.3-beta,
-    // even though `1.2.3-beta < 1.2.3`
-    // The assumption is that the 1.2.3 version has something you
-    // *don't* want, so we push the prerelease down to the minimum.
-    if (this.operator === '<' && !this.semver.prerelease.length) {
-      this.semver.prerelease = ['0'];
-      this.semver.format();
-    }
-  }
 };
 
 Comparator.prototype.inspect = function() {
@@ -29319,8 +29795,14 @@ Comparator.prototype.toString = function() {
 
 Comparator.prototype.test = function(version) {
   ;
-  return (this.semver === ANY) ? true :
-         cmp(version, this.operator, this.semver, this.loose);
+
+  if (this.semver === ANY)
+    return true;
+
+  if (typeof version === 'string')
+    version = new SemVer(version, this.loose);
+
+  return cmp(version, this.operator, this.semver, this.loose);
 };
 
 
@@ -29457,20 +29939,20 @@ function replaceTilde(comp, loose) {
     if (isX(M))
       ret = '';
     else if (isX(m))
-      ret = '>=' + M + '.0.0-0 <' + (+M + 1) + '.0.0-0';
+      ret = '>=' + M + '.0.0 <' + (+M + 1) + '.0.0';
     else if (isX(p))
       // ~1.2 == >=1.2.0- <1.3.0-
-      ret = '>=' + M + '.' + m + '.0-0 <' + M + '.' + (+m + 1) + '.0-0';
+      ret = '>=' + M + '.' + m + '.0 <' + M + '.' + (+m + 1) + '.0';
     else if (pr) {
       ;
       if (pr.charAt(0) !== '-')
         pr = '-' + pr;
       ret = '>=' + M + '.' + m + '.' + p + pr +
-            ' <' + M + '.' + (+m + 1) + '.0-0';
+            ' <' + M + '.' + (+m + 1) + '.0';
     } else
-      // ~1.2.3 == >=1.2.3-0 <1.3.0-0
-      ret = '>=' + M + '.' + m + '.' + p + '-0' +
-            ' <' + M + '.' + (+m + 1) + '.0-0';
+      // ~1.2.3 == >=1.2.3 <1.3.0
+      ret = '>=' + M + '.' + m + '.' + p +
+            ' <' + M + '.' + (+m + 1) + '.0';
 
     ;
     return ret;
@@ -29490,6 +29972,7 @@ function replaceCarets(comp, loose) {
 }
 
 function replaceCaret(comp, loose) {
+  ;
   var r = loose ? re[CARETLOOSE] : re[CARET];
   return comp.replace(r, function(_, M, m, p, pr) {
     ;
@@ -29498,35 +29981,38 @@ function replaceCaret(comp, loose) {
     if (isX(M))
       ret = '';
     else if (isX(m))
-      ret = '>=' + M + '.0.0-0 <' + (+M + 1) + '.0.0-0';
+      ret = '>=' + M + '.0.0 <' + (+M + 1) + '.0.0';
     else if (isX(p)) {
       if (M === '0')
-        ret = '>=' + M + '.' + m + '.0-0 <' + M + '.' + (+m + 1) + '.0-0';
+        ret = '>=' + M + '.' + m + '.0 <' + M + '.' + (+m + 1) + '.0';
       else
-        ret = '>=' + M + '.' + m + '.0-0 <' + (+M + 1) + '.0.0-0';
+        ret = '>=' + M + '.' + m + '.0 <' + (+M + 1) + '.0.0';
     } else if (pr) {
       ;
       if (pr.charAt(0) !== '-')
         pr = '-' + pr;
       if (M === '0') {
         if (m === '0')
-          ret = '=' + M + '.' + m + '.' + p + pr;
+          ret = '>=' + M + '.' + m + '.' + p + pr +
+                ' <' + M + '.' + m + '.' + (+p + 1);
         else
           ret = '>=' + M + '.' + m + '.' + p + pr +
-                ' <' + M + '.' + (+m + 1) + '.0-0';
+                ' <' + M + '.' + (+m + 1) + '.0';
       } else
         ret = '>=' + M + '.' + m + '.' + p + pr +
-              ' <' + (+M + 1) + '.0.0-0';
+              ' <' + (+M + 1) + '.0.0';
     } else {
+      ;
       if (M === '0') {
         if (m === '0')
-          ret = '=' + M + '.' + m + '.' + p;
+          ret = '>=' + M + '.' + m + '.' + p +
+                ' <' + M + '.' + m + '.' + (+p + 1);
         else
-          ret = '>=' + M + '.' + m + '.' + p + '-0' +
-                ' <' + M + '.' + (+m + 1) + '.0-0';
+          ret = '>=' + M + '.' + m + '.' + p +
+                ' <' + M + '.' + (+m + 1) + '.0';
       } else
-        ret = '>=' + M + '.' + m + '.' + p + '-0' +
-              ' <' + (+M + 1) + '.0.0-0';
+        ret = '>=' + M + '.' + m + '.' + p +
+              ' <' + (+M + 1) + '.0.0';
     }
 
     ;
@@ -29554,23 +30040,27 @@ function replaceXRange(comp, loose) {
     if (gtlt === '=' && anyX)
       gtlt = '';
 
-    if (gtlt && anyX) {
-      // replace X with 0, and then append the -0 min-prerelease
-      if (xM)
-        M = 0;
+    if (xM) {
+      if (gtlt === '>' || gtlt === '<') {
+        // nothing is allowed
+        ret = '<0.0.0';
+      } else {
+        // nothing is forbidden
+        ret = '*';
+      }
+    } else if (gtlt && anyX) {
+      // replace X with 0
       if (xm)
         m = 0;
       if (xp)
         p = 0;
 
       if (gtlt === '>') {
-        // >1 => >=2.0.0-0
-        // >1.2 => >=1.3.0-0
-        // >1.2.3 => >= 1.2.4-0
+        // >1 => >=2.0.0
+        // >1.2 => >=1.3.0
+        // >1.2.3 => >= 1.2.4
         gtlt = '>=';
-        if (xM) {
-          // no change
-        } else if (xm) {
+        if (xm) {
           M = +M + 1;
           m = 0;
           p = 0;
@@ -29578,20 +30068,21 @@ function replaceXRange(comp, loose) {
           m = +m + 1;
           p = 0;
         }
+      } else if (gtlt === '<=') {
+        // <=0.7.x is actually <0.8.0, since any 0.7.x should
+        // pass.  Similarly, <=7.x is actually <8.0.0, etc.
+        gtlt = '<'
+        if (xm)
+          M = +M + 1
+        else
+          m = +m + 1
       }
 
-
-      ret = gtlt + M + '.' + m + '.' + p + '-0';
-    } else if (xM) {
-      // allow any
-      ret = '*';
+      ret = gtlt + M + '.' + m + '.' + p;
     } else if (xm) {
-      // append '-0' onto the version, otherwise
-      // '1.x.x' matches '2.0.0-beta', since the tag
-      // *lowers* the version value
-      ret = '>=' + M + '.0.0-0 <' + (+M + 1) + '.0.0-0';
+      ret = '>=' + M + '.0.0 <' + (+M + 1) + '.0.0';
     } else if (xp) {
-      ret = '>=' + M + '.' + m + '.0-0 <' + M + '.' + (+m + 1) + '.0-0';
+      ret = '>=' + M + '.' + m + '.0 <' + M + '.' + (+m + 1) + '.0';
     }
 
     ;
@@ -29610,9 +30101,9 @@ function replaceStars(comp, loose) {
 
 // This function is passed to string.replace(re[HYPHENRANGE])
 // M, m, patch, prerelease, build
-// 1.2 - 3.4.5 => >=1.2.0-0 <=3.4.5
-// 1.2.3 - 3.4 => >=1.2.0-0 <3.5.0-0 Any 3.4.x will do
-// 1.2 - 3.4 => >=1.2.0-0 <3.5.0-0
+// 1.2 - 3.4.5 => >=1.2.0 <=3.4.5
+// 1.2.3 - 3.4 => >=1.2.0 <3.5.0 Any 3.4.x will do
+// 1.2 - 3.4 => >=1.2.0 <3.5.0
 function hyphenReplace($0,
                        from, fM, fm, fp, fpr, fb,
                        to, tM, tm, tp, tpr, tb) {
@@ -29620,18 +30111,18 @@ function hyphenReplace($0,
   if (isX(fM))
     from = '';
   else if (isX(fm))
-    from = '>=' + fM + '.0.0-0';
+    from = '>=' + fM + '.0.0';
   else if (isX(fp))
-    from = '>=' + fM + '.' + fm + '.0-0';
+    from = '>=' + fM + '.' + fm + '.0';
   else
     from = '>=' + from;
 
   if (isX(tM))
     to = '';
   else if (isX(tm))
-    to = '<' + (+tM + 1) + '.0.0-0';
+    to = '<' + (+tM + 1) + '.0.0';
   else if (isX(tp))
-    to = '<' + tM + '.' + (+tm + 1) + '.0-0';
+    to = '<' + tM + '.' + (+tm + 1) + '.0';
   else if (tpr)
     to = '<=' + tM + '.' + tm + '.' + tp + '-' + tpr;
   else
@@ -29645,6 +30136,10 @@ function hyphenReplace($0,
 Range.prototype.test = function(version) {
   if (!version)
     return false;
+
+  if (typeof version === 'string')
+    version = new SemVer(version, this.loose);
+
   for (var i = 0; i < this.set.length; i++) {
     if (testSet(this.set[i], version))
       return true;
@@ -29657,6 +30152,31 @@ function testSet(set, version) {
     if (!set[i].test(version))
       return false;
   }
+
+  if (version.prerelease.length) {
+    // Find the set of versions that are allowed to have prereleases
+    // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
+    // That should allow `1.2.3-pr.2` to pass.
+    // However, `1.2.4-alpha.notready` should NOT be allowed,
+    // even though it's within the range set by the comparators.
+    for (var i = 0; i < set.length; i++) {
+      ;
+      if (set[i].semver === ANY)
+        return true;
+
+      if (set[i].semver.prerelease.length > 0) {
+        var allowed = set[i].semver;
+        if (allowed.major === version.major &&
+            allowed.minor === version.minor &&
+            allowed.patch === version.patch)
+          return true;
+      }
+    }
+
+    // Version has a -pre, but it's not one of the ones we like.
+    return false;
+  }
+
   return true;
 }
 
