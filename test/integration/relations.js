@@ -115,6 +115,14 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('maintains eager loaded column specifications, #510', function() {
+          return new Site({id: 1}).fetch({
+            withRelated: [{'authors': function(qb) {
+              qb.columns('id', 'site_id', 'first_name');
+            }}]
+          }).then(checkTest(this));
+        });
+
       });
 
       describe('Eager Loading - Collections', function() {

@@ -386,6 +386,53 @@ module.exports = {
       }
     }
   },
+  'maintains eager loaded column specifications, #510': {
+    mysql: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        authors: [{
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim'
+        },{
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka'
+        }]
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        authors: [{
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim'
+        },{
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka'
+        }]
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        name: 'knexjs.org',
+        authors: [{
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim'
+        },{
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka'
+        }]
+      }
+    }
+  },
   'eager loads "hasOne" models correctly (sites -> meta)': {
     mysql: {
       result: [{
