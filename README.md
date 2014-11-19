@@ -20,7 +20,7 @@ var knex = require('knex')({client: 'mysql', connection: process.env.MYSQL_DATAB
 var bookshelf = require('bookshelf')(knex);
 
 var User = bookshelf.Model.extend({
-  tableName: 'users'
+  tableName: 'users',
   messages: function() {
     return this.hasMany(Posts);
   }
