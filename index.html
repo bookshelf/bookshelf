@@ -1906,7 +1906,7 @@ new Stories().fetch({
   withRelated: 'author'
 }).tap(function(stories) {
   if (req.withComments) return stories.load(['comments.tags', 'comments.author']);
-}).then(function() {
+}).then(function(stories) {
   console.log(JSON.stringify(stories));
 });
 </code></pre>
