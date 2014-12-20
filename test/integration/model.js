@@ -350,9 +350,13 @@ module.exports = function(bookshelf) {
         return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
           throw new Error('This should not succeed');
         }, function(err) {
-          expect(err.message).to.equal('No rows were affected in the update, did you mean to pass the {method: "insert"} option?');
+          expect(err.message).to.equal('EmptyResponse');
         });
 
+      });
+
+      it('does not error if if the row was not updated but require is false', function() {
+        return new Site({id: 200, name: 'This doesnt exist'}).save({}, {require: false});
       });
 
       it('should not error if updated row was not affected', function() {
