@@ -746,8 +746,8 @@ Story.where({id: 2}).fetch({
       <br />
       A one-to-one relation is a very basic relation, where the <b>model</b> has exactly
       one of another <b>Target</b> model, referenced by a <b>foreignKey</b> in the <b>Target</b> model.
-      By default, the <b>foreignkey</b> is assumed to be the singular form of the current model's <a href="#Model-tableName">tableName</a>,
-      followed by <tt>_id</tt>.
+      By default, the <b>foreignKey</b> is assumed to be the singular form of the current model's <a href="#Model-tableName">tableName</a>,
+      followed by <tt>_id</tt> / <tt>_{{idAttribute}}</tt>.
     </p>
 
 <pre><code>
@@ -784,7 +784,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
       Typically the most common relationship type, a <tt>hasMany</tt> is when the <b>model</b>
       has a "one-to-many" relationship with the <b>Target</b> model or collection. The
       <b>model</b> is referenced by a <b>foreignKey</b> in the <b>Target</b> model, which defaults to the singular form of the current model's
-      <a href="#Model-tableName">tableName</a>, followed by <tt>_id</tt>.
+      <a href="#Model-tableName">tableName</a>, followed by <tt>_id</tt> / <tt>_{{idAttribute}}</tt>.
     </p>
 
     <p id="Model-belongsTo">
@@ -796,7 +796,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
       (and is the <i>one</i> side of that association). In both cases, the <tt>belongsTo</tt>
       relationship is used for a <b>model</b> that is a member of another <b>Target</b> model, referenced by the <b>foreignKey</b> in the current <b>model</b>.
       By default, the <b>foreignKey</b> is assumed to be the singular form of the <b>Target</b> model's <a href="#Model-tableName">tableName</a>,
-      followed by <tt>_id</tt>.
+      followed by <tt>_id</tt> / <tt>_{{idAttribute}}</tt>.
     </p>
 
 <pre><code>
@@ -847,7 +847,7 @@ var User = bookshelf.Model.extend({
 </code></pre>
 
     <p>
-      The default key names in the joining table are the singular versions of the model table names, followed by <tt>_id</tt>.
+      The default key names in the joining table are the singular versions of the model table names, followed by <tt>_id</tt> / <tt>_{{idAttribute}}</tt>.
       So in the above case, the columns in the joining table would be <tt>user_id</tt>, <tt>account_id</tt>, and
       <tt>access</tt>, which is used as an example of how dynamic relations can be formed using different contexts. To
       customize the keys used in, or the <tt>tableName</tt> used for the join table, you may specify them like so:
