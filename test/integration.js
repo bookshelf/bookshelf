@@ -52,6 +52,7 @@ module.exports = function(Bookshelf) {
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);
+      require('./integration/plugins/nested')(bookshelf);
     });
 
   });
