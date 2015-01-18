@@ -30,7 +30,7 @@ module.exports = function (bookshelf) {
     if (CollectionCtor) {
       preventOverwrite(this._collections, name);
       if (_.isPlainObject(CollectionCtor)) {
-        CollectionCtor = this.Model.extend(CollectionCtor, staticProps);
+        CollectionCtor = this.Collection.extend(CollectionCtor, staticProps);
       }
       this._collections[name] = CollectionCtor;
     }
