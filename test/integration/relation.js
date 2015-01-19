@@ -129,16 +129,17 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Account);
+        equal(throughTarget.tableName, 'accounts');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
         var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1 limit 1';
-
+        
         equal(_knex.toString(), sql);
       });
 
@@ -161,10 +162,11 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Account);
+        equal(throughTarget.tableName, 'accounts');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -193,10 +195,11 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Appointment);
-        equal(relatedData.throughTableName, 'appointments');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Appointment);
+        equal(throughTarget.tableName, 'appointments');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
