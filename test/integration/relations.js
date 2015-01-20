@@ -595,6 +595,10 @@ module.exports = function(Bookshelf) {
         it('eager loads belongsTo `through`', function() {
           return new Comment().fetchAll({withRelated: 'blog'}).tap(checkTest(this));
         });
+        
+        it('eager loads belongsTo nested `through`', function() {
+          return new Comment().fetchAll({withRelated: 'site'}).tap(checkTest(this));
+        });
 
       });
 
