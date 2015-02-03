@@ -494,7 +494,8 @@ var Television = bookshelf.Model.extend({
       (to have your model's attributes in <tt>camelCase</tt>,
       but your database's columns in <tt>snake_case</tt>, for example)
       this refers to the name returned by <b>parse</b> (<tt>myId</tt>),
-      not the database column (<tt>my_id</tt>).
+      not the database column (<tt>my_id</tt>). Specify compound primary
+      keys as an array of columns.
     </p>
 
     <p id="Model-id">
