@@ -528,6 +528,14 @@ module.exports = function(bookshelf) {
         return m.destroy();
       });
 
+      it('will throw an error when trying to destroy a non-existent object with {require: true}', function() {
+        var m = new Site({id: 1337})
+        return m.destroy({require: true}).then(function() {
+        }).then(function() {
+          throw Error('No exception thrown');
+        }).catch(bookshelf.NoRowsDeletedError, _.noop);
+      });
+
     });
 
     describe('resetQuery', function() {
