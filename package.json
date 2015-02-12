@@ -19,6 +19,7 @@
     "mysql",
     "postgresql",
     "sqlite",
+    "fdbsql",
     "datamapper",
     "active record"
   ],
