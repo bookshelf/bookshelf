@@ -7,7 +7,8 @@ var drops = [
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
   'users', 'roles', 'photos', 'users_roles', 'info',
   'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
-  'parsed_users', 'tokens', 'thumbnails'
+  'parsed_users', 'tokens', 'thumbnails',
+  'lefts', 'rights', 'lefts_rights'
 ];
 
 module.exports = function(Bookshelf) {
@@ -144,6 +145,19 @@ module.exports = function(Bookshelf) {
       table.increments();
       table.string('parsed_user_id');
       table.string('token');
+    })
+    // 
+    .createTable('lefts', function(table) {
+      table.increments();
+    })
+    .createTable('rights', function(table) {
+      table.increments();
+    })
+    .createTable('lefts_rights', function(table) {
+      table.increments();
+      table.string('parsed_name');
+      table.integer('left_id').notNullable();
+      table.integer('right_id').notNullable();
     });
 
   });
