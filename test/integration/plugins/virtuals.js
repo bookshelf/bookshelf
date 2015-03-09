@@ -1,6 +1,7 @@
 var _         = require('lodash');
 var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
+var expect    = require('chai').expect;
 
 module.exports = function (bookshelf) {
 
@@ -43,6 +44,22 @@ module.exports = function (bookshelf) {
       equal(m.fullName, 'Jack Shmoe');
       equal(m.get('firstName'), 'Jack');
       equal(m.get('lastName'), 'Shmoe');
+    });
+
+    it('defaults virtual properties with no setter to a noop', function () {
+       var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: function () {
+            return this.get('firstName') + ' ' + this.get('lastName');
+          }
+        }
+      }))({fullName: 'Jane Doe'});
+
+      expect(m.attributes.fullName).to.be.undefined;
+
+      m.set('fullName', 'John Doe');
+
+      expect(m.attributes.fullName).to.be.undefined;
     });
 
     it('allows virtual properties to be set and get like normal properties', function () {
