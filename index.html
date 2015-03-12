@@ -636,6 +636,8 @@ var Author = bookshelf.Model.extend({tableName: 'authors'});
 
 var Owner  = bookshelf.Model.extend({tableName: 'owners'});
 
+var Pages  = bookshelf.Model.extend({tableName: 'pages'});
+
 var Book = bookshelf.Model.extend({
   summary: function() {
     return this.hasOne(Summary);
