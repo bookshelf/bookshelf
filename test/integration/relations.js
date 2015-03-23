@@ -264,8 +264,10 @@ module.exports = function(Bookshelf) {
                     });
                 })
               ]);
-            })
-            .then(function(resp) {
+            }).spread(function(site1Admins, site2Admins) {
+              expect(site1Admins).to.equal(site1.related('admins'));
+              expect(site2Admins).to.equal(site2.related('admins'));
+
               expect(site1.related('admins')).to.have.length(2);
               expect(site2.related('admins')).to.have.length(1);
             }).then(function() {
