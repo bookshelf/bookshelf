@@ -47,3 +47,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 });
 ```
+
+## Contributing
+
+To contribute to Bookshelf, read the [contribution documentation](CONTRIBUTING.md) for more information.
