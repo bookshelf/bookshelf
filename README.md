@@ -47,3 +47,22 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 });
 ```
+
+## Development
+
+For development tasks such as testing, you need to clone the repository and install dependencies.
+
+```
+$ git clone git@github.com:tgriesser/bookshelf.git
+$ cd bookshelf
+$ npm install
+```
+
+### Testing
+
+The testing suite requires you to create a [mysql](https://www.mysql.com/) and [postgresql](http://www.postgresql.org/) database named `bookshelf_test`
+
+Once you have done that, you can run the tests
+```
+$ npm test
+```
