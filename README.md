@@ -1,4 +1,4 @@
-# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.png?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
+# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
 
 Bookshelf is a Node.js ORM with support for PostgreSQL, MySQL / MariaDB, and SQLite3.
 
