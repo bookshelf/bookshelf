@@ -13,11 +13,6 @@ module.exports = {
 
   sqlite3: {
     filename: ':memory:'
-  },
-
-  fdbsql: {
-    database: 'bookshelf_test',
-    user: 'bookshelf'
   }
 
 };
