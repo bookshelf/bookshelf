@@ -166,7 +166,7 @@ Bookshelf.initialize = function(knex) {
   };
   Collection.extend = function(protoProps, staticProps){
     this.EmptyError = createError(BookshelfCollection.EmptyError,
-      _.capitalize(protoProps.tableName) + "EmptyError");
+      _.capitalize(protoProps.tableName) + 'EmptyError');
     return require('simple-extend').apply(this, [protoProps, staticProps])
   };
 
