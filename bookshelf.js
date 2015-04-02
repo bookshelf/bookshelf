@@ -21,6 +21,7 @@ Bookshelf.initialize = function(knex) {
   var _          = require('lodash');
   var inherits   = require('inherits');
   var semver     = require('semver');
+  var createError = require('create-error');
 
   // We've supplemented `Events` with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
@@ -149,7 +150,19 @@ Bookshelf.initialize = function(knex) {
   });
   Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
 
-  Model.extend = Collection.extend = require('simple-extend');
+  Model.extend = function(protoProps, staticProps){
+    // Set per-model Error
+    ['NotFoundError', 'NoRowsUpdatedError', 'NoRowsDeletedError'].forEach(function(errorType){
+      this[errorType] = createError(BookshelfModel[errorType],
+      _.capitalize((protoProps.tableName) || '') + errorType);
+    }.bind(this));
+    return require('simple-extend').apply(this, [protoProps, staticProps])
+  };
+  Collection.extend = function(protoProps, staticProps){
+    this.EmptyError = createError(BookshelfCollection.EmptyError,
+      _.capitalize(protoProps.tableName) + "EmptyError");
+    return require('simple-extend').apply(this, [protoProps, staticProps])
+  };
 
   return bookshelf;
 };
