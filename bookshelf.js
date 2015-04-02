@@ -18,10 +18,16 @@ Bookshelf.initialize = function(knex) {
     VERSION: '0.7.9'
   };
 
-  var _          = require('lodash');
-  var inherits   = require('inherits');
-  var semver     = require('semver');
+  var _           = require('lodash');
+  var inherits    = require('inherits');
+  var semver      = require('semver');
   var createError = require('create-error');
+
+  // shim of capitalize to lodash v2.x
+  _.capitalize = _.capitalize || function capitalize(string) {
+    string = baseToString(string);
+    return string && (string.charAt(0).toUpperCase() + string.slice(1));
+  };
 
   // We've supplemented `Events` with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
