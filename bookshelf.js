@@ -25,7 +25,6 @@ Bookshelf.initialize = function(knex) {
 
   // shim of capitalize to lodash v2.x
   _.capitalize = _.capitalize || function capitalize(string) {
-    string = baseToString(string);
     return string && (string.charAt(0).toUpperCase() + string.slice(1));
   };
 
