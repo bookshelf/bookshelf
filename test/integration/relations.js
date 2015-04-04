@@ -42,6 +42,10 @@ module.exports = function(Bookshelf) {
     var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
 
+    var LeftModel   = Models.LeftModel;
+    var RightModel  = Models.RightModel;
+    var JoinModel   = Models.JoinModel;
+
     describe('Bookshelf Relations', function() {
 
       describe('Standard Relations - Models', function() {
@@ -860,6 +864,86 @@ module.exports = function(Bookshelf) {
         });
       });
 
+    });
+
+
+    describe('Issue #578 - lifecycle events on pivot model for belongsToMany().through()', function () {
+
+      // Overrides the `initialize` method on the JoinModel to throw an Error
+      // when the current lifecycleEvent is triggered. Additionally overrides
+      // the Left/Right models `.belongsToMany().through()` configuration with
+      // the overridden JoinModel.
+      function initializeModelsForLifecycleEvent(lifecycleEvent) {
+        JoinModel = JoinModel.extend({
+          initialize: (function (v) {
+            return function () {
+              this.on(lifecycleEvent, function () {
+                throw new Error('`' + lifecycleEvent + '` triggered on JoinModel()');
+              });
+            };
+          }(lifecycleEvent))
+        });
+
+        LeftModel = LeftModel.extend({
+          rights: function () {
+            return this.belongsToMany(RightModel).through(JoinModel);
+          }
+        });
+
+        RightModel = RightModel.extend({
+          lefts: function () {
+            return this.belongsToMany(LeftModel).through(JoinModel).withPivot(['parsedName']);
+          }
+        });
+      };
+
+      // First, initialize the models for the current `lifecycleEvent`, then
+      // step through the entire lifecycle of a JoinModel, returning a promise.
+      function joinModelLifecycleRoutine(lifecycleEvent) {
+        initializeModelsForLifecycleEvent(lifecycleEvent);
+        return (new LeftModel).save().then(function (left) {
+          // creating, saving, created, saved
+          return [left, left.rights().create()];
+        }).spread(function (left, right) {
+          // fetching, fetched
+          return [left, right, right.lefts().fetch()];
+        }).spread(function (left, right, lefts) {
+          // updating, updated
+          return [left, right, left.rights().updatePivot({})];
+        }).spread(function (left, right, relationship) {
+          return (new LeftModel).save().then(function (left) {
+            return [left, right, right.lefts().attach(left)];
+          });
+        }).spread(function (left, right, relationship) {
+          // destroying, destroyed
+          return left.rights().detach(right);
+        });
+      }
+
+      // For each lifecycle event that should be triggered on the JoinModel,
+      // build a test that verifies the expected Error is being thrown by the
+      // JoinModel's lifecycle event handler.
+
+      [
+        'creating',
+        'created',
+        'saving',
+        'saved',
+        'fetching',
+        'fetched',
+        'updating',
+        'updated',
+        'destroying',
+        'destroyed'
+      ].forEach(function (v) {
+        it('should trigger pivot model lifecycle event: ' + v, function () {
+          return joinModelLifecycleRoutine(v).catch(function (err) {
+            expect(err)
+              .to.be.an.instanceOf(Error)
+              .and.to.have.property('message', '`' + v + '` triggered on JoinModel()');
+          });
+        });
+      });
     });
 
   });

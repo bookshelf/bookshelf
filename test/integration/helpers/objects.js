@@ -287,6 +287,49 @@ module.exports = function(Bookshelf) {
     tableName: 'parsed_users',
   });
 
+
+  /**
+   * Issue #578 - lifecycle events on pivot model for belongsToMany().through()
+   *
+   * Here we bootstrap some models involved in a .belongsToMany().through()
+   * relationship. The models are overridden with actual relationship methods
+   * e.g. `lefts: function () { return this.belongsToMany(LeftModel).through(JoinModel) }`
+   * within the tests to ensure the appropriate lifecycle events are being
+   * triggered.
+   */
+
+  var LeftModel = Bookshelf.Model.extend({
+    tableName: 'lefts'
+  });
+
+  var RightModel = Bookshelf.Model.extend({
+    tableName: 'rights'
+  });
+
+  var JoinModel = Bookshelf.Model.extend({
+    tableName: 'lefts_rights',
+    defaults: { parsedName: '' },
+    format: function (attrs) {
+      return _.reduce(attrs, function(memo, val, key) {
+        memo[_.str.underscored(key)] = val;
+        return memo;
+      }, {});
+    },
+    parse: function (attrs) {
+      return _.reduce(attrs, function(memo, val, key) {
+        memo[_.str.camelize(key)] = val;
+        return memo;
+      }, {});
+    },
+    lefts: function() {
+      return this.belongsTo(LeftModel);
+    },
+    rights: function() {
+      return this.belongsTo(RightModel);
+    }
+  });
+
+
   return {
     Models: {
       Site: Site,
@@ -312,7 +355,10 @@ module.exports = function(Bookshelf) {
       Settings: Settings,
       Instance: Instance,
       Hostname: Hostname,
-      Uuid: Uuid
+      Uuid: Uuid,
+      LeftModel: LeftModel,
+      RightModel: RightModel,
+      JoinModel: JoinModel
     }
   };
 
