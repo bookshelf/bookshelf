@@ -37,6 +37,13 @@ module.exports = function(bookshelf) {
         classMethod2: function() { return 'test2'; }
       });
 
+      var OtherUser = bookshelf.Model.extend({
+        idAttribute: 'user_id',
+        getData: function() { return 'test'; }
+      }, {
+        classMethod: function() { return 'test'; }
+      });
+
       it('can be extended', function() {
         var user = new User();
         var subUser = new SubUser();
@@ -61,6 +68,21 @@ module.exports = function(bookshelf) {
       it('doesnt have ommitted Backbone properties', function() {
         expect(User.prototype.changedAttributes).to.be.undefined;
         expect((new User()).changedAttributes).to.be.undefined;
+      });
+
+      it('should have own NotFoundError', function(){
+        expect(User.NotFoundError).to.be.eql(SubUser.NotFoundError);
+        expect(User.NotFoundError).to.not.be.eql(OtherUser.NotFoundError);
+      });
+
+      it('should have own NoRowsUpdatedError', function(){
+        expect(User.NoRowsUpdatedError).to.be.eql(SubUser.NoRowsUpdatedError);
+        expect(User.NoRowsUpdatedError).to.not.be.eql(OtherUser.NoRowsUpdatedError);
+      });
+
+      it('should have own NoRowsDeletedError', function(){
+        expect(User.NoRowsDeletedError).to.be.eql(SubUser.NoRowsDeletedError);
+        expect(User.NoRowsDeletedError).to.not.be.eql(OtherUser.NoRowsDeletedError);
       });
 
     });

@@ -161,12 +161,12 @@ Bookshelf.initialize = function(knex) {
       this[errorType] = createError(BookshelfModel[errorType],
       _.capitalize((protoProps.tableName) || '') + errorType);
     }.bind(this));
-    return require('simple-extend').apply(this, [protoProps, staticProps])
+    return require('simple-extend').apply(this, [protoProps, staticProps]);
   };
   Collection.extend = function(protoProps, staticProps){
     this.EmptyError = createError(BookshelfCollection.EmptyError,
       _.capitalize(protoProps.tableName) + 'EmptyError');
-    return require('simple-extend').apply(this, [protoProps, staticProps])
+    return require('simple-extend').apply(this, [protoProps, staticProps]);
   };
 
   return bookshelf;
