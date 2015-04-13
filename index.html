@@ -2234,7 +2234,7 @@ Bookshelf.transaction(function(t) {
       ], function(info) {
 
         // Some validation could take place here.
-        return new Book(info).save('shelf_id', model.id, {transacting: t});
+        return new Book(info).save({'shelf_id': model.id}, {transacting: t});
       });
     });
 }).then(function(library) {
