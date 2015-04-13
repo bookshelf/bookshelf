@@ -2231,7 +2231,7 @@ Bookshelf.transaction(function(t) {
         {title: 'Canterbury Tales'},
         {title: 'Moby Dick'},
         {title: 'Hamlet'}
-      ], function(model) {
+      ], function(info) {
 
         // Some validation could take place here.
         return new Book(info).save('shelf_id', model.id, {transacting: t});
