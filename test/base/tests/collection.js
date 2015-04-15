@@ -13,6 +13,31 @@ module.exports = function() {
   var CollectionBase = require(path.resolve(basePath + '/lib/base/collection'));
   var ModelBase      = require(path.resolve(basePath + '/lib/base/model'));
 
+  describe('Collection (sorted)', function() {
+
+    var collection;
+    var Collection = CollectionBase.extend({
+      comparator: 'position',
+      model: ModelBase.extend({
+        tableName: 'test_table',
+        idAttribute: 'some_id',
+        invokedMethod: function() {
+          return Promise.resolve(this.id);
+        }
+      })
+    });
+
+    beforeEach(function() {
+      collection = new Collection([{some_id: 1, name: 'Test', position: 1}, {id: 2, name: 'No Id', position: 0}]);
+    });
+
+    it('should properly sort the items based on the comparator', function() {
+      equal(collection.at(0).get('position'), 0);
+      equal(collection.at(1).get('position'), 1);
+    });
+
+  });
+
   describe('Collection', function() {
 
     var collection;
@@ -100,7 +125,7 @@ module.exports = function() {
 
         for (i = 0; i < count; ++i) {
           models.push(new collection.model({
-            some_id: i, 
+            some_id: i,
             name: 'Large-' + i
           }));
         }
@@ -151,6 +176,5 @@ module.exports = function() {
     });
 
   });
-
 
 };
