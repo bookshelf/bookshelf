@@ -155,17 +155,20 @@ Bookshelf.initialize = function(knex) {
   });
   Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
 
+  // Model.extend = require('simple-extend');
+  Collection.extend = require('simple-extend');
   Model.extend = function(protoProps, staticProps){
-    // Set per-model Error
+    if(typeof protoProps === 'undefined') protoProps = {};
+    if(typeof staticProps === 'undefined') staticProps = {};
     ['NotFoundError', 'NoRowsUpdatedError', 'NoRowsDeletedError'].forEach(function(errorType){
-      this[errorType] = createError(BookshelfModel[errorType],
+      staticProps[errorType] = createError(this[errorType],
       _.capitalize((protoProps.tableName) || '') + errorType);
-    }.bind(this));
+    }, this);
     return require('simple-extend').apply(this, [protoProps, staticProps]);
   };
   Collection.extend = function(protoProps, staticProps){
-    this.EmptyError = createError(BookshelfCollection.EmptyError,
-      _.capitalize(protoProps.tableName) + 'EmptyError');
+    if(typeof staticProps === 'undefined') staticProps = {};
+    staticProps.EmptyError = createError(this.EmptyError, 'EmptyError');
     return require('simple-extend').apply(this, [protoProps, staticProps]);
   };
 
