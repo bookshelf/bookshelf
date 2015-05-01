@@ -3,7 +3,7 @@ language: node_js
 
 node_js:
   - '0.10'
-  - '0.11'
+  - '0.12'
 
 before_script:
   - psql -c 'create database bookshelf_test;' -U postgres
@@ -13,6 +13,4 @@ notifications:
   email: false
 
 matrix:
-  allow_failures:
-    - node_js: '0.11'
   fast_finish: true

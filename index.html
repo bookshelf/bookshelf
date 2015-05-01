@@ -27,7 +27,7 @@
   <div id="sidebar" class="interface">
 
     <a class="toc_title" href="#">
-      Bookshelf.js <span class="version">(0.7.9)</span>
+      Bookshelf.js <span class="version">(0.8.0)</span>
     </a>
     <ul class="toc_section">
       <li>&raquo; <a href="http://github.com/tgriesser/bookshelf">GitHub Repository</a></li>
@@ -195,7 +195,7 @@
       and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.7.9 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.8.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2325,6 +2325,25 @@ process.stderr.on('data', function(data) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.8.0</b> &mdash; <small><i>May 1, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.9...0.8.0">Diff</a><br />
+    </p>
+
+    <ul>
+      <li>Dropped Backbone dependency</li>
+      <li>More specific errors throughout, #522</li>
+      <li>Support {require: true} for model.destroy #617</li>
+      <li>Add lifecycle events on pivot models for belongsToMany, .through #578</li>
+      <li>Allows for select/column calls in the query builder closure, #633.</li>
+      <li>Added per-constructor error classes #694 (note: this will not work in CoffeeScript).</li>
+    </ul>
+
+    <b>Breaking changes:</b>
+    <ul>
+      <li>Removed the <tt>__super__</tt> internal property on the constructor, this shouldn't have been something you were relying on anyway.</li>
+    </ul>
+
 
     <p>
       <b class="header">0.7.9</b> &mdash; <small><i>Oct 28, 2014</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.8...0.7.9">Diff</a><br />
