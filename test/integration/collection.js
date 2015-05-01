@@ -34,6 +34,19 @@ module.exports = function(bookshelf) {
     var Role     = Models.Role;
     var Photo    = Models.Photo;
 
+    describe('extend', function() {
+      it ('should have own EmptyError', function() {
+        var Sites = bookshelf.Collection.extend({model: Site});
+        var OtherSites = bookshelf.Collection.extend({model: Site});
+
+        var err = new Sites.EmptyError();
+        expect(Sites.EmptyError).to.not.be.eql(bookshelf.Collection.EmptyError);
+        expect(Sites.EmptyError).to.not.be.eql(OtherSites.EmptyError);
+        expect(Sites.EmptyError).to.not.be.eql(OtherSites.EmptyError);
+        expect(err).to.be.an.instanceof(bookshelf.Collection.EmptyError);
+      });
+    });
+
     describe('fetch', function() {
 
       it ('fetches the models in a collection', function() {
@@ -76,7 +89,7 @@ module.exports = function(bookshelf) {
           .fetchOne({require: true})
           .throw(new Error())
           .catch(function(err) {
-            assert(err instanceof Site.NotFoundError)
+            assert(err instanceof Author.NotFoundError, 'Error is a Site.NotFoundError')
           });
 
       });
