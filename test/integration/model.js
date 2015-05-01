@@ -339,7 +339,7 @@ module.exports = function(bookshelf) {
         return new Site({id: 200, name: 'This doesnt exist'}).save().then(function() {
           throw new Error('This should not succeed');
         }, function(err) {
-          expect(err.message).to.equal('EmptyResponse');
+          expect(err.message).to.equal('No Rows Updated');
         });
 
       });
