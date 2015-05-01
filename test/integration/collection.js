@@ -118,6 +118,20 @@ module.exports = function(bookshelf) {
                 expect(photo.get('imageable_type')).to.equal('sites');
                 expect(photo.get('url')).to.equal('http://image.dev');
               });
+          })
+          // The following is for testing custom columnNames.
+          .then(function() {
+            return new Site({id: 10})
+              .thumbnails()
+              .create({
+                url: 'http://image.dev',
+                caption: 'this is a test image'
+              })
+              .then(function(photo) {
+                expect(photo.get('ImageableId')).to.equal(10);
+                expect(photo.get('ImageableType')).to.equal('sites');
+                expect(photo.get('url')).to.equal('http://image.dev');
+              });
           });
 
       });
@@ -161,14 +175,16 @@ module.exports = function(bookshelf) {
       });
 
       it('can require items in the response', function() {
-        return expect(bookshelf.Collection.extend({tableName: 'posts'})
+        return bookshelf.Collection.extend({tableName: 'posts'})
           .query('where', {id: '1000'})
           .fetch({require: true})
           .catch(function(err) {
-            expect(err.message).to.equal('EmptyError');
+            expect(err.message).to.equal('EmptyResponse');
             throw err;
-          }))
-          .to.be.rejectedWith(bookshelf.Collection.EmptyError);
+          })
+          .catch(bookshelf.Collection.EmptyError, function(err) {
+            expect(err.message).to.equal('EmptyResponse');
+          });
       });
 
     });

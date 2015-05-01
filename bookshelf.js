@@ -1,7 +1,7 @@
-// Bookshelf.js 0.7.2
+// Bookshelf.js 0.7.9
 // ---------------
 
-//     (c) 2013 Tim Griesser
+//     (c) 2014 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
@@ -15,7 +15,7 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.2'
+    VERSION: '0.7.9'
   };
 
   var _          = require('lodash');

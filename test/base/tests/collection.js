@@ -52,16 +52,61 @@ module.exports = function() {
 
     });
 
-    it('should use the `set` method to update the collections, similar to Backbone', function() {
 
-      collection.set([{some_id: 2, name: 'Test'}, {some_id: 3, name: 'Item'}]);
+    describe('#set()', function() {
+      it('should delete old models and add new ones by default', function() {
+        collection.set([{some_id: 1, name: 'Test'}, {some_id: 2, name: 'Item'}]);
+        equal(collection.length, 2);
+        equal(collection.models.length, 2);
+      });
 
-      equal(collection.length, 2);
+      it('should not remove models with {remove: false} option set', function() {
+        collection.set([{some_id: 2, name: 'Item2'}], {remove: false});
 
-      collection.set([{some_id: 2, name: 'Item'}], {remove: false});
+        equal(collection.length, 3);
+      });
 
-      equal(collection.length, 2);
+      it('should not merge new attribute values with {merge: false} option set', function() {
+        collection.set([{some_id: 1, name: 'WontChange'}], {merge: false, parse: true});
 
+        equal(collection.get(1).get('name'), 'Test');
+      });
+
+      it('should accept a single model, not an array', function() {
+        collection.set({some_id: 1, name: 'Changed'});
+        equal(collection.get(1).get('name'), 'Changed');
+      });
+
+      it('should accept Models', function() {
+        var model = new collection.model({
+          some_id: 3,
+          name: 'Changed'
+        });
+        collection.set([model]);
+        equal(collection.get(3).get('name'), 'Changed');
+      });
+
+      it('should not add models with {add: false} option set', function() {
+        collection.set([{some_id: 3, name: 'WontAdd'}], {add: false});
+        equal(collection.get(3), undefined);
+      });
+
+      it('should support large arrays', function() {
+        this.timeout(15000);
+
+        var count = 200000;
+        var models = [];
+        var i;
+
+        for (i = 0; i < count; ++i) {
+          models.push(new collection.model({
+            some_id: i, 
+            name: 'Large-' + i
+          }));
+        }
+        collection.set(models, {add: true, remove: false, merge: false});
+        equal(collection.get(count - 1).get('name'), 'Large-' + (count - 1));
+      });
     });
 
     it('should use the `reset` method, to reset the collection', function() {

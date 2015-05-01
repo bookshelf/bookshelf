@@ -1,15 +1,15 @@
-# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.png?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
+# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
 
 Bookshelf is a Node.js ORM with support for PostgreSQL, MySQL / MariaDB, and SQLite3.
 
-It is built atop the <a href="http://knexjs.org">Knex Query Builder</a>,
+It is built atop the <a href="http://knexjs.org">Knex query builder</a>,
 and is strongly influenced by the Model and Collection foundations of Backbone.js.
 
 It features [transaction support](http://bookshelfjs.org/#Bookshelf-transaction), one-to-one, one-to-many, many-to-many, and polymorphic relations.
 
-For Docs, License, Tests, FAQ, and other information, see: http://bookshelfjs.org.
+For documentation, FAQs, and other information, see: http://bookshelfjs.org.
 
-To suggest a feature, report a bug, or general discussion: http://github.com/tgriesser/bookshelf/issues/
+To suggest a feature, report a bug, or for general discussion: http://github.com/tgriesser/bookshelf/issues/
 
 ## Examples
 
@@ -20,7 +20,7 @@ var knex = require('knex')({client: 'mysql', connection: process.env.MYSQL_DATAB
 var bookshelf = require('bookshelf')(knex);
 
 var User = bookshelf.Model.extend({
-  tableName: 'users'
+  tableName: 'users',
   messages: function() {
     return this.hasMany(Posts);
   }
@@ -47,3 +47,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 });
 ```
+
+## Contributing
+
+To contribute to Bookshelf, read the [contribution documentation](CONTRIBUTING.md) for more information.

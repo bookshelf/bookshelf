@@ -22,23 +22,29 @@ module.exports = function(Bookshelf) {
     var Models      = objs.Models;
 
     // Models
-    var Site       = Models.Site;
-    var SiteMeta   = Models.SiteMeta;
-    var Admin      = Models.Admin;
-    var Author     = Models.Author;
-    var Blog       = Models.Blog;
-    var Post       = Models.Post;
-    var Comment    = Models.Comment;
-    var Tag        = Models.Tag;
-    var User       = Models.User;
-    var Role       = Models.Role;
-    var Photo      = Models.Photo;
-    var Customer   = Models.Customer;
-    var Instance   = Models.Instance;
-    var Hostname   = Models.Hostname;
+    var Site         = Models.Site;
+    var SiteMeta     = Models.SiteMeta;
+    var Admin        = Models.Admin;
+    var Author       = Models.Author;
+    var Blog         = Models.Blog;
+    var Post         = Models.Post;
+    var Comment      = Models.Comment;
+    var Tag          = Models.Tag;
+    var User         = Models.User;
+    var Role         = Models.Role;
+    var Thumbnail    = Models.Thumbnail;
+    var Photo        = Models.Photo;
+    var PhotoParsed  = Models.PhotoParsed;
+    var Customer     = Models.Customer;
+    var Instance     = Models.Instance;
+    var Hostname     = Models.Hostname;
 
     var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
+
+    var LeftModel   = Models.LeftModel;
+    var RightModel  = Models.RightModel;
+    var JoinModel   = Models.JoinModel;
 
     describe('Bookshelf Relations', function() {
 
@@ -110,6 +116,14 @@ module.exports = function(Bookshelf) {
         it('Attaches an empty related model or collection if the `EagerRelation` comes back blank', function() {
           return new Site({id: 3}).fetch({
             withRelated: ['meta', 'blogs', 'authors.posts']
+          }).then(checkTest(this));
+        });
+
+        it('maintains eager loaded column specifications, #510', function() {
+          return new Site({id: 1}).fetch({
+            withRelated: [{'authors': function(qb) {
+              qb.columns('id', 'site_id', 'first_name');
+            }}]
           }).then(checkTest(this));
         });
 
@@ -198,6 +212,34 @@ module.exports = function(Bookshelf) {
           ]);
         });
 
+        it('has an attaching event, which will fail if an error is thrown', function(){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          return admin1.save().then(function() {
+            site1.related('admins').on('attaching', function() {
+              throw new Error('This failed');
+            });
+
+            expect(site1.related('admins').attach(admin1)).to.be.rejected;
+          });
+        });
+
+        it('has an detaching event, which will fail if an error is thrown', function(){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          return admin1.save().then(function() {
+            site1.related('admins').on('detaching', function() {
+              throw new Error('This failed');
+            });
+
+            return site1.related('admins').attach(admin1);
+          }).then(function() {
+            expect(site1.related('admins').detach(admin1)).to.be.rejected;
+          });
+        });
+
         it('provides "attach" for creating or attaching records', function() {
 
           var site1  = new Site({id: 1});
@@ -209,12 +251,27 @@ module.exports = function(Bookshelf) {
           return Promise.all([admin1.save(), admin2.save()])
             .then(function() {
               admin1_id = admin1.id;
+
               return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
-                site2.related('admins').attach(admin2)
+                site2.related('admins').attach(admin2),
+                site1.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 2);
+                    });
+                }),
+                site2.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                })
               ]);
-            })
-            .then(function(resp) {
+            }).spread(function(site1Admins, site2Admins) {
+              expect(site1Admins).to.equal(site1.related('admins'));
+              expect(site2Admins).to.equal(site2.related('admins'));
+
               expect(site1.related('admins')).to.have.length(2);
               expect(site2.related('admins')).to.have.length(1);
             }).then(function() {
@@ -241,15 +298,21 @@ module.exports = function(Bookshelf) {
               return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 1);
                 }),
                 admins2.detach().then(function(c) {
                   expect(admins2).to.have.length(0);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 0);
+                }),
+                admins1.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                }),
+                admins2.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 0);
+                    });
                 })
               ]);
             });
@@ -268,7 +331,19 @@ module.exports = function(Bookshelf) {
               admin1_id = admin1.id;
               return Promise.all([
                 site1.related('admins').attach([admin1, admin2]),
-                site2.related('admins').attach(admin2)
+                site2.related('admins').attach(admin2),
+                site1.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 2);
+                    });
+                }),
+                site2.related('admins').on('attached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                })
               ]);
             })
             .then(function(resp) {
@@ -298,15 +373,21 @@ module.exports = function(Bookshelf) {
               return Promise.all([
                 admins1.detach(admin1_id).then(function(c) {
                   expect(admins1).to.have.length(1);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 1);
                 }),
                 admins2.detach().then(function(c) {
                   expect(admins2).to.have.length(0);
-                  return c.fetch();
-                }).then(function(c) {
-                  equal(c.length, 0);
+                }),
+                admins1.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 1);
+                    });
+                }),
+                admins2.on('detached', function(c) {
+                  return c.fetch()
+                    .then(function(c) {
+                      equal(c.length, 0);
+                    });
                 })
               ]);
             });
@@ -415,6 +496,20 @@ module.exports = function(Bookshelf) {
             .fetch().tap(checkTest(this));
         });
 
+        it('handles morphTo (imageble "authors", PhotoParsed)', function() {
+          return new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+            .imageableParsed()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('has no side effects for morphTo (imageable "authors", PhotoParsed)', function() {
+          var photoParsed = new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+          return photoParsed.imageableParsed().fetch()
+          .then( function() {
+            return photoParsed.fetch()
+          }).then(checkTest(this));
+        });
+
         it('handles morphTo (imageable "sites")', function() {
           return new Photo({imageable_id: 1, imageable_type: 'sites'})
             .imageable()
@@ -431,6 +526,44 @@ module.exports = function(Bookshelf) {
 
         it('eager loads beyond the morphTo, where possible', function() {
           return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
+        });
+
+
+        it('handles morphOne with custom columnNames (thumbnail)', function() {
+          return new Author({id: 1})
+            .thumbnail()
+            .fetch()
+            .tap(checkTest(this));
+        });
+
+        it('handles morphMany with custom columnNames (thumbnail)', function() {
+          return new Site({id: 1})
+            .thumbnails()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('handles morphTo with custom columnNames (imageable "authors")', function() {
+          return new Thumbnail({ImageableId: 1, ImageableType: 'authors'})
+            .imageable()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('handles morphTo with custom columnNames (imageable "sites")', function() {
+          return new Thumbnail({ImageableId: 1, ImageableType: 'sites'})
+            .imageable()
+            .fetch().tap(checkTest(this));
+        });
+
+        it('eager loads morphMany with custom columnNames (sites -> thumbnails)', function() {
+          return new Site().fetchAll({withRelated: ['thumbnails']}).tap(checkTest(this));
+        });
+
+        it('eager loads morphTo with custom columnNames (thumbnails -> imageable)', function() {
+          return Thumbnail.fetchAll({withRelated: ['imageable']}).tap(checkTest(this));
+        });
+
+        it('eager loads beyond the morphTo with custom columnNames, where possible', function() {
+          return Thumbnail.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
       });
@@ -731,6 +864,86 @@ module.exports = function(Bookshelf) {
         });
       });
 
+    });
+
+
+    describe('Issue #578 - lifecycle events on pivot model for belongsToMany().through()', function () {
+
+      // Overrides the `initialize` method on the JoinModel to throw an Error
+      // when the current lifecycleEvent is triggered. Additionally overrides
+      // the Left/Right models `.belongsToMany().through()` configuration with
+      // the overridden JoinModel.
+      function initializeModelsForLifecycleEvent(lifecycleEvent) {
+        JoinModel = JoinModel.extend({
+          initialize: (function (v) {
+            return function () {
+              this.on(lifecycleEvent, function () {
+                throw new Error('`' + lifecycleEvent + '` triggered on JoinModel()');
+              });
+            };
+          }(lifecycleEvent))
+        });
+
+        LeftModel = LeftModel.extend({
+          rights: function () {
+            return this.belongsToMany(RightModel).through(JoinModel);
+          }
+        });
+
+        RightModel = RightModel.extend({
+          lefts: function () {
+            return this.belongsToMany(LeftModel).through(JoinModel).withPivot(['parsedName']);
+          }
+        });
+      };
+
+      // First, initialize the models for the current `lifecycleEvent`, then
+      // step through the entire lifecycle of a JoinModel, returning a promise.
+      function joinModelLifecycleRoutine(lifecycleEvent) {
+        initializeModelsForLifecycleEvent(lifecycleEvent);
+        return (new LeftModel).save().then(function (left) {
+          // creating, saving, created, saved
+          return [left, left.rights().create()];
+        }).spread(function (left, right) {
+          // fetching, fetched
+          return [left, right, right.lefts().fetch()];
+        }).spread(function (left, right, lefts) {
+          // updating, updated
+          return [left, right, left.rights().updatePivot({})];
+        }).spread(function (left, right, relationship) {
+          return (new LeftModel).save().then(function (left) {
+            return [left, right, right.lefts().attach(left)];
+          });
+        }).spread(function (left, right, relationship) {
+          // destroying, destroyed
+          return left.rights().detach(right);
+        });
+      }
+
+      // For each lifecycle event that should be triggered on the JoinModel,
+      // build a test that verifies the expected Error is being thrown by the
+      // JoinModel's lifecycle event handler.
+
+      [
+        'creating',
+        'created',
+        'saving',
+        'saved',
+        'fetching',
+        'fetched',
+        'updating',
+        'updated',
+        'destroying',
+        'destroyed'
+      ].forEach(function (v) {
+        it('should trigger pivot model lifecycle event: ' + v, function () {
+          return joinModelLifecycleRoutine(v).catch(function (err) {
+            expect(err)
+              .to.be.an.instanceOf(Error)
+              .and.to.have.property('message', '`' + v + '` triggered on JoinModel()');
+          });
+        });
+      });
     });
 
   });

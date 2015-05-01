@@ -2,7 +2,7 @@
 // Create a central registry of model/collection constructors to
 // help with the circular reference problem, and for convenience in relations.
 // -----
-module.exports = function (Bookshelf) {
+module.exports = function (bookshelf) {
   'use strict';
   var _ = require('lodash');
 
@@ -10,24 +10,35 @@ module.exports = function (Bookshelf) {
     if (store[name]) throw new Error(name + ' is already defined in the registry');
   }
 
+  bookshelf.registry = bookshelf.registry || {};
+
   // Set up the methods for storing and retrieving models
-  // on the Bookshelf instance.
-  Bookshelf.model = function(name, ModelCtor) {
+  // on the bookshelf instance.
+  bookshelf.model = function(name, ModelCtor, staticProps) {
     this._models = this._models || Object.create(null);
     if (ModelCtor) {
       preventOverwrite(this._models, name);
+      if (_.isPlainObject(ModelCtor)) {
+        ModelCtor = this.Model.extend(ModelCtor, staticProps);
+      }
       this._models[name] = ModelCtor;
     }
-    return this._models[name];
+    return (this._models[name] = this._models[name] || bookshelf.resolve(name));
   };
-  Bookshelf.collection = function(name, CollectionCtor) {
+  bookshelf.collection = function(name, CollectionCtor, staticProps) {
     this._collections = this._collections || Object.create(null);
     if (CollectionCtor) {
       preventOverwrite(this._collections, name);
+      if (_.isPlainObject(CollectionCtor)) {
+        CollectionCtor = this.Collection.extend(CollectionCtor, staticProps);
+      }
       this._collections[name] = CollectionCtor;
     }
-    return this._collections[name];
+    return (this._collections[name] = this._collections[name] || bookshelf.resolve(name));
   };
+
+  // Provide a custom function to resolve the location of a model or collection.
+  bookshelf.resolve = function(name) { return void 0; };
 
   // Check the collection or module caches for a Model or Collection constructor,
   // returning if the input is not an object. Check for a collection first,
@@ -35,17 +46,17 @@ module.exports = function (Bookshelf) {
   // registered model, throwing an error if none are found.
   function resolveModel(input) {
     if (typeof input === 'string') {
-      return Bookshelf.collection(input) || Bookshelf.model(input) || (function() {
+      return bookshelf.collection(input) || bookshelf.model(input) || (function() {
         throw new Error('The model ' + input + ' could not be resolved from the registry plugin.');
       })();
     }
     return input;
   }
 
-  var Model = Bookshelf.Model;
-  var Collection = Bookshelf.Collection;
+  var Model = bookshelf.Model;
+  var Collection = bookshelf.Collection;
 
-  // Re-implement the `Bookshelf.Model` relation methods to include a check for the registered model.
+  // Re-implement the `bookshelf.Model` relation methods to include a check for the registered model.
   _.each(['hasMany', 'hasOne', 'belongsToMany', 'morphOne', 'morphMany', 'belongsTo', 'through'], function(method) {
     var original = Model.prototype[method];
     Model.prototype[method] = function(Target) {

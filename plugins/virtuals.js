@@ -101,8 +101,10 @@ module.exports = function (Bookshelf) {
 
   function setVirtual(value, key) {
     var virtual = this.virtuals && this.virtuals[key];
-    if (virtual && virtual.set) {
-      virtual.set.call(this, value);
+    if (virtual) {
+      if (virtual.set) {
+        virtual.set.call(this, value);
+      }
       return true;
     }
   }
