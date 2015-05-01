@@ -12,5 +12,6 @@
   "supernew": true,
   "sub": true,
   "trailing": true,
+  "proto": true,
   "predef": [ "-Promise" ]
 }

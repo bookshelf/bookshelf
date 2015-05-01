@@ -28,8 +28,7 @@
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
     "lodash": "^3.7.0",
-    "semver": "^4.3.3",
-    "simple-extend": "0.1.0"
+    "semver": "^4.3.3"
   },
   "devDependencies": {
     "chai": "~1.9.1",

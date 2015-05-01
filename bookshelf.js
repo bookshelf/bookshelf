@@ -8,83 +8,76 @@
 var _          = require('lodash');
 var inherits   = require('inherits');
 var semver     = require('semver');
+var helpers    = require('./lib/helpers')
 
-var Bookshelf = function() {
-  return Bookshelf.initialize.apply(null, arguments);
-};
+// We've supplemented `Events` with a `triggerThen`
+// method to allow for asynchronous event handling via promises. We also
+// mix this into the prototypes of the main objects in the library.
+var Events = require('./lib/base/events');
 
-// Constructor for a new `Bookshelf` object, it accepts
-// an active `knex` instance and initializes the appropriate
-// `Model` and `Collection` constructors for use in the current instance.
-Bookshelf.initialize = function(knex) {
+// All core modules required for the bookshelf instance.
+var BookshelfModel      = require('./lib/model');
+var BookshelfCollection = require('./lib/collection');
+var BookshelfRelation   = require('./lib/relation');
+var Errors              = require('./lib/errors');
+
+function Bookshelf(knex) {
   var bookshelf  = {
     VERSION: '0.8.0'
   };
-
-  // We've supplemented `Events` with a `triggerThen`
-  // method to allow for asynchronous event handling via promises. We also
-  // mix this into the prototypes of the main objects in the library.
-  var Events = require('./lib/base/events');
-
-  // All core modules required for the bookshelf instance.
-  var BookshelfModel      = require('./lib/model');
-  var BookshelfCollection = require('./lib/collection');
-  var BookshelfRelation   = require('./lib/relation');
-  var Errors              = require('./lib/errors');
 
   var range = '>=0.6.10 <0.9.0';
   if (!semver.satisfies(knex.VERSION, range)) {
     throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
   }
 
-  var Model = bookshelf.Model = function() {
-    BookshelfModel.apply(this, arguments);
-  };
-  var Collection = bookshelf.Collection = function() {
-    BookshelfCollection.apply(this, arguments);
-  };
-  inherits(Model, BookshelfModel);
-  inherits(Collection, BookshelfCollection);
+  var Model = bookshelf.Model = BookshelfModel.extend({
+    
+    _builder: builderFn,
 
-  _.extend(Model, BookshelfModel);
-  _.extend(Collection, BookshelfCollection);
+    // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
+    // mixing in the correct `builder` method, as well as the `relation` method,
+    // passing in the correct `Model` & `Collection` constructors for later reference.
+    _relation: function(type, Target, options) {
+      if (type !== 'morphTo' && !_.isFunction(Target)) {
+        throw new Error('A valid target model must be defined for the ' +
+          _.result(this, 'tableName') + ' ' + type + ' relation');
+      }
+      return new Relation(type, Target, options);
+    }
 
-  Model.prototype._builder =
-  Collection.prototype._builder = function(tableName) {
-    var builder  = knex(tableName);
-    var instance = this;
-    return builder.on('query', function(data) {
-      instance.trigger('query', data);
-    });
-  };
+  }, {
+
+    forge: forge,
+
+    collection: function(rows, options) {
+      return new Collection((rows || []), _.extend({}, options, {model: this}));
+    },
+
+    fetchAll: function(options) {
+      return this.forge().fetchAll(options); 
+    }
+  })
+
+  var Collection = bookshelf.Collection = BookshelfCollection.extend({
+    
+    _builder: builderFn
+  
+  }, {
+  
+    forge: forge
+  
+  });
 
   // The collection also references the correct `Model`, specified above, for creating
   // new `Model` instances in the collection.
   Collection.prototype.model = Model;
   Model.prototype.Collection = Collection;
 
-  function Relation() {
-    BookshelfRelation.apply(this, arguments);
-  }
-  inherits(Relation, BookshelfRelation);
-  Relation.prototype.Model = Model;
-  Relation.prototype.Collection = Collection;
-
-  // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
-  // mixing in the correct `builder` method, as well as the `relation` method,
-  // passing in the correct `Model` & `Collection` constructors for later reference.
-  Model.prototype._relation = function(type, Target, options) {
-    if (type !== 'morphTo' && !_.isFunction(Target)) {
-      throw new Error('A valid target model must be defined for the ' +
-        _.result(this, 'tableName') + ' ' + type + ' relation');
-    }
-    return new Relation(type, Target, options);
-  };
-
-  // Shortcut for creating a new collection with the current collection.
-  Model.collection = function(rows, options) {
-    return new Collection((rows || []), _.extend({}, options, {model: this}));
-  };
+  var Relation = BookshelfRelation.extend({
+    Model: Model,
+    Collection: Collection
+  })
 
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
   // `Events` object. It also contains the version number, and a `Transaction` method
@@ -126,11 +119,19 @@ Bookshelf.initialize = function(knex) {
   // The `forge` function properly instantiates a new Model or Collection
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
-  Model.forge = Collection.forge = function() {
+  function forge() {
     var inst = Object.create(this.prototype);
     var obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
-  };
+  }
+
+  function builderFn(tableName) {
+    var builder  = knex(tableName);
+    var instance = this;
+    return builder.on('query', function(data) {
+      instance.trigger('query', data);
+    });
+  }
 
   // Attach `where`, `query`, and `fetchAll` as static methods.
   ['where', 'query'].forEach(function(method) {
@@ -140,11 +141,16 @@ Bookshelf.initialize = function(knex) {
       return model[method].apply(model, arguments);
     };
   });
-  Model.fetchAll = function(options) { return this.forge().fetchAll(options); };
-
-  Model.extend = Collection.extend = require('simple-extend');
-
+  
   return bookshelf;
+}
+
+// Constructor for a new `Bookshelf` object, it accepts
+// an active `knex` instance and initializes the appropriate
+// `Model` and `Collection` constructors for use in the current instance.
+Bookshelf.initialize = function(knex) {
+  helpers.warn("Bookshelf.initialize is deprecated, pass knex directly: require('bookshelf')(knex)")
+  return new Bookshelf(knex)
 };
 
 // Finally, export `Bookshelf` to the world.

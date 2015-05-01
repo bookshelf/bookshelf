@@ -36,8 +36,15 @@ module.exports = function(bookshelf) {
         classMethod2: function() { return 'test2'; }
       });
 
+      var OtherUser = bookshelf.Model.extend({
+        idAttribute: 'user_id',
+        getData: function() { return 'test'; }
+      }, {
+        classMethod: function() { return 'test'; }
+      });
+
       it('can be extended', function() {
-        var user = new User();
+        var user = new User({name: "hoge"});
         var subUser = new SubUser();
         expect(user.idAttribute).to.equal('user_id');
         expect(user.getData()).to.equal('test');
@@ -62,6 +69,43 @@ module.exports = function(bookshelf) {
         equal((new User()).changedAttributes, undefined);
       });
 
+      context('should have own errors: name of', function(){
+        it('NotFoundError', function(){
+          var err = new User.NotFoundError();
+          var suberr = new SubUser.NotFoundError();
+          expect(User.NotFoundError).to.not.be.eql(bookshelf.Model.NotFoundError);
+          expect(err).to.be.an.instanceof(bookshelf.Model.NotFoundError);
+          expect(User.NotFoundError).to.not.be.eql(SubUser.NotFoundError);
+          expect(err).to.not.be.an.instanceof(SubUser.NotFoundError);
+          expect(suberr).to.be.an.instanceof(User.NotFoundError);
+          expect(User.NotFoundError).to.not.be.eql(OtherUser.NotFoundError);
+          expect(err).to.not.be.an.instanceof(OtherUser.NotFoundError);
+        });
+
+        it('NoRowsUpdatedError', function(){
+          var err = new User.NoRowsUpdatedError();
+          var suberr = new SubUser.NoRowsUpdatedError();
+          expect(User.NoRowsUpdatedError).to.not.be.eql(bookshelf.Model.NoRowsUpdatedError);
+          expect(err).to.be.an.instanceof(bookshelf.Model.NoRowsUpdatedError);
+          expect(User.NoRowsUpdatedError).to.not.be.eql(SubUser.NoRowsUpdatedError);
+          expect(err).to.not.be.an.instanceof(SubUser.NoRowsUpdatedError);
+          expect(suberr).to.be.an.instanceof(User.NoRowsUpdatedError);
+          expect(User.NoRowsUpdatedError).to.not.be.eql(OtherUser.NoRowsUpdatedError);
+          expect(err).to.not.be.an.instanceof(OtherUser.NoRowsUpdatedError);
+        });
+
+        it('NoRowsDeletedError', function(){
+          var err = new User.NoRowsDeletedError();
+          var suberr = new SubUser.NoRowsDeletedError();
+          expect(User.NoRowsDeletedError).to.not.be.eql(bookshelf.Model.NoRowsDeletedError);
+          expect(err).to.be.an.instanceof(bookshelf.Model.NoRowsDeletedError);
+          expect(User.NoRowsDeletedError).to.not.be.eql(SubUser.NoRowsDeletedError);
+          expect(err).to.not.be.an.instanceof(SubUser.NoRowsDeletedError);
+          expect(suberr).to.be.an.instanceof(User.NoRowsDeletedError);
+          expect(User.NoRowsDeletedError).to.not.be.eql(OtherUser.NoRowsDeletedError);
+          expect(err).to.not.be.an.instanceof(OtherUser.NoRowsDeletedError);
+        });
+      });
     });
 
     describe('forge', function() {
