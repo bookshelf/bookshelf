@@ -220,8 +220,9 @@ module.exports = function(Bookshelf) {
             site1.related('admins').on('attaching', function() {
               throw new Error('This failed');
             });
-
-            expect(site1.related('admins').attach(admin1)).to.be.rejected;
+            return site1.related('admins').attach(admin1);
+          }).throw(new Error()).catch(function(err) {
+            equal(err.message, 'This failed')
           });
         });
 
@@ -236,7 +237,9 @@ module.exports = function(Bookshelf) {
 
             return site1.related('admins').attach(admin1);
           }).then(function() {
-            expect(site1.related('admins').detach(admin1)).to.be.rejected;
+            return site1.related('admins').detach(admin1)
+          }).throw(new Error()).catch(function(err) {
+            equal(err.message, 'This failed')
           });
         });
 
@@ -451,8 +454,7 @@ module.exports = function(Bookshelf) {
           .then(function (relation) {
             throw new Error('this should not happen');
           }).catch(function (err) {
-            expect(err).to.be.ok;
-            expect(err).to.be.an.instanceof(Error);
+            assert(err instanceof Error);
           });
         });
 
@@ -938,9 +940,8 @@ module.exports = function(Bookshelf) {
       ].forEach(function (v) {
         it('should trigger pivot model lifecycle event: ' + v, function () {
           return joinModelLifecycleRoutine(v).catch(function (err) {
-            expect(err)
-              .to.be.an.instanceOf(Error)
-              .and.to.have.property('message', '`' + v + '` triggered on JoinModel()');
+            assert(err instanceof Error)
+            equal(err.message, '`' + v + '` triggered on JoinModel()');
           });
         });
       });

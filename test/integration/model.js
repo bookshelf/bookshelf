@@ -1,10 +1,10 @@
 var _    = require('lodash');
 var uuid = require('node-uuid');
 
-_.str = require('underscore.string');
+var Promise   = global.testPromise;
 
-var Promise = global.testPromise;
-var equal = require('assert').equal;
+var assert    = require('assert')
+var equal     = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
 
 module.exports = function(bookshelf) {
@@ -58,8 +58,8 @@ module.exports = function(bookshelf) {
       });
 
       it('doesnt have ommitted Backbone properties', function() {
-        expect(User.prototype.changedAttributes).to.be.undefined;
-        expect((new User()).changedAttributes).to.be.undefined;
+        equal(User.prototype.changedAttributes, undefined);
+        equal((new User()).changedAttributes, undefined);
       });
 
     });
@@ -214,7 +214,7 @@ module.exports = function(bookshelf) {
           tableName: 'test',
           format: function(attrs) {
             return _.reduce(attrs, function(memo, val, key) {
-              memo[_.str.underscored(key)] = val;
+              memo[_.snakeCase(key)] = val;
               return memo;
             }, {});
           }
@@ -270,13 +270,15 @@ module.exports = function(bookshelf) {
         model.on('fetching', function() {
           throw new Error('This failed');
         });
-        return expect(model.fetch()).to.be.rejected;
+        return model.fetch().throw(new Error('Err')).catch(function(err) {
+          assert(err.message === 'This failed')
+        })
       });
 
       it('allows access to the query builder on the options object in the fetching event', function() {
         var model = new Site({id: 1});
         model.on('fetching', function(model, columns, options) {
-          expect(options.query.whereIn).to.be.a.function;
+          assert(typeof options.query.whereIn === 'function')
         });
         return model.fetch();
       });
@@ -286,8 +288,7 @@ module.exports = function(bookshelf) {
         model.query(function (qb) {
           qb.join('authors', 'authors.site_id', '=', 'sites.id');
         });
-
-        return expect(model.fetch()).to.be.fulfilled;
+        return model.fetch()
       });
 
     });
@@ -511,14 +512,15 @@ module.exports = function(bookshelf) {
           return sync;
         };
         m.on('destroying', function(model, options) {
-          expect(options.query.whereIn).to.be.a.function;
+          assert(typeof options.query.whereIn === "function");
         });
         return m.destroy();
       });
 
       it('will throw an error when trying to destroy a non-existent object with {require: true}', function() {
-        return expect(new Site({id: 1337}).destroy({require: true}))
-          .to.be.rejectedWith(bookshelf.NoRowsDeletedError);
+        return new Site({id: 1337}).destroy({require: true}).catch(function(err) {
+          assert(err instanceof bookshelf.NoRowsDeletedError)
+        })
       });
 
     });
@@ -717,7 +719,7 @@ module.exports = function(bookshelf) {
       it('will determine whether an attribute, or the model has changed', function() {
 
         return new Models.Site({id: 1}).fetch().then(function(site) {
-          expect(site.hasChanged()).to.be.false;
+          equal(site.hasChanged(), false);
           site.set('name', 'Changed site');
           equal(site.hasChanged('name'), true);
           deepEqual(site.changed, {name: 'Changed site'});

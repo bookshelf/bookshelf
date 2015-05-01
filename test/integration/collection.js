@@ -1,4 +1,8 @@
-var Promise = global.testPromise;
+var Promise   = global.testPromise;
+
+var assert    = require('assert')
+var equal     = assert.equal
+var deepEqual = assert.deepEqual
 
 module.exports = function(bookshelf) {
 
@@ -59,17 +63,21 @@ module.exports = function(bookshelf) {
           .query({where: {id: 40}})
           .fetchOne()
           .then(function(model) {
-            expect(model).to.be.null;
+            equal(model, null);
           });
 
       });
 
       it ('follows the typical model options, like require: true', function() {
 
-        return expect(new Site({id:1})
+        return new Site({id:1})
           .authors()
           .query({where: {id: 40}})
-          .fetchOne({require: true})).to.be.rejected;
+          .fetchOne({require: true})
+          .throw(new Error())
+          .catch(function(err) {
+            assert(err instanceof Site.NotFoundError)
+          });
 
       });
 
@@ -79,7 +87,7 @@ module.exports = function(bookshelf) {
 
       it('creates a new instance of Sync', function(){
         var model = new bookshelf.Model();
-        expect(model.sync(model)).to.be.an.instanceOf(require('../../lib/sync'));
+        assert(model.sync(model) instanceof require('../../lib/sync'));
       });
 
     });

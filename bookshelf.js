@@ -1,10 +1,13 @@
-// Bookshelf.js 0.7.9
+// Bookshelf.js 0.8.0
 // ---------------
 
 //     (c) 2014 Tim Griesser
 //     Bookshelf may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://bookshelfjs.org
+var _          = require('lodash');
+var inherits   = require('inherits');
+var semver     = require('semver');
 
 var Bookshelf = function() {
   return Bookshelf.initialize.apply(null, arguments);
@@ -15,12 +18,8 @@ var Bookshelf = function() {
 // `Model` and `Collection` constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   var bookshelf  = {
-    VERSION: '0.7.9'
+    VERSION: '0.8.0'
   };
-
-  var _          = require('lodash');
-  var inherits   = require('inherits');
-  var semver     = require('semver');
 
   // We've supplemented `Events` with a `triggerThen`
   // method to allow for asynchronous event handling via promises. We also
@@ -33,15 +32,7 @@ Bookshelf.initialize = function(knex) {
   var BookshelfRelation   = require('./lib/relation');
   var Errors              = require('./lib/errors');
 
-  // If the knex isn't a `Knex` instance, we'll assume it's
-  // a compatible config object and pass it through to create a new instance.
-  // This behavior is now deprecated.
-  if (_.isPlainObject(knex)) {
-    console.warn('Initializing Bookshelf with a config object is deprecated, please pass an initialized knex.js instance.');
-    knex = require('knex')(knex);
-  }
-
-  var range = '>=0.6.10';
+  var range = '>=0.6.10 <0.9.0';
   if (!semver.satisfies(knex.VERSION, range)) {
     throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
   }
@@ -112,7 +103,9 @@ Bookshelf.initialize = function(knex) {
         try {
           require('./plugins/' + plugin)(this, options);
         } catch (e) {
-          require(plugin)(this, options);
+          if (!process.browser) {
+            require(plugin)(this, options)  
+          }
         }
       } else if (_.isArray(plugin)) {
         _.each(plugin, function (plugin) {

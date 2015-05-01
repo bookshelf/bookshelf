@@ -215,30 +215,14 @@
       or send tweets to <a href="http://twitter.com/tgriesser">@tgriesser</a>.
     </p>
 
-    <p>
-      Bookshelf's dependencies are listed in the <tt>package.json</tt> file, but include
-      <a target="_blank" href="http://backbonejs.org">Backbone.js</a>,
-      <a target="_blank" href="http://lodash.com/">Lo-dash</a>,
-      <a target="_blank" href="https://github.com/petkaantonov/bluebird">bluebird</a>
-      for promise flow control, <a target="_blank" href="http://knexjs.org">Knex.js.</a> as the query
-      builder foundation, and <a target="_blank" href="https://github.com/dreamerslab/node.inflection">inflection</a>
-      for crafting intelligent defaults for related key and table names.
-    </p>
-
-    <p class="warning">
-      Special thanks to <a target="_blank" href="https://twitter.com/taylorotwell">Taylor Otwell</a> and his work
-      on the <a target="_blank" href="http://laravel.com/docs/eloquent">Eloquent ORM</a>, which has heavily
-      influenced the library's design.
-    </p>
-
     <h2 id="introduction">Introduction</h2>
 
     <p>
       Bookshelf aims to provide a simple library for common tasks when querying databases in javascript,
       and forming relations between these objects, taking a lot of ideas from the
       the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.
-      With a <a href="docs/bookshelf.html">concise, literate codebase</a>, Bookshelf is simple to
-      read, understand, and extend. It doesn't force you to use any specific validation scheme,
+      With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. 
+      It doesn't force you to use any specific validation scheme,
       provides flexible and efficient relation/nested-relation loading, and first class transaction support.
       It's a lean Object Relational Mapper, allowing you to drop down to the raw knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.
     </p>
@@ -2770,11 +2754,15 @@ user.fetch({withRelated: ['accounts', {
     </div>
 
   </div>
-  <script src="docs/assets/highlight.min.js"></script>
   <script src="docs/assets/ga.js" charset="utf-8"></script>
-  <script src="docs/assets/jquery.min.js"></script>
-  <script src="browser/knex.js"></script>
-  <script src="browser/bookshelf.js"></script>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+  <script src="docs/assets/inflection.min.js"></script>
+  <script src="docs/assets/knex.min.js"></script>
+  <script src="build/bookshelf.js"></script>
 
   <script>
   hljs.configure({

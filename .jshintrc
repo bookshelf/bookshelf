@@ -1,9 +1,11 @@
 {
+  "asi": true,
   "boss": true,
   "browser": true,
   "expr": true,
   "eqnull": true,
   "latedef": false,
+  "laxcomma": true,
   "newcap": false,
   "node": true,
   "strict": false,

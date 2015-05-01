@@ -4,10 +4,9 @@
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
+    "build": "./scripts/build.sh",
     "jshint": "jshint bookshelf.js lib/*",
-    "test": "mocha -b -t 5000 --check-leaks -R spec test/index.js",
-    "release:patch": "npm run jshint && npm test && gulp build && gulp bump --type patch && gulp release",
-    "release:minor": "npm run jshint && npm test && gulp build && gulp bump --type minor && gulp release"
+    "test": "mocha -b -t 5000 --check-leaks -R spec test/index.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -24,21 +23,17 @@
   ],
   "dependencies": {
     "bluebird": "^2.9.4",
-    "lodash": "^3.7.0",
+    "chalk": "^1.0.0",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
-    "semver": "^4.1.0",
+    "lodash": "^3.7.0",
+    "semver": "^4.3.3",
     "simple-extend": "0.1.0"
   },
   "devDependencies": {
     "chai": "~1.9.1",
-    "chai-as-promised": "~4.1.0",
-    "gulp": "^3.6.2",
-    "gulp-bump": "^0.1.8",
-    "gulp-git": "^0.5.3",
-    "gulp-shell": "^0.2.5",
-    "jshint": "~2.5.1",
+    "jshint": "~2.7.0",
     "knex": "^0.8.0",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",
@@ -47,9 +42,7 @@
     "pg": "^4.3.0",
     "sinon": "^1.11.1",
     "sinon-chai": "^2.6.0",
-    "sqlite3": "^3.0.2",
-    "through": "^2.3.4",
-    "underscore.string": "~2.3.1"
+    "sqlite3": "^3.0.5"
   },
   "author": {
     "name": "Tim Griesser",

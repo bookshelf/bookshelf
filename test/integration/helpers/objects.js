@@ -3,7 +3,6 @@
 module.exports = function(Bookshelf) {
 
   var _ = require('lodash');
-  _.str = require('underscore.string');
 
   function _parsed (attributes) {
     var parsed = {};
@@ -264,12 +263,12 @@ module.exports = function(Bookshelf) {
   var ParsedModel = Bookshelf.Model.extend({
     format: function (attrs) {
       return _.transform(attrs, function (result, val, key) {
-        result[_.str.underscored(key)] = val;
+        result[_.snakeCase(key)] = val;
       });
     },
     parse: function (attrs) {
       return _.transform(attrs, function (result, val, key) {
-        result[_.str.camelize(key)] = val;
+        result[_.camelCase(key)] = val;
       });
     }
   });
@@ -311,13 +310,13 @@ module.exports = function(Bookshelf) {
     defaults: { parsedName: '' },
     format: function (attrs) {
       return _.reduce(attrs, function(memo, val, key) {
-        memo[_.str.underscored(key)] = val;
+        memo[_.snakeCase(key)] = val;
         return memo;
       }, {});
     },
     parse: function (attrs) {
       return _.reduce(attrs, function(memo, val, key) {
-        memo[_.str.camelize(key)] = val;
+        memo[_.camelCase(key)] = val;
         return memo;
       }, {});
     },

@@ -1,4 +1,4 @@
-var Promise = require('bluebird/js/main/promise')();
+var Promise = require('bluebird')
 var helpers = require('../helpers')
 
 Promise.prototype.yield = function() {
@@ -18,4 +18,4 @@ Promise.prototype.exec = function() {
   return this.nodeify.apply(this, arguments);
 };
 
-module.exports = Promise;
+module.exports = Promise
