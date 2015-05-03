@@ -3312,6 +3312,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Returns an object containing a shallow copy of the model attributes,
 	// along with the `toJSON` value of any relations,
 	// unless `{shallow: true}` is passed in the `options`.
+	// Also includes _pivot_ keys for relations unless `{omitPivot: true}`
+	// is passed in `options`.
 	ModelBase.prototype.toJSON = function(options) {
 	  var attrs = _.clone(this.attributes);
 	  if (options && options.shallow) return attrs;
@@ -3320,6 +3322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var relation = relations[key];
 	    attrs[key] = relation.toJSON ? relation.toJSON(options) : relation;
 	  }
+	  if (options && options.omitPivot) return attrs;
 	  if (this.pivot) {
 	    var pivot = this.pivot.attributes;
 	    for (key in pivot) {
