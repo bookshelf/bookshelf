@@ -280,19 +280,16 @@ var User = bookshelf.Model.extend({
   <p>
     This initialization should likely only ever happen once in your application, as it creates a connection pool for the current database, you should use the <tt>bookshelf</tt> instance returned throughout your library.
 
-    You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow if you're using <b>express.js</b> is to set the client as a property on the app instance when your application starts, so you can easily reference it later:
+    You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:
   </p>
 
 <pre><code>
-// When the app starts
-var app = express();
+// In a file named something like bookshelf.js
 var knex = require('knex')(dbConfig);
-var bookshelf = require('bookshelf')(knex);
-
-app.set('bookshelf', bookshelf);
+module.exports require('bookshelf')(knex);
 
 // elsewhere, to use the bookshelf client:
-var bookshelf = app.get('bookshelf');
+var bookshelf = require('./bookshelf');
 
 var Post = bookshelf.Model.extend({
   // ...
