@@ -76,7 +76,7 @@ module.exports = function (Bookshelf) {
   _.each(modelMethods, function(method) {
     Model.prototype[method] = function() {
       var args = _.toArray(arguments);
-      args.unshift(_.extend({}, this.attributes, getVirtuals(this)));
+      args.unshift(_.extend({}, this.toJSON(), getVirtuals(this)));
       return _[method].apply(_, args);
     };
   });
