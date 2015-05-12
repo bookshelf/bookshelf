@@ -197,7 +197,7 @@
       and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.8.0 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.8.1 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2324,6 +2324,16 @@ process.stderr.on('data', function(data) {
     </p>
 
     <h2 id="changelog">Change Log</h2>
+
+    <p>
+      <b class="header">0.8.1</b> &mdash; <small><i>May 12, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.8.0...0.8.1">Diff</a><br />
+    </p>
+
+    <ul>
+      <li>Fix for regression in <tt>initialize</tt> not being called in Collection constructor, #737.</li>
+      <li>Fix for regression, removing <tt>omitPivot</tt> in 0.8 #721</li>
+      <li>Added <tt>serialize</tt>, a method which is easy to override and contains the toJSON logic.</li>
+    </ul>
 
     <p>
       <b class="header">0.8.0</b> &mdash; <small><i>May 1, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.7.9...0.8.0">Diff</a><br />

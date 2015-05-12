@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var path = require('path');
 
 module.exports = function (Bookshelf) {
 
@@ -17,7 +18,7 @@ module.exports = function (Bookshelf) {
 
     it('can be the path to a plugin', function () {
       var plugin = require('./helpers/plugin');
-      Bookshelf.plugin('./test/integration/helpers/plugin', options);
+      Bookshelf.plugin(path.resolve(__dirname, 'helpers/plugin'), options);
       expect(plugin).to.have.been.calledWith(Bookshelf, options);
     });
 
