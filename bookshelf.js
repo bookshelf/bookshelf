@@ -1,4 +1,4 @@
-// Bookshelf.js 0.8.0
+// Bookshelf.js 0.8.1
 // ---------------
 
 //     (c) 2014 Tim Griesser

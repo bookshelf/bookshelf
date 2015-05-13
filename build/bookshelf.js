@@ -7,7 +7,7 @@
 		exports["Bookshelf"] = factory(require("lodash"), require("inflection"), require("bluebird"));
 	else
 		root["Bookshelf"] = factory(root["_"], root["inflection"], root["Promise"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_12__, __WEBPACK_EXTERNAL_MODULE_23__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_13__, __WEBPACK_EXTERNAL_MODULE_24__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,32 +54,38 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Bookshelf.js 0.8.0
+	// Bookshelf.js 0.8.1
 	// ---------------
 
 	//     (c) 2014 Tim Griesser
 	//     Bookshelf may be freely distributed under the MIT license.
 	//     For all details and documentation:
 	//     http://bookshelfjs.org
-	var _          = __webpack_require__(1);
-	var inherits   = __webpack_require__(13);
-	var semver     = __webpack_require__(14);
-	var helpers    = __webpack_require__(2)
+	module.exports = __webpack_require__(1)
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _          = __webpack_require__(2);
+	var inherits   = __webpack_require__(14);
+	var semver     = __webpack_require__(21);
+	var helpers    = __webpack_require__(3)
 
 	// We've supplemented `Events` with a `triggerThen`
 	// method to allow for asynchronous event handling via promises. We also
 	// mix this into the prototypes of the main objects in the library.
-	var Events = __webpack_require__(3);
+	var Events = __webpack_require__(4);
 
 	// All core modules required for the bookshelf instance.
-	var BookshelfModel      = __webpack_require__(4);
-	var BookshelfCollection = __webpack_require__(5);
-	var BookshelfRelation   = __webpack_require__(6);
-	var Errors              = __webpack_require__(7);
+	var BookshelfModel      = __webpack_require__(5);
+	var BookshelfCollection = __webpack_require__(6);
+	var BookshelfRelation   = __webpack_require__(7);
+	var Errors              = __webpack_require__(8);
 
 	function Bookshelf(knex) {
 	  var bookshelf  = {
-	    VERSION: '0.8.0'
+	    VERSION: '0.8.1'
 	  };
 
 	  var range = '>=0.6.10 <0.9.0';
@@ -150,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    plugin: function(plugin, options) {
 	      if (_.isString(plugin)) {
 	        try {
-	          __webpack_require__(8)("./" + plugin)(this, options);
+	          __webpack_require__(9)("./" + plugin)(this, options);
 	        } catch (e) {
 	          if (false) {
 	            require(plugin)(this, options)  
@@ -214,19 +220,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Helpers
 	// ---------------
-	var _     = __webpack_require__(1);
-	var chalk = __webpack_require__(21)
+	var _     = __webpack_require__(2);
+	var chalk = __webpack_require__(23)
 
 	var helpers = {
 
@@ -292,16 +298,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = helpers
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Events
 	// ---------------
 
 	var Promise      = __webpack_require__(15);
-	var inherits     = __webpack_require__(13);
+	var inherits     = __webpack_require__(14);
 	var EventEmitter = __webpack_require__(22).EventEmitter;
-	var _            = __webpack_require__(1);
+	var _            = __webpack_require__(2);
 
 	function Events() {
 	  EventEmitter.apply(this, arguments);
@@ -390,18 +396,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Events;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Model
 	// ---------------
-	var _              = __webpack_require__(1);
-	var createError    = __webpack_require__(24)
+	var _              = __webpack_require__(2);
+	var createError    = __webpack_require__(25)
 
 	var Sync           = __webpack_require__(16);
-	var Helpers        = __webpack_require__(2);
+	var Helpers        = __webpack_require__(3);
 	var EagerRelation  = __webpack_require__(17);
-	var Errors         = __webpack_require__(7);
+	var Errors         = __webpack_require__(8);
 
 	var ModelBase      = __webpack_require__(18);
 	var Promise        = __webpack_require__(15);
@@ -715,21 +721,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Collection
 	// ---------------
-	var _              = __webpack_require__(1);
+	var _              = __webpack_require__(2);
 
 	var Sync           = __webpack_require__(16);
-	var Helpers        = __webpack_require__(2);
+	var Helpers        = __webpack_require__(3);
 	var EagerRelation  = __webpack_require__(17);
-	var Errors         = __webpack_require__(7);
+	var Errors         = __webpack_require__(8);
 
 	var CollectionBase = __webpack_require__(19);
 	var Promise        = __webpack_require__(15);
-	var createError    = __webpack_require__(24);
+	var createError    = __webpack_require__(25);
 
 	var BookshelfCollection = CollectionBase.extend({
 
@@ -866,16 +872,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = BookshelfCollection;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Relation
 	// ---------------
-	var _          = __webpack_require__(1);
-	var inherits   = __webpack_require__(13);
-	var inflection = __webpack_require__(12);
+	var _          = __webpack_require__(2);
+	var inherits   = __webpack_require__(14);
+	var inflection = __webpack_require__(13);
 
-	var Helpers      = __webpack_require__(2);
+	var Helpers      = __webpack_require__(3);
 	var ModelBase    = __webpack_require__(18);
 	var RelationBase = __webpack_require__(20);
 	var Promise      = __webpack_require__(15);
@@ -1402,10 +1408,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createError = __webpack_require__(24);
+	var createError = __webpack_require__(25);
 
 	module.exports = {
 
@@ -1426,16 +1432,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./registry": 9,
-		"./registry.js": 9,
-		"./virtuals": 10,
-		"./virtuals.js": 10,
-		"./visibility": 11,
-		"./visibility.js": 11
+		"./registry": 10,
+		"./registry.js": 10,
+		"./virtuals": 11,
+		"./virtuals.js": 11,
+		"./visibility": 12,
+		"./visibility.js": 12
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -1448,11 +1454,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 8;
+	webpackContext.id = 9;
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Registry Plugin -
@@ -1461,7 +1467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// -----
 	module.exports = function (bookshelf) {
 	  'use strict';
-	  var _ = __webpack_require__(1);
+	  var _ = __webpack_require__(2);
 
 	  function preventOverwrite(store, name) {
 	    if (store[name]) throw new Error(name + ' is already defined in the registry');
@@ -1540,7 +1546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Virtuals Plugin
@@ -1548,7 +1554,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// -----
 	module.exports = function (Bookshelf) {
 	  "use strict";
-	  var _         = __webpack_require__(1);
+	  var _         = __webpack_require__(2);
 	  var proto     = Bookshelf.Model.prototype;
 
 	  var Model = Bookshelf.Model.extend({
@@ -1658,7 +1664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Visibility plugin -
@@ -1666,7 +1672,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// -----
 	module.exports = function(Bookshelf) {
 	  "use strict";
-	  var _      = __webpack_require__(1);
+	  var _      = __webpack_require__(2);
 	  var proto  = Bookshelf.Model.prototype;
 	  var toJSON = proto.toJSON;
 
@@ -1710,13 +1716,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_13__;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	if (typeof Object.create === 'function') {
@@ -1745,7 +1751,956 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Promise = __webpack_require__(24)
+	var helpers = __webpack_require__(3)
+
+	Promise.prototype.yield = function() {
+	  helpers.deprecate('.yield', '.return')
+	  return this.return.apply(this, arguments);
+	}
+	Promise.prototype.ensure = function() {
+	  helpers.deprecate('.ensure', '.finally')
+	  return this.finally.apply(this, arguments);
+	}
+	Promise.prototype.otherwise = function() {
+	  helpers.deprecate('.otherwise', '.catch')
+	  return this.catch.apply(this, arguments);
+	}
+	Promise.prototype.exec = function() {
+	  helpers.deprecate('bookshelf.exec', 'bookshelf.asCallback')
+	  return this.nodeify.apply(this, arguments);
+	};
+
+	module.exports = Promise
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Sync
+	// ---------------
+	var _       = __webpack_require__(2);
+	var Promise = __webpack_require__(15);
+
+	// Sync is the dispatcher for any database queries,
+	// taking the "syncing" `model` or `collection` being queried, along with
+	// a hash of options that are used in the various query methods.
+	// If the `transacting` option is set, the query is assumed to be
+	// part of a transaction, and this information is passed along to `Knex`.
+	var Sync = function(syncing, options) {
+	  options = options || {};
+	  this.query   = syncing.query();
+	  this.syncing = syncing.resetQuery();
+	  this.options = options;
+	  if (options.debug) this.query.debug();
+	  if (options.transacting) this.query.transacting(options.transacting);
+	};
+
+	_.extend(Sync.prototype, {
+
+	  // Prefix all keys of the passed in object with the
+	  // current table name
+	  prefixFields: function(fields) {
+	    var tableName = this.syncing.tableName;
+	    var prefixed = {};
+	    for (var key in fields) {
+	      prefixed[tableName + '.' + key] = fields[key];
+	    }
+	    return prefixed;
+	  },
+
+	  // Select the first item from the database - only used by models.
+	  first: Promise.method(function() {
+	    this.query.where(this.prefixFields(this.syncing.format(
+	      _.extend(Object.create(null), this.syncing.attributes)
+	    ))).limit(1);
+	    return this.select();
+	  }),
+
+	  // Runs a `select` query on the database, adding any necessary relational
+	  // constraints, resetting the query when complete. If there are results and
+	  // eager loaded relations, those are fetched and returned on the model before
+	  // the promise is resolved. Any `success` handler passed in the
+	  // options will be called - used by both models & collections.
+	  select: Promise.method(function() {
+	    var knex           = this.query
+	      , options        = this.options
+	      , relatedData    = this.syncing.relatedData
+	      , columnsInQuery = _.some(knex._statements, {grouping:'columns'})
+	      , columns;
+
+	    if (!relatedData) {
+	      columns = options.columns;
+	      // Call the function, if one exists, to constrain the eager loaded query.
+	      if (options._beforeFn) options._beforeFn.call(knex, knex);
+	      if (!_.isArray(columns)) {
+	        columns = columns ? [columns] :
+	          // if columns have been selected in a query closure, use them.
+	          // any user who does this is responsible for prefixing each
+	          // selected column with the correct table name. this will also
+	          // break withRelated queries if the dependent fkey fields are not
+	          // manually included. this is a temporary hack which will be
+	          // replaced by an upcoming rewrite.
+	          columnsInQuery ? [] : [_.result(this.syncing, 'tableName') + '.*'];
+	      }
+	    }
+
+	    // Set the query builder on the options, in-case we need to
+	    // access in the `fetching` event handlers.
+	    options.query = knex;
+
+	    return Promise.bind(this).then(function () {
+	      var fks = {}
+	        , through;
+
+	      // Inject all appropriate select costraints dealing with the relation
+	      // into the `knex` query builder for the current instance.
+	      if (relatedData) {
+	        if (relatedData.throughTarget) {
+	          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
+	          through = new relatedData.throughTarget(fks);
+	          return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
+	            .then(function () {
+	              relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+	              relatedData.selectConstraints(knex, options);
+	            });
+	        } else {
+	          relatedData.selectConstraints(knex, options);
+	        }
+	      }
+	    }).then(function () {
+	      return this.syncing.triggerThen('fetching', this.syncing, columns, options);
+	    }).then(function() {
+	      return knex.select(columns);
+	    });
+	  }),
+
+	  // Issues an `insert` command on the query - only used by models.
+	  insert: Promise.method(function() {
+	    var syncing = this.syncing;
+	    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+	  }),
+
+	  // Issues an `update` command on the query - only used by models.
+	  update: Promise.method(function(attrs) {
+	    var syncing = this.syncing, query = this.query;
+	    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+	    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
+	      throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
+	    }
+	    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+	  }),
+
+	  // Issues a `delete` command on the query.
+	  del: Promise.method(function() {
+	    var query = this.query, syncing = this.syncing;
+	    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+	    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
+	      throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
+	    }
+	    return this.query.del();
+	  })
+
+	});
+
+	module.exports = Sync;
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// EagerRelation
+	// ---------------
+	var _         = __webpack_require__(2);
+	var inherits  = __webpack_require__(14);
+
+	var Helpers   = __webpack_require__(3);
+	var Promise   = __webpack_require__(15);
+	var EagerBase = __webpack_require__(26);
+
+	// An `EagerRelation` object temporarily stores the models from an eager load,
+	// and handles matching eager loaded objects with their parent(s). The `tempModel`
+	// is only used to retrieve the value of the relation method, to know the constrains
+	// for the eager query.
+	function EagerRelation() {
+	  EagerBase.apply(this, arguments);
+	}
+	inherits(EagerRelation, EagerBase);
+
+	_.extend(EagerRelation.prototype, {
+
+	  // Handles an eager loaded fetch, passing the name of the item we're fetching for,
+	  // and any options needed for the current fetch.
+	  eagerFetch: Promise.method(function(relationName, handled, options) {
+	    var relatedData = handled.relatedData;
+
+	    // skip eager loading for rows where the foreign key isn't set
+	    if (relatedData.parentFk === null) return;
+
+	    if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
+
+	    return handled
+	      .sync(_.extend(options, {parentResponse: this.parentResponse}))
+	      .select()
+	      .bind(this)
+	      .tap(function(response) {
+	        return this._eagerLoadHelper(response, relationName, handled, _.omit(options, 'parentResponse'));
+	      });
+	  }),
+
+	  // Special handler for the eager loaded morph-to relations, this handles
+	  // the fact that there are several potential models that we need to be fetching against.
+	  // pairing them up onto a single response for the eager loading.
+	  morphToFetch: Promise.method(function(relationName, relatedData, options) {
+	    var groups = _.groupBy(this.parent, function(m) {
+	      var typeKeyName = relatedData.columnNames && relatedData.columnNames[0] ? relatedData.columnNames[0] : relatedData.morphName + '_type';
+	      return m.get(typeKeyName);
+	    });
+	    var pending = _.reduce(groups, function(memo, val, group) {
+	      var Target = Helpers.morphCandidate(relatedData.candidates, group);
+	      var target = new Target();
+	      var idKeyName = relatedData.columnNames && relatedData.columnNames[1] ? relatedData.columnNames[1] : relatedData.morphName + '_id';
+	      memo.push(target
+	        .query('whereIn',
+	          _.result(target, 'idAttribute'),
+	          _.uniq(_.invoke(groups[group], 'get', idKeyName))
+	        )
+	        .sync(options)
+	        .select()
+	        .bind(this)
+	        .tap(function(response) {
+	          return this._eagerLoadHelper(response, relationName, {
+	            relatedData: relatedData.instance('morphTo', Target, {morphName: relatedData.morphName, columnNames: relatedData.columnNames})
+	          }, options);
+	        }));
+	        return memo;
+	    }, [], this);
+	    return Promise.all(pending).then(function(resps) {
+	      return _.flatten(resps);
+	    });
+	  }),
+
+	  // Handles the eager load for both the `morphTo` and regular cases.
+	  _eagerLoadHelper: function(response, relationName, handled, options) {
+	    var relatedModels = this.pushModels(relationName, handled, response);
+	    var relatedData   = handled.relatedData;
+
+	    // If there is a response, fetch additional nested eager relations, if any.
+	    if (response.length > 0 && options.withRelated) {
+	      var relatedModel = relatedData.createModel();
+
+	      // If this is a `morphTo` relation, we need to do additional processing
+	      // to ensure we don't try to load any relations that don't look to exist.
+	      if (relatedData.type === 'morphTo') {
+	        var withRelated = this._filterRelated(relatedModel, options);
+	        if (withRelated.length === 0) return;
+	        options = _.extend({}, options, {withRelated: withRelated});
+	      }
+	      return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
+	    }
+	  },
+
+	  // Filters the `withRelated` on a `morphTo` relation, to ensure that only valid
+	  // relations are attempted for loading.
+	  _filterRelated: function(relatedModel, options) {
+
+	    // By this point, all withRelated should be turned into a hash, so it should
+	    // be fairly simple to process by splitting on the dots.
+	    return _.reduce(options.withRelated, function(memo, val) {
+	      for (var key in val) {
+	        var seg = key.split('.')[0];
+	        if (_.isFunction(relatedModel[seg])) memo.push(val);
+	      }
+	      return memo;
+	    }, []);
+	  }
+
+	});
+
+	module.exports = EagerRelation;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Base Model
+	// ---------------
+	var _        = __webpack_require__(2);
+	var inherits = __webpack_require__(14);
+
+	var Events   = __webpack_require__(4);
+	var Promise  = __webpack_require__(15);
+	var Errors   = __webpack_require__(8);
+	var slice    = Array.prototype.slice
+
+	// List of attributes attached directly from the `options` passed to the constructor.
+	var modelProps = ['tableName', 'hasTimestamps'];
+
+	// The "ModelBase" is similar to the 'Active Model' in Rails,
+	// it defines a standard interface from which other objects may inherit.
+	function ModelBase(attributes, options) {
+	  var attrs = attributes || {};
+	  options   = options    || {};
+	  this.attributes = Object.create(null);
+	  this._reset();
+	  this.relations = {};
+	  this.cid  = _.uniqueId('c');
+	  if (options) {
+	    _.extend(this, _.pick(options, modelProps));
+	    if (options.parse) attrs = this.parse(attrs, options) || {};
+	  }
+	  this.set(attrs, options);
+	  this.initialize.apply(this, arguments);
+	}
+	inherits(ModelBase, Events);
+
+	ModelBase.prototype.initialize = function() {};
+
+	// The default value for the "id" attribute.
+	ModelBase.prototype.idAttribute = 'id';
+
+	// Get the value of an attribute.
+	ModelBase.prototype.get = function(attr) {
+	  return this.attributes[attr];
+	};
+
+	// Set a property.
+	ModelBase.prototype.set = function(key, val, options) {
+	  if (key == null) return this;
+	  var attrs;
+
+	  // Handle both `"key", value` and `{key: value}` -style arguments.
+	  if (typeof key === 'object') {
+	    attrs = key;
+	    options = val;
+	  } else {
+	    (attrs = {})[key] = val;
+	  }
+	  options = _.clone(options) || {};
+
+	  // Extract attributes and options.
+	  var hasChanged = false;
+	  var unset   = options.unset;
+	  var current = this.attributes;
+	  var prev    = this._previousAttributes;
+
+	  // Check for changes of `id`.
+	  if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+
+	  // For each `set` attribute, update or delete the current value.
+	  for (var attr in attrs) {
+	    val = attrs[attr];
+	    if (!_.isEqual(prev[attr], val)) {
+	      this.changed[attr] = val;
+	      if (!_.isEqual(current[attr], val)) hasChanged = true;
+	    } else {
+	      delete this.changed[attr];
+	    }
+	    unset ? delete current[attr] : current[attr] = val;
+	  }
+	  return this;
+	};
+
+	// A model is new if it has never been persisted, which we assume if it lacks an id.
+	ModelBase.prototype.isNew = function() {
+	  return this.id == null;
+	};
+
+	ModelBase.prototype.serialize = function(options) {
+	  var attrs = _.clone(this.attributes);
+	  if (options && options.shallow) return attrs;
+	  var relations = this.relations;
+	  for (var key in relations) {
+	    var relation = relations[key];
+	    attrs[key] = relation.toJSON ? relation.toJSON(options) : relation;
+	  }
+	  if (options && options.omitPivot) return attrs;
+	  if (this.pivot) {
+	    var pivot = this.pivot.attributes;
+	    for (key in pivot) {
+	      attrs['_pivot_' + key] = pivot[key];
+	    }
+	  }
+	  return attrs;  
+	}
+
+	// Returns an object containing a shallow copy of the model attributes,
+	// along with the `toJSON` value of any relations,
+	// unless `{shallow: true}` is passed in the `options`.
+	// Also includes _pivot_ keys for relations unless `{omitPivot: true}`
+	// is passed in `options`.
+	ModelBase.prototype.toJSON = function(options) {
+	  return this.serialize(options)
+	};
+
+	// Returns the string representation of the object.
+	ModelBase.prototype.toString = function() {
+	  return '[Object Model]';
+	};
+
+	// Get the HTML-escaped value of an attribute.
+	ModelBase.prototype.escape = function(key) {
+	  return _.escape(this.get(key));
+	};
+
+	// Returns `true` if the attribute contains a value that is not null
+	// or undefined.
+	ModelBase.prototype.has = function(attr) {
+	  return this.get(attr) != null;
+	};
+
+	// **parse** converts a response into the hash of attributes to be `set` on
+	// the model. The default implementation is just to pass the response along.
+	ModelBase.prototype.parse = function(resp, options) {
+	  return resp;
+	};
+
+	// Remove an attribute from the model, firing `"change"`. `unset` is a noop
+	// if the attribute doesn't exist.
+	ModelBase.prototype.unset = function(attr, options) {
+	  return this.set(attr, void 0, _.extend({}, options, {unset: true}));
+	};
+
+	// Clear all attributes on the model, firing `"change"`.
+	ModelBase.prototype.clear = function(options) {
+	  var attrs = {};
+	  for (var key in this.attributes) attrs[key] = void 0;
+	  return this.set(attrs, _.extend({}, options, {unset: true}));
+	};
+
+	// **format** converts a model into the values that should be saved into
+	// the database table. The default implementation is just to pass the data along.
+	ModelBase.prototype.format = function(attrs, options) {
+	  return attrs;
+	};
+
+	// Returns the related item, or creates a new
+	// related item by creating a new model or collection.
+	ModelBase.prototype.related = function(name) {
+	  return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
+	};
+
+	// Create a new model with identical attributes to this one,
+	// including any relations on the current model.
+	ModelBase.prototype.clone = function(options) {
+	  var model = new this.constructor(this.attributes);
+	  var relations = this.relations;
+	  for (var key in relations) {
+	    model.relations[key] = relations[key].clone();
+	  }
+	  model._previousAttributes = _.clone(this._previousAttributes);
+	  model.changed = setProps(Object.create(null), this.changed);
+	  return model;
+	};
+
+	// Sets the timestamps before saving the model.
+	ModelBase.prototype.timestamp = function(options) {
+	  var d = new Date();
+	  var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
+	  var vals = {};
+	  if (keys[1]) vals[keys[1]] = d;
+	  if (this.isNew(options) && keys[0] && (!options || options.method !== 'update')) vals[keys[0]] = d;
+	  return vals;
+	};
+
+	// Determine if the model has changed since the last `"change"` event.
+	// If you specify an attribute name, determine if that attribute has changed.
+	ModelBase.prototype.hasChanged = function(attr) {
+	  if (attr == null) return !_.isEmpty(this.changed);
+	  return _.has(this.changed, attr);
+	};
+
+	// Get the previous value of an attribute, recorded at the time the last
+	// `"change"` event was fired.
+	ModelBase.prototype.previous = function(attr) {
+	  if (attr == null || !this._previousAttributes) return null;
+	  return this._previousAttributes[attr];
+	};
+
+	// Get all of the attributes of the model at the time of the previous
+	// `"change"` event.
+	ModelBase.prototype.previousAttributes = function() {
+	  return _.clone(this._previousAttributes);
+	};
+
+	// Resets the `_previousAttributes` and `changed` hash for the model.
+	// Typically called after a `sync` action (save, fetch, delete) -
+	ModelBase.prototype._reset = function() {
+	  this._previousAttributes = _.clone(this.attributes);
+	  this.changed = Object.create(null);
+	  return this;
+	};
+
+	// Set the changed properties on the object.
+	function setProps(obj, hash) {
+	  var i = -1, keys = Object.keys(hash);
+	  while (++i < hash.length) {
+	    var key = hash[i]
+	    obj[key] = hash[key];
+	  }
+	}
+
+	// "_" methods that we want to implement on the Model.
+	var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+
+	// Mix in each "_" method as a proxy to `Model#attributes`.
+	_.each(modelMethods, function(method) {
+	  ModelBase.prototype[method] = function() {
+	    var args = slice.call(arguments);
+	    args.unshift(this.attributes);
+	    return _[method].apply(_, args);
+	  };
+	});
+
+	ModelBase.extend = __webpack_require__(27);
+
+	module.exports = ModelBase;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Base Collection
+	// ---------------
+
+	// All exernal dependencies required in this scope.
+	var _         = __webpack_require__(2);
+	var inherits  = __webpack_require__(14);
+
+	// All components that need to be referenced in this scope.
+	var Events    = __webpack_require__(4);
+	var Promise   = __webpack_require__(15);
+	var ModelBase = __webpack_require__(18);
+
+	var array  = [];
+	var push   = array.push;
+	var slice  = array.slice;
+	var splice = array.splice;
+
+	function CollectionBase(models, options) {
+	  if (options) _.extend(this, _.pick(options, collectionProps));
+	  this._reset();
+	  this.initialize.apply(this, arguments)
+	  if (!_.isFunction(this.model)) {
+	    throw new Error('A valid `model` constructor must be defined for all collections.');
+	  }
+	  if (models) this.reset(models, _.extend({silent: true}, options));
+	}
+	inherits(CollectionBase, Events);
+
+	// List of attributes attached directly from the constructor's options object.
+	var collectionProps = ['model', 'Model', 'comparator'];
+
+	// Copied over from Backbone.
+	var setOptions = {add: true, remove: true, merge: true};
+	var addOptions = {add: true, remove: false};
+
+	CollectionBase.prototype.initialize = function() {};
+
+	// The `tableName` on the associated Model, used in relation building.
+	CollectionBase.prototype.tableName = function() {
+	  return _.result(this.model.prototype, 'tableName');
+	};
+
+	// The `idAttribute` on the associated Model, used in relation building.
+	CollectionBase.prototype.idAttribute = function() {
+	  return this.model.prototype.idAttribute;
+	};
+
+	CollectionBase.prototype.toString = function() {
+	  return '[Object Collection]';
+	};
+
+	CollectionBase.prototype.serialize = function(options) {
+	  return this.map(function(model){ 
+	    return model.toJSON(options); 
+	  });
+	}
+
+	// The JSON representation of a Collection is an array of the
+	// models' attributes.
+	CollectionBase.prototype.toJSON = function(options) {
+	  return this.serialize(options)
+	};
+
+	// A simplified version of Backbone's `Collection#set` method,
+	// removing the comparator, and getting rid of the temporary model creation,
+	// since there's *no way* we'll be getting the data in an inconsistent
+	// form from the database.
+	CollectionBase.prototype.set = function(models, options) {
+	  options = _.defaults({}, options, setOptions);
+	  if (options.parse) models = this.parse(models, options);
+	  if (!_.isArray(models)) models = models ? [models] : [];
+	  var i, l, id, model, attrs, existing;
+	  var at = options.at;
+	  var targetModel = this.model;
+	  var toAdd = [], toRemove = [], modelMap = {};
+	  var add = options.add, merge = options.merge, remove = options.remove;
+	  var order = add && remove ? [] : false;
+
+	  // Turn bare objects into model references, and prevent invalid models
+	  // from being added.
+	  for (i = 0, l = models.length; i < l; i++) {
+	    attrs = models[i];
+	    if (attrs instanceof ModelBase) {
+	      id = model = attrs;
+	    } else {
+	      id = attrs[targetModel.prototype.idAttribute];
+	    }
+
+	    // If a duplicate is found, prevent it from being added and
+	    // optionally merge it into the existing model.
+	    if (existing = this.get(id)) {
+	      if (remove) {
+	        modelMap[existing.cid] = true;
+	      }
+	      if (merge) {
+	        attrs = attrs === model ? model.attributes : attrs;
+	        if (options.parse) attrs = existing.parse(attrs, options);
+	        existing.set(attrs, options);
+	      }
+
+	      // This is a new model, push it to the `toAdd` list.
+	    } else if (add) {
+	      if (!(model = this._prepareModel(attrs, options))) continue;
+	      toAdd.push(model);
+
+	      // Listen to added models' events, and index models for lookup by
+	      // `id` and by `cid`.
+	      model.on('all', this._onModelEvent, this);
+	      this._byId[model.cid] = model;
+	      if (model.id != null) this._byId[model.id] = model;
+	    }
+	    if (order) order.push(existing || model);
+	  }
+
+	  // Remove nonexistent models if appropriate.
+	  if (remove) {
+	    for (i = 0, l = this.length; i < l; ++i) {
+	      if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
+	    }
+	    if (toRemove.length) this.remove(toRemove, options);
+	  }
+
+	  // See if sorting is needed, update `length` and splice in new models.
+	  if (toAdd.length || (order && order.length)) {
+	    this.length += toAdd.length;
+	    if (at != null) {
+	      splice.apply(this.models, [at, 0].concat(toAdd));
+	    } else {
+	      if (order) {
+	        this.models.length = 0;
+	      } else {
+	        order = toAdd;
+	      }
+	      for (i = 0, l = order.length; i < l; ++i) {
+	        this.models.push(order[i]);
+	      }
+	    }
+	  }
+
+	  if (options.silent) return this;
+
+	  // Trigger `add` events.
+	  for (i = 0, l = toAdd.length; i < l; i++) {
+	    (model = toAdd[i]).trigger('add', model, this, options);
+	  }
+	  return this;
+	};
+
+	// Prepare a model or hash of attributes to be added to this collection.
+	CollectionBase.prototype._prepareModel = function(attrs, options) {
+	  if (attrs instanceof ModelBase) return attrs;
+	  return new this.model(attrs, options);
+	};
+
+	// Run "Promise.map" over the models
+	CollectionBase.prototype.mapThen = function(iterator, context) {
+	  return Promise.bind(context).thenReturn(this.models).map(iterator);
+	};
+
+	// Convenience method for invoke, returning a `Promise.all` promise.
+	CollectionBase.prototype.invokeThen = function() {
+	  return Promise.all(this.invoke.apply(this, arguments));
+	};
+
+	// Run "reduce" over the models in the collection.
+	CollectionBase.prototype.reduceThen = function(iterator, initialValue, context) {
+	  return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
+	};
+
+	CollectionBase.prototype.fetch = function() {
+	  return Promise.rejected('The fetch method has not been implemented');
+	};
+
+	// Add a model, or list of models to the set.
+	CollectionBase.prototype.add = function(models, options) {
+	  return this.set(models, _.extend({merge: false}, options, addOptions));
+	};
+
+	// Remove a model, or a list of models from the set.
+	CollectionBase.prototype.remove = function(models, options) {
+	  var singular = !_.isArray(models);
+	  models = singular ? [models] : _.clone(models);
+	  options || (options = {});
+	  var i, l, index, model;
+	  for (i = 0, l = models.length; i < l; i++) {
+	    model = models[i] = this.get(models[i]);
+	    if (!model) continue;
+	    delete this._byId[model.id];
+	    delete this._byId[model.cid];
+	    index = this.indexOf(model);
+	    this.models.splice(index, 1);
+	    this.length--;
+	    if (!options.silent) {
+	      options.index = index;
+	      model.trigger('remove', model, this, options);
+	    }
+	    this._removeReference(model);
+	  }
+	  return singular ? models[0] : models;
+	};
+
+	// When you have more items than you want to add or remove individually,
+	// you can reset the entire set with a new list of models, without firing
+	// any granular `add` or `remove` events. Fires `reset` when finished.
+	// Useful for bulk operations and optimizations.
+	CollectionBase.prototype.reset = function(models, options) {
+	  options = options || {};
+	  for (var i = 0, l = this.models.length; i < l; i++) {
+	    this._removeReference(this.models[i]);
+	  }
+	  options.previousModels = this.models;
+	  this._reset();
+	  models = this.add(models, _.extend({silent: true}, options));
+	  if (!options.silent) this.trigger('reset', this, options);
+	  return models;
+	};
+
+	// Add a model to the end of the collection.
+	CollectionBase.prototype.push = function(model, options) {
+	  return this.add(model, _.extend({at: this.length}, options));
+	};
+
+	// Remove a model from the end of the collection.
+	CollectionBase.prototype.pop = function(options) {
+	  var model = this.at(this.length - 1);
+	  this.remove(model, options);
+	  return model;
+	};
+
+	// Add a model to the beginning of the collection.
+	CollectionBase.prototype.unshift = function(model, options) {
+	  return this.add(model, _.extend({at: 0}, options));
+	};
+
+	// Remove a model from the beginning of the collection.
+	CollectionBase.prototype.shift = function(options) {
+	  var model = this.at(0);
+	  this.remove(model, options);
+	  return model;
+	};
+
+	// Slice out a sub-array of models from the collection.
+	CollectionBase.prototype.slice = function() {
+	  return slice.apply(this.models, arguments);
+	};
+
+	// Get a model from the set by id.
+	CollectionBase.prototype.get = function(obj) {
+	  if (obj == null) return void 0;
+	  return this._byId[obj.id] || this._byId[obj.cid] || this._byId[obj];
+	};
+
+	// Get the model at the given index.
+	CollectionBase.prototype.at = function(index) {
+	  return this.models[index];
+	};
+
+	// Return models with matching attributes. Useful for simple cases of
+	// `filter`.
+	CollectionBase.prototype.where = function(attrs, first) {
+	  if (_.isEmpty(attrs)) return first ? void 0 : [];
+	  return this[first ? 'find' : 'filter'](function(model) {
+	    for (var key in attrs) {
+	      if (attrs[key] !== model.get(key)) return false;
+	    }
+	    return true;
+	  });
+	};
+
+	// Return the first model with matching attributes. Useful for simple cases
+	// of `find`.
+	CollectionBase.prototype.findWhere = function(attrs) {
+	  return this.where(attrs, true);
+	};
+
+	// Force the collection to re-sort itself, based on a comporator defined on the model.
+	CollectionBase.prototype.sort = function(options) {
+	  if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
+	  options || (options = {});
+
+	  // Run sort based on type of `comparator`.
+	  if (_.isString(this.comparator) || this.comparator.length === 1) {
+	    this.models = this.sortBy(this.comparator, this);
+	  } else {
+	    this.models.sort(_.bind(this.comparator, this));
+	  }
+
+	  if (!options.silent) this.trigger('sort', this, options);
+	  return this;
+	};
+
+	// Pluck an attribute from each model in the collection.
+	CollectionBase.prototype.pluck = function(attr) {
+	  return this.invoke('get', attr);
+	};
+
+	// Create a new instance of a model in this collection. Add the model to the
+	// collection immediately, unless `wait: true` is passed, in which case we
+	// wait for the server to agree.
+	CollectionBase.prototype.create = function(model, options) {
+	  options = options ? _.clone(options) : {};
+	  if (!(model = this._prepareModel(model, options))) return false;
+	  if (!options.wait) this.add(model, options);
+	  var collection = this;
+	  var success = options.success;
+	  options.success = function(model, resp, options) {
+	    if (options.wait) collection.add(model, options);
+	    if (success) success(model, resp, options);
+	  };
+	  model.save(null, options);
+	  return model;
+	};
+
+	// **parse** converts a response into a list of models to be added to the
+	// collection. The default implementation is just to pass it through.
+	CollectionBase.prototype.parse = function(resp, options) {
+	  return resp;
+	};
+
+	// Create a new collection with an identical list of models as this one.
+	CollectionBase.prototype.clone = function() {
+	  return new this.constructor(this.models);
+	};
+
+	// Private method to reset all internal state. Called when the collection
+	// is first initialized or reset.
+	CollectionBase.prototype._reset = function() {
+	  this.length = 0;
+	  this.models = [];
+	  this._byId  = Object.create(null);
+	};
+
+	// Internal method to sever a model's ties to a collection.
+	CollectionBase.prototype._removeReference = function(model) {
+	  // TODO: Sever from the internal model cache.
+	};
+
+	// Internal method called every time a model in the set fires an event.
+	// Sets need to update their indexes when models change ids. All other
+	// events simply proxy through. "add" and "remove" events that originate
+	// in other collections are ignored.
+	CollectionBase.prototype._onModelEvent = function(event, model, collection, options) {
+	  // TOOD: See if we need anything here.
+	};
+
+	// Underscore methods that we want to implement on the Collection.
+	// 90% of the core usefulness of Backbone Collections is actually implemented
+	// right here:
+	var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
+	  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
+	  'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
+	  'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
+	  'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
+	  'lastIndexOf', 'isEmpty', 'chain'];
+
+	// Mix in each Underscore method as a proxy to `Collection#models`.
+	_.each(methods, function(method) {
+	  CollectionBase.prototype[method] = function() {
+	    var args = slice.call(arguments);
+	    args.unshift(this.models);
+	    return _[method].apply(_, args);
+	  };
+	});
+
+	// Underscore methods that take a property name as an argument.
+	var attributeMethods = ['groupBy', 'countBy', 'sortBy'];
+
+	// Use attributes instead of properties.
+	_.each(attributeMethods, function(method) {
+	  CollectionBase.prototype[method] = function(value, context) {
+	    var iterator = _.isFunction(value) ? value : function(model) {
+	      return model.get(value);
+	    };
+	    return _[method](this.models, iterator, context);
+	  };
+	});
+
+
+	// List of attributes attached directly from the `options` passed to the constructor.
+	var modelProps = ['tableName', 'hasTimestamps'];
+
+	CollectionBase.extend = __webpack_require__(27);
+
+	module.exports = CollectionBase;
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Base Relation
+	// ---------------
+
+	var _              = __webpack_require__(2);
+	var CollectionBase = __webpack_require__(19);
+
+	// Used internally, the `Relation` helps in simplifying the relationship building,
+	// centralizing all logic dealing with type & option handling.
+	function RelationBase(type, Target, options) {
+	  this.type = type;
+	  if (this.target = Target) {
+	    this.targetTableName   = _.result(Target.prototype, 'tableName');
+	    this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
+	  }
+	  _.extend(this, options);
+	}
+
+	_.extend(RelationBase.prototype, {
+
+	  // Creates a new relation instance, used by the `Eager` relation in
+	  // dealing with `morphTo` cases, where the same relation is targeting multiple models.
+	  instance: function(type, Target, options) {
+	    return new this.constructor(type, Target, options);
+	  },
+
+	  // Creates a new, unparsed model, used internally in the eager fetch helper
+	  // methods. (Parsing may mutate information necessary for eager pairing.)
+	  createModel: function(data) {
+	    if (this.target.prototype instanceof CollectionBase) {
+	      return new this.target.prototype.model(data)._reset();
+	    }
+	    return new this.target(data)._reset();
+	  },
+
+	  // Eager pair the models.
+	  eagerPair: function() {}
+
+	});
+
+	RelationBase.extend = __webpack_require__(27);
+
+	module.exports = RelationBase;
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function(exports) {
@@ -2949,1049 +3904,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Promise = __webpack_require__(23)
-	var helpers = __webpack_require__(2)
-
-	Promise.prototype.yield = function() {
-	  helpers.deprecate('.yield', '.return')
-	  return this.return.apply(this, arguments);
-	}
-	Promise.prototype.ensure = function() {
-	  helpers.deprecate('.ensure', '.finally')
-	  return this.finally.apply(this, arguments);
-	}
-	Promise.prototype.otherwise = function() {
-	  helpers.deprecate('.otherwise', '.catch')
-	  return this.catch.apply(this, arguments);
-	}
-	Promise.prototype.exec = function() {
-	  helpers.deprecate('bookshelf.exec', 'bookshelf.asCallback')
-	  return this.nodeify.apply(this, arguments);
-	};
-
-	module.exports = Promise
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Sync
-	// ---------------
-	var _       = __webpack_require__(1);
-	var Promise = __webpack_require__(15);
-
-	// Sync is the dispatcher for any database queries,
-	// taking the "syncing" `model` or `collection` being queried, along with
-	// a hash of options that are used in the various query methods.
-	// If the `transacting` option is set, the query is assumed to be
-	// part of a transaction, and this information is passed along to `Knex`.
-	var Sync = function(syncing, options) {
-	  options = options || {};
-	  this.query   = syncing.query();
-	  this.syncing = syncing.resetQuery();
-	  this.options = options;
-	  if (options.debug) this.query.debug();
-	  if (options.transacting) this.query.transacting(options.transacting);
-	};
-
-	_.extend(Sync.prototype, {
-
-	  // Prefix all keys of the passed in object with the
-	  // current table name
-	  prefixFields: function(fields) {
-	    var tableName = this.syncing.tableName;
-	    var prefixed = {};
-	    for (var key in fields) {
-	      prefixed[tableName + '.' + key] = fields[key];
-	    }
-	    return prefixed;
-	  },
-
-	  // Select the first item from the database - only used by models.
-	  first: Promise.method(function() {
-	    this.query.where(this.prefixFields(this.syncing.format(
-	      _.extend(Object.create(null), this.syncing.attributes)
-	    ))).limit(1);
-	    return this.select();
-	  }),
-
-	  // Runs a `select` query on the database, adding any necessary relational
-	  // constraints, resetting the query when complete. If there are results and
-	  // eager loaded relations, those are fetched and returned on the model before
-	  // the promise is resolved. Any `success` handler passed in the
-	  // options will be called - used by both models & collections.
-	  select: Promise.method(function() {
-	    var knex           = this.query
-	      , options        = this.options
-	      , relatedData    = this.syncing.relatedData
-	      , columnsInQuery = _.some(knex._statements, {grouping:'columns'})
-	      , columns;
-
-	    if (!relatedData) {
-	      columns = options.columns;
-	      // Call the function, if one exists, to constrain the eager loaded query.
-	      if (options._beforeFn) options._beforeFn.call(knex, knex);
-	      if (!_.isArray(columns)) {
-	        columns = columns ? [columns] :
-	          // if columns have been selected in a query closure, use them.
-	          // any user who does this is responsible for prefixing each
-	          // selected column with the correct table name. this will also
-	          // break withRelated queries if the dependent fkey fields are not
-	          // manually included. this is a temporary hack which will be
-	          // replaced by an upcoming rewrite.
-	          columnsInQuery ? [] : [_.result(this.syncing, 'tableName') + '.*'];
-	      }
-	    }
-
-	    // Set the query builder on the options, in-case we need to
-	    // access in the `fetching` event handlers.
-	    options.query = knex;
-
-	    return Promise.bind(this).then(function () {
-	      var fks = {}
-	        , through;
-
-	      // Inject all appropriate select costraints dealing with the relation
-	      // into the `knex` query builder for the current instance.
-	      if (relatedData) {
-	        if (relatedData.throughTarget) {
-	          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
-	          through = new relatedData.throughTarget(fks);
-	          return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
-	            .then(function () {
-	              relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
-	              relatedData.selectConstraints(knex, options);
-	            });
-	        } else {
-	          relatedData.selectConstraints(knex, options);
-	        }
-	      }
-	    }).then(function () {
-	      return this.syncing.triggerThen('fetching', this.syncing, columns, options);
-	    }).then(function() {
-	      return knex.select(columns);
-	    });
-	  }),
-
-	  // Issues an `insert` command on the query - only used by models.
-	  insert: Promise.method(function() {
-	    var syncing = this.syncing;
-	    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
-	  }),
-
-	  // Issues an `update` command on the query - only used by models.
-	  update: Promise.method(function(attrs) {
-	    var syncing = this.syncing, query = this.query;
-	    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-	    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
-	      throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
-	    }
-	    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
-	  }),
-
-	  // Issues a `delete` command on the query.
-	  del: Promise.method(function() {
-	    var query = this.query, syncing = this.syncing;
-	    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-	    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
-	      throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
-	    }
-	    return this.query.del();
-	  })
-
-	});
-
-	module.exports = Sync;
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// EagerRelation
-	// ---------------
-	var _         = __webpack_require__(1);
-	var inherits  = __webpack_require__(13);
-
-	var Helpers   = __webpack_require__(2);
-	var Promise   = __webpack_require__(15);
-	var EagerBase = __webpack_require__(25);
-
-	// An `EagerRelation` object temporarily stores the models from an eager load,
-	// and handles matching eager loaded objects with their parent(s). The `tempModel`
-	// is only used to retrieve the value of the relation method, to know the constrains
-	// for the eager query.
-	function EagerRelation() {
-	  EagerBase.apply(this, arguments);
-	}
-	inherits(EagerRelation, EagerBase);
-
-	_.extend(EagerRelation.prototype, {
-
-	  // Handles an eager loaded fetch, passing the name of the item we're fetching for,
-	  // and any options needed for the current fetch.
-	  eagerFetch: Promise.method(function(relationName, handled, options) {
-	    var relatedData = handled.relatedData;
-
-	    // skip eager loading for rows where the foreign key isn't set
-	    if (relatedData.parentFk === null) return;
-
-	    if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
-
-	    return handled
-	      .sync(_.extend(options, {parentResponse: this.parentResponse}))
-	      .select()
-	      .bind(this)
-	      .tap(function(response) {
-	        return this._eagerLoadHelper(response, relationName, handled, _.omit(options, 'parentResponse'));
-	      });
-	  }),
-
-	  // Special handler for the eager loaded morph-to relations, this handles
-	  // the fact that there are several potential models that we need to be fetching against.
-	  // pairing them up onto a single response for the eager loading.
-	  morphToFetch: Promise.method(function(relationName, relatedData, options) {
-	    var groups = _.groupBy(this.parent, function(m) {
-	      var typeKeyName = relatedData.columnNames && relatedData.columnNames[0] ? relatedData.columnNames[0] : relatedData.morphName + '_type';
-	      return m.get(typeKeyName);
-	    });
-	    var pending = _.reduce(groups, function(memo, val, group) {
-	      var Target = Helpers.morphCandidate(relatedData.candidates, group);
-	      var target = new Target();
-	      var idKeyName = relatedData.columnNames && relatedData.columnNames[1] ? relatedData.columnNames[1] : relatedData.morphName + '_id';
-	      memo.push(target
-	        .query('whereIn',
-	          _.result(target, 'idAttribute'),
-	          _.uniq(_.invoke(groups[group], 'get', idKeyName))
-	        )
-	        .sync(options)
-	        .select()
-	        .bind(this)
-	        .tap(function(response) {
-	          return this._eagerLoadHelper(response, relationName, {
-	            relatedData: relatedData.instance('morphTo', Target, {morphName: relatedData.morphName, columnNames: relatedData.columnNames})
-	          }, options);
-	        }));
-	        return memo;
-	    }, [], this);
-	    return Promise.all(pending).then(function(resps) {
-	      return _.flatten(resps);
-	    });
-	  }),
-
-	  // Handles the eager load for both the `morphTo` and regular cases.
-	  _eagerLoadHelper: function(response, relationName, handled, options) {
-	    var relatedModels = this.pushModels(relationName, handled, response);
-	    var relatedData   = handled.relatedData;
-
-	    // If there is a response, fetch additional nested eager relations, if any.
-	    if (response.length > 0 && options.withRelated) {
-	      var relatedModel = relatedData.createModel();
-
-	      // If this is a `morphTo` relation, we need to do additional processing
-	      // to ensure we don't try to load any relations that don't look to exist.
-	      if (relatedData.type === 'morphTo') {
-	        var withRelated = this._filterRelated(relatedModel, options);
-	        if (withRelated.length === 0) return;
-	        options = _.extend({}, options, {withRelated: withRelated});
-	      }
-	      return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
-	    }
-	  },
-
-	  // Filters the `withRelated` on a `morphTo` relation, to ensure that only valid
-	  // relations are attempted for loading.
-	  _filterRelated: function(relatedModel, options) {
-
-	    // By this point, all withRelated should be turned into a hash, so it should
-	    // be fairly simple to process by splitting on the dots.
-	    return _.reduce(options.withRelated, function(memo, val) {
-	      for (var key in val) {
-	        var seg = key.split('.')[0];
-	        if (_.isFunction(relatedModel[seg])) memo.push(val);
-	      }
-	      return memo;
-	    }, []);
-	  }
-
-	});
-
-	module.exports = EagerRelation;
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Base Model
-	// ---------------
-	var _        = __webpack_require__(1);
-	var inherits = __webpack_require__(13);
-
-	var Events   = __webpack_require__(3);
-	var Promise  = __webpack_require__(15);
-	var Errors   = __webpack_require__(7);
-	var slice    = Array.prototype.slice
-
-	// List of attributes attached directly from the `options` passed to the constructor.
-	var modelProps = ['tableName', 'hasTimestamps'];
-
-	// The "ModelBase" is similar to the 'Active Model' in Rails,
-	// it defines a standard interface from which other objects may inherit.
-	function ModelBase(attributes, options) {
-	  var attrs = attributes || {};
-	  options   = options    || {};
-	  this.attributes = Object.create(null);
-	  this._reset();
-	  this.relations = {};
-	  this.cid  = _.uniqueId('c');
-	  if (options) {
-	    _.extend(this, _.pick(options, modelProps));
-	    if (options.parse) attrs = this.parse(attrs, options) || {};
-	  }
-	  this.set(attrs, options);
-	  this.initialize.apply(this, arguments);
-	}
-	inherits(ModelBase, Events);
-
-	ModelBase.prototype.initialize = function() {};
-
-	// The default value for the "id" attribute.
-	ModelBase.prototype.idAttribute = 'id';
-
-	// Get the value of an attribute.
-	ModelBase.prototype.get = function(attr) {
-	  return this.attributes[attr];
-	};
-
-	// Set a property.
-	ModelBase.prototype.set = function(key, val, options) {
-	  if (key == null) return this;
-	  var attrs;
-
-	  // Handle both `"key", value` and `{key: value}` -style arguments.
-	  if (typeof key === 'object') {
-	    attrs = key;
-	    options = val;
-	  } else {
-	    (attrs = {})[key] = val;
-	  }
-	  options = _.clone(options) || {};
-
-	  // Extract attributes and options.
-	  var hasChanged = false;
-	  var unset   = options.unset;
-	  var current = this.attributes;
-	  var prev    = this._previousAttributes;
-
-	  // Check for changes of `id`.
-	  if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
-
-	  // For each `set` attribute, update or delete the current value.
-	  for (var attr in attrs) {
-	    val = attrs[attr];
-	    if (!_.isEqual(prev[attr], val)) {
-	      this.changed[attr] = val;
-	      if (!_.isEqual(current[attr], val)) hasChanged = true;
-	    } else {
-	      delete this.changed[attr];
-	    }
-	    unset ? delete current[attr] : current[attr] = val;
-	  }
-	  return this;
-	};
-
-	// A model is new if it has never been persisted, which we assume if it lacks an id.
-	ModelBase.prototype.isNew = function() {
-	  return this.id == null;
-	};
-
-	// Returns an object containing a shallow copy of the model attributes,
-	// along with the `toJSON` value of any relations,
-	// unless `{shallow: true}` is passed in the `options`.
-	// Also includes _pivot_ keys for relations unless `{omitPivot: true}`
-	// is passed in `options`.
-	ModelBase.prototype.toJSON = function(options) {
-	  var attrs = _.clone(this.attributes);
-	  if (options && options.shallow) return attrs;
-	  var relations = this.relations;
-	  for (var key in relations) {
-	    var relation = relations[key];
-	    attrs[key] = relation.toJSON ? relation.toJSON(options) : relation;
-	  }
-	  if (options && options.omitPivot) return attrs;
-	  if (this.pivot) {
-	    var pivot = this.pivot.attributes;
-	    for (key in pivot) {
-	      attrs['_pivot_' + key] = pivot[key];
-	    }
-	  }
-	  return attrs;
-	};
-
-	// Returns the string representation of the object.
-	ModelBase.prototype.toString = function() {
-	  return '[Object Model]';
-	};
-
-	// Get the HTML-escaped value of an attribute.
-	ModelBase.prototype.escape = function(key) {
-	  return _.escape(this.get(key));
-	};
-
-	// Returns `true` if the attribute contains a value that is not null
-	// or undefined.
-	ModelBase.prototype.has = function(attr) {
-	  return this.get(attr) != null;
-	};
-
-	// **parse** converts a response into the hash of attributes to be `set` on
-	// the model. The default implementation is just to pass the response along.
-	ModelBase.prototype.parse = function(resp, options) {
-	  return resp;
-	};
-
-	// Remove an attribute from the model, firing `"change"`. `unset` is a noop
-	// if the attribute doesn't exist.
-	ModelBase.prototype.unset = function(attr, options) {
-	  return this.set(attr, void 0, _.extend({}, options, {unset: true}));
-	};
-
-	// Clear all attributes on the model, firing `"change"`.
-	ModelBase.prototype.clear = function(options) {
-	  var attrs = {};
-	  for (var key in this.attributes) attrs[key] = void 0;
-	  return this.set(attrs, _.extend({}, options, {unset: true}));
-	};
-
-	// **format** converts a model into the values that should be saved into
-	// the database table. The default implementation is just to pass the data along.
-	ModelBase.prototype.format = function(attrs, options) {
-	  return attrs;
-	};
-
-	// Returns the related item, or creates a new
-	// related item by creating a new model or collection.
-	ModelBase.prototype.related = function(name) {
-	  return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
-	};
-
-	// Create a new model with identical attributes to this one,
-	// including any relations on the current model.
-	ModelBase.prototype.clone = function(options) {
-	  var model = new this.constructor(this.attributes);
-	  var relations = this.relations;
-	  for (var key in relations) {
-	    model.relations[key] = relations[key].clone();
-	  }
-	  model._previousAttributes = _.clone(this._previousAttributes);
-	  model.changed = setProps(Object.create(null), this.changed);
-	  return model;
-	};
-
-	// Sets the timestamps before saving the model.
-	ModelBase.prototype.timestamp = function(options) {
-	  var d = new Date();
-	  var keys = (_.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at']);
-	  var vals = {};
-	  if (keys[1]) vals[keys[1]] = d;
-	  if (this.isNew(options) && keys[0] && (!options || options.method !== 'update')) vals[keys[0]] = d;
-	  return vals;
-	};
-
-	// Determine if the model has changed since the last `"change"` event.
-	// If you specify an attribute name, determine if that attribute has changed.
-	ModelBase.prototype.hasChanged = function(attr) {
-	  if (attr == null) return !_.isEmpty(this.changed);
-	  return _.has(this.changed, attr);
-	};
-
-	// Get the previous value of an attribute, recorded at the time the last
-	// `"change"` event was fired.
-	ModelBase.prototype.previous = function(attr) {
-	  if (attr == null || !this._previousAttributes) return null;
-	  return this._previousAttributes[attr];
-	};
-
-	// Get all of the attributes of the model at the time of the previous
-	// `"change"` event.
-	ModelBase.prototype.previousAttributes = function() {
-	  return _.clone(this._previousAttributes);
-	};
-
-	// Resets the `_previousAttributes` and `changed` hash for the model.
-	// Typically called after a `sync` action (save, fetch, delete) -
-	ModelBase.prototype._reset = function() {
-	  this._previousAttributes = _.clone(this.attributes);
-	  this.changed = Object.create(null);
-	  return this;
-	};
-
-	// Set the changed properties on the object.
-	function setProps(obj, hash) {
-	  var i = -1, keys = Object.keys(hash);
-	  while (++i < hash.length) {
-	    var key = hash[i]
-	    obj[key] = hash[key];
-	  }
-	}
-
-	// "_" methods that we want to implement on the Model.
-	var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
-
-	// Mix in each "_" method as a proxy to `Model#attributes`.
-	_.each(modelMethods, function(method) {
-	  ModelBase.prototype[method] = function() {
-	    var args = slice.call(arguments);
-	    args.unshift(this.attributes);
-	    return _[method].apply(_, args);
-	  };
-	});
-
-	ModelBase.extend = __webpack_require__(26);
-
-	module.exports = ModelBase;
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Base Collection
-	// ---------------
-
-	// All exernal dependencies required in this scope.
-	var _         = __webpack_require__(1);
-	var inherits  = __webpack_require__(13);
-
-	// All components that need to be referenced in this scope.
-	var Events    = __webpack_require__(3);
-	var Promise   = __webpack_require__(15);
-	var ModelBase = __webpack_require__(18);
-
-	var array  = [];
-	var push   = array.push;
-	var slice  = array.slice;
-	var splice = array.splice;
-
-	function CollectionBase(models, options) {
-	  if (options) _.extend(this, _.pick(options, collectionProps));
-	  this._reset();
-	  if (!_.isFunction(this.model)) {
-	    throw new Error('A valid `model` constructor must be defined for all collections.');
-	  }
-	  if (models) this.reset(models, _.extend({silent: true}, options));
-	}
-	inherits(CollectionBase, Events);
-
-	// List of attributes attached directly from the constructor's options object.
-	var collectionProps = ['model', 'Model', 'comparator'];
-
-	// Copied over from Backbone.
-	var setOptions = {add: true, remove: true, merge: true};
-	var addOptions = {add: true, remove: false};
-
-	// The `tableName` on the associated Model, used in relation building.
-	CollectionBase.prototype.tableName = function() {
-	  return _.result(this.model.prototype, 'tableName');
-	};
-
-	// The `idAttribute` on the associated Model, used in relation building.
-	CollectionBase.prototype.idAttribute = function() {
-	  return this.model.prototype.idAttribute;
-	};
-
-	CollectionBase.prototype.toString = function() {
-	  return '[Object Collection]';
-	};
-
-	// The JSON representation of a Collection is an array of the
-	// models' attributes.
-	CollectionBase.prototype.toJSON = function(options) {
-	  return this.map(function(model){ return model.toJSON(options); });
-	};
-
-	// A simplified version of Backbone's `Collection#set` method,
-	// removing the comparator, and getting rid of the temporary model creation,
-	// since there's *no way* we'll be getting the data in an inconsistent
-	// form from the database.
-	CollectionBase.prototype.set = function(models, options) {
-	  options = _.defaults({}, options, setOptions);
-	  if (options.parse) models = this.parse(models, options);
-	  if (!_.isArray(models)) models = models ? [models] : [];
-	  var i, l, id, model, attrs, existing;
-	  var at = options.at;
-	  var targetModel = this.model;
-	  var toAdd = [], toRemove = [], modelMap = {};
-	  var add = options.add, merge = options.merge, remove = options.remove;
-	  var order = add && remove ? [] : false;
-
-	  // Turn bare objects into model references, and prevent invalid models
-	  // from being added.
-	  for (i = 0, l = models.length; i < l; i++) {
-	    attrs = models[i];
-	    if (attrs instanceof ModelBase) {
-	      id = model = attrs;
-	    } else {
-	      id = attrs[targetModel.prototype.idAttribute];
-	    }
-
-	    // If a duplicate is found, prevent it from being added and
-	    // optionally merge it into the existing model.
-	    if (existing = this.get(id)) {
-	      if (remove) {
-	        modelMap[existing.cid] = true;
-	      }
-	      if (merge) {
-	        attrs = attrs === model ? model.attributes : attrs;
-	        if (options.parse) attrs = existing.parse(attrs, options);
-	        existing.set(attrs, options);
-	      }
-
-	      // This is a new model, push it to the `toAdd` list.
-	    } else if (add) {
-	      if (!(model = this._prepareModel(attrs, options))) continue;
-	      toAdd.push(model);
-
-	      // Listen to added models' events, and index models for lookup by
-	      // `id` and by `cid`.
-	      model.on('all', this._onModelEvent, this);
-	      this._byId[model.cid] = model;
-	      if (model.id != null) this._byId[model.id] = model;
-	    }
-	    if (order) order.push(existing || model);
-	  }
-
-	  // Remove nonexistent models if appropriate.
-	  if (remove) {
-	    for (i = 0, l = this.length; i < l; ++i) {
-	      if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
-	    }
-	    if (toRemove.length) this.remove(toRemove, options);
-	  }
-
-	  // See if sorting is needed, update `length` and splice in new models.
-	  if (toAdd.length || (order && order.length)) {
-	    this.length += toAdd.length;
-	    if (at != null) {
-	      splice.apply(this.models, [at, 0].concat(toAdd));
-	    } else {
-	      if (order) {
-	        this.models.length = 0;
-	      } else {
-	        order = toAdd;
-	      }
-	      for (i = 0, l = order.length; i < l; ++i) {
-	        this.models.push(order[i]);
-	      }
-	    }
-	  }
-
-	  if (options.silent) return this;
-
-	  // Trigger `add` events.
-	  for (i = 0, l = toAdd.length; i < l; i++) {
-	    (model = toAdd[i]).trigger('add', model, this, options);
-	  }
-	  return this;
-	};
-
-	// Prepare a model or hash of attributes to be added to this collection.
-	CollectionBase.prototype._prepareModel = function(attrs, options) {
-	  if (attrs instanceof ModelBase) return attrs;
-	  return new this.model(attrs, options);
-	};
-
-	// Run "Promise.map" over the models
-	CollectionBase.prototype.mapThen = function(iterator, context) {
-	  return Promise.bind(context).thenReturn(this.models).map(iterator);
-	};
-
-	// Convenience method for invoke, returning a `Promise.all` promise.
-	CollectionBase.prototype.invokeThen = function() {
-	  return Promise.all(this.invoke.apply(this, arguments));
-	};
-
-	// Run "reduce" over the models in the collection.
-	CollectionBase.prototype.reduceThen = function(iterator, initialValue, context) {
-	  return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
-	};
-
-	CollectionBase.prototype.fetch = function() {
-	  return Promise.rejected('The fetch method has not been implemented');
-	};
-
-	// Add a model, or list of models to the set.
-	CollectionBase.prototype.add = function(models, options) {
-	  return this.set(models, _.extend({merge: false}, options, addOptions));
-	};
-
-	// Remove a model, or a list of models from the set.
-	CollectionBase.prototype.remove = function(models, options) {
-	  var singular = !_.isArray(models);
-	  models = singular ? [models] : _.clone(models);
-	  options || (options = {});
-	  var i, l, index, model;
-	  for (i = 0, l = models.length; i < l; i++) {
-	    model = models[i] = this.get(models[i]);
-	    if (!model) continue;
-	    delete this._byId[model.id];
-	    delete this._byId[model.cid];
-	    index = this.indexOf(model);
-	    this.models.splice(index, 1);
-	    this.length--;
-	    if (!options.silent) {
-	      options.index = index;
-	      model.trigger('remove', model, this, options);
-	    }
-	    this._removeReference(model);
-	  }
-	  return singular ? models[0] : models;
-	};
-
-	// When you have more items than you want to add or remove individually,
-	// you can reset the entire set with a new list of models, without firing
-	// any granular `add` or `remove` events. Fires `reset` when finished.
-	// Useful for bulk operations and optimizations.
-	CollectionBase.prototype.reset = function(models, options) {
-	  options = options || {};
-	  for (var i = 0, l = this.models.length; i < l; i++) {
-	    this._removeReference(this.models[i]);
-	  }
-	  options.previousModels = this.models;
-	  this._reset();
-	  models = this.add(models, _.extend({silent: true}, options));
-	  if (!options.silent) this.trigger('reset', this, options);
-	  return models;
-	};
-
-	// Add a model to the end of the collection.
-	CollectionBase.prototype.push = function(model, options) {
-	  return this.add(model, _.extend({at: this.length}, options));
-	};
-
-	// Remove a model from the end of the collection.
-	CollectionBase.prototype.pop = function(options) {
-	  var model = this.at(this.length - 1);
-	  this.remove(model, options);
-	  return model;
-	};
-
-	// Add a model to the beginning of the collection.
-	CollectionBase.prototype.unshift = function(model, options) {
-	  return this.add(model, _.extend({at: 0}, options));
-	};
-
-	// Remove a model from the beginning of the collection.
-	CollectionBase.prototype.shift = function(options) {
-	  var model = this.at(0);
-	  this.remove(model, options);
-	  return model;
-	};
-
-	// Slice out a sub-array of models from the collection.
-	CollectionBase.prototype.slice = function() {
-	  return slice.apply(this.models, arguments);
-	};
-
-	// Get a model from the set by id.
-	CollectionBase.prototype.get = function(obj) {
-	  if (obj == null) return void 0;
-	  return this._byId[obj.id] || this._byId[obj.cid] || this._byId[obj];
-	};
-
-	// Get the model at the given index.
-	CollectionBase.prototype.at = function(index) {
-	  return this.models[index];
-	};
-
-	// Return models with matching attributes. Useful for simple cases of
-	// `filter`.
-	CollectionBase.prototype.where = function(attrs, first) {
-	  if (_.isEmpty(attrs)) return first ? void 0 : [];
-	  return this[first ? 'find' : 'filter'](function(model) {
-	    for (var key in attrs) {
-	      if (attrs[key] !== model.get(key)) return false;
-	    }
-	    return true;
-	  });
-	};
-
-	// Return the first model with matching attributes. Useful for simple cases
-	// of `find`.
-	CollectionBase.prototype.findWhere = function(attrs) {
-	  return this.where(attrs, true);
-	};
-
-	// Force the collection to re-sort itself, based on a comporator defined on the model.
-	CollectionBase.prototype.sort = function(options) {
-	  if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
-	  options || (options = {});
-
-	  // Run sort based on type of `comparator`.
-	  if (_.isString(this.comparator) || this.comparator.length === 1) {
-	    this.models = this.sortBy(this.comparator, this);
-	  } else {
-	    this.models.sort(_.bind(this.comparator, this));
-	  }
-
-	  if (!options.silent) this.trigger('sort', this, options);
-	  return this;
-	};
-
-	// Pluck an attribute from each model in the collection.
-	CollectionBase.prototype.pluck = function(attr) {
-	  return this.invoke('get', attr);
-	};
-
-	// Create a new instance of a model in this collection. Add the model to the
-	// collection immediately, unless `wait: true` is passed, in which case we
-	// wait for the server to agree.
-	CollectionBase.prototype.create = function(model, options) {
-	  options = options ? _.clone(options) : {};
-	  if (!(model = this._prepareModel(model, options))) return false;
-	  if (!options.wait) this.add(model, options);
-	  var collection = this;
-	  var success = options.success;
-	  options.success = function(model, resp, options) {
-	    if (options.wait) collection.add(model, options);
-	    if (success) success(model, resp, options);
-	  };
-	  model.save(null, options);
-	  return model;
-	};
-
-	// **parse** converts a response into a list of models to be added to the
-	// collection. The default implementation is just to pass it through.
-	CollectionBase.prototype.parse = function(resp, options) {
-	  return resp;
-	};
-
-	// Create a new collection with an identical list of models as this one.
-	CollectionBase.prototype.clone = function() {
-	  return new this.constructor(this.models);
-	};
-
-	// Private method to reset all internal state. Called when the collection
-	// is first initialized or reset.
-	CollectionBase.prototype._reset = function() {
-	  this.length = 0;
-	  this.models = [];
-	  this._byId  = Object.create(null);
-	};
-
-	// Internal method to sever a model's ties to a collection.
-	CollectionBase.prototype._removeReference = function(model) {
-	  // TODO: Sever from the internal model cache.
-	};
-
-	// Internal method called every time a model in the set fires an event.
-	// Sets need to update their indexes when models change ids. All other
-	// events simply proxy through. "add" and "remove" events that originate
-	// in other collections are ignored.
-	CollectionBase.prototype._onModelEvent = function(event, model, collection, options) {
-	  // TOOD: See if we need anything here.
-	};
-
-	// Underscore methods that we want to implement on the Collection.
-	// 90% of the core usefulness of Backbone Collections is actually implemented
-	// right here:
-	var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
-	  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
-	  'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
-	  'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
-	  'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
-	  'lastIndexOf', 'isEmpty', 'chain'];
-
-	// Mix in each Underscore method as a proxy to `Collection#models`.
-	_.each(methods, function(method) {
-	  CollectionBase.prototype[method] = function() {
-	    var args = slice.call(arguments);
-	    args.unshift(this.models);
-	    return _[method].apply(_, args);
-	  };
-	});
-
-	// Underscore methods that take a property name as an argument.
-	var attributeMethods = ['groupBy', 'countBy', 'sortBy'];
-
-	// Use attributes instead of properties.
-	_.each(attributeMethods, function(method) {
-	  CollectionBase.prototype[method] = function(value, context) {
-	    var iterator = _.isFunction(value) ? value : function(model) {
-	      return model.get(value);
-	    };
-	    return _[method](this.models, iterator, context);
-	  };
-	});
-
-
-	// List of attributes attached directly from the `options` passed to the constructor.
-	var modelProps = ['tableName', 'hasTimestamps'];
-
-	CollectionBase.extend = __webpack_require__(26);
-
-	module.exports = CollectionBase;
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Base Relation
-	// ---------------
-
-	var _              = __webpack_require__(1);
-	var CollectionBase = __webpack_require__(19);
-
-	// Used internally, the `Relation` helps in simplifying the relationship building,
-	// centralizing all logic dealing with type & option handling.
-	function RelationBase(type, Target, options) {
-	  this.type = type;
-	  if (this.target = Target) {
-	    this.targetTableName   = _.result(Target.prototype, 'tableName');
-	    this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
-	  }
-	  _.extend(this, options);
-	}
-
-	_.extend(RelationBase.prototype, {
-
-	  // Creates a new relation instance, used by the `Eager` relation in
-	  // dealing with `morphTo` cases, where the same relation is targeting multiple models.
-	  instance: function(type, Target, options) {
-	    return new this.constructor(type, Target, options);
-	  },
-
-	  // Creates a new, unparsed model, used internally in the eager fetch helper
-	  // methods. (Parsing may mutate information necessary for eager pairing.)
-	  createModel: function(data) {
-	    if (this.target.prototype instanceof CollectionBase) {
-	      return new this.target.prototype.model(data)._reset();
-	    }
-	    return new this.target(data)._reset();
-	  },
-
-	  // Eager pair the models.
-	  eagerPair: function() {}
-
-	});
-
-	RelationBase.extend = __webpack_require__(26);
-
-	module.exports = RelationBase;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-	var escapeStringRegexp = __webpack_require__(28);
-	var ansiStyles = __webpack_require__(29);
-	var stripAnsi = __webpack_require__(30);
-	var hasAnsi = __webpack_require__(31);
-	var supportsColor = __webpack_require__(32);
-	var defineProps = Object.defineProperties;
-
-	function Chalk(options) {
-		// detect mode if not set manually
-		this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
-	}
-
-	// use bright blue on Windows as the normal blue color is illegible
-	if (process.platform === 'win32') {
-		ansiStyles.blue.open = '\u001b[94m';
-	}
-
-	function build(_styles) {
-		var builder = function builder() {
-			return applyStyle.apply(builder, arguments);
-		};
-		builder._styles = _styles;
-		builder.enabled = this.enabled;
-		// __proto__ is used because we must return a function, but there is
-		// no way to create a function with a different prototype.
-		builder.__proto__ = proto;
-		return builder;
-	}
-
-	var styles = (function () {
-		var ret = {};
-
-		Object.keys(ansiStyles).forEach(function (key) {
-			ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
-
-			ret[key] = {
-				get: function () {
-					return build.call(this, this._styles.concat(key));
-				}
-			};
-		});
-
-		return ret;
-	})();
-
-	var proto = defineProps(function chalk() {}, styles);
-
-	function applyStyle() {
-		// support varags, but simply cast to string in case there's only one arg
-		var args = arguments;
-		var argsLen = args.length;
-		var str = argsLen !== 0 && String(arguments[0]);
-		if (argsLen > 1) {
-			// don't slice `arguments`, it prevents v8 optimizations
-			for (var a = 1; a < argsLen; a++) {
-				str += ' ' + args[a];
-			}
-		}
-
-		if (!this.enabled || !str) {
-			return str;
-		}
-
-		/*jshint validthis: true */
-		var nestedStyles = this._styles;
-
-		var i = nestedStyles.length;
-		while (i--) {
-			var code = ansiStyles[nestedStyles[i]];
-			// Replace any instances already present with a re-opening code
-			// otherwise only the part of the string until said closing code
-			// will be colored, and the rest will simply be 'plain'.
-			str = code.open + str.replace(code.closeRe, code.open) + code.close;
-		}
-
-		return str;
-	}
-
-	function init() {
-		var ret = {};
-
-		Object.keys(styles).forEach(function (name) {
-			ret[name] = {
-				get: function () {
-					return build.call(this, [name]);
-				}
-			};
-		});
-
-		return ret;
-	}
-
-	defineProps(Chalk.prototype, init());
-
-	module.exports = new Chalk();
-	module.exports.styles = ansiStyles;
-	module.exports.hasColor = hasAnsi;
-	module.exports.stripColor = stripAnsi;
-	module.exports.supportsColor = supportsColor;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
-
-/***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4302,10 +4214,117 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_23__;
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	var escapeStringRegexp = __webpack_require__(29);
+	var ansiStyles = __webpack_require__(30);
+	var stripAnsi = __webpack_require__(31);
+	var hasAnsi = __webpack_require__(32);
+	var supportsColor = __webpack_require__(33);
+	var defineProps = Object.defineProperties;
+
+	function Chalk(options) {
+		// detect mode if not set manually
+		this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
+	}
+
+	// use bright blue on Windows as the normal blue color is illegible
+	if (process.platform === 'win32') {
+		ansiStyles.blue.open = '\u001b[94m';
+	}
+
+	function build(_styles) {
+		var builder = function builder() {
+			return applyStyle.apply(builder, arguments);
+		};
+		builder._styles = _styles;
+		builder.enabled = this.enabled;
+		// __proto__ is used because we must return a function, but there is
+		// no way to create a function with a different prototype.
+		builder.__proto__ = proto;
+		return builder;
+	}
+
+	var styles = (function () {
+		var ret = {};
+
+		Object.keys(ansiStyles).forEach(function (key) {
+			ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
+
+			ret[key] = {
+				get: function () {
+					return build.call(this, this._styles.concat(key));
+				}
+			};
+		});
+
+		return ret;
+	})();
+
+	var proto = defineProps(function chalk() {}, styles);
+
+	function applyStyle() {
+		// support varags, but simply cast to string in case there's only one arg
+		var args = arguments;
+		var argsLen = args.length;
+		var str = argsLen !== 0 && String(arguments[0]);
+		if (argsLen > 1) {
+			// don't slice `arguments`, it prevents v8 optimizations
+			for (var a = 1; a < argsLen; a++) {
+				str += ' ' + args[a];
+			}
+		}
+
+		if (!this.enabled || !str) {
+			return str;
+		}
+
+		/*jshint validthis: true */
+		var nestedStyles = this._styles;
+
+		var i = nestedStyles.length;
+		while (i--) {
+			var code = ansiStyles[nestedStyles[i]];
+			// Replace any instances already present with a re-opening code
+			// otherwise only the part of the string until said closing code
+			// will be colored, and the rest will simply be 'plain'.
+			str = code.open + str.replace(code.closeRe, code.open) + code.close;
+		}
+
+		return str;
+	}
+
+	function init() {
+		var ret = {};
+
+		Object.keys(styles).forEach(function (name) {
+			ret[name] = {
+				get: function () {
+					return build.call(this, [name]);
+				}
+			};
+		});
+
+		return ret;
+	}
+
+	defineProps(Chalk.prototype, init());
+
+	module.exports = new Chalk();
+	module.exports.styles = ansiStyles;
+	module.exports.hasColor = hasAnsi;
+	module.exports.stripColor = stripAnsi;
+	module.exports.supportsColor = supportsColor;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
 
 /***/ },
 /* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_24__;
+
+/***/ },
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//     create-error.js 0.3.1
@@ -4429,7 +4448,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Eager Base
@@ -4440,7 +4459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// a database specific `eagerFetch` method, which then may utilize
 	// `pushModels` for pairing the models depending on the database need.
 
-	var _         = __webpack_require__(1);
+	var _         = __webpack_require__(2);
 	var Promise   = __webpack_require__(15);
 
 	function EagerBase(parent, parentResponse, target) {
@@ -4539,7 +4558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = EagerBase;
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -4592,7 +4611,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// shim for using process in browser
@@ -4656,7 +4675,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4673,7 +4692,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4735,11 +4754,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var ansiRegex = __webpack_require__(33)();
+	var ansiRegex = __webpack_require__(34)();
 
 	module.exports = function (str) {
 		return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
@@ -4747,17 +4766,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var ansiRegex = __webpack_require__(34);
+	var ansiRegex = __webpack_require__(35);
 	var re = new RegExp(ansiRegex().source); // remove the `g` flag
 	module.exports = re.test.bind(re);
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -4804,10 +4823,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		return false;
 	})();
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4817,7 +4836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
