@@ -11,6 +11,11 @@ module.exports = function (Bookshelf) {
 
   describe('Plugin', function () {
 
+    var Models = require('./helpers/objects')(Bookshelf).Models;
+
+    var Site   = Models.Site;
+    var Author = Models.Author;
+
     it('can be the name of an included plugin', function () {
       Bookshelf.plugin('registry');
       expect(Bookshelf).to.itself.respondTo('model');
@@ -34,6 +39,22 @@ module.exports = function (Bookshelf) {
 
     it('returns the Bookshelf instance for chaining', function () {
       expect(Bookshelf.plugin(spy, options)).to.equal(Bookshelf);
+    });
+
+    it('can modify the `Collection` model returned by `Model#collection`', function () {
+      var testPlugin = function (bookshelf, options) {
+        bookshelf.Collection = bookshelf.Collection.extend({
+          test: 'test'
+        });
+      }
+
+      Bookshelf.plugin(testPlugin);
+      expect(Bookshelf.Model.collection().test).to.equal('test');
+    });
+
+    it('can modify the `Collection` model used by relations', function () {
+      var authors = Site.forge().related('authors');
+      expect(authors.test).to.equal('test');
     });
 
   });
