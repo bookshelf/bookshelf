@@ -208,6 +208,16 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('correctly parses added relation keys', function() {
+        return Site.forge({id: 1}).related('authorsParsed')
+          .create({first_name_parsed: 'John', last_name_parsed: 'Smith'})
+          .then(function (author) {
+            expect(author.get('first_name_parsed')).to.equal('John');
+            expect(author.get('last_name_parsed')).to.equal('Smith');
+            expect(author.get('site_id_parsed')).to.equal(1);
+            return author.destroy();
+          });
+      });
     });
 
   });

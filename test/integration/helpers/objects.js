@@ -47,6 +47,9 @@ module.exports = function(Bookshelf) {
     authors: function() {
       return this.hasMany(Author);
     },
+    authorsParsed: function() {
+      return this.hasMany(AuthorParsed);
+    },
     photos: function() {
       return this.morphMany(Photo, 'imageable');
     },
