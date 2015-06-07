@@ -157,6 +157,17 @@ module.exports = function(bookshelf) {
 
       });
 
+      it('should not set incorrect foreign key in a `hasMany` `through` relation - #768', function() {
+
+        // This will fail if an unknown field (eg. `blog_id`) is added to insert query.
+        return new Blog({id: 768})
+          .comments()
+          .create({post_id: 5, comment: 'test comment'})
+          .tap(function (comment) {
+            return comment.destroy();
+          });
+      });
+
       it('should automatically create a join model when joining a belongsToMany', function() {
 
         return new Site({id: 1})
