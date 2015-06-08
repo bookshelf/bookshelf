@@ -829,6 +829,18 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('clone', function() {
+      var Post = Models.Post;
+
+      it('should be equivalent when cloned', function() {
+        var original = Post.forge({author: 'Johnny', body: 'body'});
+        original.related('comments').add({email: 'some@email.com'});
+        var cloned = original.clone();
+
+        deepEqual(_.omit(cloned, 'cid'), _.omit(original, 'cid'));
+      });
+    });
+
   });
 
 };
