@@ -73,6 +73,10 @@ module.exports = function(bookshelf) {
       site_id: 2,
       first_name: 'Ron',
       last_name: 'Burgundy'
+    },{
+      site_id: 99,
+      first_name: 'Anonymous',
+      last_name: null
     }]),
 
     knex('posts').insert([{

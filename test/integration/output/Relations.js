@@ -3608,6 +3608,12 @@ module.exports = {
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
+      },{
+        id: 5,
+        site_id: 99,
+        first_name: 'Anonymous',
+        last_name: null,
+        blogs: []
       }]
     },
     postgresql: {
@@ -3670,6 +3676,12 @@ module.exports = {
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
+      },{
+        id: 5,
+        site_id: 99,
+        first_name: 'Anonymous',
+        last_name: null,
+        blogs: []
       }]
     },
     sqlite3: {
@@ -3732,6 +3744,12 @@ module.exports = {
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
+      },{
+        id: 5,
+        site_id: 99,
+        first_name: 'Anonymous',
+        last_name: null,
+        blogs: []
       }]
     }
   },
