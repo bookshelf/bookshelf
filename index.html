@@ -2206,7 +2206,7 @@ collection
 <pre><code>
 var Promise = require('bluebird');
 
-Bookshelf.transaction(function(t) {
+bookshelf.transaction(function(t) {
   return new Library({name: 'Old Books'})
     .save(null, {transacting: t})
     .tap(function(model) {
