@@ -683,6 +683,13 @@ module.exports = function(bookshelf) {
         equal(_.isEmpty(ts2.created_at), true);
         equal(_.isDate(ts2.updated_at), true);
       });
+
+      it('will set the `created_at` when inserting new entries', function() {
+        var m = new bookshelf.Model({id: 1});
+        var ts  = m.timestamp({method: 'insert'});
+        equal(_.isDate(ts.created_at), true);
+        equal(_.isDate(ts.updated_at), true);
+      });
     });
 
     describe('defaults', function() {
