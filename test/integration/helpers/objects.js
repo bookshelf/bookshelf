@@ -183,6 +183,9 @@ module.exports = function(Bookshelf) {
     },
     blog: function() {
       return this.belongsTo(Blog).through(Post);
+    },
+    site: function() {
+      return this.belongsTo(Site).through(Blog).through(Post);
     }
   });
 

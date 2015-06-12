@@ -159,8 +159,8 @@ module.exports = function(Bookshelf) {
 			});
 
 			it('allows for *-through relations', function() {
-				var relation = this.model.throughTest();
-				expect(relation.relatedData.throughTableName).to.equal('related');
+				var relation = this.model.throughTest();        
+        expect(relation.relatedData.throughTargets[0].tableName).to.equal('related');
 			});
 
 			describe('morphTo', function() {

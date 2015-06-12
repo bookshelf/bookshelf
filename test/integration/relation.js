@@ -63,6 +63,13 @@ module.exports = function(Bookshelf) {
         return this.hasOne(AccountHistory).through(Account);
       }
     });
+    
+    var Warehouse = Bookshelf.Model.extend({
+      tableName: 'warehouses',
+      accountHistory: function() {
+        return this.hasOne(AccountHistory).through(Supplier).through(Account);
+      }
+    });
 
     var Account = Bookshelf.Model.extend({
       tableName: 'accounts'
@@ -72,6 +79,9 @@ module.exports = function(Bookshelf) {
       tableName: 'account_histories',
       supplier: function() {
         return this.belongsTo(Supplier).through(Account);
+      },
+      warehouse: function() {
+        return this.belongsTo(Warehouse).through(Supplier).through(Account); 
       }
     });
 
@@ -129,19 +139,20 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Account);
+        equal(throughTarget.tableName, 'accounts');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
         var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1 limit 1';
-
+        
         equal(_knex.toString(), sql);
       });
-
+      
       it('should handle a belongsTo -> through relation', function() {
         var base = new AccountHistory({id: 1});
         var relation = base.supplier();
@@ -161,10 +172,11 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Account);
+        equal(throughTarget.tableName, 'accounts');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -173,6 +185,45 @@ module.exports = function(Bookshelf) {
 
         equal(_knex.toString(), sql);
       });
+      
+      it('should handle a belongsTo -> nested through relation', function() {
+        var base = new AccountHistory({id: 1});
+        var relation = base.warehouse();
+        var _knex    = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'belongsTo');
+        equal(relatedData.target, Warehouse);
+        equal(relatedData.targetTableName, 'warehouses');
+        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.foreignKey, 'warehouse_id');
+
+        // Init
+        equal(relatedData.parentId, 1);
+        equal(relatedData.parentTableName, 'account_histories');
+        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentFk, 1);
+
+        // Throughs
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Supplier);
+        equal(throughTarget.tableName, 'suppliers');
+        equal(throughTarget.idAttribute, 'id');
+                
+        throughTarget = relatedData.throughTargets[1]
+        equal(throughTarget.target, Account);
+        equal(throughTarget.tableName, 'accounts');
+        equal(throughTarget.idAttribute, 'id');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        var sql = 'select `warehouses`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `warehouses` inner join `suppliers` on `suppliers`.`warehouse_id` = `warehouses`.`id` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1 limit 1';
+
+        equal(_knex.toString(), sql);
+      });
+      
 
       it('should handle a belongsToMany -> through relation', function() {
         var base = new Doctor({id: 1});
@@ -193,10 +244,11 @@ module.exports = function(Bookshelf) {
         equal(relatedData.parentIdAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
-        // Through
-        equal(relatedData.throughTarget, Appointment);
-        equal(relatedData.throughTableName, 'appointments');
-        equal(relatedData.throughIdAttribute, 'id');
+        // Through        
+        var throughTarget = relatedData.throughTargets[0]
+        equal(throughTarget.target, Appointment);
+        equal(throughTarget.tableName, 'appointments');
+        equal(throughTarget.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});

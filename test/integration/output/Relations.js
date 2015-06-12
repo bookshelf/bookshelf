@@ -3785,6 +3785,53 @@ module.exports = {
       }]
     }
   },
+  'eager loads belongsTo nested `through`': {
+    mysql: {
+      result: [{
+        id: 1,
+        post_id: 1,
+        name: '(blank)',
+        email: 'test@example.com',
+        comment: 'this is neat.',
+        site:
+        { id: 1,
+          name: 'knexjs.org',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        post_id: 1,
+        name: '(blank)',
+        email: 'test@example.com',
+        comment: 'this is neat.',
+        site:
+        { id: 1,
+          name: 'knexjs.org',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        post_id: 1,
+        name: '(blank)',
+        email: 'test@example.com',
+        comment: 'this is neat.',
+        site:
+        { id: 1,
+          name: 'knexjs.org',
+          _pivot_id: 1,
+          _pivot_blog_id: 1
+        }
+      }]
+    }
+  },
   '#65 - should eager load correctly for models': {
     mysql: {
       result: {
