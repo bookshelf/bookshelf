@@ -205,5 +205,36 @@ module.exports = function (bookshelf) {
       deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
     });
 
+    it('behaves correctly during a `patch` save - #542', function() {
+      var Model = bookshelf.Model.extend({
+        tableName: 'authors',
+        virtuals: {
+          full_name: {
+              set: function(fullName) {
+                var names = fullName.split(' ');
+                console.log('about to set...', names);
+                return this.set({
+                  first_name: names[0],
+                  last_name:  names[1]
+                });
+              },
+              get: function() {
+                return [this.get('first_name'), this.get('last_name')].join(' ');
+              }
+            }
+        }
+      });
+
+      return new Model({site_id: 5}).save()
+        .then(function(model) {
+          return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
+        }).tap(function(result) {
+          expect(result.get('site_id')).to.equal(2);
+          expect(result.get('first_name')).to.equal('Oderus');
+          expect(result.get('last_name')).to.equal('Urungus');
+          return result.destroy();
+        });
+
+    });
   });
 };
