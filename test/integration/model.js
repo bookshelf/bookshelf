@@ -829,7 +829,7 @@ module.exports = function(bookshelf) {
 
     });
 
-    describe('clone', function() {
+    describe('model.clone', function() {
       var Post = Models.Post;
 
       it('should be equivalent when cloned', function() {
