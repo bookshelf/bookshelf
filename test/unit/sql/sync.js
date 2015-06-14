@@ -20,6 +20,9 @@ module.exports = function() {
       };
       return {
         tableName: 'testtable',
+        isNew: function() {
+          return true
+        },
         queryData: qd,
         query: function() {
           return {
@@ -53,6 +56,10 @@ module.exports = function() {
 
       it('should run after format', function() {
 
+        var attributes = {
+          'Some': 'column',
+          'Another': 'column'
+        };
         var sync = new Sync(_.extend(stubSync(), {
           format: function(attrs) {
             var data = {};
@@ -60,10 +67,6 @@ module.exports = function() {
               data[key.toLowerCase()] = attrs[key];
             }
             return data;
-          },
-          attributes: {
-            'Some': 'column',
-            'Another': 'column'
           }
         }));
         sync.select = function() {
@@ -72,7 +75,7 @@ module.exports = function() {
             "testtable.another": "column"
           }]);
         };
-        return sync.first();
+        return sync.first(attributes);
 
       });
 
