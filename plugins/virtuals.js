@@ -4,6 +4,7 @@
 module.exports = function (Bookshelf) {
   "use strict";
   var _         = require('lodash');
+  var Promise   = require('bluebird');
   var proto     = Bookshelf.Model.prototype;
 
   var Model = Bookshelf.Model.extend({
@@ -55,17 +56,87 @@ module.exports = function (Bookshelf) {
     },
 
     // Allow virtuals to be set like normal properties
-    set: function(key, val, options) {
+    set: function(key, value, options) {
+
       if (key == null) {
         return this;
       }
+
+      // Determine whether we're in the middle of a patch operation based on the 
+      // existance of the `patchAttributes` object.
+      var isPatching = this.patchAttributes != null;
+
+      // Handle `{key: value}` style arguments.
       if (_.isObject(key)) {
-        return proto.set.call(this, _.omit(key, setVirtual, this), val, options);
+        var nonVirtuals = _.omit(key, setVirtual, this);
+        if (isPatching) {
+          _.extend(this.patchAttributes, nonVirtuals);
+        }
+        // Set the non-virtual attributes as normal.
+        return proto.set.call(this, nonVirtuals, value, options);
       }
-      if (setVirtual.call(this, val, key)) {
+
+      // Handle `"key", value` style arguments.
+      if (setVirtual.call(this, value, key)) {
+        if (isPatching) {
+          this.patchAttributes[key] = value;
+        }
         return this;
       }
       return proto.set.apply(this, arguments);
+    },
+
+    // Override `save` to keep track of state while doing a `patch` operation.
+    save: function(key, value, options) {
+      var attrs;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      if (key == null || typeof key === "object") {
+        attrs = key && _.clone(key) || {};
+        options = _.clone(value) || {};
+      } else {
+        (attrs = {})[key] = value;
+        options = options ? _.clone(options) : {};
+      }
+
+      // Determine whether which kind of save we will do, update or insert.
+      var method = options.method = this.saveMethod(options);
+
+      // Check if we're going to do a patch, in which case deal with virtuals now.
+      if (options.method === 'update' && options.patch) {
+
+         // Extend the model state to collect side effects from the virtual setter
+         // callback. If `set` is called, this object will be updated in addition
+         // to the normal `attributes` object.
+         this.patchAttributes = {}
+
+         // Any setter could throw. We need to reject `save` if they do.
+         try {
+
+           // Check if any of the patch attribues are virtuals. If so call their
+           // setter. Any setter that calls `this.set` will be modifying
+           // `this.patchAttributes` instead of `this.attributes`.
+           _.each(attrs, (function (value, key) {
+
+             if (setVirtual.call(this, value, key)) {
+               // This was a virtual, so remove it from the attributes to be
+               // passed to `Model.save`.
+               delete attrs[key];
+             }
+
+           }).bind(this));
+
+           // Now add any changes that occurred during the update.
+           _.extend(attrs, this.patchAttributes);
+         } catch (e) {
+           return Promise.reject(e);
+         } finally {
+           // Delete the temporary object.
+           delete this.patchAttributes;
+         }
+      }
+
+      return proto.save.call(this, attrs, options);
     }
   });
 

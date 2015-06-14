@@ -205,5 +205,55 @@ module.exports = function (bookshelf) {
       deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
     });
 
+    it('behaves correctly during a `patch` save - #542', function() {
+      var Model = bookshelf.Model.extend({
+        tableName: 'authors',
+        virtuals: {
+          full_name: {
+            set: function(fullName) {
+              var names = fullName.split(' ');
+              return this.set({
+                first_name: names[0],
+                last_name:  names[1]
+              });
+            },
+            get: function() {
+              return [this.get('first_name'), this.get('last_name')].join(' ');
+            }
+          }
+        }
+      });
+
+      return new Model({site_id: 5}).save()
+        .then(function(model) {
+          return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
+        }).tap(function(result) {
+          expect(result.get('site_id')).to.equal(2);
+          expect(result.get('first_name')).to.equal('Oderus');
+          expect(result.get('last_name')).to.equal('Urungus');
+          return result.destroy();
+        });
+
+    });
+
+    it('save should be rejected after `set` throws an exception during a `patch` operation.', function() {
+      var Model = bookshelf.Model.extend({
+        tableName: 'authors',
+        virtuals: {
+          will_cause_error: {
+            set: function(fullName) {
+              throw new Error('Deliberately failing');
+            },
+            get: _.noop
+          }
+        }
+      });
+
+      return Model.forge({id: 4, first_name: 'Ned'})
+        .save({will_cause_error: 'value'}, {patch: true})
+        .catch(function(error) {
+          expect(error.message).to.equal('Deliberately failing');
+        })
+    });
   });
 };
