@@ -20,6 +20,9 @@ module.exports = function() {
       };
       return {
         tableName: 'testtable',
+        isNew: function() {
+          return true
+        },
         queryData: qd,
         query: function() {
           return {
