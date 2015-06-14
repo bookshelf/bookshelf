@@ -210,18 +210,17 @@ module.exports = function (bookshelf) {
         tableName: 'authors',
         virtuals: {
           full_name: {
-              set: function(fullName) {
-                var names = fullName.split(' ');
-                console.log('about to set...', names);
-                return this.set({
-                  first_name: names[0],
-                  last_name:  names[1]
-                });
-              },
-              get: function() {
-                return [this.get('first_name'), this.get('last_name')].join(' ');
-              }
+            set: function(fullName) {
+              var names = fullName.split(' ');
+              return this.set({
+                first_name: names[0],
+                last_name:  names[1]
+              });
+            },
+            get: function() {
+              return [this.get('first_name'), this.get('last_name')].join(' ');
             }
+          }
         }
       });
 
@@ -235,6 +234,26 @@ module.exports = function (bookshelf) {
           return result.destroy();
         });
 
+    });
+
+    it('save should be rejected after `set` throws an exception during a `patch` operation.', function() {
+      var Model = bookshelf.Model.extend({
+        tableName: 'authors',
+        virtuals: {
+          will_cause_error: {
+            set: function(fullName) {
+              throw new Error('Deliberately failing');
+            },
+            get: _.noop
+          }
+        }
+      });
+
+      return Model.forge({id: 4, first_name: 'Ned'})
+        .save({will_cause_error: 'value'}, {patch: true})
+        .catch(function(error) {
+          expect(error.message).to.equal('Deliberately failing');
+        })
     });
   });
 };

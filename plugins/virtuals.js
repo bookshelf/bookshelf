@@ -4,6 +4,7 @@
 module.exports = function (Bookshelf) {
   "use strict";
   var _         = require('lodash');
+  var Promise   = require('bluebird');
   var proto     = Bookshelf.Model.prototype;
 
   var Model = Bookshelf.Model.extend({
@@ -91,7 +92,7 @@ module.exports = function (Bookshelf) {
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
-        attrs = key || {};
+        attrs = key && _.clone(key) || {};
         options = _.clone(value) || {};
       } else {
         (attrs = {})[key] = value;
@@ -109,17 +110,30 @@ module.exports = function (Bookshelf) {
          // to the normal `attributes` object.
          this.patchAttributes = {}
 
-         _.each(attrs, (function (value, key) {
-           if (setVirtual.call(this, value, key)) {
-             delete attrs[key];
-           }
-         }).bind(this));
+         // Any setter could throw. We need to reject `save` if they do.
+         try {
 
-         // Now add any changes that occurred during the update.
-         _.extend(attrs, this.patchAttributes);
+           // Check if any of the patch attribues are virtuals. If so call their
+           // setter. Any setter that calls `this.set` will be modifying
+           // `this.patchAttributes` instead of `this.attributes`.
+           _.each(attrs, (function (value, key) {
 
-         // Delete the temporary object.
-         delete this.patchAttributes;
+             if (setVirtual.call(this, value, key)) {
+               // This was a virtual, so remove it from the attributes to be
+               // passed to `Model.save`.
+               delete attrs[key];
+             }
+
+           }).bind(this));
+
+           // Now add any changes that occurred during the update.
+           _.extend(attrs, this.patchAttributes);
+         } catch (e) {
+           return Promise.reject(e);
+         } finally {
+           // Delete the temporary object.
+           delete this.patchAttributes;
+         }
       }
 
       return proto.save.call(this, attrs, options);
