@@ -46,6 +46,8 @@ module.exports = function(Bookshelf) {
       // Only testing this against mysql for now, just so the toString is reliable...
       if (dialect === 'mysql') {
         require('./integration/relation')(bookshelf);
+      } else if (dialect === 'postgresql') {
+        require('./integration/json')(bookshelf);
       }
       
       require('./integration/model')(bookshelf);
@@ -55,7 +57,6 @@ module.exports = function(Bookshelf) {
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);
-      require('./integration/json')(bookshelf);
     });
 
   });

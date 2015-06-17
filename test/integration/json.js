@@ -6,24 +6,26 @@ module.exports = function(bookshelf) {
 
   var isJsonSupported;
 
-  function checkJson() {
+  function checkResponse(actual, expected) {
+    // Knex will store strings if client does not support JSON.
     if (!isJsonSupported) {
-      console.log('Test skipped... JSON columns not supported');
+      expected = _.mapValues(expected, function(value) {
+        if (_.isObject(value)) {
+          return JSON.stringify(value);
+        }
+        return value
+      });
     }
-    return isJsonSupported;
+    expect(actual).to.eql(expected);
   }
 
   before(function() {
     return require('./helpers/json/supported')(bookshelf).then(function(supported) {
       isJsonSupported = supported;
-      if (!isJsonSupported) {
-        throw null;
-      }
       return require('./helpers/json/migration')(bookshelf)
     }).then(function() {
        return require('./helpers/json/inserts')(bookshelf);
-    }).then(function() {
-    }).catch(_.isNull, _.noop);
+    });
   });
 
   describe('JSON support', function() {
@@ -34,11 +36,9 @@ module.exports = function(bookshelf) {
 
 
     it('can `fetch` a model with a JSON column', function() {
-      if (!checkJson()) return;
-
       return Command.forge({id: 0}).fetch()
         .then(function(command) {
-          expect(command.attributes).to.eql({
+          checkResponse(command.attributes, {
             id: 0,
             unit_id: 1,
             type: 'move',
@@ -53,11 +53,9 @@ module.exports = function(bookshelf) {
     });
 
     it('Trying to fetch a model automatically excludes JSON column', function() {
-      if (!checkJson()) return;
-
       return Command.forge({unit_id: 1, type: 'attack', info: {test: 'blah'}}).fetch()
         .then(function(command) {
-          expect(command.attributes).to.eql({
+          checkResponse(command.attributes, {
             id: 1,
             unit_id: 1,
             type: 'attack',
