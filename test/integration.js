@@ -30,9 +30,12 @@ module.exports = function(Bookshelf) {
   });
 
   _.each([MySQL, PostgreSQL, SQLite3], function(bookshelf) {
-    describe('Dialect: ' + bookshelf.knex.client.dialect, function() {
 
-      var dialect = this.dialect = bookshelf.knex.client.dialect;
+    var dialect = bookshelf.knex.client.dialect;
+
+    describe('Dialect: ' + dialect, function() {
+
+      this.dialect = dialect;
 
       before(function() {
         return require('./integration/helpers/migration')(bookshelf).then(function() {
@@ -43,10 +46,8 @@ module.exports = function(Bookshelf) {
       // Only testing this against mysql for now, just so the toString is reliable...
       if (dialect === 'mysql') {
         require('./integration/relation')(bookshelf);
-      } else if (dialect === 'postgresql') {
-        require('./integration/json')(bookshelf);
       }
-
+      
       require('./integration/model')(bookshelf);
       require('./integration/collection')(bookshelf);
       require('./integration/relations')(bookshelf);
@@ -54,6 +55,7 @@ module.exports = function(Bookshelf) {
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);
+      require('./integration/json')(bookshelf);
     });
 
   });
