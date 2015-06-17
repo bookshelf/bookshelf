@@ -1,5 +1,3 @@
-'use strict';
-
 var createError = require('create-error');
 
 module.exports = {

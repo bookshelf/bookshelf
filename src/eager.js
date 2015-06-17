@@ -1,12 +1,10 @@
 // EagerRelation
 // ---------------
-'use strict';
+var _         = require('lodash');
+var inherits  = require('inherits');
 
-var _ = require('lodash');
-var inherits = require('inherits');
-
-var Helpers = require('./helpers');
-var Promise = require('./base/promise');
+var Helpers   = require('./helpers');
+var Promise   = require('./base/promise');
 var EagerBase = require('./base/eager');
 
 // An `EagerRelation` object temporarily stores the models from an eager load,
@@ -22,7 +20,7 @@ _.extend(EagerRelation.prototype, {
 
   // Handles an eager loaded fetch, passing the name of the item we're fetching for,
   // and any options needed for the current fetch.
-  eagerFetch: Promise.method(function (relationName, handled, options) {
+  eagerFetch: Promise.method(function(relationName, handled, options) {
     var relatedData = handled.relatedData;
 
     // skip eager loading for rows where the foreign key isn't set
@@ -30,41 +28,51 @@ _.extend(EagerRelation.prototype, {
 
     if (relatedData.type === 'morphTo') return this.morphToFetch(relationName, relatedData, options);
 
-    return handled.sync(_.extend(options, { parentResponse: this.parentResponse })).select().bind(this).tap(function (response) {
-      return this._eagerLoadHelper(response, relationName, handled, _.omit(options, 'parentResponse'));
-    });
+    return handled
+      .sync(_.extend(options, {parentResponse: this.parentResponse}))
+      .select()
+      .bind(this)
+      .tap(function(response) {
+        return this._eagerLoadHelper(response, relationName, handled, _.omit(options, 'parentResponse'));
+      });
   }),
 
   // Special handler for the eager loaded morph-to relations, this handles
   // the fact that there are several potential models that we need to be fetching against.
   // pairing them up onto a single response for the eager loading.
-  morphToFetch: Promise.method(function (relationName, relatedData, options) {
-    var _this = this;
-
-    var groups = _.groupBy(this.parent, function (m) {
+  morphToFetch: Promise.method(function(relationName, relatedData, options) {
+    var groups = _.groupBy(this.parent, function(m) {
       var typeKeyName = relatedData.columnNames && relatedData.columnNames[0] ? relatedData.columnNames[0] : relatedData.morphName + '_type';
       return m.get(typeKeyName);
     });
-    var pending = _.reduce(groups, function (memo, val, group) {
+    var pending = _.reduce(groups, (memo, val, group) => {
       var Target = Helpers.morphCandidate(relatedData.candidates, group);
       var target = new Target();
       var idKeyName = relatedData.columnNames && relatedData.columnNames[1] ? relatedData.columnNames[1] : relatedData.morphName + '_id';
-      memo.push(target.query('whereIn', _.result(target, 'idAttribute'), _.uniq(_.invoke(groups[group], 'get', idKeyName))).sync(options).select().bind(_this).tap(function (response) {
-        return this._eagerLoadHelper(response, relationName, {
-          relatedData: relatedData.instance('morphTo', Target, { morphName: relatedData.morphName, columnNames: relatedData.columnNames })
-        }, options);
-      }));
-      return memo;
+      memo.push(target
+        .query('whereIn',
+          _.result(target, 'idAttribute'),
+          _.uniq(_.invoke(groups[group], 'get', idKeyName))
+        )
+        .sync(options)
+        .select()
+        .bind(this)
+        .tap(function(response) {
+          return this._eagerLoadHelper(response, relationName, {
+            relatedData: relatedData.instance('morphTo', Target, {morphName: relatedData.morphName, columnNames: relatedData.columnNames})
+          }, options);
+        }));
+        return memo;
     }, []);
-    return Promise.all(pending).then(function (resps) {
+    return Promise.all(pending).then(function(resps) {
       return _.flatten(resps);
     });
   }),
 
   // Handles the eager load for both the `morphTo` and regular cases.
-  _eagerLoadHelper: function _eagerLoadHelper(response, relationName, handled, options) {
+  _eagerLoadHelper: function(response, relationName, handled, options) {
     var relatedModels = this.pushModels(relationName, handled, response);
-    var relatedData = handled.relatedData;
+    var relatedData   = handled.relatedData;
 
     // If there is a response, fetch additional nested eager relations, if any.
     if (response.length > 0 && options.withRelated) {
@@ -75,19 +83,19 @@ _.extend(EagerRelation.prototype, {
       if (relatedData.type === 'morphTo') {
         var withRelated = this._filterRelated(relatedModel, options);
         if (withRelated.length === 0) return;
-        options = _.extend({}, options, { withRelated: withRelated });
+        options = _.extend({}, options, {withRelated: withRelated});
       }
-      return new EagerRelation(relatedModels, response, relatedModel).fetch(options)['return'](response);
+      return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
     }
   },
 
   // Filters the `withRelated` on a `morphTo` relation, to ensure that only valid
   // relations are attempted for loading.
-  _filterRelated: function _filterRelated(relatedModel, options) {
+  _filterRelated: function(relatedModel, options) {
 
     // By this point, all withRelated should be turned into a hash, so it should
     // be fairly simple to process by splitting on the dots.
-    return _.reduce(options.withRelated, function (memo, val) {
+    return _.reduce(options.withRelated, function(memo, val) {
       for (var key in val) {
         var seg = key.split('.')[0];
         if (_.isFunction(relatedModel[seg])) memo.push(val);

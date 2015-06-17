@@ -1,5 +1,4 @@
 var _          = require('lodash');
-var inherits   = require('inherits');
 var semver     = require('semver');
 var helpers    = require('./helpers')
 
@@ -97,9 +96,9 @@ function Bookshelf(knex) {
           }
         }
       } else if (_.isArray(plugin)) {
-        _.each(plugin, function (plugin) {
-          this.plugin(plugin, options);
-        }, this);
+        _.each(plugin, (p) => {
+          this.plugin(p, options);
+        });
       } else {
         plugin(this, options);
       }
@@ -122,10 +121,14 @@ function Bookshelf(knex) {
   }
 
   function builderFn(tableName) {
-    var builder  = knex(tableName);
-    var instance = this;
-    return builder.on('query', function(data) {
-      instance.trigger('query', data);
+    var builder
+    if (tableName) {
+      builder = knex(tableName);
+    } else {
+      builder = knex.queryBuilder()
+    }
+    return builder.on('query', (data) => {
+      this.trigger('query', data);
     });
   }
 

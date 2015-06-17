@@ -4,7 +4,10 @@
 [tests](https://github.com/tgriesser/bookshelf/tree/master/test).
 
 * Use the same coding style as the rest of the
-[codebase](https://github.com/tgriesser/bookshelf/blob/master/bookshelf.js).
+[codebase](https://github.com/tgriesser/bookshelf/blob/master/src/bookshelf.js).
+
+* Make changes in the /src directory, running "npm run dev" which will kick off 
+transpilation from ES6 in the background
 
 * Files in the `/browser` folder are built automatically. You don't need to edit them.
 

@@ -4,9 +4,11 @@
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
+    "dev": "rm -rf ./lib && mkdir ./lib && babel -w -L -D src/ --out-dir lib/",
+    "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
-    "jshint": "jshint bookshelf.js lib/*",
-    "test": "mocha -b -t 5000 --check-leaks -R spec test/index.js"
+    "eslint": "eslint bookshelf.js src/.",
+    "test": "npm run eslint && npm run babel && mocha -b -t 5000 --check-leaks -R spec test/index.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -31,8 +33,10 @@
     "semver": "^4.3.3"
   },
   "devDependencies": {
+    "babel": "^5.5.8",
+    "babel-eslint": "^3.1.15",
     "chai": "~1.9.1",
-    "jshint": "~2.7.0",
+    "eslint": "^0.23.0",
     "knex": "^0.8.0",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",

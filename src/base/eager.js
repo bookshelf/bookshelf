@@ -6,10 +6,8 @@
 // a database specific `eagerFetch` method, which then may utilize
 // `pushModels` for pairing the models depending on the database need.
 
-'use strict';
-
-var _ = require('lodash');
-var Promise = require('./promise');
+var _         = require('lodash');
+var Promise   = require('./promise');
 
 function EagerBase(parent, parentResponse, target) {
   this.parent = parent;
@@ -21,12 +19,12 @@ _.extend(EagerBase.prototype, {
 
   // This helper function is used internally to determine which relations
   // are necessary for fetching based on the `model.load` or `withRelated` option.
-  fetch: Promise.method(function (options) {
+  fetch: Promise.method(function(options) {
     var relationName, related, relation;
-    var target = this.target;
-    var handled = this.handled = {};
+    var target      = this.target;
+    var handled     = this.handled = {};
     var withRelated = this.prepWithRelated(options.withRelated);
-    var subRelated = {};
+    var subRelated  = {};
 
     // Internal flag to determine whether to set the ctor(s) on the `Relation` object.
     target._isEager = true;
@@ -73,19 +71,19 @@ _.extend(EagerBase.prototype, {
 
     // Return a deferred handler for all of the nested object sync
     // returning the original response when these syncs & pairings are complete.
-    return Promise.all(pendingDeferred)['return'](this.parentResponse);
+    return Promise.all(pendingDeferred).return(this.parentResponse);
   }),
 
   // Prep the `withRelated` object, to normalize into an object where each
   // has a function that is called when running the query.
-  prepWithRelated: function prepWithRelated(withRelated) {
+  prepWithRelated: function(withRelated) {
     if (!_.isArray(withRelated)) withRelated = [withRelated];
     var obj = {};
     for (var i = 0, l = withRelated.length; i < l; i++) {
       var related = withRelated[i];
       if (_.isString(related)) {
-        obj[related] = noop;
-      } else {
+        obj[related] = noop
+      } else { 
         _.extend(obj, related);
       }
     }
@@ -94,10 +92,10 @@ _.extend(EagerBase.prototype, {
 
   // Pushes each of the incoming models onto a new `related` array,
   // which is used to correcly pair additional nested relations.
-  pushModels: function pushModels(relationName, handled, resp) {
-    var models = this.parent;
+  pushModels: function(relationName, handled, resp) {
+    var models      = this.parent;
     var relatedData = handled.relatedData;
-    var related = [];
+    var related     = [];
     for (var i = 0, l = resp.length; i < l; i++) {
       related.push(relatedData.createModel(resp[i]));
     }
@@ -106,6 +104,6 @@ _.extend(EagerBase.prototype, {
 
 });
 
-var noop = function noop() {};
+var noop = function() {};
 
 module.exports = EagerBase;

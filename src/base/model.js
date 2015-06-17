@@ -1,12 +1,10 @@
 // Base Model
 // ---------------
-'use strict';
-
-var _ = require('lodash');
+var _        = require('lodash');
 var inherits = require('inherits');
 
-var Events = require('./events');
-var slice = Array.prototype.slice;
+var Events   = require('./events');
+var slice    = Array.prototype.slice
 
 // List of attributes attached directly from the `options` passed to the constructor.
 var modelProps = ['tableName', 'hasTimestamps'];
@@ -15,11 +13,11 @@ var modelProps = ['tableName', 'hasTimestamps'];
 // it defines a standard interface from which other objects may inherit.
 function ModelBase(attributes, options) {
   var attrs = attributes || {};
-  options = options || {};
+  options   = options    || {};
   this.attributes = Object.create(null);
   this._reset();
   this.relations = {};
-  this.cid = _.uniqueId('c');
+  this.cid  = _.uniqueId('c');
   if (options) {
     _.extend(this, _.pick(options, modelProps));
     if (options.parse) attrs = this.parse(attrs, options) || {};
@@ -29,18 +27,18 @@ function ModelBase(attributes, options) {
 }
 inherits(ModelBase, Events);
 
-ModelBase.prototype.initialize = function () {};
+ModelBase.prototype.initialize = function() {};
 
 // The default value for the "id" attribute.
 ModelBase.prototype.idAttribute = 'id';
 
 // Get the value of an attribute.
-ModelBase.prototype.get = function (attr) {
+ModelBase.prototype.get = function(attr) {
   return this.attributes[attr];
 };
 
 // Set a property.
-ModelBase.prototype.set = function (key, val, options) {
+ModelBase.prototype.set = function(key, val, options) {
   if (key == null) return this;
   var attrs;
 
@@ -54,9 +52,9 @@ ModelBase.prototype.set = function (key, val, options) {
   options = _.clone(options) || {};
 
   // Extract attributes and options.
-  var unset = options.unset;
+  var unset   = options.unset;
   var current = this.attributes;
-  var prev = this._previousAttributes;
+  var prev    = this._previousAttributes;
 
   // Check for changes of `id`.
   if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
@@ -70,20 +68,20 @@ ModelBase.prototype.set = function (key, val, options) {
       delete this.changed[attr];
     }
     if (unset) {
-      delete current[attr];
+      delete current[attr]
     } else {
-      current[attr] = val;
+      current[attr] = val
     }
   }
   return this;
 };
 
 // A model is new if it has never been persisted, which we assume if it lacks an id.
-ModelBase.prototype.isNew = function () {
+ModelBase.prototype.isNew = function() {
   return this.id == null;
 };
 
-ModelBase.prototype.serialize = function (options) {
+ModelBase.prototype.serialize = function(options) {
   var attrs = _.clone(this.attributes);
   if (options && options.shallow) return attrs;
   var relations = this.relations;
@@ -98,68 +96,68 @@ ModelBase.prototype.serialize = function (options) {
       attrs['_pivot_' + key] = pivot[key];
     }
   }
-  return attrs;
-};
+  return attrs;  
+}
 
 // Returns an object containing a shallow copy of the model attributes,
 // along with the `toJSON` value of any relations,
 // unless `{shallow: true}` is passed in the `options`.
 // Also includes _pivot_ keys for relations unless `{omitPivot: true}`
 // is passed in `options`.
-ModelBase.prototype.toJSON = function (options) {
-  return this.serialize(options);
+ModelBase.prototype.toJSON = function(options) {
+  return this.serialize(options)
 };
 
 // Returns the string representation of the object.
-ModelBase.prototype.toString = function () {
+ModelBase.prototype.toString = function() {
   return '[Object Model]';
 };
 
 // Get the HTML-escaped value of an attribute.
-ModelBase.prototype.escape = function (key) {
+ModelBase.prototype.escape = function(key) {
   return _.escape(this.get(key));
 };
 
 // Returns `true` if the attribute contains a value that is not null
 // or undefined.
-ModelBase.prototype.has = function (attr) {
+ModelBase.prototype.has = function(attr) {
   return this.get(attr) != null;
 };
 
 // **parse** converts a response into the hash of attributes to be `set` on
 // the model. The default implementation is just to pass the response along.
-ModelBase.prototype.parse = function (resp) {
+ModelBase.prototype.parse = function(resp) {
   return resp;
 };
 
 // Remove an attribute from the model, firing `"change"`. `unset` is a noop
 // if the attribute doesn't exist.
-ModelBase.prototype.unset = function (attr, options) {
-  return this.set(attr, void 0, _.extend({}, options, { unset: true }));
+ModelBase.prototype.unset = function(attr, options) {
+  return this.set(attr, void 0, _.extend({}, options, {unset: true}));
 };
 
 // Clear all attributes on the model, firing `"change"`.
-ModelBase.prototype.clear = function (options) {
+ModelBase.prototype.clear = function(options) {
   var attrs = {};
   for (var key in this.attributes) attrs[key] = void 0;
-  return this.set(attrs, _.extend({}, options, { unset: true }));
+  return this.set(attrs, _.extend({}, options, {unset: true}));
 };
 
 // **format** converts a model into the values that should be saved into
 // the database table. The default implementation is just to pass the data along.
-ModelBase.prototype.format = function (attrs) {
+ModelBase.prototype.format = function(attrs) {
   return attrs;
 };
 
 // Returns the related item, or creates a new
 // related item by creating a new model or collection.
-ModelBase.prototype.related = function (name) {
+ModelBase.prototype.related = function(name) {
   return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
 };
 
 // Create a new model with identical attributes to this one,
 // including any relations on the current model.
-ModelBase.prototype.clone = function () {
+ModelBase.prototype.clone = function() {
   var model = new this.constructor(this.attributes);
   var relations = this.relations;
   for (var key in relations) {
@@ -174,7 +172,7 @@ ModelBase.prototype.clone = function () {
 // This is an internal helper that uses `isNew` and `options.method` to
 // determine the correct method. If `option.method` is provided, it will be
 // returned, but lowercased for later comparison.
-ModelBase.prototype.saveMethod = function (options) {
+ModelBase.prototype.saveMethod = function(options) {
   var method = options && options.method && options.method.toLowerCase();
   return method || (this.isNew(options) ? 'insert' : 'update');
 };
@@ -185,13 +183,13 @@ ModelBase.prototype.saveMethod = function (options) {
 // the current date if it is being inserted, and just the `updated_at` attribute
 // if it's being updated. This method may be overriden to use different column
 // names or types for the timestamps.
-ModelBase.prototype.timestamp = function (options) {
+ModelBase.prototype.timestamp = function(options) {
   if (!this.hasTimestamps) return {};
 
-  var now = new Date();
-  var attributes = {};
-  var method = this.saveMethod(options);
-  var keys = _.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at'];
+  var now          = new Date();
+  var attributes   = {};
+  var method       = this.saveMethod(options);
+  var keys         = _.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at'];
   var createdAtKey = keys[0];
   var updatedAtKey = keys[1];
 
@@ -210,27 +208,27 @@ ModelBase.prototype.timestamp = function (options) {
 
 // Determine if the model has changed since the last `"change"` event.
 // If you specify an attribute name, determine if that attribute has changed.
-ModelBase.prototype.hasChanged = function (attr) {
+ModelBase.prototype.hasChanged = function(attr) {
   if (attr == null) return !_.isEmpty(this.changed);
   return _.has(this.changed, attr);
 };
 
 // Get the previous value of an attribute, recorded at the time the last
 // `"change"` event was fired.
-ModelBase.prototype.previous = function (attr) {
+ModelBase.prototype.previous = function(attr) {
   if (attr == null || !this._previousAttributes) return null;
   return this._previousAttributes[attr];
 };
 
 // Get all of the attributes of the model at the time of the previous
 // `"change"` event.
-ModelBase.prototype.previousAttributes = function () {
+ModelBase.prototype.previousAttributes = function() {
   return _.clone(this._previousAttributes);
 };
 
 // Resets the `_previousAttributes` and `changed` hash for the model.
 // Typically called after a `sync` action (save, fetch, delete) -
-ModelBase.prototype._reset = function () {
+ModelBase.prototype._reset = function() {
   this._previousAttributes = _.clone(this.attributes);
   this.changed = Object.create(null);
   return this;
@@ -240,8 +238,8 @@ ModelBase.prototype._reset = function () {
 var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
 
 // Mix in each "_" method as a proxy to `Model#attributes`.
-_.each(modelMethods, function (method) {
-  ModelBase.prototype[method] = function () {
+_.each(modelMethods, function(method) {
+  ModelBase.prototype[method] = function() {
     var args = slice.call(arguments);
     args.unshift(this.attributes);
     return _[method].apply(_, args);

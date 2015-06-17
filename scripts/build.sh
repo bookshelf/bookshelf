@@ -1,12 +1,13 @@
 #!/bin/bash -e
 
+npm run babel
+
 npm install webpack@1.8.11
 
 webpack=node_modules/.bin/webpack
 
 rm -rf tmp
 mkdir tmp
-
 rm -rf build
 mkdir build
 

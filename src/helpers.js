@@ -1,16 +1,18 @@
 // Helpers
 // ---------------
-'use strict';
-
-var _ = require('lodash');
-var chalk = require('chalk');
+var _     = require('lodash');
+var chalk = require('chalk')
 
 var helpers = {
 
   // Sets the constraints necessary during a `model.save` call.
-  saveConstraints: function saveConstraints(model, relatedData) {
+  saveConstraints: function(model, relatedData) {
     var data = {};
-    if (relatedData && !relatedData.isThrough() && relatedData.type !== 'belongsToMany' && relatedData.type !== 'belongsTo') {
+    if (relatedData
+        && !relatedData.isThrough()
+        && relatedData.type !== 'belongsToMany'
+        && relatedData.type !== 'belongsTo'
+    ) {
       data[relatedData.key('foreignKey')] = relatedData.parentFk || model.get(relatedData.key('foreignKey'));
       if (relatedData.isMorph()) data[relatedData.key('morphKey')] = relatedData.key('morphValue');
     }
@@ -19,9 +21,9 @@ var helpers = {
 
   // Finds the specific `morphTo` table we should be working with, or throws
   // an error if none is matched.
-  morphCandidate: function morphCandidate(candidates, foreignTable) {
-    var Target = _.find(candidates, function (Candidate) {
-      return _.result(Candidate.prototype, 'tableName') === foreignTable;
+  morphCandidate: function(candidates, foreignTable) {
+    var Target = _.find(candidates, function(Candidate) {
+      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
     });
     if (!Target) {
       throw new Error('The target polymorphic model was not found');
@@ -34,7 +36,7 @@ var helpers = {
   // call the query builder with the first argument, applying the rest.
   // If the first argument is an object, assume the keys are query builder
   // methods, and the values are the arguments for the query.
-  query: function query(obj, args) {
+  query: function(obj, args) {
     obj._knex = obj._knex || obj._builder(_.result(obj, 'tableName'));
     if (args.length === 0) return obj._knex;
     var method = args[0];
@@ -42,7 +44,7 @@ var helpers = {
       method.call(obj._knex, obj._knex);
     } else if (_.isObject(method)) {
       for (var key in method) {
-        var target = _.isArray(method[key]) ? method[key] : [method[key]];
+        var target = _.isArray(method[key]) ?  method[key] : [method[key]];
         obj._knex[key].apply(obj._knex, target);
       }
     } else {
@@ -51,18 +53,19 @@ var helpers = {
     return obj;
   },
 
-  error: function error(msg) {
-    console.log(chalk.red(msg));
+  error: function(msg) {
+    console.log(chalk.red(msg))
   },
 
-  warn: function warn(msg) {
-    console.log(chalk.yellow(msg));
+  warn: function(msg) {
+    console.log(chalk.yellow(msg))
   },
 
-  deprecate: function deprecate(a, b) {
-    helpers.warn(a + ' has been deprecated, please use ' + b + ' instead');
+  deprecate: function(a, b) {
+    helpers.warn(a + ' has been deprecated, please use ' + b + ' instead')
   }
 
 };
 
-module.exports = helpers;
+
+module.exports = helpers
