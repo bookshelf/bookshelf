@@ -85,7 +85,7 @@ var BookshelfModel = ModelBase.extend({
       ? this.attributes
       : _.pick(this.attributes, this.idAttribute)
 
-    return this._doRefresh(attributes, options);
+    return this._doFetch(attributes, options);
   },
 
   // Fetch a model based on the currently set attributes, returning a model to
@@ -95,10 +95,10 @@ var BookshelfModel = ModelBase.extend({
   fetch: function(options) {
 
     // Fetch uses all set attributes.
-    return this._doRefresh(this.attributes, options);
+    return this._doFetch(this.attributes, options);
   },
 
-  _doRefresh: Promise.method(function(attributes, options) {
+  _doFetch: Promise.method(function(attributes, options) {
     options = options ? _.clone(options) : {};
 
     // Run the `first` call on the `sync` object to fetch a single model.
