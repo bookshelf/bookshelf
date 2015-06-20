@@ -2338,6 +2338,40 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
+      <b class="header">branch:master</b> &mdash; <small><i>June 20, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.8.1...master">Diff</a><br />
+    </p>
+
+    <ul>
+      <li>
+        ES6/7: Move code base to <tt>/src</tt> &mdash; code is now compiled into <tt>/lib</tt> via <a href="https://babeljs.io/">Babel</a>.
+      </li>
+      <li>
+        Add <tt><a href="#Model-refresh">model.refresh</a></tt>. #796
+      </li>
+      <li>
+        Prevent <tt><a href="#Model-fetch">fetch</a></tt> and <tt><a href="#Model-refresh">refresh</a></tt> from trying to add JSON attributes to a <tt>where</tt> clause. #550 #778
+      </li>
+      <li>
+        Virtuals plugin now supports <tt>{patch: true}</tt> argument to <tt><a href="#Model-save">save</a></tt>. #542
+      </li>
+      <li>
+        Restored <tt><a href="#Model-clone">model.clone</a></tt> and <tt><a href="#Collection-clone">collection.clone</a></tt>, which were not previously working. #744
+      </li>
+      <li>
+        Allow <a href="#Collection">bookshelf.Collection</a> to be modified and extended by plugins (so that relations and <tt>fetchAll</tt> operations will return the extended instance). #681 #688
+      </li>
+      <li>
+        Fix <tt><a href="#Model-timestamps">model.timestamps</a></tt> behaviour which deviated from documentation. Also ensure that <tt>createdAt</tt> is set when <tt>{method: "insert"}</tt> is passed explicitly. #787
+      </li>
+      <li>
+        Calling <tt><a href="#Collection-create">create</a></tt> on a <tt><a href="#Model.through">through</a></tt> relationship no longer tries to make a pivot object. Previously this would attempt to create an object with invalid foreign keys. #768
+      </li>
+      <li>
+        Parse foreign keys set during <tt><a href="#Collection-create">create</a></tt> in a relation. #770
+      </li>
+    </ul>
+
+    <p>
       <b class="header">0.8.1</b> &mdash; <small><i>May 12, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.8.0...0.8.1">Diff</a><br />
     </p>
 
