@@ -37,17 +37,35 @@ var helpers = {
   // If the first argument is an object, assume the keys are query builder
   // methods, and the values are the arguments for the query.
   query: function(obj, args) {
-    obj._knex = obj._knex || obj._builder(_.result(obj, 'tableName'));
+
+    // Ensure the object has a query builder.
+    if (!obj._knex) {
+      var tableName = _.result(obj, 'tableName');
+      obj._knex = obj._builder(tableName);
+    }
+
+    // If there are no arguments, return the query builder.
     if (args.length === 0) return obj._knex;
+
     var method = args[0];
+
     if (_.isFunction(method)) {
+
+      // `method` is a query builder callback. Call it on the query builder
+      // object.
       method.call(obj._knex, obj._knex);
     } else if (_.isObject(method)) {
+
+      // `method` is an object. Use keys as methods and values as arguments to
+      // the query builder.
       for (var key in method) {
         var target = _.isArray(method[key]) ?  method[key] : [method[key]];
         obj._knex[key].apply(obj._knex, target);
       }
     } else {
+
+      // Otherwise assume that the `method` is string name of a query builder
+      // method, and use the remaining args as arguments to that method.
       obj._knex[method].apply(obj._knex, args.slice(1));
     }
     return obj;

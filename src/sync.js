@@ -31,10 +31,30 @@ _.extend(Sync.prototype, {
   },
 
   // Select the first item from the database - only used by models.
-  first: Promise.method(function() {
-    this.query.where(this.prefixFields(this.syncing.format(
-      _.extend(Object.create(null), this.syncing.attributes)
-    ))).limit(1);
+  first: Promise.method(function(attributes) {
+
+    var model = this.syncing,
+        query = this.query,
+        whereAttributes,
+        formatted;
+
+    // We'll never use an JSON object for a search, because even
+    // PostgreSQL, which has JSON type columns, does not support the `=`
+    // operator.
+    //
+    // NOTE: `_.omit` returns an empty object, even if attributes are null.
+    whereAttributes = _.omit(attributes, _.isPlainObject);
+
+    if (!_.isEmpty(whereAttributes)) {
+
+      // Format and prefix attributes.
+      formatted = this.prefixFields(model.format(whereAttributes));
+      query.where(formatted);
+    }
+
+    // Limit to a single result.
+    query.limit(1);
+
     return this.select();
   }),
 
