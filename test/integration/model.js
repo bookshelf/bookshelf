@@ -290,6 +290,23 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('refresh', function() {
+      var Site = Models.Site;
+      
+      it('will fetch a record by present attributes without an ID attribute', function() {
+        Site.forge({name: 'knexjs.org'}).refresh().then(function (model) {
+          expect(model.id).to.equal(1);
+        });
+      });
+
+      it("will update a model's attributes by fetching only by `idAttribute`", function() {
+        Site.forge({id: 1, name: 'NOT THE CORRECT NAME'}).refresh().then(function (model) {
+          expect(model.get('name')).to.equal('knexjs.org');
+        });
+      });
+
+    });
+
     describe('fetch', function() {
 
       var Site = Models.Site;

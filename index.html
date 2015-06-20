@@ -57,6 +57,7 @@
       <li>– <a href="#Model-id">id</a></li>
       <li>– <a href="#Model-set">set</a></li>
       <li>– <a href="#Model-get">get</a></li>
+      <li>– <a href="#Model-refresh">refresh</a></li>
       <li>– <a href="#Model-fetch">fetch</a></li>
       <li>– <a href="#Model-fetchAll">fetchAll</a></li>
       <li>– <a href="#Model-where">where</a></li>
@@ -511,10 +512,21 @@ customer.set("telephone", "555-555-1212");
       <tt>note.get("title")</tt>
     </p>
 
+    <p id="Model-refresh">
+      <b class="header">refresh</b><code>model.refresh([options]).then(function(model) {...</code>
+      <p>
+        Updates model attributes to match those currently in the database. If the model's <tt><a href="#Model-idAttribute">idAttribute</a></tt> is set, then it will do a <tt>select</tt> based on primary key alone. Otherwise it will default to <tt><a href="#Model-fetch">fetch</a></tt>'s behaviour of matching all given <tt><a href="#Model-attributes">attributes</a></tt>.
+      </p>
+      
+      <p>
+      Accepts the same options as <tt><a href="#Model-fetch">fetch</a></tt>; <tt>{require: true}</tt> to throw an error if the model is not found, and <tt>{columns: [...]}</tt> to only update certain columns.
+      </p>
+    </p>
+
     <p id="Model-fetch">
       <b class="header">fetch</b><code>model.fetch([options]).then(function(model) {...</code>
       <br />
-      Fetches a model from the database, using any attributes currently set on the model
+      Fetches a model from the database, using <em>all</em> attributes currently set on the model
       to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched <tt>model</tt>,
       or <tt>undefined</tt> if the model isn't fetched. If you wish to trigger an error if the fetched model is not found, pass <tt>{require: true}</tt> as one of the options to the fetch call. A <tt>"fetching"</tt> event will be fired just before the record is fetched; a good place to hook into for validation. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved. If you need to constrain the query performed by fetch, you can call the <a href="#Model-query">query</a> method before calling fetch.
     </p>
