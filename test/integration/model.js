@@ -21,6 +21,18 @@ module.exports = function(bookshelf) {
       del:    function() { return Promise.resolve({}); }
     };
 
+    var checkCount = function(ctx) {
+      var dialect = bookshelf.knex.client.dialect;
+      var formatNumber = {
+        mysql:      _.identity,
+        sqlite3:    _.identity,
+        postgresql: function(count) { return count.toString() }
+      }[dialect];
+      return function(actual, expected) {
+        expect(actual, formatNumber(expected));
+      }
+    };
+
     describe('extend/constructor/initialize', function() {
 
       var User = bookshelf.Model.extend({
@@ -582,6 +594,39 @@ module.exports = function(bookshelf) {
         return new Site({id: 1337}).destroy({require: true}).catch(function(err) {
           assert(err instanceof bookshelf.NoRowsDeletedError)
         })
+      });
+
+    });
+
+    describe('count', function() {
+      it ('counts the number of models in a collection', function() {
+        return Models.Post
+          .forge()
+          .count()
+          .then(function(count) {
+            checkCount(count, 5);
+          });
+      });
+
+      it ('optionally counts by column (excluding null values)', function() {
+        var author = Models.Author.forge();
+        return author.count()
+          .then(function(count) {
+            checkCount(count, 5);
+            return author.count('last_name');
+          }).then(function(count) {
+            checkCount(count, 4);
+          });
+      });
+
+      it ('counts a filtered query', function() {
+        return Models.Post
+          .forge()
+          .query('where', 'blog_id', 1)
+          .count()
+          .then(function(count) {
+            checkCount(count, 2);
+          });
       });
 
     });

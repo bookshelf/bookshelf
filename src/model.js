@@ -137,12 +137,21 @@ var BookshelfModel = ModelBase.extend({
       });
   }),
 
-  // Shortcut for creating a collection and fetching the associated models.
-  fetchAll: function(options) {
-    var collection = this.constructor.collection();
+  all: function() {
+    let collection = this.constructor.collection();
     collection._knex = this.query().clone();
     this.resetQuery();
     if (this.relatedData) collection.relatedData = this.relatedData;
+    return collection;
+  },
+
+  count: function(column, options) {
+    return this.all().count(column, options);
+  },
+
+  // Shortcut for creating a collection and fetching the associated models.
+  fetchAll: function(options) {
+    let collection = this.all();
     return collection
       .once('fetching', (__, columns, opts) => {
         return this.triggerThen('fetching:collection', collection, columns, opts);
