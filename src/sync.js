@@ -58,6 +58,51 @@ _.extend(Sync.prototype, {
     return this.select();
   }),
 
+  // Add relational constraints required for either a `count` or `select` query.
+  constrain: Promise.method(function() {
+    var knex           = this.query
+      , options        = this.options
+      , relatedData    = this.syncing.relatedData
+      , fks            = {}
+      , through;
+
+    // Set the query builder on the options, in-case we need to
+    // access in the `fetching` event handlers.
+    options.query = knex;
+
+    // Inject all appropriate select costraints dealing with the relation
+    // into the `knex` query builder for the current instance.
+    if (relatedData) return Promise.try(function () {
+      if (relatedData.isThrough()) {
+        fks[relatedData.key('foreignKey')] = relatedData.parentFk;
+        through = new relatedData.throughTarget(fks);
+        return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
+          .then(function () {
+            relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+          });
+      }
+    })
+  }),
+
+  // Runs a `count` query on the database, adding any necessary relational
+  // constraints. Returns a promise that resolves to an integer count.
+  count: Promise.method(function (column) {
+    var knex    = this.query
+      , options = this.options;
+
+    return Promise.bind(this).then(function () {
+      return this.constrain();
+    }).then(function() {
+      return this.syncing.triggerThen('counting', this.syncing, options);
+    }).then(function() {
+      return knex.count((column || '*') + ' as count');
+    }).then(function(rows) {
+      return rows[0].count;
+    });
+  }),
+
+
+
   // Runs a `select` query on the database, adding any necessary relational
   // constraints, resetting the query when complete. If there are results and
   // eager loaded relations, those are fetched and returned on the model before
@@ -90,27 +135,11 @@ _.extend(Sync.prototype, {
     // access in the `fetching` event handlers.
     options.query = knex;
 
-    return Promise.bind(this).then(function () {
-      var fks = {}
-        , through;
-
-      // Inject all appropriate select costraints dealing with the relation
-      // into the `knex` query builder for the current instance.
-      if (relatedData) {
-        if (relatedData.throughTarget) {
-          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
-          through = new relatedData.throughTarget(fks);
-          return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
-            .then(function () {
-              relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
-              relatedData.selectConstraints(knex, options);
-            });
-        } else {
-          relatedData.selectConstraints(knex, options);
-        }
-      }
-    }).then(function () {
-      return this.syncing.triggerThen('fetching', this.syncing, columns, options);
+    return Promise.bind(this).then(function() {
+      return this.constrain();
+    }).then(function() {
+      if (relatedData) relatedData.selectConstraints(knex, options);
+     return this.syncing.triggerThen('fetching', this.syncing, columns, options);
     }).then(function() {
       return knex.select(columns);
     });

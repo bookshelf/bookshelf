@@ -1,8 +1,8 @@
 var Promise   = global.testPromise;
 
-var assert    = require('assert')
+var assert    = require('assert');
+var _         = require('lodash');
 var equal     = assert.equal
-var deepEqual = assert.deepEqual
 
 module.exports = function(bookshelf) {
 
@@ -12,6 +12,16 @@ module.exports = function(bookshelf) {
     var dialect = bookshelf.knex.client.dialect;
     var json    = function(model) {
       return JSON.parse(JSON.stringify(model));
+    };
+    var checkCount = function(ctx) {
+      var formatNumber = {
+        mysql:      _.identity,
+        sqlite3:    _.identity,
+        postgresql: function(count) { return count.toString() }
+      }[dialect];
+      return function(actual, expected) {
+        expect(actual, formatNumber(expected));
+      }
     };
     var checkTest = function(ctx) {
       return function(resp) {
@@ -56,6 +66,57 @@ module.exports = function(bookshelf) {
           .tap(checkTest(this));
       });
 
+    });
+
+    describe('count', function() {
+      it ('counts the number of models in a collection', function() {
+        return bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .count()
+          .then(function(count) {
+            checkCount(count, 5);
+          });
+      });
+
+      it ('optionally counts by column (excluding null values)', function() {
+        var authors = bookshelf.Collection.extend({tableName: 'authors'}).forge();
+
+        return authors.count()
+          .then(function(count) {
+            checkCount(count, 5);
+            return authors.count('last_name');
+          }).then(function(count) {
+            checkCount(count, 4);
+          });
+      });
+
+      it ('counts a filtered query', function() {
+        return bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .query('where', 'blog_id', 1)
+          .count()
+          .then(function(count) {
+            checkCount(count, 2);
+          });
+      });
+
+      it ('counts a `hasMany` relation', function() {
+        return new Blog({id: 1})
+          .posts()
+          .count()
+          .tap(function(count) {
+            checkCount(count, 2);
+          });
+      });
+
+      it ('counts a `hasMany` `through` relation', function() {
+        return new Blog({id: 1})
+          .comments()
+          .count()
+          .tap(function(count) {
+            checkCount(count, 1);
+          });
+      });
     });
 
     describe('fetchOne', function() {

@@ -55,6 +55,17 @@ var BookshelfCollection = CollectionBase.extend({
       .return(this);
   }),
 
+  // Counts all models in collection, respecting relational constrains and query
+  // modifications.
+  count: Promise.method(function(column, options) {
+    if (!_.isString(column)) {
+      options = column;
+      column = undefined;
+    }
+    if (options) options = _.clone(options);
+    return this.sync(options).count(column)
+  }),
+
   // Fetches a single model from the collection, useful on related collections.
   fetchOne: Promise.method(function(options) {
     var model = new this.model();

@@ -46,6 +46,10 @@ function Bookshelf(knex) {
       return new bookshelf.Collection((rows || []), _.extend({}, options, {model: this}));
     },
 
+    count: function(column, options) {
+      return this.forge().count(column, options); 
+    },
+
     fetchAll: function(options) {
       return this.forge().fetchAll(options); 
     }

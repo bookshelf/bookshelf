@@ -21,6 +21,18 @@ module.exports = function(bookshelf) {
       del:    function() { return Promise.resolve({}); }
     };
 
+    var checkCount = function(ctx) {
+      var dialect = bookshelf.knex.client.dialect;
+      var formatNumber = {
+        mysql:      _.identity,
+        sqlite3:    _.identity,
+        postgresql: function(count) { return count.toString() }
+      }[dialect];
+      return function(actual, expected) {
+        expect(actual, formatNumber(expected));
+      }
+    };
+
     describe('extend/constructor/initialize', function() {
 
       var User = bookshelf.Model.extend({
@@ -586,6 +598,49 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('count', function() {
+      it('counts the number of models in a collection', function() {
+        return Models.Post
+          .forge()
+          .count()
+          .then(function(count) {
+            checkCount(count, 5);
+          });
+      });
+
+      it('optionally counts by column (excluding null values)', function() {
+        var author = Models.Author.forge();
+        return author.count()
+          .then(function(count) {
+            checkCount(count, 5);
+            return author.count('last_name');
+          }).then(function(count) {
+            checkCount(count, 4);
+          });
+      });
+
+      it('counts a filtered query', function() {
+        return Models.Post
+          .forge()
+          .query('where', 'blog_id', 1)
+          .count()
+          .then(function(count) {
+            checkCount(count, 2);
+          });
+      });
+
+      it('resets query after completing', function() {
+        var posts =  Models.Post.collection();
+        posts.query('where', 'blog_id', 2).count()
+          .then(function(count)  {
+            checkCount(count, 2);
+            return posts.count();
+          })
+          .then(function(count) { checkCount(count, 2); });
+      });
+
+    });
+
     describe('resetQuery', function() {
 
       it('deletes the `_builder` property, resetting the model query builder', function() {
@@ -819,6 +874,14 @@ module.exports = function(bookshelf) {
         expect(newModelCollection.at(0)).to.be.an.instanceOf(NewModel);
       });
 
+    });
+
+    describe('Model.count', function() {
+      it('counts the number of matching records in the database', function() {
+        return Models.Post.count().then(function(count) {
+          checkCount(count, 5);
+        });
+      });
     });
 
     describe('model.once', function() {
