@@ -866,6 +866,14 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('Model.count', function() {
+      it('counts the number of matching records in the database', function() {
+        return Models.Post.count().then(function(count) {
+          checkCount(count, 5);
+        });
+      });
+    });
+
     describe('model.once', function() {
 
       var Post = Models.Post;
