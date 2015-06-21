@@ -60,6 +60,7 @@
       <li>– <a href="#Model-refresh">refresh</a></li>
       <li>– <a href="#Model-fetch">fetch</a></li>
       <li>– <a href="#Model-fetchAll">fetchAll</a></li>
+      <li>– <a href="#Model-count">count</a></li>
       <li>– <a href="#Model-where">where</a></li>
       <li>– <a href="#Model-query">query</a></li>
       <li>– <a href="#Model-load">load</a></li>
@@ -122,6 +123,7 @@
       <li>– <a href="#Collection-toJSON">toJSON</a></li>
       <li>– <a href="#Collection-fetch">fetch</a></li>
       <li>– <a href="#Collection-fetchOne">fetchOne</a></li>
+      <li>– <a href="#Collection-count">count</a></li>
       <li>– <a href="#Collection-mapThen">mapThen</a></li>
       <li>– <a href="#Collection-invokeThen">invokeThen</a></li>
       <li>– <a href="#Collection-load">load</a></li>
@@ -582,6 +584,17 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
       <br />
       Fetches a <a href="#Collection">collection</a> of models from the database, using any <a href="#Model-query">query</a> parameters currently set on the model to form a <tt>select</tt> query. Returns a promise, which will resolve with the fetched <tt>collection</tt>. If you wish to trigger an error if no models are found, pass <tt>{require: true}</tt> as one of the options to the fetchAll call. A <tt>"fetching"</tt> event will be fired just before the collection is fetched; a good place to hook into for validations. A <tt>"fetched"</tt> event will be fired when a record is successfully retrieved. If you need to constrain the query performed by fetch, you can call the <a href="#Model-query">query</a> method before calling fetch.
     </p>
+
+    <p id="Model-count">
+      <b class="header">count</b><code>Model.count / model.count(column='*', [options]).then(function(count) { ...</code>
+      <br>
+      Gets the number of matching records in the database, respecting any previous calls to <a href="#Model-query">query</a>. If a <tt>column</tt> if provided, records with a null value in that column will be excluded from the count.
+
+<pre><code>
+// Get the number of named, blue ducks.
+Duck.where('color', 'blue').count('name')
+  .then(function(count) { //...
+</code></pre>
 
     <p id="Model-load">
       <b class="header">load</b><code>model.load(relations, [options]).then(function(model) {...</code>
@@ -1833,6 +1846,24 @@ new Site({id:1})
   });
 </code></pre>
 
+    <p id="Collection-count">
+      <b class="header">count</b><code>collection.count(column='*', [options])</code>
+      <br>
+      Get the number of records in the collection's table. Providing a <tt>column</tt>
+      value excludes records with a null value in that column.
+    </p>
+
+<pre><code>
+// select count(*) from shareholders where company_id = 1 and share &gt; 0.1;
+new Company({id:1})
+  .shareholders()
+  .query('where', 'share', '&gt;', '0.1')
+  .count()
+  .then(function(count) {
+    assert(count === 3);
+  });
+</code></pre>
+
     <p id="Collection-mapThen">
       <b class="header">mapThen</b><code>collection.mapThen(iterator, [context])</code>
       <br />
@@ -2344,6 +2375,9 @@ process.stderr.on('data', function(data) {
     <ul>
       <li>
         ES6/7: Move code base to <tt>/src</tt> &mdash; code is now compiled into <tt>/lib</tt> via <a href="https://babeljs.io/">Babel</a>.
+      </li>
+      <li>
+        Add <tt><a href="#Collection-count">collection.count</a>, <tt><a href="#Model-count">model.count</a></tt> and <tt>Model.count</tt>.
       </li>
       <li>
         Add <tt><a href="#Model-refresh">model.refresh</a></tt>. #796
