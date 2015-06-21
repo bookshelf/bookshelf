@@ -599,7 +599,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('count', function() {
-      it ('counts the number of models in a collection', function() {
+      it('counts the number of models in a collection', function() {
         return Models.Post
           .forge()
           .count()
@@ -608,7 +608,7 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('optionally counts by column (excluding null values)', function() {
+      it('optionally counts by column (excluding null values)', function() {
         var author = Models.Author.forge();
         return author.count()
           .then(function(count) {
@@ -619,7 +619,7 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('counts a filtered query', function() {
+      it('counts a filtered query', function() {
         return Models.Post
           .forge()
           .query('where', 'blog_id', 1)
@@ -627,6 +627,16 @@ module.exports = function(bookshelf) {
           .then(function(count) {
             checkCount(count, 2);
           });
+      });
+
+      it('resets query after completing', function() {
+        var posts =  Models.Post.collection();
+        posts.query('where', 'blog_id', 2).count()
+          .then(function(count)  {
+            checkCount(count, 2);
+            return posts.count();
+          })
+          .then(function(count) { checkCount(count, 2); });
       });
 
     });
