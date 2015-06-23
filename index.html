@@ -1954,16 +1954,17 @@ new Stories().fetch({
     </p>
 
 <pre class="runnable">
-var ships = new Backbone.Collection;
+var Ships = new bookshelf.Collection();
+Ships.model = Ship;
 
-ships.on("add", function(ship) {
-  alert("Ahoy " + ship.get("name") + "!");
-});
-
-ships.add([
+Ships.add([
   {name: "Flying Dutchman"},
   {name: "Black Pearl"}
 ]);
+
+Ships.fetch().then(function(resp) {
+
+});
 </code></pre>
 
     <p class="warning">
@@ -2002,13 +2003,10 @@ ships.add([
     </p>
 
 <pre><code>
-var vanHalen = new Backbone.Collection([eddie, alex, stone, roth]);
+var vanHalen = new bookshelf.Collection([eddie, alex, stone, roth]);
 
 vanHalen.set([eddie, alex, stone, hagar]);
 
-// Fires a "remove" event for roth, and an "add" event for "hagar".
-// Updates any of stone, alex, and eddie's attributes that may have
-// changed over the years.
 </code></pre>
 
     <p id="Collection-get">
