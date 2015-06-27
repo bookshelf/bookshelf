@@ -112,37 +112,44 @@ _.extend(Sync.prototype, {
     var knex           = this.query
       , options        = this.options
       , relatedData    = this.syncing.relatedData
-      , columnsInQuery = _.some(knex._statements, {grouping:'columns'})
+      , queryContainsColumns
       , columns;
 
-    if (!relatedData) {
-      columns = options.columns;
-      // Call the function, if one exists, to constrain the eager loaded query.
-      if (options._beforeFn) options._beforeFn.call(knex, knex);
-      if (!_.isArray(columns)) {
-        columns = columns ? [columns] :
-          // if columns have been selected in a query closure, use them.
-          // any user who does this is responsible for prefixing each
-          // selected column with the correct table name. this will also
-          // break withRelated queries if the dependent fkey fields are not
-          // manually included. this is a temporary hack which will be
-          // replaced by an upcoming rewrite.
-          columnsInQuery ? [] : [_.result(this.syncing, 'tableName') + '.*'];
+    // Check if any `select` style statements have been called with column
+    // specifications. This could include `distinct()` with no arguments, which
+    // does not affect inform the columns returned.
+    queryContainsColumns = _(knex._statements)
+      .where({grouping: 'columns'})
+      .some('value.length');
+
+    return Promise.resolve(this.constrain()).tap(() => {
+
+      // If this is a relation, apply the appropriate constraints.
+      if (relatedData) {
+        relatedData.selectConstraints(knex, options);
+      } else {
+
+        // Call the function, if one exists, to constrain the eager loaded query.
+        if (options._beforeFn) options._beforeFn.call(knex, knex);
+
+        if (options.columns) {
+
+          // Normalize single column name into array.
+          columns = _.isArray(options.columns) ? options.columns : [options.columns];
+
+        } else if (!queryContainsColumns) {
+
+          // If columns have already been selected via the `query` method
+          // we will use them. Otherwise, select all columns in this table.
+          columns = [_.result(this.syncing, 'tableName') + '.*'];
+        }
       }
-    }
 
-    // Set the query builder on the options, in-case we need to
-    // access in the `fetching` event handlers.
-    options.query = knex;
-
-    return Promise.bind(this).then(function() {
-      return this.constrain();
-    }).then(function() {
-      if (relatedData) relatedData.selectConstraints(knex, options);
-     return this.syncing.triggerThen('fetching', this.syncing, columns, options);
-    }).then(function() {
-      return knex.select(columns);
-    });
+      // Set the query builder on the options, for access in the `fetching`
+      // event handlers.
+      options.query = knex;
+      return this.syncing.triggerThen('fetching', this.syncing, columns, options);
+    }).then(() => knex.select(columns));
   }),
 
   // Issues an `insert` command on the query - only used by models.
