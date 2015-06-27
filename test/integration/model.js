@@ -322,6 +322,7 @@ module.exports = function(bookshelf) {
     describe('fetch', function() {
 
       var Site = Models.Site;
+      var Author = Models.Author;
 
       it('issues a first (get one) to Knex, triggering a fetched event, returning a promise', function() {
         var count = 0;
@@ -362,6 +363,32 @@ module.exports = function(bookshelf) {
           qb.join('authors', 'authors.site_id', '=', 'sites.id');
         });
         return model.fetch()
+      });
+
+      it('allows specification of select columns as an `options` argument', function () {
+        var model = new Author({id: 1}).fetch({columns: ['first_name']})
+          .then(function (model) {
+            deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
+          });
+      });
+
+      it('allows specification of select columns in query callback', function () {
+        var model = new Author({id: 1}).query('select','first_name').fetch()
+          .then(function (model) {
+            deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
+          });
+      });
+
+      it('will still select default columns if `distinct` is called without columns - #807', function () {
+        var model = new Author({id: 1}).query('distinct').fetch()
+          .then(function (model) {
+            deepEqual(model.toJSON(), {
+              id: 1,
+              first_name: 'Tim',
+              last_name: 'Griesser',
+              site_id: 1
+            });
+          });
       });
 
     });
