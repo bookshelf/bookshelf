@@ -76,6 +76,18 @@ _.extend(Sync.prototype, {
       if (relatedData.isThrough()) {
         fks[relatedData.key('foreignKey')] = relatedData.parentFk;
         through = new relatedData.throughTarget(fks);
+
+        /**
+         * Fired before a `fetch` operation. A promise may be returned from the
+         * event handler for async behaviour.
+         *
+         * @event Model#fetching
+         * @type {function}
+         * @param {Model}    model      The model that has been fetched.
+         * @param {string[]} columns    The columns being retrieved by the query.
+         * @param {Object}   options    Options object passed to {@link Model#fetch fetch}.
+         * @returns {Promise}
+         */
         return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
           .then(function () {
             relatedData.pivotColumns = through.parse(relatedData.pivotColumns);

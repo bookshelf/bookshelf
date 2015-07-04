@@ -9,7 +9,7 @@
     "build": "./scripts/build.sh",
     "eslint": "eslint bookshelf.js src/.",
     "test": "npm run eslint && npm run babel && mocha -b -t 5000 --check-leaks -R spec test/index.js",
-    "jsdoc": "npm run babel && rm -r ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json --destination ./docs/html -r bookshelf.js lib"
+    "jsdoc": "npm run babel && rm -rf ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -40,6 +40,7 @@
     "eslint": "^0.23.0",
     "jsdoc": "^3.3.1",
     "knex": "^0.8.0",
+    "minami": "git+https://github.com/rhys-vdw/minami",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",
     "mysql": "^2.5.2",

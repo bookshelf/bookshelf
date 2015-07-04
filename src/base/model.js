@@ -51,6 +51,8 @@ ModelBase.prototype.initialize = function() {};
  */
 
 /**
+ * @member {string}
+ * @default "id"
  * @description
  *
  * This tells the model which attribute to expect as the unique identifier
@@ -60,7 +62,6 @@ ModelBase.prototype.initialize = function() {};
  * but your database's columns in `snake_case`, for example) this refers to
  * the name returned by parse (`myId`), not the database column (`my_id`).
  *
- * @member {string}
  */
 ModelBase.prototype.idAttribute = 'id';
 
