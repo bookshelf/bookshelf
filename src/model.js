@@ -324,8 +324,7 @@ var BookshelfModel = ModelBase.extend({
    * @param {string=} [morphValue=Target#{@link Model#tableName tablename}]
    *
    *   The string value associated with this relationship. Stored in the `_type`
-   *   column of the polymorphic table. Defaults to `Target`#{@link Model#tableName
-   *   tablename}.
+   *   column of the polymorphic table. Defaults to `Target#{@link Model#tableName|tablename}`.
    *
    * @returns {Model} The related model.
    */
@@ -638,7 +637,6 @@ var BookshelfModel = ModelBase.extend({
          * event handler for async behaviour.
          *
          * @event Model#fetched
-         * @type {function}
          * @param {Model}  model    The model firing the event.
          * @param {Object} reponse  Knex query response.
          * @param {Object} options  Options object passed to {@link Model#fetch fetch}.
@@ -710,7 +708,6 @@ var BookshelfModel = ModelBase.extend({
          * may be returned from the event handler for async behaviour.
          *
          * @event Model#fetching:collection
-         * @type {function}
          * @param {Model}    collection The collection that has been fetched.
          * @param {string[]} columns    The columns being retrieved by the query.
          * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -724,7 +721,6 @@ var BookshelfModel = ModelBase.extend({
          * may be returned from the event handler for async behaviour.
          *
          * @event Model#fetched:collection
-         * @type {function}
          * @param {Model}  collection The collection that has been fetched.
          * @param {Object} resp       The Knex query response.
          * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -909,7 +905,6 @@ var BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save.
        *
        * @event Model#saving
-       * @type {function}
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -924,7 +919,6 @@ var BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save operation.
        *
        * @event Model#creating
-       * @type {function}
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -939,7 +933,6 @@ var BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save operation.
        *
        * @event Model#updating
-       * @type {function}
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -973,7 +966,6 @@ var BookshelfModel = ModelBase.extend({
          * Fired before after an `insert` or `update` query.
          *
          * @event Model#saved
-         * @type {function}
          * @param {Model}  model    The model firing the event.
          * @param {Object} resp     The database response.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -986,7 +978,6 @@ var BookshelfModel = ModelBase.extend({
          * Fired before after an `insert` query.
          *
          * @event Model#created
-         * @type {function}
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -999,7 +990,6 @@ var BookshelfModel = ModelBase.extend({
          * Fired before after an `update` query.
          *
          * @event Model#updated
-         * @type {function}
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1046,7 +1036,6 @@ var BookshelfModel = ModelBase.extend({
        * will reject the promise and cancel the deletion.
        *
        * @event Model#destroying
-       * @type {function}
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1068,7 +1057,6 @@ var BookshelfModel = ModelBase.extend({
        * handler for async behaviour. 
        *
        * @event Model#destroyed
-       * @type {function}
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.

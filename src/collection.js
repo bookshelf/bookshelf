@@ -110,7 +110,6 @@ var BookshelfCollection = CollectionBase.extend({
 
         /**
          * @event Collection#fetched
-         * @type {function}
          *
          * @description
          * Fired after a `fetch` operation. A promise may be returned from the
