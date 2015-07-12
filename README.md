@@ -48,7 +48,7 @@ var User = bookshelf.Model.extend({
 });
 ```
 
-This initialization should likely only ever happen once in your application, as it creates a connection pool for the current database, you should use the `bookshelf` instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:
+This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the `bookshelf` instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:
 
 ```js
 // In a file named something like bookshelf.js
