@@ -1021,6 +1021,14 @@ var BookshelfModel = ModelBase.extend({
    *
    * @fires Model#destroying Fired before the `delete` operation.
    * @fires Model#destroying Fired after the `delete` operation.
+   *
+   * @example
+   *
+   *   new User({id: 1})
+   *     .destroy()
+   *     .then(function(model) {
+   *       // ...
+   *     });
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
