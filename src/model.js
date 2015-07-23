@@ -1,15 +1,13 @@
-// Model
-// ---------------
-var _              = require('lodash');
-var createError    = require('create-error')
+import _ from 'lodash';
+import createError from 'create-error';
 
-var Sync           = require('./sync');
-var Helpers        = require('./helpers');
-var EagerRelation  = require('./eager');
-var Errors         = require('./errors');
+import Sync from './sync';
+import Helpers from './helpers';
+import EagerRelation from './eager';
+import Errors from './errors';
 
-var ModelBase      = require('./base/model');
-var Promise        = require('./base/promise');
+import ModelBase from './base/model';
+import Promise from './base/promise';
 
 /**
  *
@@ -40,7 +38,7 @@ var Promise        = require('./base/promise');
  * {@linkcode Model#constructor constructor}, which allows you to replace the
  * actual constructor function for your model.
  *
- *     var Books = bookshelf.Model.extend({
+ *     let Books = bookshelf.Model.extend({
  *     
  *       tableName: 'documents',
  *     
@@ -68,17 +66,17 @@ var Promise        = require('./base/promise');
  *   {@linkcode Model#set set} on the model.
  *   
  */
-var BookshelfModel = ModelBase.extend({
+let BookshelfModel = ModelBase.extend({
 
   /**
    * The `hasOne` relation specifies that this table has exactly one of another
    * type of object, specified by a foreign key in the other table.
    * 
-   *     var Record = bookshelf.Model.extend({
+   *     let Record = bookshelf.Model.extend({
    *       tableName: 'health_records'
    *     });
    *
-   *     var Patient = bookshelf.Model.extend({
+   *     let Patient = bookshelf.Model.extend({
    *       tableName: 'patients',
    *       record: function() {
    *         return this.hasOne(Record);
@@ -109,8 +107,8 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Model}
    */
-  hasOne: function(Target, foreignKey) {
-    return this._relation('hasOne', Target, {foreignKey: foreignKey}).init(this);
+  hasOne(Target, foreignKey) {
+    return this._relation('hasOne', Target, {foreignKey}).init(this);
   },
 
   /**
@@ -131,8 +129,8 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  hasMany: function(Target, foreignKey) {
-    return this._relation('hasMany', Target, {foreignKey: foreignKey}).init(this);
+  hasMany(Target, foreignKey) {
+    return this._relation('hasMany', Target, {foreignKey}).init(this);
   },
  
   /**
@@ -147,7 +145,7 @@ var BookshelfModel = ModelBase.extend({
    * member of another Target model, referenced by the foreignKey in the current
    * model.
    *
-   *     var Book = bookshelf.Model.extend({
+   *     let Book = bookshelf.Model.extend({
    *       tableName: 'books',
    *       author: function() {
    *         return this.belongsTo(Author);
@@ -174,8 +172,8 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Model}
    */
-  belongsTo: function(Target, foreignKey) {
-    return this._relation('belongsTo', Target, {foreignKey: foreignKey}).init(this);
+  belongsTo(Target, foreignKey) {
+    return this._relation('belongsTo', Target, {foreignKey}).init(this);
   },
 
   /**
@@ -185,11 +183,11 @@ var BookshelfModel = ModelBase.extend({
    * alphabetically. For example, a `users` table and an `accounts` table would have
    * a joining table of accounts_users.
    *
-   *     var Account = bookshelf.Model.extend({
+   *     let Account = bookshelf.Model.extend({
    *       tableName: 'accounts'
    *     });
    *     
-   *     var User = bookshelf.Model.extend({
+   *     let User = bookshelf.Model.extend({
    *     
    *       tableName: 'users',
    *     
@@ -223,7 +221,7 @@ var BookshelfModel = ModelBase.extend({
    * about the model, you may create a {@link Model#belongsToMany belongsToMany}
    * {@link Relation#through through} relation:
    *
-   *     var Doctor = bookshelf.Model.extend({
+   *     let Doctor = bookshelf.Model.extend({
    *     
    *       patients: function() {
    *         return this.belongsToMany(Patient).through(Appointment);
@@ -231,7 +229,7 @@ var BookshelfModel = ModelBase.extend({
    *     
    *     });
    *     
-   *     var Appointment = bookshelf.Model.extend({
+   *     let Appointment = bookshelf.Model.extend({
    *     
    *       patient: function() {
    *         return this.belongsTo(Patient);
@@ -243,7 +241,7 @@ var BookshelfModel = ModelBase.extend({
    *     
    *     });
    *     
-   *     var Patient = bookshelf.Model.extend({
+   *     let Patient = bookshelf.Model.extend({
    *     
    *       doctors: function() {
    *         return this.belongsToMany(Doctor).through(Appointment);
@@ -276,9 +274,9 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  belongsToMany: function(Target, joinTableName, foreignKey, otherKey) {
+  belongsToMany(Target, joinTableName, foreignKey, otherKey) {
     return this._relation('belongsToMany', Target, {
-      joinTableName: joinTableName, foreignKey: foreignKey, otherKey: otherKey
+      joinTableName, foreignKey, otherKey
     }).init(this);
   },
 
@@ -292,7 +290,7 @@ var BookshelfModel = ModelBase.extend({
    * `morphValue` may be optionally set to store/retrieve a different value in
    * the `_type` column than the {@link Model#tableName}.
    *
-   *     var Site = bookshelf.Model.extend({
+   *     let Site = bookshelf.Model.extend({
    *       tableName: 'sites',
    *       photo: function() {
    *         return this.morphOne(Photo, 'imageable');
@@ -301,7 +299,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * And with custom `columnNames`:
    *
-   *     var Site = bookshelf.Model.extend({
+   *     let Site = bookshelf.Model.extend({
    *       tableName: 'sites',
    *       photo: function() {
    *         return this.morphOne(Photo, 'imageable', ["ImageableType", "ImageableId"]);
@@ -328,7 +326,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Model} The related model.
    */
-  morphOne: function(Target, name, columnNames, morphValue) {
+  morphOne(Target, name, columnNames, morphValue) {
     return this._morphOneOrMany(Target, name, columnNames, morphValue, 'morphOne');
   },
 
@@ -348,7 +346,7 @@ var BookshelfModel = ModelBase.extend({
    * store/retrieve a different value in the `_type` column than the `Target`'s
    * {@link Model#tableName tableName}.
    *
-   *     var Post = bookshelf.Model.extend({
+   *     let Post = bookshelf.Model.extend({
    *       tableName: 'posts',
    *       photos: function() {
    *         return this.morphMany(Photo, 'imageable');
@@ -357,7 +355,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * And with custom columnNames:
    *
-   *     var Post = bookshelf.Model.extend({
+   *     let Post = bookshelf.Model.extend({
    *       tableName: 'posts',
    *       photos: function() {
    *         return this.morphMany(Photo, 'imageable', ["ImageableType", "ImageableId"]);
@@ -380,7 +378,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection} A collection of related models.
    */
-  morphMany: function(Target, name, columnNames, morphValue) {
+  morphMany(Target, name, columnNames, morphValue) {
     return this._morphOneOrMany(Target, name, columnNames, morphValue, 'morphMany');
   },
 
@@ -391,7 +389,7 @@ var BookshelfModel = ModelBase.extend({
    * {@link Model models} are the potential opposite end of the {@link
    * polymorphicRelation polymorphic relation}.
    *
-   *     var Photo = bookshelf.Model.extend({
+   *     let Photo = bookshelf.Model.extend({
    *       tableName: 'photos',
    *       imageable: function() {
    *         return this.morphTo('imageable', Site, Post);
@@ -400,7 +398,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * And with custom columnNames:
    *
-   *     var Photo = bookshelf.Model.extend({
+   *     let Photo = bookshelf.Model.extend({
    *       tableName: 'photos',
    *       imageable: function() {
    *         return this.morphTo('imageable', ["ImageableType", "ImageableId"], Site, Post);
@@ -418,17 +416,17 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Model}
    */
-  morphTo: function(morphName) {
-    var columnNames, remainder;
+  morphTo(morphName) {
     if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
+    let columnNames, candidates;
     if (_.isArray(arguments[1])) {
       columnNames = arguments[1];
-      remainder = _.rest(arguments, 2);
+      candidates = _.rest(arguments, 2);
     } else {
       columnNames = null;
-      remainder = _.rest(arguments);
+      candidates = _.rest(arguments);
     }
-    return this._relation('morphTo', null, {morphName: morphName, columnNames: columnNames, candidates: remainder}).init(this);
+    return this._relation('morphTo', null, {morphName, columnNames, candidates}).init(this);
   },
 
   /**
@@ -441,7 +439,7 @@ var BookshelfModel = ModelBase.extend({
    * Model#hasMany hasMany} paragraphs through chapters. Consider the following examples:
    *
    *
-   *     var Book = bookshelf.Model.extend({
+   *     let Book = bookshelf.Model.extend({
    *     
    *       tableName: 'books',
    *     
@@ -457,7 +455,7 @@ var BookshelfModel = ModelBase.extend({
    *     
    *     });
    *     
-   *     var Chapter = bookshelf.Model.extend({
+   *     let Chapter = bookshelf.Model.extend({
    *     
    *       tableName: 'chapters',
    *     
@@ -467,7 +465,7 @@ var BookshelfModel = ModelBase.extend({
    *     
    *     });
    *     
-   *     var Paragraph = bookshelf.Model.extend({
+   *     let Paragraph = bookshelf.Model.extend({
    *     
    *       tableName: 'paragraphs',
    *     
@@ -503,18 +501,18 @@ var BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  through: function(Interim, throughForeignKey, otherKey) {
+  through(Interim, throughForeignKey, otherKey) {
     return this.relatedData.through(this, Interim, {throughForeignKey: throughForeignKey, otherKey: otherKey});
   },
 
   // Update the attributes of a model, fetching it by its primary key. If
   // no attribute matches its `idAttribute`, then fetch by all available
   // fields.
-  refresh: function(options) {
+  refresh(options) {
 
     // If this is new, we use all its attributes. Otherwise we just grab the
     // primary key.
-    var attributes = this.isNew()
+    let attributes = this.isNew()
       ? this.attributes
       : _.pick(this.attributes, this.idAttribute)
 
@@ -557,7 +555,7 @@ var BookshelfModel = ModelBase.extend({
    * serialized as properties on a {@link Model#toJSON toJSON} call unless
    * `{shallow: true}` is passed.  
    *
-   *     var Book = bookshelf.Model.extend({
+   *     let Book = bookshelf.Model.extend({
    *       tableName: 'books',
    *       editions: function() {
    *         return this.hasMany(Edition);
@@ -586,8 +584,8 @@ var BookshelfModel = ModelBase.extend({
    * @param {Transaction=} options.transacting
    *  Optionally run the query in a transaction.
    *
-   * @fires Model#fetching
-   * @fires Model#fetched 
+   * @fires Model#event:fetching
+   * @fires Model#event:fetched
    *
    * @throws {Model.NotFoundError}
    *
@@ -595,7 +593,7 @@ var BookshelfModel = ModelBase.extend({
    *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
    *
    */
-  fetch: function(options) {
+  fetch(options) {
 
     // Fetch uses all set attributes.
     return this._doFetch(this.attributes, options);
@@ -651,7 +649,7 @@ var BookshelfModel = ModelBase.extend({
       });
   }),
 
-  all: function() {
+  all() {
     let collection = this.constructor.collection();
     collection._knex = this.query().clone();
     this.resetQuery();
@@ -659,7 +657,7 @@ var BookshelfModel = ModelBase.extend({
     return collection;
   },
 
-  count: function(column, options) {
+  count(column, options) {
     return this.all().count(column, options);
   },
 
@@ -684,11 +682,11 @@ var BookshelfModel = ModelBase.extend({
    *
    *   Optionally run the query in a transaction.
    *
-   * @fires Model#fetching:collection
+   * @fires Model#"fetching:collection"
    *
    *   Fired just before the {@link Collection} is fetched; a good place to hook into for validations.
    *
-   * @fires Model#fetched:collection
+   * @fires Model#event:"fetched:collection"
    *
    *   Fired when a record is successfully retrieved.
    *
@@ -699,7 +697,7 @@ var BookshelfModel = ModelBase.extend({
    * @returns {Promise<Collection>} A promise resolving to the fetched {@link Collection collection}.
    *
    */
-  fetchAll: function(options) {
+  fetchAll(options) {
     let collection = this.all();
     return collection
       .once('fetching', (__, columns, opts) => {
@@ -707,7 +705,7 @@ var BookshelfModel = ModelBase.extend({
          * Fired before a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#fetching:collection
+         * @event Model#"fetching:collection"
          * @param {Model}    collection The collection that has been fetched.
          * @param {string[]} columns    The columns being retrieved by the query.
          * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -720,7 +718,7 @@ var BookshelfModel = ModelBase.extend({
          * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#fetched:collection
+         * @event Model#event:"fetched:collection"
          * @param {Model}  collection The collection that has been fetched.
          * @param {Object} resp       The Knex query response.
          * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -838,19 +836,19 @@ var BookshelfModel = ModelBase.extend({
    * @param {bool} [options.require=true]
    *   Throw a {@link Model.NoRowsUpdatedError} if no records are affected by save.
    *
-   * @fires Model#saving   Fired before performing either an `insert` or `update`.
-   * @fires Model#creating Fired before performing an `insert`.
-   * @fires Model#updating Fired before performing an `update`.
-   * @fires Model#created  Fired after performing an `insert`.
-   * @fires Model#updated  Fired after performing an `update`.
-   * @fires Model#saved    Fired after performing either an `insert` or `update`.
+   * @fires Model#event:saving   Fired before performing either an `insert` or `update`.
+   * @fires Model#event:creating Fired before performing an `insert`.
+   * @fires Model#event:updating Fired before performing an `update`.
+   * @fires Model#event:created  Fired after performing an `insert`.
+   * @fires Model#event:updated  Fired after performing an `update`.
+   * @fires Model#event:saved    Fired after performing either an `insert` or `update`.
    *
    * @throws Model.NoRowsUpdatedError
    *
    * @returns {Promise<Model>} A promise resolving to the saved and updated model.
    */
   save: Promise.method(function(key, val, options) {
-    var attrs;
+    let attrs;
 
     // Handle both `"key", value` and `{key: value}` -style arguments.
     if (key == null || typeof key === "object") {
@@ -871,7 +869,7 @@ var BookshelfModel = ModelBase.extend({
       // If the object is being created, we merge any defaults here rather than
       // during object creation.
       if (method === 'insert' || options.defaults) {
-        var defaults = _.result(this, 'defaults');
+        let defaults = _.result(this, 'defaults');
         if (defaults) {
           attrs = _.extend({}, defaults, this.attributes, attrs);
         }
@@ -894,7 +892,7 @@ var BookshelfModel = ModelBase.extend({
 
       // Gives access to the `query` object in the `options`, in case we need it
       // in any event handlers.
-      var sync = this.sync(options);
+      let sync = this.sync(options);
       options.query = sync.query;
 
       /**
@@ -904,7 +902,7 @@ var BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save.
        *
-       * @event Model#saving
+       * @event Model#event:saving
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -918,7 +916,7 @@ var BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save operation.
        *
-       * @event Model#creating
+       * @event Model#event:creating
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -932,7 +930,7 @@ var BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save operation.
        *
-       * @event Model#updating
+       * @event Model#event:updating
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -965,7 +963,7 @@ var BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `insert` or `update` query.
          *
-         * @event Model#saved
+         * @event Model#event:saved
          * @param {Model}  model    The model firing the event.
          * @param {Object} resp     The database response.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -977,7 +975,7 @@ var BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `insert` query.
          *
-         * @event Model#created
+         * @event Model#event:created
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -989,7 +987,7 @@ var BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `update` query.
          *
-         * @event Model#updated
+         * @event Model#event:updated
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1020,7 +1018,7 @@ var BookshelfModel = ModelBase.extend({
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
    *
    * @fires Model#destroying Fired before the `delete` operation.
-   * @fires Model#destroying Fired after the `delete` operation.
+   * @fires Model#destroyed  Fired after the `delete` operation.
    *
    * @example
    *
@@ -1032,7 +1030,7 @@ var BookshelfModel = ModelBase.extend({
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
-    var sync = this.sync(options);
+    let sync = this.sync(options);
     options.query = sync.query;
     return Promise.bind(this).then(function() {
 
@@ -1043,7 +1041,7 @@ var BookshelfModel = ModelBase.extend({
        * handler for async behaviour. Throwing an exception from the handler
        * will reject the promise and cancel the deletion.
        *
-       * @event Model#destroying
+       * @event Model#event:destroying
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1064,7 +1062,7 @@ var BookshelfModel = ModelBase.extend({
        * Fired before a `delete` query. A promise may be returned from the event
        * handler for async behaviour. 
        *
-       * @event Model#destroyed
+       * @event Model#event:destroyed
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1082,7 +1080,7 @@ var BookshelfModel = ModelBase.extend({
    *  @method Model#resetQuery
    *  @returns {Model}          Self, this method is chainable.
    */
-  resetQuery: function() {
+  resetQuery() {
     this._knex = null;
     return this;
   },
@@ -1117,7 +1115,7 @@ var BookshelfModel = ModelBase.extend({
    *   }).fetch()
    *     .then(function(model) {...
    *   
-   *   var qb = model.query();
+   *   let qb = model.query();
    *       qb.where({id: 1}).select().then(function(resp) {...
    *
    * @method Model#query
@@ -1127,7 +1125,7 @@ var BookshelfModel = ModelBase.extend({
    *
    * @see {@link http://knexjs.org/#Builder Knex `QueryBuilder`}
    */
-  query: function() {
+  query() {
     return Helpers.query(this, _.toArray(arguments));
   },
 
@@ -1157,8 +1155,8 @@ var BookshelfModel = ModelBase.extend({
    *
    * @see Model#query
    */
-  where: function() {
-    var args = _.toArray(arguments);
+  where() {
+    let args = _.toArray(arguments);
     return this.query.apply(this, ['where'].concat(args));
   },
 
@@ -1169,7 +1167,7 @@ var BookshelfModel = ModelBase.extend({
    * @private
    * @returns Sync
    */
-  sync: function(options) {
+  sync(options) {
     return new Sync(this, options);
   },
 
@@ -1179,7 +1177,7 @@ var BookshelfModel = ModelBase.extend({
    * @method Model#_morphOneOrMany
    * @private
    */
-  _morphOneOrMany: function(Target, morphName, columnNames, morphValue, type) {
+  _morphOneOrMany(Target, morphName, columnNames, morphValue, type) {
     if (!_.isArray(columnNames)) {
       // Shift by one place
       morphValue = columnNames;
@@ -1201,8 +1199,8 @@ var BookshelfModel = ModelBase.extend({
    * @todo: need to check on Backbone's status there, ticket #2636
    * @todo: {silent: true, parse: true}, for parity with collection#set
    */
-  _handleResponse: function(response) {
-    var relatedData = this.relatedData;
+  _handleResponse(response) {
+    let relatedData = this.relatedData;
     this.set(this.parse(response[0]), {silent: true})._reset();
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot([this]);
@@ -1218,13 +1216,13 @@ var BookshelfModel = ModelBase.extend({
    *
    * @param {Object} Response from Knex query.
    */
-  _handleEager: function(response, options) {
+  _handleEager(response, options) {
     return new EagerRelation([this], response, this).fetch(options);
   }
 
 }, {
 
-  extended: function(child) {
+  extended(child) {
     /**
      * @class Model.NotFoundError
      * @description

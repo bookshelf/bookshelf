@@ -1,15 +1,13 @@
-// Collection
-// ---------------
-var _              = require('lodash');
+import _ from 'lodash';
 
-var Sync           = require('./sync');
-var Helpers        = require('./helpers');
-var EagerRelation  = require('./eager');
-var Errors         = require('./errors');
+import Sync from './sync';
+import Helpers from './helpers';
+import EagerRelation from './eager';
+import Errors from './errors';
 
-var CollectionBase = require('./base/collection');
-var Promise        = require('./base/promise');
-var createError    = require('create-error');
+import CollectionBase from './base/collection';
+import Promise from './base/promise';
+import createError from 'create-error';
 
 /**
  * @class Collection
@@ -31,14 +29,14 @@ var createError    = require('create-error');
  * initialize} function, it will be invoked when the collection is created.
  *
  * @example
- * var tabs = new TabSet([tab1, tab2, tab3]);
+ * let tabs = new TabSet([tab1, tab2, tab3]);
  *
  * @param {(Model[])=} models Initial array of models.
  * @param {Object=} options
  * @param {bool} [options.comparator=false]
  *   {@link Collection#comparator Comparator} for collection, or `false` to disable sorting.
  */
-var BookshelfCollection = CollectionBase.extend({
+let BookshelfCollection = CollectionBase.extend({
 
   /**
    * @method Collection#through
@@ -175,7 +173,7 @@ var BookshelfCollection = CollectionBase.extend({
    *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
    */
   fetchOne: Promise.method(function(options) {
-    var model = new this.model();
+    let model = new this.model();
     model._knex = this.query().clone();
     this.resetQuery();
     if (this.relatedData) model.relatedData = this.relatedData;
@@ -224,7 +222,7 @@ var BookshelfCollection = CollectionBase.extend({
    */
   create: Promise.method(function(model, options) {
     options = options ? _.clone(options) : {};
-    var relatedData = this.relatedData;
+    let relatedData = this.relatedData;
     model = this._prepareModel(model, options);
 
     // If we've already added things on the query chain,
@@ -273,7 +271,7 @@ var BookshelfCollection = CollectionBase.extend({
    *
    * @example
    *
-   * var qb = collection.query();
+   * let qb = collection.query();
    *     qb.where({id: 1}).select().then(function(resp) {...
    * 
    * collection.query(function(qb) {
@@ -315,7 +313,7 @@ var BookshelfCollection = CollectionBase.extend({
    * collection's `fetch` call.
    */
   _handleResponse: function(response) {
-    var relatedData = this.relatedData;
+    let relatedData = this.relatedData;
     this.set(response, {silent: true, parse: true}).invoke('_reset');
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot(this.models);
@@ -348,4 +346,4 @@ var BookshelfCollection = CollectionBase.extend({
 
 BookshelfCollection.EmptyError = Errors.EmptyError
 
-module.exports = BookshelfCollection;
+export default BookshelfCollection;

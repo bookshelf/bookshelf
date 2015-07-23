@@ -249,7 +249,7 @@ CollectionBase.prototype.mapThen = function(iterator, context) {
  * bulk saving or deleting models:
  *
  * @param {string} method The {@link Model model} method to invoke.
- * @param {...mixed} Arguments to `method`.
+ * @param {...mixed} arguments Arguments to `method`.
  * @returns {Promise<mixed[]>}
  *   Promise resolving to array of results from invocation.
  */

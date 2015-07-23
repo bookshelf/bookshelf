@@ -1,36 +1,36 @@
-var _          = require('lodash');
-var semver     = require('semver');
-var helpers    = require('./helpers')
+import _ from 'lodash';
+import semver from 'semver';
+import helpers from './helpers';
 
 // We've supplemented `Events` with a `triggerThen`
 // method to allow for asynchronous event handling via promises. We also
 // mix this into the prototypes of the main objects in the library.
-var Events = require('./base/events');
+import Events from './base/events';
 
 // All core modules required for the bookshelf instance.
-var BookshelfModel      = require('./model');
-var BookshelfCollection = require('./collection');
-var BookshelfRelation   = require('./relation');
-var Errors              = require('./errors');
+import BookshelfModel from './model';
+import BookshelfCollection from './collection';
+import BookshelfRelation from './relation';
+import Errors from './errors';
 
 function Bookshelf(knex) {
-  var bookshelf  = {
+  let bookshelf  = {
     VERSION: '0.8.1'
   };
 
-  var range = '>=0.6.10 <0.9.0';
+  let range = '>=0.6.10 <0.9.0';
   if (!semver.satisfies(knex.VERSION, range)) {
     throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
   }
 
-  var Model = bookshelf.Model = BookshelfModel.extend({
+  let Model = bookshelf.Model = BookshelfModel.extend({
     
     _builder: builderFn,
 
     // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
     // mixing in the correct `builder` method, as well as the `relation` method,
     // passing in the correct `Model` & `Collection` constructors for later reference.
-    _relation: function(type, Target, options) {
+    _relation(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
           _.result(this, 'tableName') + ' ' + type + ' relation');
@@ -40,28 +40,28 @@ function Bookshelf(knex) {
 
   }, {
 
-    forge: forge,
+    forge,
 
-    collection: function(rows, options) {
+    collection(rows, options) {
       return new bookshelf.Collection((rows || []), _.extend({}, options, {model: this}));
     },
 
-    count: function(column, options) {
+    count(column, options) {
       return this.forge().count(column, options); 
     },
 
-    fetchAll: function(options) {
+    fetchAll(options) {
       return this.forge().fetchAll(options); 
     }
   })
 
-  var Collection = bookshelf.Collection = BookshelfCollection.extend({
+  let Collection = bookshelf.Collection = BookshelfCollection.extend({
     
     _builder: builderFn
   
   }, {
   
-    forge: forge
+    forge
   
   });
 
@@ -70,10 +70,9 @@ function Bookshelf(knex) {
   Collection.prototype.model = Model;
   Model.prototype.Collection = Collection;
 
-  var Relation = BookshelfRelation.extend({
-    Model: Model,
-    Collection: Collection
-  })
+  let Relation = BookshelfRelation.extend({
+    Model, Collection
+  });
 
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
   // `Events` object. It also contains the version number, and a `Transaction` method
@@ -81,13 +80,13 @@ function Bookshelf(knex) {
   _.extend(bookshelf, Events, Errors, {
 
     // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
-    transaction: function() {
+    transaction() {
       return this.knex.transaction.apply(this, arguments);
     },
 
     // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
     // injecting the current instance into the plugin, which should be a module.exports.
-    plugin: function(plugin, options) {
+    plugin(plugin, options) {
       if (_.isString(plugin)) {
         try {
           require('../plugins/' + plugin)(this, options);
@@ -119,28 +118,25 @@ function Bookshelf(knex) {
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
   function forge() {
-    var inst = Object.create(this.prototype);
-    var obj = this.apply(inst, arguments);
+    let inst = Object.create(this.prototype);
+    let obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   }
 
   function builderFn(tableName) {
-    var builder
-    if (tableName) {
-      builder = knex(tableName);
-    } else {
-      builder = knex.queryBuilder()
-    }
-    return builder.on('query', (data) => {
-      this.trigger('query', data);
-    });
+    let builder = tableName
+      ? knex(tableName)
+      : knex.queryBuilder();
+
+    return builder.on('query', data =>
+      this.trigger('query', data)
+    );
   }
 
   // Attach `where`, `query`, and `fetchAll` as static methods.
-  ['where', 'query'].forEach(function(method) {
-    Model[method] =
-    Collection[method] = function() {
-      var model = this.forge();
+  ['where', 'query'].forEach((method) => {
+    Model[method] = Collection[method] = function() {
+      let model = this.forge();
       return model[method].apply(model, arguments);
     };
   });
@@ -157,4 +153,4 @@ Bookshelf.initialize = function(knex) {
 };
 
 // Finally, export `Bookshelf` to the world.
-module.exports = Bookshelf;
+export default Bookshelf;
