@@ -584,8 +584,8 @@ let BookshelfModel = ModelBase.extend({
    * @param {Transaction=} options.transacting
    *  Optionally run the query in a transaction.
    *
-   * @fires Model#event:fetching
-   * @fires Model#event:fetched
+   * @fires Model#fetching
+   * @fires Model#fetched
    *
    * @throws {Model.NotFoundError}
    *
@@ -686,7 +686,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *   Fired just before the {@link Collection} is fetched; a good place to hook into for validations.
    *
-   * @fires Model#event:"fetched:collection"
+   * @fires Model#"fetched:collection"
    *
    *   Fired when a record is successfully retrieved.
    *
@@ -718,7 +718,7 @@ let BookshelfModel = ModelBase.extend({
          * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#event:"fetched:collection"
+         * @event Model#"fetched:collection"
          * @param {Model}  collection The collection that has been fetched.
          * @param {Object} resp       The Knex query response.
          * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -836,12 +836,12 @@ let BookshelfModel = ModelBase.extend({
    * @param {bool} [options.require=true]
    *   Throw a {@link Model.NoRowsUpdatedError} if no records are affected by save.
    *
-   * @fires Model#event:saving   Fired before performing either an `insert` or `update`.
-   * @fires Model#event:creating Fired before performing an `insert`.
-   * @fires Model#event:updating Fired before performing an `update`.
-   * @fires Model#event:created  Fired after performing an `insert`.
-   * @fires Model#event:updated  Fired after performing an `update`.
-   * @fires Model#event:saved    Fired after performing either an `insert` or `update`.
+   * @fires Model#saving
+   * @fires Model#creating
+   * @fires Model#updating
+   * @fires Model#created
+   * @fires Model#updated
+   * @fires Model#saved
    *
    * @throws Model.NoRowsUpdatedError
    *
@@ -902,7 +902,7 @@ let BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save.
        *
-       * @event Model#event:saving
+       * @event Model#saving
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -916,7 +916,7 @@ let BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save operation.
        *
-       * @event Model#event:creating
+       * @event Model#creating
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -930,7 +930,7 @@ let BookshelfModel = ModelBase.extend({
        * returned from the event handler for async behaviour. Throwing an
        * exception from the handler will cancel the save operation.
        *
-       * @event Model#event:updating
+       * @event Model#updating
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -963,7 +963,7 @@ let BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `insert` or `update` query.
          *
-         * @event Model#event:saved
+         * @event Model#saved
          * @param {Model}  model    The model firing the event.
          * @param {Object} resp     The database response.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -975,7 +975,7 @@ let BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `insert` query.
          *
-         * @event Model#event:created
+         * @event Model#created
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -987,7 +987,7 @@ let BookshelfModel = ModelBase.extend({
          *
          * Fired before after an `update` query.
          *
-         * @event Model#event:updated
+         * @event Model#updated
          * @param {Model}  model    The model firing the event.
          * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1017,16 +1017,16 @@ let BookshelfModel = ModelBase.extend({
    * @param {Object=}      options                  Hash of options.
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
    *
-   * @fires Model#destroying Fired before the `delete` operation.
-   * @fires Model#destroyed  Fired after the `delete` operation.
-   *
    * @example
    *
-   *   new User({id: 1})
-   *     .destroy()
-   *     .then(function(model) {
-   *       // ...
-   *     });
+   * new User({id: 1})
+   *   .destroy()
+   *   .then(function(model) {
+   *     // ...
+   *   });
+   *
+   * @fires Model#destroying
+   * @fires Model#destroyed
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
@@ -1041,7 +1041,7 @@ let BookshelfModel = ModelBase.extend({
        * handler for async behaviour. Throwing an exception from the handler
        * will reject the promise and cancel the deletion.
        *
-       * @event Model#event:destroying
+       * @event Model#destroying
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
@@ -1062,7 +1062,7 @@ let BookshelfModel = ModelBase.extend({
        * Fired before a `delete` query. A promise may be returned from the event
        * handler for async behaviour. 
        *
-       * @event Model#event:destroyed
+       * @event Model#destroyed
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
        * @param {Object} options  Options object passed to {@link Model#save save}.
