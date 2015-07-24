@@ -1265,6 +1265,14 @@ new Author({id: 1, first_name: 'User'})
       is completed.
     </p>
 
+<pre><code>
+new User({id: 1})
+  .destroy()
+  .then(function(model) {
+    // ...
+  });
+</code></pre>
+
     <p id="Model-attributes">
       <b class="header">attributes</b><code>model.attributes</code>
       <br />
