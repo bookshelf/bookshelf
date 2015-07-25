@@ -683,12 +683,7 @@ let BookshelfModel = ModelBase.extend({
    *   Optionally run the query in a transaction.
    *
    * @fires Model#"fetching:collection"
-   *
-   *   Fired just before the {@link Collection} is fetched; a good place to hook into for validations.
-   *
    * @fires Model#"fetched:collection"
-   *
-   *   Fired when a record is successfully retrieved.
    *
    * @throws {Model.EmptyError}
    *
