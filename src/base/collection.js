@@ -593,7 +593,7 @@ CollectionBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#filter
  */
 /**
- * @method CollectionBase#selec
+ * @method CollectionBase#select
  * @see http://lodash.com/docs/#select
  */
 /**

@@ -80,7 +80,7 @@ function Bookshelf(knex) {
      * @returns {Collection}
      */
     collection(models, options) {
-      return new bookshelf.Collection((rows || []), _.extend({}, options, {model: this}));
+      return new bookshelf.Collection((models || []), _.extend({}, options, {model: this}));
     },
 
     /**
