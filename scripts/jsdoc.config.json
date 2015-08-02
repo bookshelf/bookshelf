@@ -3,7 +3,7 @@
     "allowUnknownTags": true
   },
   "source": {
-    "include": ["README.md", "bookshelf.js", "lib"],
+    "include": ["README.md", "bookshelf.js", "src"],
     "includePattern": ".+\\.js(doc)?$",
     "excludePattern": "(^|\\/|\\\\)_"
   },
@@ -23,6 +23,10 @@
     "template": "./node_modules/minami",
     "recurse": true,
     "private": false,
-    "encoding": "utf-8"
+    "encoding": "utf-8",
+    "whitelist": [
+      "Model",
+      "Collection"
+    ]
   }
 }

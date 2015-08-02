@@ -747,6 +747,21 @@ _.each(attributeMethods, function(method) {
   };
 });
 
+/**
+ * @method Collection.extend
+ * @description
+ *
+ * To create a {@link Collection} class of your own, extend
+ * `Bookshelf.Collection`.
+ *
+ * @param {Object=} prototypeProperties
+ *   Instance methods and properties to be attached to instances of the new
+ *   class.
+ * @param {Object=} classProperties
+ *   Class (ie. static) functions and properties to be attached to the
+ *   constructor of the new class.
+ * @returns {Function} Constructor for new `Collection` subclass.
+ */
 CollectionBase.extend = require('../extend');
 
 module.exports = CollectionBase;

@@ -520,6 +520,75 @@ _.each(modelMethods, function(method) {
   };
 });
 
+/**
+ * @method Model.extend
+ * @description
+ *
+ * To create a Model class of your own, you extend {@link Model bookshelf.Model}.
+ *
+ * `extend` correctly sets up the prototype chain, so subclasses created with
+ * `extend` can be further extended and subclassed as far as you like.
+ *
+ *     var checkit  = require('checkit');
+ *     var Promise  = require('bluebird');
+ *     var bcrypt   = Promise.promisifyAll(require('bcrypt'));
+ *     
+ *     var Customer = bookshelf.Model.extend({
+ *     
+ *       initialize: function() {
+ *         this.on('saving', this.validateSave);
+ *       },
+ *     
+ *       validateSave: function() {
+ *         return checkit(rules).run(this.attributes);
+ *       },
+ *     
+ *       account: function() {
+ *         return this.belongsTo(Account);
+ *       },
+ *     
+ *     }, {
+ *     
+ *       login: Promise.method(function(email, password) {
+ *         if (!email || !password) throw new Error('Email and password are both required');
+ *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
+ *           return bcrypt.compareAsync(customer.get('password'), password);
+ *         });
+ *       })
+ *     
+ *     });
+ *     
+ *     Customer.login(email, password)
+ *       .then(function(customer) {
+ *         res.json(customer.omit('password'));
+ *       }).catch(Customer.NotFoundError, function() {
+ *         res.json(400, {error: email + ' not found'});
+ *       }).catch(function(err) {
+ *         console.error(err);
+ *       });
+ *
+ * _Brief aside on `super`: JavaScript does not provide a simple way to call
+ * `super` — the function of the same name defined higher on the prototype
+ * chain. If you override a core function like {@link Model#set set}, or {@link
+ * Model#save save}, and you want to invoke the parent object's implementation,
+ * you'll have to explicitly call it, along these lines:_
+ *
+ *     var Customer = bookshelf.Model.extend({
+ *       set: function() {
+ *         ...
+ *         bookshelf.Model.prototype.set.apply(this, arguments);
+ *         ...
+ *       }
+ *     });
+ *
+ * @param {Object=} prototypeProperties
+ *   Instance methods and properties to be attached to instances of the new
+ *   class.
+ * @param {Object=} classProperties
+ *   Class (ie. static) functions and properties to be attached to the
+ *   constructor of the new class.
+ * @returns {Function} Constructor for new `Model` subclass.
+ */
 ModelBase.extend = require('../extend');
 
 module.exports = ModelBase;
