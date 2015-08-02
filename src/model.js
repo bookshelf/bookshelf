@@ -826,8 +826,8 @@ let BookshelfModel = ModelBase.extend({
    *   Explicitly select a save method, either `"update"` or `"insert"`.
    * @param {string} [options.defaults=false]
    *   Assign {@link Model#defaults defaults} in an `update` operation.
-   * @param {string=} options.patch
-   *   Explicitly select a save method.
+   * @param {bool} [options.patch=false]
+   *   Only save attributes supplied in arguments to `save`.
    * @param {bool} [options.require=true]
    *   Throw a {@link Model.NoRowsUpdatedError} if no records are affected by save.
    *
@@ -838,7 +838,7 @@ let BookshelfModel = ModelBase.extend({
    * @fires Model#updated
    * @fires Model#saved
    *
-   * @throws Model.NoRowsUpdatedError
+   * @throws {Model.NoRowsUpdatedError}
    *
    * @returns {Promise<Model>} A promise resolving to the saved and updated model.
    */
@@ -1091,27 +1091,27 @@ let BookshelfModel = ModelBase.extend({
    *
    * @example
    *
-   *   model
-   *     .query('where', 'other_id', '=', '5')
-   *     .fetch()
-   *     .then(function(model) {
-   *       ...
-   *     });
+   * model
+   *   .query('where', 'other_id', '=', '5')
+   *   .fetch()
+   *   .then(function(model) {
+   *     // ...
+   *   });
    *   
-   *   model
-   *     .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
-   *     .fetch()
-   *     .then(function(model) {
-   *       ...
-   *     });
+   * model
+   *   .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
+   *   .fetch()
+   *   .then(function(model) {
+   *     // ...
+   *   });
    *   
-   *   model.query(function(qb) {
-   *     qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
-   *   }).fetch()
-   *     .then(function(model) {...
+   * model.query(function(qb) {
+   *   qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
+   * }).fetch()
+   *   .then(function(model) { // ...
    *   
-   *   let qb = model.query();
-   *       qb.where({id: 1}).select().then(function(resp) {...
+   * let qb = model.query();
+   *     qb.where({id: 1}).select().then(function(resp) { // ...
    *
    * @method Model#query
    * @param {function|Object|...string=} arguments The query method.

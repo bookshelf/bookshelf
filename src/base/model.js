@@ -204,7 +204,7 @@ ModelBase.prototype.serialize = function(options) {
  * `JSON.stringify`}. To customize serialization, override {@link
  * BaseModel#serialize serialize}.
  *
- * @param {options} Options passed to {@link BaseModel#serialize}.
+ * @param {Object=} options Options passed to {@link BaseModel#serialize}.
  */
 ModelBase.prototype.toJSON = function(options) {
   return this.serialize(options)
@@ -390,9 +390,9 @@ ModelBase.prototype.saveMethod = function(options) {
  * timestamps.
  *
  * @param {Object=} options
- * @param {method}  [options.method=]
- * Either `'insert'` or `'update'`. Specify what kind of save the attribute
- * update is for.
+ * @param {string} [options.method="update"]
+ *   Either `'insert'` or `'update'`. Specify what kind of save the attribute
+ *   update is for.
  *
  * @returns {Object} A hash of timestamp attributes that were set.
  */

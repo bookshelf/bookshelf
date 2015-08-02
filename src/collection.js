@@ -156,7 +156,7 @@ let BookshelfCollection = CollectionBase.extend({
    *   .query({where: {id: 2}})
    *   .fetchOne()
    *   .then(function(model) {
-   *     ... //
+   *     // ...
    *   });
    *
    * @param {Object=}  options
