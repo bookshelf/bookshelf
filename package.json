@@ -9,7 +9,7 @@
     "build": "./scripts/build.sh",
     "eslint": "eslint bookshelf.js src/.",
     "test": "npm run eslint && npm run babel && mocha -b -t 5000 --check-leaks -R spec test/index.js",
-    "jsdoc": "npm run babel && rm -rf ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json"
+    "jsdoc": "rm -rf ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
