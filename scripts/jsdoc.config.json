@@ -19,6 +19,7 @@
     }
   },
   "opts": {
+    "tutorials": "./tutorials",
     "destination": "./docs/html",
     "template": "./node_modules/minami",
     "recurse": true,
