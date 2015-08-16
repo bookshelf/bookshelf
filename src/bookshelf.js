@@ -13,6 +13,17 @@ import BookshelfCollection from './collection';
 import BookshelfRelation from './relation';
 import Errors from './errors';
 
+/**
+ * @class Bookshelf
+ * @classdesc
+ *
+ * The Bookshelf library is initialized by passing an initialized Knex client
+ * instance. The knex documentation provides a number of examples for different
+ * databases.
+ *
+ * @constructor
+ * @param {Knex} knex Knex instance.
+ */
 function Bookshelf(knex) {
   let bookshelf  = {
     VERSION: '0.8.1'
@@ -169,10 +180,64 @@ function Bookshelf(knex) {
   // referencing the correct version of `knex` passed into the object.
   _.extend(bookshelf, Events, Errors, {
 
-    // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
+    /**
+     * @method Bookshelf#transaction
+     * @memberOf Bookshelf
+     * @description
+     *
+     * An alias to `{@link http://knexjs.org/#Transactions
+     * Knex#transaction}`, the `transaction` object must be passed along in the
+     * options of any relevant Bookshelf calls, to ensure all queries are on the
+     * same connection. The entire transaction block is a promise that will
+     * resolve when the transaction is committed, or fail if the transaction is
+     * rolled back.
+     *
+     *     var Promise = require('bluebird');
+     *     
+     *     Bookshelf.transaction(function(t) {
+     *       return new Library({name: 'Old Books'})
+     *         .save(null, {transacting: t})
+     *         .tap(function(model) {
+     *           return Promise.map([
+     *             {title: 'Canterbury Tales'},
+     *             {title: 'Moby Dick'},
+     *             {title: 'Hamlet'}
+     *           ], function(info) {
+     *     
+     *             // Some validation could take place here.
+     *             return new Book(info).save({'shelf_id': model.id}, {transacting: t});
+     *           });
+     *         });
+     *     }).then(function(library) {
+     *       console.log(library.related('books').pluck('title'));
+     *     }).catch(function(err) {
+     *       console.error(err);
+     *     });
+     *
+     * @param {Bookshelf~transactionCallback} transactionCallback
+     *    Callback containing transaction logic. The callback should return a
+     *    promise.
+     *
+     * @returns {Promise<mixed>}
+     *    A promise resolving to the value returned from {@link
+     *    Bookshelf~transactionCallback transactionCallback}.
+     */
     transaction() {
       return this.knex.transaction.apply(this, arguments);
     },
+
+    /**
+     * @callback Bookshelf~transactionCallback
+     * @description
+     *
+     * A transaction block to be provided to {@link Bookshelf#transaction}.
+     *
+     * @see {@link http://knexjs.org/#Transactions Knex#transaction}
+     * @see Bookshelf#transaction
+     *
+     * @param {Transaction} transaction
+     * @returns {Promise<mixed>}
+     */
 
     // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
     // injecting the current instance into the plugin, which should be a module.exports.
@@ -200,8 +265,13 @@ function Bookshelf(knex) {
 
   });
 
-  // Grab a reference to the `knex` instance passed (or created) in this constructor,
-  // for convenience.
+  /**
+   * @member Bookshelf#knex
+   * @memberOf Bookshelf
+   * @type {Knex}
+   * @description
+   * A reference to the {@link http://knexjs.org Knex.js} instance being used by Bookshelf.
+   */
   bookshelf.knex = knex;
 
   // The `forge` function properly instantiates a new Model or Collection

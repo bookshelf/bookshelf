@@ -10,7 +10,6 @@ import ModelBase from './base/model';
 import Promise from './base/promise';
 
 /**
- *
  * @class Model
  * @extends ModelBase
  * @inheritdoc
@@ -39,19 +38,14 @@ import Promise from './base/promise';
  * actual constructor function for your model.
  *
  *     let Books = bookshelf.Model.extend({
- *     
  *       tableName: 'documents',
- *     
  *       constructor: function() {
  *         bookshelf.Model.apply(this, arguments);
  *         this.on('saving', function(model, attrs, options) {
  *           options.query.where('type', '=', 'book');
  *         });
  *       }
- *     
  *     });
- *
- * @constructor
  *
  * @param {Object}   attributes            Initial values for this model's attributes.
  * @param {Object=}  options               Hash of options.
@@ -62,8 +56,8 @@ import Promise from './base/promise';
  *
  * @param {boolean} [options.parse=false]
  *
- *   Convert attributes by {@link Model#parse parse} before being
- *   {@link Model#set set} on the model.
+ *   Convert attributes by {@link Model#parse parse} before being {@link
+ *   Model#set set} on the model.
  *   
  */
 let BookshelfModel = ModelBase.extend({

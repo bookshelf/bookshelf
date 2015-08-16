@@ -26,6 +26,7 @@
     "private": false,
     "encoding": "utf-8",
     "whitelist": [
+      "Bookshelf",
       "Model",
       "Collection"
     ]
