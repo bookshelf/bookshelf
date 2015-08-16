@@ -25,8 +25,8 @@ import Promise from './base/promise';
  * @description
  *
  * When creating an instance of a model, you can pass in the initial values of
- * the attributes, which will be {@linkcode Model#set set} on the
- * model. If you define an {@linkcode initialize} function, it will be invoked
+ * the attributes, which will be {@link Model#set set} on the
+ * model. If you define an {@link initialize} function, it will be invoked
  * when the model is created.
  *
  *     new Book({
@@ -35,7 +35,7 @@ import Promise from './base/promise';
  *     });
  *
  * In rare cases, if you're looking to get fancy, you may want to override
- * {@linkcode Model#constructor constructor}, which allows you to replace the
+ * {@link Model#constructor constructor}, which allows you to replace the
  * actual constructor function for your model.
  *
  *     let Books = bookshelf.Model.extend({
@@ -55,15 +55,15 @@ import Promise from './base/promise';
  *
  * @param {Object}   attributes            Initial values for this model's attributes.
  * @param {Object=}  options               Hash of options.
- * @param {string=}  options.tableName     Initial value for {@linkcode Model#tableName tableName}.
+ * @param {string=}  options.tableName     Initial value for {@link Model#tableName tableName}.
  * @param {boolean=} [options.hasTimestamps=false]
  *
- *   Initial value for {@linkcode Model#hasTimestamps hasTimestamps}.
+ *   Initial value for {@link Model#hasTimestamps hasTimestamps}.
  *
  * @param {boolean} [options.parse=false]
  *
- *   Convert attributes by {@linkcode Model#parse parse} before being
- *   {@linkcode Model#set set} on the model.
+ *   Convert attributes by {@link Model#parse parse} before being
+ *   {@link Model#set set} on the model.
  *   
  */
 let BookshelfModel = ModelBase.extend({
@@ -97,12 +97,12 @@ let BookshelfModel = ModelBase.extend({
    *
    * @param {Model} Target
    *
-   *   Constructor of {@linkcode Model} targeted by join.
+   *   Constructor of {@link Model} targeted by join.
    *
    * @param {string=} foreignKey
    *
    *   ForeignKey in the `Target` model. By default, the `foreignKey` is assumed to
-   *   be the singular form of this model's {@linkcode Model#tableName tableName},
+   *   be the singular form of this model's {@link Model#tableName tableName},
    *   followed by `_id` / `_{{{@link ModelBase#idAttribute idAttribute}}}`.
    *
    * @returns {Model}
@@ -119,7 +119,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @param {Model} Target
    *
-   *   Constructor of {@linkcode Model} targeted by join.
+   *   Constructor of {@link Model} targeted by join.
    *
    * @param {string=} foreignKey
    *
@@ -137,11 +137,11 @@ let BookshelfModel = ModelBase.extend({
    * The `belongsTo` relationship is used when a model is a member of
    * another `Target` model.
    *
-   * It can be used in a {@link oneToOne one-to-one} associations as the inverse
-   * of a {@linkcode Model#hasOne hasOne}. It can also used in {@link oneToMany
-   * one-to-many} associations as the inverse of a {@link
-   * Model#hasMany hasMany} (and is the one side of that association).
-   * In both cases, the belongsTo relationship is used for a model that is a
+   * It can be used in a {@tutorial one-to-one} associations as the inverse
+   * of a {@link Model#hasOne hasOne}. It can also used in {@tutorial
+   * one-to-many} associations as the inverse of a {@link Model#hasMany hasMany}
+   * (and is the one side of that association). In both cases, the {@link
+   * Model#belongsTo belongsTo} relationship is used for a model that is a
    * member of another Target model, referenced by the foreignKey in the current
    * model.
    *
@@ -162,7 +162,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @param {Model} Target
    *
-   *   Constructor of {@linkcode Model} targeted by join.
+   *   Constructor of {@link Model} targeted by join.
    *
    * @param {string=} foreignKey
    *
@@ -253,7 +253,7 @@ let BookshelfModel = ModelBase.extend({
    * @method  Model#belongsToMany
    * @param {Model} Target
    *
-   *   Constructor of {@linkcode Model} targeted by join.
+   *   Constructor of {@link Model} targeted by join.
    *
    * @param {string=} foreignKey
    *
@@ -313,7 +313,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @method Model#morphOne
    *
-   * @param {Model}     Target      Constructor of {@linkcode Model} targeted by join.
+   * @param {Model}     Target      Constructor of {@link Model} targeted by join.
    * @param {string=}   name        Prefix for `_id` and `_type` columns.
    * @param {(string[])=}  columnNames
    *
@@ -364,7 +364,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @method Model#morphMany
    *
-   * @param {Model}     Target      Constructor of {@linkcode Model} targeted by join.
+   * @param {Model}     Target      Constructor of {@link Model} targeted by join.
    * @param {string=}   name        Prefix for `_id` and `_type` columns.
    * @param {(string[])=}  columnNames
    *
@@ -412,7 +412,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *   Array containing two column names, the first is the `_type`, the second is the `_id`.
    *
-   * @param {...Model} Target Constructor of {@linkcode Model} targeted by join.
+   * @param {...Model} Target Constructor of {@link Model} targeted by join.
    *
    * @returns {Model}
    */
