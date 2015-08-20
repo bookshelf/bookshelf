@@ -200,7 +200,7 @@
       and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.
     </p>
 
-    <h2>Latest Release: 0.8.1 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
+    <h2>Latest Release: 0.8.2 - <span class="small"><a href="#changelog">Change Log</a></span></h2>
 
     <p>
       Current Develop &mdash;
@@ -2375,7 +2375,7 @@ process.stderr.on('data', function(data) {
     <h2 id="changelog">Change Log</h2>
 
     <p>
-      <b class="header">branch:master</b> &mdash; <small><i>June 20, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.8.1...master">Diff</a><br />
+      <b class="header">0.8.2</b> &mdash; <small><i>August 20, 2015</i></small> &mdash; <a href="https://github.com/tgriesser/bookshelf/compare/0.8.2...master">Diff</a><br />
     </p>
 
     <ul>
@@ -2383,31 +2383,31 @@ process.stderr.on('data', function(data) {
         ES6/7: Move code base to <tt>/src</tt> &mdash; code is now compiled into <tt>/lib</tt> via <a href="https://babeljs.io/">Babel</a>.
       </li>
       <li>
-        Add <tt><a href="#Collection-count">collection.count</a></tt>, <tt><a href="#Model-count">model.count</a></tt> and <tt>Model.count</tt>.
+        Add <tt>collection.count</tt>, <tt>model.count</tt> and <tt>Model.count</tt>.
       </li>
       <li>
-        Add <tt><a href="#Model-refresh">model.refresh</a></tt>. #796
+        Add <tt>model.refresh</tt>. #796
       </li>
       <li>
-        Prevent <tt><a href="#Model-fetch">fetch</a></tt> and <tt><a href="#Model-refresh">refresh</a></tt> from trying to add JSON attributes to a <tt>where</tt> clause. #550 #778
+        Prevent <tt>fetch</tt> and <tt>refresh</tt> from trying to add JSON attributes to a <tt>where</tt> clause. #550 #778
       </li>
       <li>
-        Virtuals plugin now supports <tt>{patch: true}</tt> argument to <tt><a href="#Model-save">save</a></tt>. #542
+        Virtuals plugin now supports <tt>{patch: true}</tt> argument to <tt>model.save</tt>. #542
       </li>
       <li>
-        Restored <tt><a href="#Model-clone">model.clone</a></tt> and <tt><a href="#Collection-clone">collection.clone</a></tt>, which were not previously working. #744
+        Restored <tt>model.clone</tt> and <tt>collection.clone</tt>, which were not previously working. #744
       </li>
       <li>
-        Allow <a href="#Collection">bookshelf.Collection</a> to be modified and extended by plugins (so that relations and <tt>fetchAll</tt> operations will return the extended instance). #681 #688
+        Allow <tt>bookshelf.Collection</tt> to be modified and extended by plugins (so that relations and <tt>fetchAll</tt> operations will return the extended instance). #681 #688
       </li>
       <li>
-        Fix <tt><a href="#Model-timestamps">model.timestamps</a></tt> behaviour which deviated from documentation. Also ensure that <tt>createdAt</tt> is set when <tt>{method: "insert"}</tt> is passed explicitly. #787
+        Fix <tt>model.timestamps</tt> behaviour which deviated from documentation. Also ensure that <tt>createdAt</tt> is set when <tt>{method: "insert"}</tt> is passed explicitly. #787
       </li>
       <li>
-        Calling <tt><a href="#Collection-create">create</a></tt> on a <tt><a href="#Model.through">through</a></tt> relationship no longer tries to make a pivot object. Previously this would attempt to create an object with invalid foreign keys. #768
+        Calling <tt>create</tt> on a <tt>through</tt> relationship no longer tries to make a pivot object. Previously this would attempt to create an object with invalid foreign keys. #768
       </li>
       <li>
-        Parse foreign keys set during <tt><a href="#Collection-create">create</a></tt> in a relation. #770
+        Parse foreign keys set during <tt>create</tt> in a relation. #770
       </li>
     </ul>
 
