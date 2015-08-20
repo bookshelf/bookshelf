@@ -54,14 +54,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Bookshelf.js 0.8.1
-	// ---------------
-
-	//     (c) 2014 Tim Griesser
-	//     Bookshelf may be freely distributed under the MIT license.
-	//     For all details and documentation:
-	//     http://bookshelfjs.org
+	
+	/**
+	 * (c) 2014 Tim Griesser
+	 * Bookshelf may be freely distributed under the MIT license.
+	 * For all details and documentation:
+	 * http://bookshelfjs.org
+	 *
+	 * version 0.8.1
+	 *
+	 */
 	module.exports = __webpack_require__(1)
+
 
 /***/ },
 /* 1 */
@@ -69,32 +73,70 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _ = __webpack_require__(2);
-	var semver = __webpack_require__(14);
-	var helpers = __webpack_require__(3);
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _lodash = __webpack_require__(2);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	var _semver = __webpack_require__(14);
+
+	var _semver2 = _interopRequireDefault(_semver);
+
+	var _helpers = __webpack_require__(3);
+
+	var _helpers2 = _interopRequireDefault(_helpers);
 
 	// We've supplemented `Events` with a `triggerThen`
 	// method to allow for asynchronous event handling via promises. We also
 	// mix this into the prototypes of the main objects in the library.
-	var Events = __webpack_require__(4);
+
+	var _baseEvents = __webpack_require__(4);
+
+	var _baseEvents2 = _interopRequireDefault(_baseEvents);
 
 	// All core modules required for the bookshelf instance.
-	var BookshelfModel = __webpack_require__(5);
-	var BookshelfCollection = __webpack_require__(6);
-	var BookshelfRelation = __webpack_require__(7);
-	var Errors = __webpack_require__(8);
 
+	var _model = __webpack_require__(5);
+
+	var _model2 = _interopRequireDefault(_model);
+
+	var _collection = __webpack_require__(6);
+
+	var _collection2 = _interopRequireDefault(_collection);
+
+	var _relation2 = __webpack_require__(7);
+
+	var _relation3 = _interopRequireDefault(_relation2);
+
+	var _errors = __webpack_require__(8);
+
+	var _errors2 = _interopRequireDefault(_errors);
+
+	/**
+	 * @class Bookshelf
+	 * @classdesc
+	 *
+	 * The Bookshelf library is initialized by passing an initialized Knex client
+	 * instance. The knex documentation provides a number of examples for different
+	 * databases.
+	 *
+	 * @constructor
+	 * @param {Knex} knex Knex instance.
+	 */
 	function Bookshelf(knex) {
 	  var bookshelf = {
 	    VERSION: '0.8.1'
 	  };
 
 	  var range = '>=0.6.10 <0.9.0';
-	  if (!semver.satisfies(knex.VERSION, range)) {
+	  if (!_semver2['default'].satisfies(knex.VERSION, range)) {
 	    throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
 	  }
 
-	  var Model = bookshelf.Model = BookshelfModel.extend({
+	  var Model = bookshelf.Model = _model2['default'].extend({
 
 	    _builder: builderFn,
 
@@ -102,31 +144,124 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // mixing in the correct `builder` method, as well as the `relation` method,
 	    // passing in the correct `Model` & `Collection` constructors for later reference.
 	    _relation: function _relation(type, Target, options) {
-	      if (type !== 'morphTo' && !_.isFunction(Target)) {
-	        throw new Error('A valid target model must be defined for the ' + _.result(this, 'tableName') + ' ' + type + ' relation');
+	      if (type !== 'morphTo' && !_lodash2['default'].isFunction(Target)) {
+	        throw new Error('A valid target model must be defined for the ' + _lodash2['default'].result(this, 'tableName') + ' ' + type + ' relation');
 	      }
 	      return new Relation(type, Target, options);
 	    }
 
 	  }, {
 
+	    /**
+	     * @method Model.forge
+	     * @belongsTo Model
+	     * @description
+	     *
+	     * A simple helper function to instantiate a new Model without needing `new`.
+	     *
+	     * @param {Object=} attributes Initial values for this model's attributes.
+	     * @param {Object=}  options               Hash of options.
+	     * @param {string=}  options.tableName     Initial value for {@linkcode Model#tableName tableName}.
+	     * @param {boolean=} [options.hasTimestamps=false]
+	     *
+	     *   Initial value for {@linkcode Model#hasTimestamps hasTimestamps}.
+	     *
+	     * @param {boolean} [options.parse=false]
+	     *
+	     *   Convert attributes by {@linkcode Model#parse parse} before being
+	     *   {@linkcode Model#set set} on the `model`.
+	     */
 	    forge: forge,
 
-	    collection: function collection(rows, options) {
-	      return new bookshelf.Collection(rows || [], _.extend({}, options, { model: this }));
+	    /**
+	     * @method Model.collection
+	     * @belongsTo Model
+	     * @description
+	     *
+	     * A simple static helper to instantiate a new {@link Collection}, setting
+	     * the current `model` as the collection's target.
+	     *
+	     * @example
+	     *
+	     * Customer.collection().fetch().then(function(collection) {
+	     *   // ...
+	     * })
+	     *
+	     * @param {(Model[])=} models
+	     * @param {Object=} options
+	     * @returns {Collection}
+	     */
+	    collection: function collection(models, options) {
+	      return new bookshelf.Collection(models || [], _lodash2['default'].extend({}, options, { model: this }));
 	    },
 
+	    /**
+	     * @method Model.count
+	     * @belongsTo Model
+	     * @description
+	     *
+	     * Gets the number of matching records in the database, respecting any
+	     * previous calls to {@link Model#query query}. If a `column` is provided,
+	     * records with a null value in that column will be excluded from the count.
+	     *
+	     * @param {string=} [column='*']
+	     * @param {Object=} options
+	     * @returns {Promise<number>}
+	     */
+	    count: function count(column, options) {
+	      return this.forge().count(column, options);
+	    },
+
+	    /**
+	     * @method Model.fetchAll
+	     * @belongsTo Model
+	     * @description
+	     *
+	     * Simple helper function for retireving all instances of the given model.
+	     *
+	     * @see Model#fetchAll
+	     * @returns {Promise<Collection>}
+	     */
 	    fetchAll: function fetchAll(options) {
 	      return this.forge().fetchAll(options);
 	    }
 	  });
 
-	  var Collection = bookshelf.Collection = BookshelfCollection.extend({
+	  var Collection = bookshelf.Collection = _collection2['default'].extend({
 
 	    _builder: builderFn
 
 	  }, {
 
+	    /**
+	     * @method Collection.forge
+	     * @belongsTo Collection
+	     * @description
+	     *
+	     * A simple helper function to instantiate a new Collection without needing
+	     * new.
+	     *
+	     * @param {(Object[]|Model[])=} [models]
+	     *   Set of models (or attribute hashes) with which to initialize the
+	     *   collection.
+	     * @param {Object} options Hash of options.
+	     *
+	     * @example
+	     *
+	     * var Promise = require('bluebird');
+	     * var Accounts = bookshelf.Collection.extend({
+	     *   model: Account
+	     * });
+	     *
+	     * var accounts = Accounts.forge([
+	     *   {name: 'Person1'},
+	     *   {name: 'Person2'}
+	     * ])
+	     *
+	     * Promise.all(accounts.invoke('save')).then(function() {
+	     *   // collection models should now be saved...
+	     * });
+	     */
 	    forge: forge
 
 	  });
@@ -136,27 +271,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Collection.prototype.model = Model;
 	  Model.prototype.Collection = Collection;
 
-	  var Relation = BookshelfRelation.extend({
-	    Model: Model,
-	    Collection: Collection
+	  var Relation = _relation3['default'].extend({
+	    Model: Model, Collection: Collection
 	  });
 
 	  // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
 	  // `Events` object. It also contains the version number, and a `Transaction` method
 	  // referencing the correct version of `knex` passed into the object.
-	  _.extend(bookshelf, Events, Errors, {
+	  _lodash2['default'].extend(bookshelf, _baseEvents2['default'], _errors2['default'], {
 
-	    // Helper method to wrap a series of Bookshelf actions in a `knex` transaction block;
+	    /**
+	     * @method Bookshelf#transaction
+	     * @memberOf Bookshelf
+	     * @description
+	     *
+	     * An alias to `{@link http://knexjs.org/#Transactions
+	     * Knex#transaction}`, the `transaction` object must be passed along in the
+	     * options of any relevant Bookshelf calls, to ensure all queries are on the
+	     * same connection. The entire transaction block is a promise that will
+	     * resolve when the transaction is committed, or fail if the transaction is
+	     * rolled back.
+	     *
+	     *     var Promise = require('bluebird');
+	     *     
+	     *     Bookshelf.transaction(function(t) {
+	     *       return new Library({name: 'Old Books'})
+	     *         .save(null, {transacting: t})
+	     *         .tap(function(model) {
+	     *           return Promise.map([
+	     *             {title: 'Canterbury Tales'},
+	     *             {title: 'Moby Dick'},
+	     *             {title: 'Hamlet'}
+	     *           ], function(info) {
+	     *     
+	     *             // Some validation could take place here.
+	     *             return new Book(info).save({'shelf_id': model.id}, {transacting: t});
+	     *           });
+	     *         });
+	     *     }).then(function(library) {
+	     *       console.log(library.related('books').pluck('title'));
+	     *     }).catch(function(err) {
+	     *       console.error(err);
+	     *     });
+	     *
+	     * @param {Bookshelf~transactionCallback} transactionCallback
+	     *    Callback containing transaction logic. The callback should return a
+	     *    promise.
+	     *
+	     * @returns {Promise<mixed>}
+	     *    A promise resolving to the value returned from {@link
+	     *    Bookshelf~transactionCallback transactionCallback}.
+	     */
 	    transaction: function transaction() {
 	      return this.knex.transaction.apply(this, arguments);
 	    },
+
+	    /**
+	     * @callback Bookshelf~transactionCallback
+	     * @description
+	     *
+	     * A transaction block to be provided to {@link Bookshelf#transaction}.
+	     *
+	     * @see {@link http://knexjs.org/#Transactions Knex#transaction}
+	     * @see Bookshelf#transaction
+	     *
+	     * @param {Transaction} transaction
+	     * @returns {Promise<mixed>}
+	     */
 
 	    // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
 	    // injecting the current instance into the plugin, which should be a module.exports.
 	    plugin: function plugin(_plugin, options) {
 	      var _this = this;
 
-	      if (_.isString(_plugin)) {
+	      if (_lodash2['default'].isString(_plugin)) {
 	        try {
 	          __webpack_require__(9)("./" + _plugin)(this, options);
 	        } catch (e) {
@@ -167,8 +355,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            require(_plugin)(this, options);
 	          }
 	        }
-	      } else if (_.isArray(_plugin)) {
-	        _.each(_plugin, function (p) {
+	      } else if (_lodash2['default'].isArray(_plugin)) {
+	        _lodash2['default'].each(_plugin, function (p) {
 	          _this.plugin(p, options);
 	        });
 	      } else {
@@ -179,8 +367,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  });
 
-	  // Grab a reference to the `knex` instance passed (or created) in this constructor,
-	  // for convenience.
+	  /**
+	   * @member Bookshelf#knex
+	   * @memberOf Bookshelf
+	   * @type {Knex}
+	   * @description
+	   * A reference to the {@link http://knexjs.org Knex.js} instance being used by Bookshelf.
+	   */
 	  bookshelf.knex = knex;
 
 	  // The `forge` function properly instantiates a new Model or Collection
@@ -193,10 +386,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function builderFn(tableName) {
-	    var builder = knex(tableName);
-	    var instance = this;
+	    var _this2 = this;
+
+	    var builder = tableName ? knex(tableName) : knex.queryBuilder();
+
 	    return builder.on('query', function (data) {
-	      instance.trigger('query', data);
+	      return _this2.trigger('query', data);
 	    });
 	  }
 
@@ -215,12 +410,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	// an active `knex` instance and initializes the appropriate
 	// `Model` and `Collection` constructors for use in the current instance.
 	Bookshelf.initialize = function (knex) {
-	  helpers.warn('Bookshelf.initialize is deprecated, pass knex directly: require(\'bookshelf\')(knex)');
+	  _helpers2['default'].warn('Bookshelf.initialize is deprecated, pass knex directly: require(\'bookshelf\')(knex)');
 	  return new Bookshelf(knex);
 	};
 
 	// Finally, export `Bookshelf` to the world.
-	module.exports = Bookshelf;
+	exports['default'] = Bookshelf;
+	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
@@ -237,7 +433,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var _ = __webpack_require__(2);
-	var chalk = __webpack_require__(23);
+	var chalk = __webpack_require__(22);
 
 	var helpers = {
 
@@ -269,17 +465,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // If the first argument is an object, assume the keys are query builder
 	  // methods, and the values are the arguments for the query.
 	  query: function query(obj, args) {
-	    obj._knex = obj._knex || obj._builder(_.result(obj, 'tableName'));
+
+	    // Ensure the object has a query builder.
+	    if (!obj._knex) {
+	      var tableName = _.result(obj, 'tableName');
+	      obj._knex = obj._builder(tableName);
+	    }
+
+	    // If there are no arguments, return the query builder.
 	    if (args.length === 0) return obj._knex;
+
 	    var method = args[0];
+
 	    if (_.isFunction(method)) {
+
+	      // `method` is a query builder callback. Call it on the query builder
+	      // object.
 	      method.call(obj._knex, obj._knex);
 	    } else if (_.isObject(method)) {
+
+	      // `method` is an object. Use keys as methods and values as arguments to
+	      // the query builder.
 	      for (var key in method) {
 	        var target = _.isArray(method[key]) ? method[key] : [method[key]];
 	        obj._knex[key].apply(obj._knex, target);
 	      }
 	    } else {
+
+	      // Otherwise assume that the `method` is string name of a query builder
+	      // method, and use the remaining args as arguments to that method.
 	      obj._knex[method].apply(obj._knex, args.slice(1));
 	    }
 	    return obj;
@@ -312,7 +526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Promise = __webpack_require__(15);
 	var inherits = __webpack_require__(24);
-	var EventEmitter = __webpack_require__(22).EventEmitter;
+	var EventEmitter = __webpack_require__(23).EventEmitter;
 	var _ = __webpack_require__(2);
 
 	function Events() {
@@ -412,100 +626,638 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Model
-	// ---------------
 	'use strict';
 
-	var _ = __webpack_require__(2);
-	var createError = __webpack_require__(25);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var Sync = __webpack_require__(16);
-	var Helpers = __webpack_require__(3);
-	var EagerRelation = __webpack_require__(17);
-	var Errors = __webpack_require__(8);
+	var _lodash = __webpack_require__(2);
 
-	var ModelBase = __webpack_require__(18);
-	var Promise = __webpack_require__(15);
+	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var BookshelfModel = ModelBase.extend({
+	var _createError = __webpack_require__(25);
 
-	  // The `hasOne` relation specifies that this table has exactly one of another type of object,
-	  // specified by a foreign key in the other table. The foreign key is assumed to be the singular of this
-	  // object's `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
+	var _createError2 = _interopRequireDefault(_createError);
+
+	var _sync = __webpack_require__(16);
+
+	var _sync2 = _interopRequireDefault(_sync);
+
+	var _helpers = __webpack_require__(3);
+
+	var _helpers2 = _interopRequireDefault(_helpers);
+
+	var _eager = __webpack_require__(17);
+
+	var _eager2 = _interopRequireDefault(_eager);
+
+	var _errors = __webpack_require__(8);
+
+	var _errors2 = _interopRequireDefault(_errors);
+
+	var _baseModel = __webpack_require__(18);
+
+	var _baseModel2 = _interopRequireDefault(_baseModel);
+
+	var _basePromise = __webpack_require__(15);
+
+	var _basePromise2 = _interopRequireDefault(_basePromise);
+
+	/**
+	 * @class Model
+	 * @extends ModelBase
+	 * @inheritdoc
+	 * @classdesc
+	 *
+	 * Models are simple objects representing individual database rows, specifying
+	 * the tableName and any relations to other models. They can be extended with
+	 * any domain-specific methods, which can handle components such as validations,
+	 * computed properties, and access control.
+	 *
+	 * @constructor
+	 * @description
+	 *
+	 * When creating an instance of a model, you can pass in the initial values of
+	 * the attributes, which will be {@link Model#set set} on the
+	 * model. If you define an {@link initialize} function, it will be invoked
+	 * when the model is created.
+	 *
+	 *     new Book({
+	 *       title: "One Thousand and One Nights",
+	 *       author: "Scheherazade"
+	 *     });
+	 *
+	 * In rare cases, if you're looking to get fancy, you may want to override
+	 * {@link Model#constructor constructor}, which allows you to replace the
+	 * actual constructor function for your model.
+	 *
+	 *     let Books = bookshelf.Model.extend({
+	 *       tableName: 'documents',
+	 *       constructor: function() {
+	 *         bookshelf.Model.apply(this, arguments);
+	 *         this.on('saving', function(model, attrs, options) {
+	 *           options.query.where('type', '=', 'book');
+	 *         });
+	 *       }
+	 *     });
+	 *
+	 * @param {Object}   attributes            Initial values for this model's attributes.
+	 * @param {Object=}  options               Hash of options.
+	 * @param {string=}  options.tableName     Initial value for {@link Model#tableName tableName}.
+	 * @param {boolean=} [options.hasTimestamps=false]
+	 *
+	 *   Initial value for {@link Model#hasTimestamps hasTimestamps}.
+	 *
+	 * @param {boolean} [options.parse=false]
+	 *
+	 *   Convert attributes by {@link Model#parse parse} before being {@link
+	 *   Model#set set} on the model.
+	 *   
+	 */
+	var BookshelfModel = _baseModel2['default'].extend({
+
+	  /**
+	   * The `hasOne` relation specifies that this table has exactly one of another
+	   * type of object, specified by a foreign key in the other table.
+	   * 
+	   *     let Record = bookshelf.Model.extend({
+	   *       tableName: 'health_records'
+	   *     });
+	   *
+	   *     let Patient = bookshelf.Model.extend({
+	   *       tableName: 'patients',
+	   *       record: function() {
+	   *         return this.hasOne(Record);
+	   *       }
+	   *     });
+	   *
+	   *     // select * from `health_records` where `patient_id` = 1;
+	   *     new Patient({id: 1}).related('record').fetch().then(function(model) {
+	   *       ...
+	   *     }); 
+	   *
+	   *     // alternatively, if you don't need the relation loaded on the patient's relations hash:
+	   *     new Patient({id: 1}).record().fetch().then(function(model) {
+	   *       ...
+	   *     });
+	   *
+	   * @method Model#hasOne
+	   *
+	   * @param {Model} Target
+	   *
+	   *   Constructor of {@link Model} targeted by join.
+	   *
+	   * @param {string=} foreignKey
+	   *
+	   *   ForeignKey in the `Target` model. By default, the `foreignKey` is assumed to
+	   *   be the singular form of this model's {@link Model#tableName tableName},
+	   *   followed by `_id` / `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @returns {Model}
+	   */
 	  hasOne: function hasOne(Target, foreignKey) {
 	    return this._relation('hasOne', Target, { foreignKey: foreignKey }).init(this);
 	  },
 
-	  // The `hasMany` relation specifies that this object has one or more rows in another table which
-	  // match on this object's primary key. The foreign key is assumed to be the singular of this object's
-	  // `tableName` with an `_id` suffix, but a custom `foreignKey` attribute may also be specified.
+	  /**
+	   * The `hasMany` relation specifies that this model has one or more rows in
+	   * another table which match on this model's primary key.
+	   *
+	   * @method Model#hasMany
+	   *
+	   * @param {Model} Target
+	   *
+	   *   Constructor of {@link Model} targeted by join.
+	   *
+	   * @param {string=} foreignKey
+	   *
+	   *   ForeignKey in the `Target` model. By default, the foreignKey is assumed to
+	   *   be the singular form of this model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @returns {Collection}
+	   */
 	  hasMany: function hasMany(Target, foreignKey) {
 	    return this._relation('hasMany', Target, { foreignKey: foreignKey }).init(this);
 	  },
 
-	  // A reverse `hasOne` relation, the `belongsTo`, where the specified key in this table
-	  // matches the primary `idAttribute` of another table.
+	  /**
+	   * The `belongsTo` relationship is used when a model is a member of
+	   * another `Target` model.
+	   *
+	   * It can be used in a {@tutorial one-to-one} associations as the inverse
+	   * of a {@link Model#hasOne hasOne}. It can also used in {@tutorial
+	   * one-to-many} associations as the inverse of a {@link Model#hasMany hasMany}
+	   * (and is the one side of that association). In both cases, the {@link
+	   * Model#belongsTo belongsTo} relationship is used for a model that is a
+	   * member of another Target model, referenced by the foreignKey in the current
+	   * model.
+	   *
+	   *     let Book = bookshelf.Model.extend({
+	   *       tableName: 'books',
+	   *       author: function() {
+	   *         return this.belongsTo(Author);
+	   *       }
+	   *     });
+	   * 
+	   *     // select * from `books` where id = 1
+	   *     // select * from `authors` where id = book.author_id
+	   *     Book.where({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
+	   *       console.log(JSON.stringify(book.related('author')));
+	   *     });
+	   * 
+	   * @method Model#belongsTo
+	   *
+	   * @param {Model} Target
+	   *
+	   *   Constructor of {@link Model} targeted by join.
+	   *
+	   * @param {string=} foreignKey
+	   *
+	   *   ForeignKey in this model. By default, the foreignKey is assumed to
+	   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @returns {Model}
+	   */
 	  belongsTo: function belongsTo(Target, foreignKey) {
 	    return this._relation('belongsTo', Target, { foreignKey: foreignKey }).init(this);
 	  },
 
-	  // A `belongsToMany` relation is when there are many-to-many relation
-	  // between two models, with a joining table.
+	  /**
+	   * Defines a many-to-many relation, where the current model is joined to one
+	   * or more of a `Target` model through another table. The default name for
+	   * the joining table is the two table names, joined by an underscore, ordered
+	   * alphabetically. For example, a `users` table and an `accounts` table would have
+	   * a joining table of accounts_users.
+	   *
+	   *     let Account = bookshelf.Model.extend({
+	   *       tableName: 'accounts'
+	   *     });
+	   *     
+	   *     let User = bookshelf.Model.extend({
+	   *     
+	   *       tableName: 'users',
+	   *     
+	   *       allAccounts: function () {
+	   *         return this.belongsToMany(Account);
+	   *       },
+	   *     
+	   *       adminAccounts: function() {
+	   *         return this.belongsToMany(Account).query({where: {access: 'admin'}});
+	   *       },
+	   *     
+	   *       viewAccounts: function() {
+	   *         return this.belongsToMany(Account).query({where: {access: 'readonly'}});
+	   *       }
+	   *     
+	   *     });  
+	   *
+	   *  The default key names in the joining table are the singular versions of the
+	   *  model table names, followed by `_id` /
+	   *  _{{{@link ModelBase#idAttribute idAttribute}}}. So in the above case, the
+	   *  columns in the joining table
+	   *  would be `user_id`, `account_id`, and `access`, which is used as an
+	   *  example of how dynamic relations can be formed using different contexts.
+	   *  To customize the keys used in, or the {@link Model#tableName tableName}
+	   *  used for the join table, you may specify them like so:
+	   *
+	   *      this.belongsToMany(Account, 'users_accounts', 'userid', 'accountid');
+	   *
+	   * If you wish to create a {@link Model#belongsToMany belongsToMany}
+	   * association where the joining table has a primary key, and more information
+	   * about the model, you may create a {@link Model#belongsToMany belongsToMany}
+	   * {@link Relation#through through} relation:
+	   *
+	   *     let Doctor = bookshelf.Model.extend({
+	   *     
+	   *       patients: function() {
+	   *         return this.belongsToMany(Patient).through(Appointment);
+	   *       }
+	   *     
+	   *     });
+	   *     
+	   *     let Appointment = bookshelf.Model.extend({
+	   *     
+	   *       patient: function() {
+	   *         return this.belongsTo(Patient);
+	   *       },
+	   *     
+	   *       doctor: function() {
+	   *         return this.belongsTo(Doctor);
+	   *       }
+	   *     
+	   *     });
+	   *     
+	   *     let Patient = bookshelf.Model.extend({
+	   *     
+	   *       doctors: function() {
+	   *         return this.belongsToMany(Doctor).through(Appointment);
+	   *       }
+	   *     
+	   *     });
+	   *
+	   * @belongsTo Model
+	   * @method  Model#belongsToMany
+	   * @param {Model} Target
+	   *
+	   *   Constructor of {@link Model} targeted by join.
+	   *
+	   * @param {string=} foreignKey
+	   *
+	   *   Foreign key in this model. By default, the `foreignKey` is assumed to
+	   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @param {string=} table
+	   *
+	   *   Name of the joining table. Defaults to the two table names, joined by an
+	   *   underscore, ordered alphabetically.
+	   *
+	   * @param {string=} otherKey
+	   *
+	   *   Foreign key in the `Target` model. By default, the `otherKey` is assumed to
+	   *   be the singular form of this model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @returns {Collection}
+	   */
 	  belongsToMany: function belongsToMany(Target, joinTableName, foreignKey, otherKey) {
 	    return this._relation('belongsToMany', Target, {
 	      joinTableName: joinTableName, foreignKey: foreignKey, otherKey: otherKey
 	    }).init(this);
 	  },
 
-	  // A `morphOne` relation is a one-to-one polymorphic association from this model
-	  // to another model.
+	  /**
+	   * The {@link Model#morphOne morphOne} is used to signify a {@link oneToOne
+	   * one-to-one} {@link polymorphicRelation polymorphic relation} with
+	   * another `Target` model, where the `name` of the model is used to determine
+	   * which database table keys are used. The naming convention requires the
+	   * `name` prefix an `_id` and `_type` field in the database. So for the case
+	   * below the table names would be `imageable_type` and `imageable_id`. The
+	   * `morphValue` may be optionally set to store/retrieve a different value in
+	   * the `_type` column than the {@link Model#tableName}.
+	   *
+	   *     let Site = bookshelf.Model.extend({
+	   *       tableName: 'sites',
+	   *       photo: function() {
+	   *         return this.morphOne(Photo, 'imageable');
+	   *       }
+	   *     });
+	   *
+	   * And with custom `columnNames`:
+	   *
+	   *     let Site = bookshelf.Model.extend({
+	   *       tableName: 'sites',
+	   *       photo: function() {
+	   *         return this.morphOne(Photo, 'imageable', ["ImageableType", "ImageableId"]);
+	   *       }
+	   *     });
+	   *
+	   * Note that both `columnNames` and `morphValue` are optional arguments. How
+	   * your argument is treated when only one is specified, depends on the type.
+	   * If your argument is an array, it will be assumed to contain custom
+	   * `columnNames`. If it's not, it will be assumed to indicate a `morphValue`.
+	   *
+	   * @method Model#morphOne
+	   *
+	   * @param {Model}     Target      Constructor of {@link Model} targeted by join.
+	   * @param {string=}   name        Prefix for `_id` and `_type` columns.
+	   * @param {(string[])=}  columnNames
+	   *
+	   *   Array containing two column names, the first is the `_type`, the second
+	   *   is the `_id`.
+	   *
+	   * @param {string=} [morphValue=Target#{@link Model#tableName tableName}]
+	   *
+	   *   The string value associated with this relationship. Stored in the `_type`
+	   *   column of the polymorphic table. Defaults to `Target#{@link
+	   *   Model#tableName tableName}`.
+	   *
+	   * @returns {Model} The related model.
+	   */
 	  morphOne: function morphOne(Target, name, columnNames, morphValue) {
 	    return this._morphOneOrMany(Target, name, columnNames, morphValue, 'morphOne');
 	  },
 
-	  // A `morphMany` relation is a polymorphic many-to-one relation from this model
-	  // to many another models.
+	  /**
+	   * {@link Model#morphMany morphMany} is essentially the same as a {@link
+	   * Model#morphOne morphOne}, but creating a {@link Collection collection}
+	   * rather than a {@link Model model} (similar to a {@link Model#hasOne
+	   * hasOne} vs. {@link Model#hasMany hasMany} relation).
+	   *  
+	   * {@link Model#morphMany morphMany} is used to signify a {@link oneToMany
+	   * one-to-many} or {@link manyToMany many-to-many} {@link polymorphicRelation
+	   * polymorphic relation} with another `Target` model, where the `name` of the
+	   * model is used to determine which database table keys are used. The naming
+	   * convention requires the `name` prefix an `_id` and `_type` field in the
+	   * database. So for the case below the table names would be `imageable_type`
+	   * and `imageable_id`. The `morphValue` may be optionally set to
+	   * store/retrieve a different value in the `_type` column than the `Target`'s
+	   * {@link Model#tableName tableName}.
+	   *
+	   *     let Post = bookshelf.Model.extend({
+	   *       tableName: 'posts',
+	   *       photos: function() {
+	   *         return this.morphMany(Photo, 'imageable');
+	   *       }
+	   *     });
+	   *
+	   * And with custom columnNames:
+	   *
+	   *     let Post = bookshelf.Model.extend({
+	   *       tableName: 'posts',
+	   *       photos: function() {
+	   *         return this.morphMany(Photo, 'imageable', ["ImageableType", "ImageableId"]);
+	   *       }
+	   *     });
+	   *
+	   * @method Model#morphMany
+	   *
+	   * @param {Model}     Target      Constructor of {@link Model} targeted by join.
+	   * @param {string=}   name        Prefix for `_id` and `_type` columns.
+	   * @param {(string[])=}  columnNames
+	   *
+	   *   Array containing two column names, the first is the `_type`, the second is the `_id`.
+	   *
+	   * @param {string=} [morphValue=Target#{@link Model#tableName tablename}]
+	   *
+	   *   The string value associated with this relationship. Stored in the `_type`
+	   *   column of the polymorphic table. Defaults to `Target`#{@link Model#tableName
+	   *   tablename}.
+	   *
+	   * @returns {Collection} A collection of related models.
+	   */
 	  morphMany: function morphMany(Target, name, columnNames, morphValue) {
 	    return this._morphOneOrMany(Target, name, columnNames, morphValue, 'morphMany');
 	  },
 
-	  // Defines the opposite end of a `morphOne` or `morphMany` relationship, where
-	  // the alternate end of the polymorphic model is defined.
+	  /**
+	   * The {@link Model#morphTo morphTo} relation is used to specify the inverse
+	   * of the {@link Model#morphOne morphOne} or {@link Model#morphMany
+	   * morphMany} relations, where the `targets` must be passed to signify which
+	   * {@link Model models} are the potential opposite end of the {@link
+	   * polymorphicRelation polymorphic relation}.
+	   *
+	   *     let Photo = bookshelf.Model.extend({
+	   *       tableName: 'photos',
+	   *       imageable: function() {
+	   *         return this.morphTo('imageable', Site, Post);
+	   *       }
+	   *     });
+	   *
+	   * And with custom columnNames:
+	   *
+	   *     let Photo = bookshelf.Model.extend({
+	   *       tableName: 'photos',
+	   *       imageable: function() {
+	   *         return this.morphTo('imageable', ["ImageableType", "ImageableId"], Site, Post);
+	   *       }
+	   *     });
+	   * 
+	   * @method Model#morphTo
+	   *
+	   * @param {string}      name        Prefix for `_id` and `_type` columns.
+	   * @param {(string[])=} columnNames
+	   *
+	   *   Array containing two column names, the first is the `_type`, the second is the `_id`.
+	   *
+	   * @param {...Model} Target Constructor of {@link Model} targeted by join.
+	   *
+	   * @returns {Model}
+	   */
 	  morphTo: function morphTo(morphName) {
-	    var columnNames, remainder;
-	    if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
-	    if (_.isArray(arguments[1])) {
+	    if (!_lodash2['default'].isString(morphName)) throw new Error('The `morphTo` name must be specified.');
+	    var columnNames = undefined,
+	        candidates = undefined;
+	    if (_lodash2['default'].isArray(arguments[1])) {
 	      columnNames = arguments[1];
-	      remainder = _.rest(arguments, 2);
+	      candidates = _lodash2['default'].rest(arguments, 2);
 	    } else {
 	      columnNames = null;
-	      remainder = _.rest(arguments);
+	      candidates = _lodash2['default'].rest(arguments);
 	    }
-	    return this._relation('morphTo', null, { morphName: morphName, columnNames: columnNames, candidates: remainder }).init(this);
+	    return this._relation('morphTo', null, { morphName: morphName, columnNames: columnNames, candidates: candidates }).init(this);
 	  },
 
-	  // Used to define passthrough relationships - `hasOne`, `hasMany`,
-	  // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
-	  through: function through(Interim, foreignKey, otherKey) {
-	    return this.relatedData.through(this, Interim, { throughForeignKey: foreignKey, otherKey: otherKey });
+	  /**
+	   * Helps to create dynamic relations between {@link Model models} and {@link
+	   * Collection collections}, where a {@link Model#hasOne hasOne}, {@link
+	   * Model#hasMany hasMany}, {@link Model#belongsTo belongsTo}, or {@link
+	   * Model#belongsToMany belongsToMany} relation may run through a `JoinModel`.  
+	   *
+	   * A good example of where this would be useful is if a book {@link
+	   * Model#hasMany hasMany} paragraphs through chapters. Consider the following examples:
+	   *
+	   *
+	   *     let Book = bookshelf.Model.extend({
+	   *     
+	   *       tableName: 'books',
+	   *     
+	   *       // Find all paragraphs associated with this book, by
+	   *       // passing through the "Chapter" model.
+	   *       paragraphs: function() {
+	   *         return this.hasMany(Paragraph).through(Chapter);
+	   *       },
+	   *     
+	   *       chapters: function() {
+	   *         return this.hasMany(Chapter);
+	   *       }
+	   *     
+	   *     });
+	   *     
+	   *     let Chapter = bookshelf.Model.extend({
+	   *     
+	   *       tableName: 'chapters',
+	   *     
+	   *       paragraphs: function() {
+	   *         return this.hasMany(Paragraph);
+	   *       }
+	   *     
+	   *     });
+	   *     
+	   *     let Paragraph = bookshelf.Model.extend({
+	   *     
+	   *       tableName: 'paragraphs',
+	   *     
+	   *       chapter: function() {
+	   *         return this.belongsTo(Chapter);
+	   *       },
+	   *     
+	   *       // A reverse relation, where we can get the book from the chapter.
+	   *       book: function() {
+	   *         return this.belongsTo(Book).through(Chapter);
+	   *       }
+	   *     
+	   *     });
+	   *
+	   * The "through" table creates a pivot model, which it assigns to {@link
+	   * Model#pivot model.pivot} after it is created. On {@link Model#toJSON
+	   * toJSON}, the pivot model is flattened to values prefixed with
+	   * `_pivot_`.
+	   *
+	   * @method Model#through
+	   * @param {Model} Interim Pivot model.
+	   * @param {string=} throughForeignKey
+	   *
+	   *   Foreign key in this model. By default, the `foreignKey` is assumed to
+	   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @param {string=} otherKey
+	   *
+	   *   Foreign key in the `Interim` model. By default, the `otherKey` is assumed to
+	   *   be the singular form of this model's tableName, followed by `_id` /
+	   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+	   *
+	   * @returns {Collection}
+	   */
+	  through: function through(Interim, throughForeignKey, otherKey) {
+	    return this.relatedData.through(this, Interim, { throughForeignKey: throughForeignKey, otherKey: otherKey });
 	  },
 
-	  // Fetch a model based on the currently set attributes,
-	  // returning a model to the callback, along with any options.
-	  // Returns a deferred promise through the `Bookshelf.Sync`.
-	  // If `{require: true}` is set as an option, the fetch is considered
-	  // a failure if the model comes up blank.
-	  fetch: Promise.method(function (options) {
-	    options = options ? _.clone(options) : {};
+	  // Update the attributes of a model, fetching it by its primary key. If
+	  // no attribute matches its `idAttribute`, then fetch by all available
+	  // fields.
+	  refresh: function refresh(options) {
+
+	    // If this is new, we use all its attributes. Otherwise we just grab the
+	    // primary key.
+	    var attributes = this.isNew() ? this.attributes : _lodash2['default'].pick(this.attributes, this.idAttribute);
+
+	    return this._doFetch(attributes, options);
+	  },
+
+	  /**
+	   * Fetches a {@link Model model} from the database, using any {@link
+	   * Model#attributes attributes} currently set on the model to form a `select`
+	   * query. 
+	   *
+	   * A {@link Model#fetching "fetching"} event will be fired just before the
+	   * record is fetched; a good place to hook into for validation. {@link
+	   * Model#fetched "fetched"} event will be fired when a record is successfully
+	   * retrieved.
+	   *
+	   * If you need to constrain the query
+	   * performed by fetch, you can call {@link Model#query query} before calling
+	   * {@link Model#fetch fetch}.  
+	   *
+	   *     // select * from `books` where `ISBN-13` = '9780440180296'
+	   *     new Book({'ISBN-13': '9780440180296'})
+	   *       .fetch()
+	   *       .then(function(model) {
+	   *         // outputs 'Slaughterhouse Five'
+	   *         console.log(model.get('title'));
+	   *       });
+	   *
+	   * _If you'd like to only fetch specific columns, you may specify a `columns`
+	   * property in the `options` for the {@link Model#fetch fetch} call, or use
+	   * {@link Model#query query}, tapping into the {@link Knex} {@link
+	   * Knex#column column} method to specify which columns will be fetched._
+	   *
+	   * The `withRelated` parameter may be specified to fetch the resource, along
+	   * with any specified {@link Model#relations relations} named on the model. A
+	   * single property, or an array of properties can be specified as a value for
+	   * the `withRelated` property. The results of these relation queries will be
+	   * loaded into a {@link Model#relations relations} property on the model, may
+	   * be retrieved with the {@link Model#related related} method, and will be
+	   * serialized as properties on a {@link Model#toJSON toJSON} call unless
+	   * `{shallow: true}` is passed.  
+	   *
+	   *     let Book = bookshelf.Model.extend({
+	   *       tableName: 'books',
+	   *       editions: function() {
+	   *         return this.hasMany(Edition);
+	   *       },
+	   *       genre: function() {
+	   *         return this.belongsTo(Genre);
+	   *       }
+	   *     })
+	   *     
+	   *     new Book({'ISBN-13': '9780440180296'}).fetch({
+	   *       withRelated: ['genre', 'editions']
+	   *     }).then(function(book) {
+	   *       console.log(book.related('genre').toJSON());
+	   *       console.log(book.related('editions').toJSON());
+	   *       console.log(book.toJSON());
+	   *     });
+	   *
+	   * @method Model#fetch
+	   *
+	   * @param {Object=}  options - Hash of options.
+	   * @param {boolean=} [options.require=false]
+	   *   If `true`, will reject the returned response with a {@link
+	   *   Model.NotFoundError NotFoundError} if no result is found.
+	   * @param {(string|string[])=} [options.columns='*']
+	   *   Limit the number of columns fetched.
+	   * @param {Transaction=} options.transacting
+	   *  Optionally run the query in a transaction.
+	   *
+	   * @fires Model#fetching
+	   * @fires Model#fetched
+	   *
+	   * @throws {Model.NotFoundError}
+	   *
+	   * @returns {Promise<Model|undefined>}
+	   *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
+	   *
+	   */
+	  fetch: function fetch(options) {
+
+	    // Fetch uses all set attributes.
+	    return this._doFetch(this.attributes, options);
+	  },
+
+	  _doFetch: _basePromise2['default'].method(function (attributes, options) {
+	    options = options ? _lodash2['default'].clone(options) : {};
 
 	    // Run the `first` call on the `sync` object to fetch a single model.
-	    return this.sync(options).first().bind(this)
+	    return this.sync(options).first(attributes).bind(this)
 
 	    // Jump the rest of the chain if the response doesn't exist...
 	    .tap(function (response) {
 	      if (!response || response.length === 0) {
 	        if (options.require) throw new this.constructor.NotFoundError('EmptyResponse');
-	        return Promise.reject(null);
+	        return _basePromise2['default'].reject(null);
 	      }
 	    })
 
@@ -518,9 +1270,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // level, ensure those are omitted from the options.
 	    .tap(function (response) {
 	      if (options.withRelated) {
-	        return this._handleEager(response, _.omit(options, 'columns'));
+	        return this._handleEager(response, _lodash2['default'].omit(options, 'columns'));
 	      }
 	    }).tap(function (response) {
+
+	      /**
+	       * Fired after a `fetch` operation. A promise may be returned from the
+	       * event handler for async behaviour.
+	       *
+	       * @event Model#fetched
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} reponse  Knex query response.
+	       * @param {Object} options  Options object passed to {@link Model#fetch fetch}.
+	       * @returns {Promise}
+	       */
 	      return this.triggerThen('fetched', this, response, options);
 	    })['return'](this)['catch'](function (err) {
 	      if (err === null) return err;
@@ -528,50 +1291,208 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }),
 
-	  // Shortcut for creating a collection and fetching the associated models.
-	  fetchAll: function fetchAll(options) {
-	    var _this = this;
-
+	  all: function all() {
 	    var collection = this.constructor.collection();
 	    collection._knex = this.query().clone();
 	    this.resetQuery();
 	    if (this.relatedData) collection.relatedData = this.relatedData;
+	    return collection;
+	  },
+
+	  count: function count(column, options) {
+	    return this.all().count(column, options);
+	  },
+
+	  /**
+	   * Fetches a collection of {@link Model models} from the database, using any
+	   * query parameters currently set on the model to form a select query. Returns
+	   * a promise, which will resolve with the fetched collection. If you wish to
+	   * trigger an error if no models are found, pass {require: true} as one of
+	   * the options to the `fetchAll` call.
+	   *
+	   * If you need to constrain the query performed by fetch, you can call the
+	   * {@link Model#query query} method before calling fetch.
+	   *
+	   * @method Model#fetchAll
+	   *
+	   * @param {Object=}  options - Hash of options.
+	   * @param {boolean=} [options.require=false]
+	   *
+	   *  Rejects the returned promise with an `EmptyError` if no records are returned.
+	   *
+	   * @param {Transaction=} options.transacting
+	   *
+	   *   Optionally run the query in a transaction.
+	   *
+	   * @fires Model#"fetching:collection"
+	   * @fires Model#"fetched:collection"
+	   *
+	   * @throws {Model.EmptyError}
+	   *
+	   *  Rejects the promise in the event of an empty response if the `require: true` option.
+	   *
+	   * @returns {Promise<Collection>} A promise resolving to the fetched {@link Collection collection}.
+	   *
+	   */
+	  fetchAll: function fetchAll(options) {
+	    var _this = this;
+
+	    var collection = this.all();
 	    return collection.once('fetching', function (__, columns, opts) {
+	      /**
+	       * Fired before a {@link Model#fetchAll fetchAll} operation. A promise
+	       * may be returned from the event handler for async behaviour.
+	       *
+	       * @event Model#"fetching:collection"
+	       * @param {Model}    collection The collection that has been fetched.
+	       * @param {string[]} columns    The columns being retrieved by the query.
+	       * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
+	       * @returns {Promise}
+	       */
 	      return _this.triggerThen('fetching:collection', collection, columns, opts);
 	    }).once('fetched', function (__, resp, opts) {
+	      /**
+	       * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
+	       * may be returned from the event handler for async behaviour.
+	       *
+	       * @event Model#"fetched:collection"
+	       * @param {Model}  collection The collection that has been fetched.
+	       * @param {Object} resp       The Knex query response.
+	       * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
+	       * @returns {Promise}
+	       */
 	      return _this.triggerThen('fetched:collection', collection, resp, opts);
 	    }).fetch(options);
 	  },
 
-	  // Eager loads relationships onto an already populated `Model` instance.
-	  load: Promise.method(function (relations, options) {
-	    return Promise.bind(this).then(function () {
-	      return [this.format(_.extend(Object.create(null), this.attributes))];
+	  /**
+	   * @method Model#load
+	   * @description
+	   * The load method takes an array of relations to eager load attributes onto a
+	   * {@link Model}, in a similar way that the `withRelated` property works on
+	   * {@link Model#fetch fetch}. Dot separated attributes may be used to specify deep
+	   * eager loading.
+	   *
+	   * @example
+	   * new Posts().fetch().then(function(collection) {
+	   *   collection.at(0)
+	   *   .load(['author', 'content', 'comments.tags'])
+	   *   .then(function(model) {
+	   *     JSON.stringify(model);
+	   *   });
+	   * });
+	   * 
+	   * {
+	   *   title: 'post title',
+	   *   author: {...},
+	   *   content: {...},
+	   *   comments: [
+	   *     {tags: [...]}, {tags: [...]}
+	   *   ]
+	   * }
+	   *  
+	   * @param {string|string[]} relations The relation, or relations, to be loaded.
+	   * @param {Object=}      options Hash of options.
+	   * @param {Transaction=} options.transacting
+	   *   Optionally run the query in a transaction.
+	   * @returns {Promise<Model>} A promise resolving to this {@link Model model}
+	   */
+	  load: _basePromise2['default'].method(function (relations, options) {
+	    return _basePromise2['default'].bind(this).then(function () {
+	      return [this.format(_lodash2['default'].extend(Object.create(null), this.attributes))];
 	    }).then(function (response) {
-	      return this._handleEager(response, _.extend({}, options, {
+	      return this._handleEager(response, _lodash2['default'].extend({}, options, {
 	        shallow: true,
-	        withRelated: _.isArray(relations) ? relations : [relations]
+	        withRelated: _lodash2['default'].isArray(relations) ? relations : [relations]
 	      }));
 	    })['return'](this);
 	  }),
 
-	  // Sets and saves the hash of model attributes, triggering
-	  // a "creating" or "updating" event on the model, as well as a "saving" event,
-	  // to bind listeners for any necessary validation, logging, etc.
-	  // If an error is thrown during these events, the model will not be saved.
-	  save: Promise.method(function (key, val, options) {
-	    var attrs;
+	  /**
+	   * @method Model#save
+	   * @description
+	   *
+	   * `save` is used to perform either an insert or update query using the
+	   * model's set {@link Model#attributes attributes}.
+	   *
+	   * If the model {@link ModelBase#isNew isNew}, any {@link Model#defaults defaults}
+	   * will be set and an `insert` query will be performed. Otherwise it will
+	   * `update` the record with a corresponding ID. This behaviour can be overriden
+	   * with the `method` option.
+	   *
+	   *     new Post({name: 'New Article'}).save().then(function(model) {
+	   *       // ...
+	   *     });
+	   *
+	   * If you only wish to update with the params passed to the save, you may pass
+	   * a {patch: true} flag to the database:
+	   *
+	   *     // update authors set "bio" = 'Short user bio' where "id" = 1
+	   *     new Author({id: 1, first_name: 'User'})
+	   *       .save({bio: 'Short user bio'}, {patch: true})
+	   *       .then(function(model) {
+	   *         // ...
+	   *       });
+	   *
+	   * Several events fired on the model when saving: a {@link Model#creating
+	   * "creating"}, or {@link Model#updating "updating"} event if the model is
+	   * being inserted or updated, and a "saving" event in either case. To
+	   * prevent saving the model (with validation, etc.), throwing an error inside
+	   * one of these event listeners will stop saving the model and reject the
+	   * promise. A {@link Model#created "created"}, or {@link Model#"updated"}
+	   * event is fired after the model is saved, as well as a {@link Model#saved
+	   * "saved"} event either way. If you wish to modify the query when the {@link
+	   * Model#saving "saving"} event is fired, the knex query object should is
+	   * available in `options.query`.
+	   *
+	   *     // Save with no arguments
+	   *     Model.forge({id: 5, firstName: "John", lastName: "Smith"}).save().then(function() { //...
+	   *
+	   *     // Or add attributes during save
+	   *     Model.forge({id: 5}).save({firstName: "John", latName: "Smith"}).then(function() { //...
+	   *
+	   *     // Or, if you prefer, for a single attribute
+	   *     Model.forge({id: 5}).save('name', 'John Smith').then(function() { //...
+	   *
+	   * @param {string=}      key                      Attribute name.
+	   * @param {string=}      val                      Attribute value.
+	   * @param {Object=}      attrs                    A has of attributes.
+	   * @param {Object=}      options
+	   * @param {Transaction=} options.transacting
+	   *   Optionally run the query in a transaction.
+	   * @param {string=} options.method
+	   *   Explicitly select a save method, either `"update"` or `"insert"`.
+	   * @param {string} [options.defaults=false]
+	   *   Assign {@link Model#defaults defaults} in an `update` operation.
+	   * @param {bool} [options.patch=false]
+	   *   Only save attributes supplied in arguments to `save`.
+	   * @param {bool} [options.require=true]
+	   *   Throw a {@link Model.NoRowsUpdatedError} if no records are affected by save.
+	   *
+	   * @fires Model#saving
+	   * @fires Model#creating
+	   * @fires Model#updating
+	   * @fires Model#created
+	   * @fires Model#updated
+	   * @fires Model#saved
+	   *
+	   * @throws {Model.NoRowsUpdatedError}
+	   *
+	   * @returns {Promise<Model>} A promise resolving to the saved and updated model.
+	   */
+	  save: _basePromise2['default'].method(function (key, val, options) {
+	    var attrs = undefined;
 
 	    // Handle both `"key", value` and `{key: value}` -style arguments.
 	    if (key == null || typeof key === 'object') {
 	      attrs = key || {};
-	      options = _.clone(val) || {};
+	      options = _lodash2['default'].clone(val) || {};
 	    } else {
 	      (attrs = {})[key] = val;
-	      options = options ? _.clone(options) : {};
+	      options = options ? _lodash2['default'].clone(options) : {};
 	    }
 
-	    return Promise.bind(this).then(function () {
+	    return _basePromise2['default'].bind(this).then(function () {
 	      return this.saveMethod(options);
 	    }).then(function (method) {
 
@@ -581,9 +1502,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // If the object is being created, we merge any defaults here rather than
 	      // during object creation.
 	      if (method === 'insert' || options.defaults) {
-	        var defaults = _.result(this, 'defaults');
+	        var defaults = _lodash2['default'].result(this, 'defaults');
 	        if (defaults) {
-	          attrs = _.extend({}, defaults, this.attributes, attrs);
+	          attrs = _lodash2['default'].extend({}, defaults, this.attributes, attrs);
 	        }
 	      }
 
@@ -594,12 +1515,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Now set timestamps if appropriate. Extend `attrs` so that the
 	      // timestamps will be provided for a patch operation.
 	      if (this.hasTimestamps) {
-	        _.extend(attrs, this.timestamp({ method: method, silent: true }));
+	        _lodash2['default'].extend(attrs, this.timestamp({ method: method, silent: true }));
 	      }
 
 	      // If there are any save constraints, set them on the model.
 	      if (this.relatedData && this.relatedData.type !== 'morphTo') {
-	        Helpers.saveConstraints(this, this.relatedData);
+	        _helpers2['default'].saveConstraints(this, this.relatedData);
 	      }
 
 	      // Gives access to the `query` object in the `options`, in case we need it
@@ -607,6 +1528,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var sync = this.sync(options);
 	      options.query = sync.query;
 
+	      /**
+	       * Saving event.
+	       *
+	       * Fired before an `insert` or `update` query. A promise may be
+	       * returned from the event handler for async behaviour. Throwing an
+	       * exception from the handler will cancel the save.
+	       *
+	       * @event Model#saving
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} attrs    Model firing the event.
+	       * @param {Object} options  Options object passed to {@link Model#save save}.
+	       * @returns {Promise}
+	       */
+
+	      /**
+	       * Creating event.
+	       *
+	       * Fired before `insert` query. A promise may be
+	       * returned from the event handler for async behaviour. Throwing an
+	       * exception from the handler will cancel the save operation.
+	       *
+	       * @event Model#creating
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} attrs    Model firing the event.
+	       * @param {Object} options  Options object passed to {@link Model#save save}.
+	       * @returns {Promise}
+	       */
+
+	      /**
+	       * Updating event.
+	       *
+	       * Fired before `update` query. A promise may be
+	       * returned from the event handler for async behaviour. Throwing an
+	       * exception from the handler will cancel the save operation.
+	       *
+	       * @event Model#updating
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} attrs    Model firing the event.
+	       * @param {Object} options  Options object passed to {@link Model#save save}.
+	       * @returns {Promise}
+	       */
 	      return this.triggerThen(method === 'insert' ? 'creating saving' : 'updating saving', this, attrs, options).bind(this).then(function () {
 	        return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
 	      }).then(function (resp) {
@@ -626,20 +1588,93 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._reset();
 
+	        /**
+	         * Saved event.
+	         *
+	         * Fired before after an `insert` or `update` query.
+	         *
+	         * @event Model#saved
+	         * @param {Model}  model    The model firing the event.
+	         * @param {Object} resp     The database response.
+	         * @param {Object} options  Options object passed to {@link Model#save save}.
+	         * @returns {Promise}
+	         */
+
+	        /**
+	         * Created event.
+	         *
+	         * Fired before after an `insert` query.
+	         *
+	         * @event Model#created
+	         * @param {Model}  model    The model firing the event.
+	         * @param {Object} attrs    Model firing the event.
+	         * @param {Object} options  Options object passed to {@link Model#save save}.
+	         * @returns {Promise}
+	         */
+
+	        /**
+	         * Updated event.
+	         *
+	         * Fired before after an `update` query.
+	         *
+	         * @event Model#updated
+	         * @param {Model}  model    The model firing the event.
+	         * @param {Object} attrs    Model firing the event.
+	         * @param {Object} options  Options object passed to {@link Model#save save}.
+	         * @returns {Promise}
+	         */
 	        return this.triggerThen(method === 'insert' ? 'created saved' : 'updated saved', this, resp, options);
 	      });
 	    })['return'](this);
 	  }),
 
-	  // Destroy a model, calling a "delete" based on its `idAttribute`.
-	  // A "destroying" and "destroyed" are triggered on the model before
-	  // and after the model is destroyed, respectively. If an error is thrown
-	  // during the "destroying" event, the model will not be destroyed.
-	  destroy: Promise.method(function (options) {
-	    options = options ? _.clone(options) : {};
+	  /**
+	   * `destroy` performs a `delete` on the model, using the model's {@link
+	   * ModelBase#idAttribute idAttribute} to constrain the query.
+	   *
+	   * A {@link Model#destroying "destroying"} event is triggered on the model before being
+	   * destroyed. To prevent destroying the model (with validation, etc.), throwing an error
+	   * inside one of these event listeners will stop destroying the model and
+	   * reject the promise.
+	   *
+	   * A {@link Model#destroyed "destroyed"} event is fired after the model's
+	   * removal is completed.
+	   *
+	   * @method Model#destroy
+	   *
+	   * @param {Object=}      options                  Hash of options.
+	   * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
+	   *
+	   * @example
+	   *
+	   * new User({id: 1})
+	   *   .destroy()
+	   *   .then(function(model) {
+	   *     // ...
+	   *   });
+	   *
+	   * @fires Model#destroying
+	   * @fires Model#destroyed
+	   */
+	  destroy: _basePromise2['default'].method(function (options) {
+	    options = options ? _lodash2['default'].clone(options) : {};
 	    var sync = this.sync(options);
 	    options.query = sync.query;
-	    return Promise.bind(this).then(function () {
+	    return _basePromise2['default'].bind(this).then(function () {
+
+	      /**
+	       * Destroying event.
+	       *
+	       * Fired before a `delete` query. A promise may be returned from the event
+	       * handler for async behaviour. Throwing an exception from the handler
+	       * will reject the promise and cancel the deletion.
+	       *
+	       * @event Model#destroying
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} attrs    Model firing the event.
+	       * @param {Object} options  Options object passed to {@link Model#save save}.
+	       * @returns {Promise}
+	       */
 	      return this.triggerThen('destroying', this, options);
 	    }).then(function () {
 	      return sync.del();
@@ -648,37 +1683,130 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new this.constructor.NoRowsDeletedError('No Rows Deleted');
 	      }
 	      this.clear();
+
+	      /**
+	       * Destroyed event.
+	       *
+	       * Fired before a `delete` query. A promise may be returned from the event
+	       * handler for async behaviour. 
+	       *
+	       * @event Model#destroyed
+	       * @param {Model}  model    The model firing the event.
+	       * @param {Object} attrs    Model firing the event.
+	       * @param {Object} options  Options object passed to {@link Model#save save}.
+	       * @returns {Promise}
+	       */
 	      return this.triggerThen('destroyed', this, resp, options);
 	    }).then(this._reset);
 	  }),
 
-	  // Reset the query builder, called internally
-	  // each time a query is run.
+	  /**
+	   *  Used to reset the internal state of the current query builder instance.
+	   *  This method is called internally each time a database action is completed
+	   *  by {@link Sync}
+	   *
+	   *  @method Model#resetQuery
+	   *  @returns {Model}          Self, this method is chainable.
+	   */
 	  resetQuery: function resetQuery() {
 	    this._knex = null;
 	    return this;
 	  },
 
-	  // Tap into the "query chain" for this model.
+	  /**
+	   * The `query` method is used to tap into the underlying Knex query builder
+	   * instance for the current model. If called with no arguments, it will
+	   * return the query builder directly. Otherwise, it will call the specified
+	   * method on the query builder, applying any additional arguments from the
+	   * `model.query` call. If the method argument is a function, it will be
+	   * called with the Knex query builder as the context and the first argument,
+	   * returning the current model.
+	   *
+	   * @example
+	   *
+	   * model
+	   *   .query('where', 'other_id', '=', '5')
+	   *   .fetch()
+	   *   .then(function(model) {
+	   *     // ...
+	   *   });
+	   *   
+	   * model
+	   *   .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
+	   *   .fetch()
+	   *   .then(function(model) {
+	   *     // ...
+	   *   });
+	   *   
+	   * model.query(function(qb) {
+	   *   qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
+	   * }).fetch()
+	   *   .then(function(model) { // ...
+	   *   
+	   * let qb = model.query();
+	   *     qb.where({id: 1}).select().then(function(resp) { // ...
+	   *
+	   * @method Model#query
+	   * @param {function|Object|...string=} arguments The query method.
+	   * @returns {Model|QueryBuilder}
+	   *   Will return this model or, if called with no arguments, the underlying query builder.
+	   *
+	   * @see {@link http://knexjs.org/#Builder Knex `QueryBuilder`}
+	   */
 	  query: function query() {
-	    return Helpers.query(this, _.toArray(arguments));
+	    return _helpers2['default'].query(this, _lodash2['default'].toArray(arguments));
 	  },
 
-	  // Add the most common conditional directly to the model, everything else
-	  // can be accessed with the `query` method.
+	  /**
+	   * The where method is used as convenience for the most common {@link
+	   * Model#query query} method, adding a where clause to the builder. Any
+	   * additional knex methods may be accessed using {@link Model#query query}.
+	   *
+	   * Accepts either key, value syntax, or a hash of attributes.
+	   *
+	   * @example
+	   *
+	   * model.where('favorite_color', '<>', 'green').fetch().then(function() { //...
+	   * // or
+	   * model.where('favorite_color', 'red').fetch().then(function() { //...
+	   * // or
+	   * model.where({favorite_color: 'red', shoe_size: 12}).then(function() { //...
+	   *
+	   * @method Model#where
+	   * @param {Object|...string} method
+	   *
+	   *   Either `key, [operator], value` syntax, or a hash of attributes to
+	   *   match. Note that these must be formatted as they are in the database,
+	   *   not how they are stored after {@link Model#parse}.
+	   *
+	   * @returns {Model} Self, this method is chainable.
+	   *
+	   * @see Model#query
+	   */
 	  where: function where() {
-	    var args = _.toArray(arguments);
+	    var args = _lodash2['default'].toArray(arguments);
 	    return this.query.apply(this, ['where'].concat(args));
 	  },
 
-	  // Creates and returns a new `Sync` instance.
+	  /**
+	   * Creates and returns a new Bookshelf.Sync instance.
+	   *
+	   * @method Model#sync
+	   * @private
+	   * @returns Sync
+	   */
 	  sync: function sync(options) {
-	    return new Sync(this, options);
+	    return new _sync2['default'](this, options);
 	  },
 
-	  // Helper for setting up the `morphOne` or `morphMany` relations.
+	  /**
+	   * Helper for setting up the `morphOne` or `morphMany` relations.
+	   *
+	   * @method Model#_morphOneOrMany
+	   * @private
+	   */
 	  _morphOneOrMany: function _morphOneOrMany(Target, morphName, columnNames, morphValue, type) {
-	    if (!_.isArray(columnNames)) {
+	    if (!_lodash2['default'].isArray(columnNames)) {
 	      // Shift by one place
 	      morphValue = columnNames;
 	      columnNames = null;
@@ -687,9 +1815,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this._relation(type, Target, { morphName: morphName, morphValue: morphValue, columnNames: columnNames }).init(this);
 	  },
 
-	  // Handles the response data for the model, returning from the model's fetch call.
-	  // Todo: {silent: true, parse: true}, for parity with collection#set
-	  // need to check on Backbone's status there, ticket #2636
+	  /**
+	   * @name Model#_handleResponse
+	   * @private
+	   * @description
+	   *
+	   *   Handles the response data for the model, returning from the model's fetch call.
+	   *
+	   * @param {Object} Response from Knex query.
+	   *
+	   * @todo: need to check on Backbone's status there, ticket #2636
+	   * @todo: {silent: true, parse: true}, for parity with collection#set
+	   */
 	  _handleResponse: function _handleResponse(response) {
 	    var relatedData = this.relatedData;
 	    this.set(this.parse(response[0]), { silent: true })._reset();
@@ -698,24 +1835,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 
-	  // Handle the related data loading on the model.
+	  /**
+	   * @name Model#_handleEager
+	   * @private
+	   * @description
+	   *
+	   *   Handles the related data loading on the model.
+	   *
+	   * @param {Object} Response from Knex query.
+	   */
 	  _handleEager: function _handleEager(response, options) {
-	    return new EagerRelation([this], response, this).fetch(options);
+	    return new _eager2['default']([this], response, this).fetch(options);
 	  }
 
 	}, {
 
 	  extended: function extended(child) {
-	    child.NotFoundError = createError(this.NotFoundError);
-	    child.NoRowsUpdatedError = createError(this.NoRowsUpdatedError);
-	    child.NoRowsDeletedError = createError(this.NoRowsDeletedError);
+	    /**
+	     * @class Model.NotFoundError
+	     * @description
+	     *
+	     *   Thrown when no records are found by {@link Model#fetch fetch}, {@link
+	     *   Model#fetchAll fetchAll} or {@link Model#refresh} when called with the
+	     *   `{require: true}` option.
+	     */
+	    child.NotFoundError = (0, _createError2['default'])(this.NotFoundError);
+
+	    /**
+	     * @class Model.NoRowsUpdated
+	     * @description
+	     *
+	     *   Thrown when no records are found by {@link Model#fetch fetch} or
+	     *   {@link Model#refresh} unless called with the `{require: false}` option.
+	     */
+	    child.NoRowsUpdatedError = (0, _createError2['default'])(this.NoRowsUpdatedError);
+
+	    /**
+	     * @class Model.NoRowsDeletedError
+	     * @description
+	     *
+	     *   Thrown when no record is deleted by {@link Model#destroy destroy}
+	     *   if called with the `{require: true}` option.
+	     */
+	    child.NoRowsDeletedError = (0, _createError2['default'])(this.NoRowsDeletedError);
 	  }
 
 	});
 
-	BookshelfModel.NotFoundError = Errors.NotFoundError;
-	BookshelfModel.NoRowsUpdatedError = Errors.NoRowsUpdatedError;
-	BookshelfModel.NoRowsDeletedError = Errors.NoRowsDeletedError;
+	BookshelfModel.NotFoundError = _errors2['default'].NotFoundError;
+	BookshelfModel.NoRowsUpdatedError = _errors2['default'].NoRowsUpdatedError;
+	BookshelfModel.NoRowsDeletedError = _errors2['default'].NoRowsDeletedError;
 
 	module.exports = BookshelfModel;
 
@@ -723,37 +1892,121 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Collection
-	// ---------------
 	'use strict';
 
-	var _ = __webpack_require__(2);
+	exports.__esModule = true;
 
-	var Sync = __webpack_require__(16);
-	var Helpers = __webpack_require__(3);
-	var EagerRelation = __webpack_require__(17);
-	var Errors = __webpack_require__(8);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var CollectionBase = __webpack_require__(19);
-	var Promise = __webpack_require__(15);
-	var createError = __webpack_require__(25);
+	var _lodash = __webpack_require__(2);
 
-	var BookshelfCollection = CollectionBase.extend({
+	var _lodash2 = _interopRequireDefault(_lodash);
 
-	  // Used to define passthrough relationships - `hasOne`, `hasMany`,
-	  // `belongsTo` or `belongsToMany`, "through" a `Interim` model or collection.
+	var _sync = __webpack_require__(16);
+
+	var _sync2 = _interopRequireDefault(_sync);
+
+	var _helpers = __webpack_require__(3);
+
+	var _helpers2 = _interopRequireDefault(_helpers);
+
+	var _eager = __webpack_require__(17);
+
+	var _eager2 = _interopRequireDefault(_eager);
+
+	var _errors = __webpack_require__(8);
+
+	var _errors2 = _interopRequireDefault(_errors);
+
+	var _baseCollection = __webpack_require__(19);
+
+	var _baseCollection2 = _interopRequireDefault(_baseCollection);
+
+	var _basePromise = __webpack_require__(15);
+
+	var _basePromise2 = _interopRequireDefault(_basePromise);
+
+	var _createError = __webpack_require__(25);
+
+	var _createError2 = _interopRequireDefault(_createError);
+
+	/**
+	 * @class Collection
+	 * @extends CollectionBase
+	 * @inheritdoc
+	 * @classdesc
+	 *
+	 * Collections are ordered sets of models returned from the database, from a
+	 * {@link Model#fetchAll fetchAll} call. They may be used with a suite of
+	 * {@link http://lodash.com/ Lodash} methods.
+	 *
+	 * @constructor
+	 * @description
+	 *
+	 * When creating a {@link Collection}, you may choose to pass in the initial
+	 * array of {@link Model models}. The collection's {@link Collection#comparator
+	 * comparator} may be included as an option. Passing `false` as the comparator
+	 * option will prevent sorting. If you define an {@link Collection#initialize
+	 * initialize} function, it will be invoked when the collection is created.
+	 *
+	 * @example
+	 * let tabs = new TabSet([tab1, tab2, tab3]);
+	 *
+	 * @param {(Model[])=} models Initial array of models.
+	 * @param {Object=} options
+	 * @param {bool} [options.comparator=false]
+	 *   {@link Collection#comparator Comparator} for collection, or `false` to disable sorting.
+	 */
+	var BookshelfCollection = _baseCollection2['default'].extend({
+
+	  /**
+	   * @method Collection#through
+	   * @private
+	   * @description
+	   * Used to define passthrough relationships - `hasOne`, `hasMany`, `belongsTo`
+	   * or `belongsToMany`, "through" an `Interim` model or collection.
+	   */
 	  through: function through(Interim, foreignKey, otherKey) {
 	    return this.relatedData.through(this, Interim, { throughForeignKey: foreignKey, otherKey: otherKey });
 	  },
 
-	  // Fetch the models for this collection, resetting the models
-	  // for the query when they arrive.
-	  fetch: Promise.method(function (options) {
-	    options = options ? _.clone(options) : {};
+	  /**
+	   * @method Collection#fetch
+	   * @description
+	   * Fetch the default set of models for this collection from the database,
+	   * resetting the collection when they arrive. If you wish to trigger an error
+	   * if the fetched collection is empty, pass `{require: true}` as one of the
+	   * options to the {@link Collection#fetch fetch} call. A {@link
+	   * Collection#fetched "fetched"} event will be fired when records are
+	   * successfully retrieved. If you need to constrain the query performed by
+	   * `fetch`, you can call the {@link Collection#query query} method before
+	   * calling `fetch`.
+	   *
+	   * *If you'd like to only fetch specific columns, you may specify a `columns`
+	   * property in the options for the `fetch` call.*
+	   *
+	   * The `withRelated` option may be specified to fetch the models of the
+	   * collection, eager loading any specified {@link Relation relations} named on
+	   * the model. A single property, or an array of properties can be specified as
+	   * a value for the `withRelated` property. The results of these relation
+	   * queries will be loaded into a relations property on the respective models,
+	   * may be retrieved with the {@link Model#related related} method.
+	   *
+	   * @fires Collection#fetched
+	   * @throws {Collection.EmptyError}
+	   *   Upon a sucessful query resulting in no records returns. Only fired if `require: true` is passed as an option.
+	   *
+	   * @param {Object=} options
+	   * @param {bool} [options.required=false] Trigger a {@link Collection.EmptyError} if no records are found.
+	   * @param {string|string[]} [options.withRelated=[]] A relation, or list of relations, to be eager loaded as part of the `fetch` operation.
+	   * @returns {Promise<Collection>}
+	   */
+	  fetch: _basePromise2['default'].method(function (options) {
+	    options = options ? _lodash2['default'].clone(options) : {};
 	    return this.sync(options).select().bind(this).tap(function (response) {
 	      if (!response || response.length === 0) {
 	        if (options.require) throw new this.constructor.EmptyError('EmptyResponse');
-	        return Promise.reject(null);
+	        return _basePromise2['default'].reject(null);
 	      }
 	    })
 
@@ -766,9 +2019,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // level, ensure those are omitted from the options.
 	    .tap(function (response) {
 	      if (options.withRelated) {
-	        return this._handleEager(response, _.omit(options, 'columns'));
+	        return this._handleEager(response, _lodash2['default'].omit(options, 'columns'));
 	      }
 	    }).tap(function (response) {
+
+	      /**
+	       * @event Collection#fetched
+	       *
+	       * @description
+	       * Fired after a `fetch` operation. A promise may be returned from the
+	       * event handler for async behaviour.
+	       *
+	       * @param {Collection} collection The collection performing the {@link Collection#fetch}.
+	       * @param {Object} reponse Knex query response.
+	       * @param {Object} options Options object passed to {@link Collection#fetch fetch}.
+	       * @returns {Promise}
+	       */
 	      return this.triggerThen('fetched', this, response, options);
 	    })['catch'](function (err) {
 	      if (err !== null) throw err;
@@ -776,8 +2042,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })['return'](this);
 	  }),
 
-	  // Fetches a single model from the collection, useful on related collections.
-	  fetchOne: Promise.method(function (options) {
+	  // Counts all models in collection, respecting relational constrains and query
+	  // modifications.
+	  count: _basePromise2['default'].method(function (column, options) {
+	    if (!_lodash2['default'].isString(column)) {
+	      options = column;
+	      column = undefined;
+	    }
+	    if (options) options = _lodash2['default'].clone(options);
+	    return this.sync(options).count(column);
+	  }),
+
+	  /**
+	   * @method Collection#fetchOne
+	   * @description
+	   *
+	   * Fetch and return a single {@link Model model} from the collection,
+	   * maintaining any {@link Relation relation} data from the collection, and
+	   * any {@link Collection#query query} parameters that have already been passed
+	   * to the collection. Especially helpful on relations, where you would only
+	   * like to return a single model from the associated collection.
+	   *
+	   * @example
+	   * 
+	   * // select * from authors where site_id = 1 and id = 2 limit 1;
+	   * new Site({id:1})
+	   *   .authors()
+	   *   .query({where: {id: 2}})
+	   *   .fetchOne()
+	   *   .then(function(model) {
+	   *     // ...
+	   *   });
+	   *
+	   * @param {Object=}  options
+	   * @param {boolean} [options.require=false]
+	   *   If `true`, will reject the returned response with a {@link
+	   *   Model.NotFoundError NotFoundError} if no result is found.
+	   * @param {(string|string[])} [options.columns='*']
+	   *   Limit the number of columns fetched.
+	   * @param {Transaction} options.transacting
+	   *  Optionally run the query in a transaction.
+	   *
+	   * @throws {Model.NotFoundError}
+	   * @returns {Promise<Model|undefined>}
+	   *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
+	   */
+	  fetchOne: _basePromise2['default'].method(function (options) {
 	    var model = new this.model();
 	    model._knex = this.query().clone();
 	    this.resetQuery();
@@ -785,20 +2095,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return model.fetch(options);
 	  }),
 
-	  // Eager loads relationships onto an already populated `Collection` instance.
-	  load: Promise.method(function (relations, options) {
-	    if (!_.isArray(relations)) relations = [relations];
-	    options = _.extend({}, options, { shallow: true, withRelated: relations });
-	    return new EagerRelation(this.models, this.toJSON(options), new this.model()).fetch(options)['return'](this);
+	  /**
+	   * @method Collection#load
+	   * @description
+	   * `load` is used to eager load relations onto a Collection, in a similar way
+	   * that the `withRelated` property works on {@link Collection#fetch fetch}.
+	   * Nested eager loads can be specified by separating the nested relations with
+	   * `'.'`.
+	   *
+	   *  @param {string|string[]} relations The relation, or relations, to be loaded.
+	   *  @param {Object=}      options Hash of options.
+	   *  @param {Transaction=} options.transacting
+	   *
+	   *  @returns {Promise<Collection>} A promise resolving to this {@link
+	   *  Collection collection}
+	   */
+	  load: _basePromise2['default'].method(function (relations, options) {
+	    if (!_lodash2['default'].isArray(relations)) relations = [relations];
+	    options = _lodash2['default'].extend({}, options, { shallow: true, withRelated: relations });
+	    return new _eager2['default'](this.models, this.toJSON(options), new this.model()).fetch(options)['return'](this);
 	  }),
 
-	  // Shortcut for creating a new model, saving, and adding to the collection.
-	  // Returns a promise which will resolve with the model added to the collection.
-	  // If the model is a relation, put the `foreignKey` and `fkValue` from the `relatedData`
-	  // hash into the inserted model. Also, if the model is a `manyToMany` relation,
-	  // automatically create the joining model upon insertion.
-	  create: Promise.method(function (model, options) {
-	    options = options ? _.clone(options) : {};
+	  /**
+	   * @method Collection#create
+	   * @description
+	   *
+	   * Convenience to create a new instance of a {@link Model model} within a
+	   * collection. Equivalent to instantiating a model with a hash of {@link
+	   * Model#attributes attributes}, {@link Model#save saving} the model to the
+	   * database, and adding the model to the collection after being successfully
+	   * created.
+	   *
+	   * @param {Object} model A set of attributes to be set on the new model.
+	   * @param {Object=} options
+	   * @param {Transaction=} options.transacting
+	   *
+	   * @returns {Promise<Model>} A promise resolving with the new {@link Modle
+	   * model}.
+	   */
+	  create: _basePromise2['default'].method(function (model, options) {
+	    options = options ? _lodash2['default'].clone(options) : {};
 	    var relatedData = this.relatedData;
 	    model = this._prepareModel(model, options);
 
@@ -808,33 +2144,83 @@ return /******/ (function(modules) { // webpackBootstrap
 	      model._knex = this._knex;
 	      this.resetQuery();
 	    }
-	    return Helpers.saveConstraints(model, relatedData).save(null, options).bind(this).then(function () {
+	    return _helpers2['default'].saveConstraints(model, relatedData).save(null, options).bind(this).then(function () {
 	      if (relatedData && relatedData.type === 'belongsToMany') {
-	        return this.attach(model, _.omit(options, 'query'));
+	        return this.attach(model, _lodash2['default'].omit(options, 'query'));
 	      }
 	    }).then(function () {
 	      this.add(model, options);
 	    })['return'](model);
 	  }),
 
-	  // Reset the query builder, called internally
-	  // each time a query is run.
+	  /**
+	   * @method Collection#resetQuery
+	   * @description
+	   * Used to reset the internal state of the current query builder instance.
+	   * This method is called internally each time a database action is completed
+	   * by {@link Sync}.
+	   *
+	   * @returns {Collection} Self, this method is chainable.
+	   */
 	  resetQuery: function resetQuery() {
 	    this._knex = null;
 	    return this;
 	  },
 
-	  // Returns an instance of the query builder.
+	  /**
+	   * @method Collection#query
+	   * @description
+	   *
+	   * `query` is used to tap into the underlying Knex query builder instance for
+	   * the current collection. If called with no arguments, it will return the
+	   * query builder directly. Otherwise, it will call the specified `method` on
+	   * the query builder, applying any additional arguments from the
+	   * `collection.query` call. If the `method` argument is a function, it will be
+	   * called with the Knex query builder as the context and the first argument.
+	   *
+	   * @example
+	   *
+	   * let qb = collection.query();
+	   *     qb.where({id: 1}).select().then(function(resp) {...
+	   * 
+	   * collection.query(function(qb) {
+	   *   qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
+	   * }).fetch()
+	   *   .then(function(collection) {...
+	   * 
+	   * collection
+	   *   .query('where', 'other_id', '=', '5')
+	   *   .fetch()
+	   *   .then(function(collection) {
+	   *     ...
+	   *   });
+	   *
+	   * @param {function|Object|...string=} arguments The query method.
+	   * @returns {Collection|QueryBuilder}
+	   *   Will return this model or, if called with no arguments, the underlying query builder.
+	   *
+	   * @see {@link http://knexjs.org/#Builder Knex `QueryBuilder`}
+	   */
 	  query: function query() {
-	    return Helpers.query(this, _.toArray(arguments));
+	    return _helpers2['default'].query(this, _lodash2['default'].toArray(arguments));
 	  },
 
-	  // Creates and returns a new `Bookshelf.Sync` instance.
+	  /**
+	   * @method Collection#query
+	   * @private
+	   * @description Creates and returns a new `Bookshelf.Sync` instance.
+	   */
 	  sync: function sync(options) {
-	    return new Sync(this, options);
+	    return new _sync2['default'](this, options);
 	  },
 
-	  // Handles the response data for the collection, returning from the collection's fetch call.
+	  /**
+	   * @method Collection#_handleResponse
+	   * @private
+	   * @description
+	   * Handles the response data for the collection, returning from the
+	   * collection's `fetch` call.
+	   */
 	  _handleResponse: function _handleResponse(response) {
 	    var relatedData = this.relatedData;
 	    this.set(response, { silent: true, parse: true }).invoke('_reset');
@@ -843,22 +2229,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 
-	  // Handle the related data loading on the collection.
+	  /**
+	   * @method Collection#_handleEager
+	   * @private
+	   * @description
+	   * Handle the related data loading on the collection.
+	   */
 	  _handleEager: function _handleEager(response, options) {
-	    return new EagerRelation(this.models, response, new this.model()).fetch(options);
+	    return new _eager2['default'](this.models, response, new this.model()).fetch(options);
 	  }
 
 	}, {
 
 	  extended: function extended(child) {
-	    child.EmptyError = createError(this.EmptyError);
+	    /**
+	     * @class Collection.NotFoundError
+	     * @description
+	     *   Thrown when no records are found by {@link Collection#fetch fetch},
+	     *   when called with the `{require: true}` option.
+	     */
+	    child.EmptyError = (0, _createError2['default'])(this.EmptyError);
 	  }
 
 	});
 
-	BookshelfCollection.EmptyError = Errors.EmptyError;
+	BookshelfCollection.EmptyError = _errors2['default'].EmptyError;
 
-	module.exports = BookshelfCollection;
+	exports['default'] = BookshelfCollection;
+	module.exports = exports['default'];
 
 /***/ },
 /* 7 */
@@ -867,8 +2265,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Relation
 	// ---------------
 	'use strict';
-
-	function _taggedTemplateLiteralLoose(strings, raw) { strings.raw = raw; return strings; }
 
 	var _ = __webpack_require__(2);
 	var inflection = __webpack_require__(13);
@@ -1089,7 +2485,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // we can pick from... otherwise create a new instance.
 	    if (this.isSingle()) {
 	      if (!(Target.prototype instanceof ModelBase)) {
-	        throw new Error('The '(_taggedTemplateLiteralLoose(['', ''], ['', '']), this.type)(_taggedTemplateLiteralLoose([' related object must be a Bookshelf.Model'], [' related object must be a Bookshelf.Model'])));
+	        throw new Error('The ' + this.type + ' related object must be a Bookshelf.Model');
 	      }
 	      return models[0] || new Target();
 	    }
@@ -2845,7 +4241,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var i = 0; i < set.length; i++) {
 	      ;
 	      if (set[i].semver === ANY)
-	        return true;
+	        continue;
 
 	      if (set[i].semver.prerelease.length > 0) {
 	        var allowed = set[i].semver;
@@ -2945,6 +4341,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var low = null;
 
 	    comparators.forEach(function(comparator) {
+	      if (comparator.semver === ANY) {
+	        comparator = new Comparator('>=0.0.0')
+	      }
 	      high = high || comparator;
 	      low = low || comparator;
 	      if (gtfn(comparator.semver, high.semver, loose)) {
@@ -3048,9 +4447,84 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 
 	  // Select the first item from the database - only used by models.
-	  first: Promise.method(function () {
-	    this.query.where(this.prefixFields(this.syncing.format(_.extend(Object.create(null), this.syncing.attributes)))).limit(1);
+	  first: Promise.method(function (attributes) {
+
+	    var model = this.syncing,
+	        query = this.query,
+	        whereAttributes,
+	        formatted;
+
+	    // We'll never use an JSON object for a search, because even
+	    // PostgreSQL, which has JSON type columns, does not support the `=`
+	    // operator.
+	    //
+	    // NOTE: `_.omit` returns an empty object, even if attributes are null.
+	    whereAttributes = _.omit(attributes, _.isPlainObject);
+
+	    if (!_.isEmpty(whereAttributes)) {
+
+	      // Format and prefix attributes.
+	      formatted = this.prefixFields(model.format(whereAttributes));
+	      query.where(formatted);
+	    }
+
+	    // Limit to a single result.
+	    query.limit(1);
+
 	    return this.select();
+	  }),
+
+	  // Add relational constraints required for either a `count` or `select` query.
+	  constrain: Promise.method(function () {
+	    var knex = this.query,
+	        options = this.options,
+	        relatedData = this.syncing.relatedData,
+	        fks = {},
+	        through;
+
+	    // Set the query builder on the options, in-case we need to
+	    // access in the `fetching` event handlers.
+	    options.query = knex;
+
+	    // Inject all appropriate select costraints dealing with the relation
+	    // into the `knex` query builder for the current instance.
+	    if (relatedData) return Promise['try'](function () {
+	      if (relatedData.isThrough()) {
+	        fks[relatedData.key('foreignKey')] = relatedData.parentFk;
+	        through = new relatedData.throughTarget(fks);
+
+	        /**
+	         * Fired before a `fetch` operation. A promise may be returned from the
+	         * event handler for async behaviour.
+	         *
+	         * @event Model#fetching
+	         * @param   {Model}    model      The model that has been fetched.
+	         * @param   {string[]} columns    The columns being retrieved by the query.
+	         * @param   {Object}   options    Options object passed to {@link Model#fetch fetch}.
+	         * @returns {Promise}
+	         */
+	        return through.triggerThen('fetching', through, relatedData.pivotColumns, options).then(function () {
+	          relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+	        });
+	      }
+	    });
+	  }),
+
+	  // Runs a `count` query on the database, adding any necessary relational
+	  // constraints. Returns a promise that resolves to an integer count.
+	  count: Promise.method(function (column) {
+	    var knex = this.query,
+	        options = this.options;
+
+	    return Promise.bind(this).then(function () {
+	      return this.constrain();
+	    }).then(function () {
+	      return this.syncing.triggerThen('counting', this.syncing, options);
+	    }).then(function () {
+	      return knex.count((column || '*') + ' as count');
+	    }).then(function (rows) {
+	      return rows[0].count;
+	    });
 	  }),
 
 	  // Runs a `select` query on the database, adding any necessary relational
@@ -3059,52 +4533,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // the promise is resolved. Any `success` handler passed in the
 	  // options will be called - used by both models & collections.
 	  select: Promise.method(function () {
+	    var _this = this;
+
 	    var knex = this.query,
 	        options = this.options,
 	        relatedData = this.syncing.relatedData,
-	        columnsInQuery = _.some(knex._statements, { grouping: 'columns' }),
+	        queryContainsColumns,
 	        columns;
 
-	    if (!relatedData) {
-	      columns = options.columns;
-	      // Call the function, if one exists, to constrain the eager loaded query.
-	      if (options._beforeFn) options._beforeFn.call(knex, knex);
-	      if (!_.isArray(columns)) {
-	        columns = columns ? [columns] :
-	        // if columns have been selected in a query closure, use them.
-	        // any user who does this is responsible for prefixing each
-	        // selected column with the correct table name. this will also
-	        // break withRelated queries if the dependent fkey fields are not
-	        // manually included. this is a temporary hack which will be
-	        // replaced by an upcoming rewrite.
-	        columnsInQuery ? [] : [_.result(this.syncing, 'tableName') + '.*'];
-	      }
-	    }
+	    // Check if any `select` style statements have been called with column
+	    // specifications. This could include `distinct()` with no arguments, which
+	    // does not affect inform the columns returned.
+	    queryContainsColumns = _(knex._statements).where({ grouping: 'columns' }).some('value.length');
 
-	    // Set the query builder on the options, in-case we need to
-	    // access in the `fetching` event handlers.
-	    options.query = knex;
+	    return Promise.resolve(this.constrain()).tap(function () {
 
-	    return Promise.bind(this).then(function () {
-	      var fks = {},
-	          through;
-
-	      // Inject all appropriate select costraints dealing with the relation
-	      // into the `knex` query builder for the current instance.
+	      // If this is a relation, apply the appropriate constraints.
 	      if (relatedData) {
-	        if (relatedData.throughTarget) {
-	          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
-	          through = new relatedData.throughTarget(fks);
-	          return through.triggerThen('fetching', through, relatedData.pivotColumns, options).then(function () {
-	            relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
-	            relatedData.selectConstraints(knex, options);
-	          });
-	        } else {
-	          relatedData.selectConstraints(knex, options);
+	        relatedData.selectConstraints(knex, options);
+	      } else {
+
+	        // Call the function, if one exists, to constrain the eager loaded query.
+	        if (options._beforeFn) options._beforeFn.call(knex, knex);
+
+	        if (options.columns) {
+
+	          // Normalize single column name into array.
+	          columns = _.isArray(options.columns) ? options.columns : [options.columns];
+	        } else if (!queryContainsColumns) {
+
+	          // If columns have already been selected via the `query` method
+	          // we will use them. Otherwise, select all columns in this table.
+	          columns = [_.result(_this.syncing, 'tableName') + '.*'];
 	        }
 	      }
-	    }).then(function () {
-	      return this.syncing.triggerThen('fetching', this.syncing, columns, options);
+
+	      // Set the query builder on the options, for access in the `fetching`
+	      // event handlers.
+	      options.query = knex;
+	      return _this.syncing.triggerThen('fetching', _this.syncing, columns, options);
 	    }).then(function () {
 	      return knex.select(columns);
 	    });
@@ -3265,8 +4732,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	// List of attributes attached directly from the `options` passed to the constructor.
 	var modelProps = ['tableName', 'hasTimestamps'];
 
-	// The "ModelBase" is similar to the 'Active Model' in Rails,
-	// it defines a standard interface from which other objects may inherit.
+	/**
+	 * @class
+	 * @classdesc
+	 *
+	 * The "ModelBase" is similar to the 'Active Model' in Rails, it defines a
+	 * standard interface from which other objects may inherit.
+	 */
 	function ModelBase(attributes, options) {
 	  var attrs = attributes || {};
 	  options = options || {};
@@ -3285,15 +4757,63 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	ModelBase.prototype.initialize = function () {};
 
-	// The default value for the "id" attribute.
+	/**
+	 * @name ModelBase#tableName
+	 * @member {string} 
+	 * @description
+	 *
+	 * A required property for any database usage, The
+	 * {@linkcode Model#tableName tableName} property refers to the database
+	 * table name the model will query against.
+	 *
+	 * @example
+	 *
+	 * var Television = bookshelf.Model.extend({
+	 *   tableName: 'televisions'
+	 * });
+	 */
+
+	/**
+	 * @member {string}
+	 * @default "id"
+	 * @description
+	 *
+	 * This tells the model which attribute to expect as the unique identifier
+	 * for each database row (typically an auto-incrementing primary key named
+	 * `"id"`). Note that if you are using {@link Model#parse parse} and {@link
+	 * Model#format format} (to have your model's attributes in `camelCase`,
+	 * but your database's columns in `snake_case`, for example) this refers to
+	 * the name returned by parse (`myId`), not the database column (`my_id`).
+	 *
+	 */
 	ModelBase.prototype.idAttribute = 'id';
 
-	// Get the value of an attribute.
+	/**
+	 * @method
+	 * @description  Get the current value of an attribute from the model.
+	 * @example      note.get("title")
+	 *
+	 * @param {string} attribute - The name of the attribute to retrieve.
+	 * @returns {mixed} Attribute value.
+	 */
 	ModelBase.prototype.get = function (attr) {
 	  return this.attributes[attr];
 	};
 
-	// Set a property.
+	/**
+	 * @method
+	 * @description  Set a hash of attributes (one or many) on the model.
+	 * @example
+	 *
+	 * customer.set({first_name: "Joe", last_name: "Customer"});
+	 * customer.set("telephone", "555-555-1212");
+	 *
+	 * @param {string|Object} attribute Attribute name, or hash of attribute names and values.
+	 * @param {mixed=} value If a string was provided for `attribute`, the value to be set.
+	 * @param {Object=} options
+	 * @param {Object} [options.unset=false] Remove attributes instead of setting them.
+	 * @returns {Model} This model.
+	 */
 	ModelBase.prototype.set = function (key, val, options) {
 	  if (key == null) return this;
 	  var attrs;
@@ -3332,11 +4852,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this;
 	};
 
-	// A model is new if it has never been persisted, which we assume if it lacks an id.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Checks for the existence of an id to determine whether the model is
+	 * considered "new".
+	 *
+	 * @example
+	 *
+	 * var modelA = new bookshelf.Model();
+	 * modelA.isNew(); // true
+	 * 
+	 * var modelB = new bookshelf.Model({id: 1});
+	 * modelB.isNew(); // false
+	 */
 	ModelBase.prototype.isNew = function () {
 	  return this.id == null;
 	};
 
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Return a copy of the model's {@link ModelBase#attributes attributes} for JSON
+	 * stringification. If the {@link Model model} has any relations defined, this
+	 * will also call {@link ModelBase ModelBase#toJSON} on each of the related
+	 * objects, and include them on the object unless `{shallow: true}` is
+	 * passed as an option.
+	 *
+	 * `serialize` is called internally by {@link ModelBase#toJSON toJSON}. Override
+	 * this function if you want to customize its output.
+	 *
+	 * @example
+	 * var artist = new bookshelf.Model({
+	 *   firstName: "Wassily",
+	 *   lastName: "Kandinsky"
+	 * });
+	 *
+	 * artist.set({birthday: "December 16, 1866"});
+	 *
+	 * console.log(JSON.stringify(artist));
+	 * // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
+	 *
+	 * @param {Object=} options
+	 * @param {bool}    [options.shallow=false]   Exclude relations.
+	 * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+	 * @returns {Object} Serialized model as a plain object.
+	 */
 	ModelBase.prototype.serialize = function (options) {
 	  var attrs = _.clone(this.attributes);
 	  if (options && options.shallow) return attrs;
@@ -3355,64 +4918,161 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return attrs;
 	};
 
-	// Returns an object containing a shallow copy of the model attributes,
-	// along with the `toJSON` value of any relations,
-	// unless `{shallow: true}` is passed in the `options`.
-	// Also includes _pivot_ keys for relations unless `{omitPivot: true}`
-	// is passed in `options`.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Called automatically by {@link
+	 * https://developer.mozilla.org/en-US/docs/Glossary/JSON#toJSON()_method
+	 * `JSON.stringify`}. To customize serialization, override {@link
+	 * BaseModel#serialize serialize}.
+	 *
+	 * @param {Object=} options Options passed to {@link BaseModel#serialize}.
+	 */
 	ModelBase.prototype.toJSON = function (options) {
 	  return this.serialize(options);
 	};
 
-	// Returns the string representation of the object.
+	/**
+	 * @method
+	 * @private
+	 * @returns String representation of the object.
+	 */
 	ModelBase.prototype.toString = function () {
 	  return '[Object Model]';
 	};
 
-	// Get the HTML-escaped value of an attribute.
+	/**
+	 * @method
+	 * @description Get the HTML-escaped value of an attribute.
+	 * @param {string} attribute The attribute to escape.
+	 * @returns {string} HTML-escaped value of an attribute.
+	 */
 	ModelBase.prototype.escape = function (key) {
 	  return _.escape(this.get(key));
 	};
 
-	// Returns `true` if the attribute contains a value that is not null
-	// or undefined.
+	/**
+	 * @method
+	 * @description
+	 * Returns `true` if the attribute contains a value that is not null or undefined.
+	 * @param {string} attribute The attribute to check.
+	 * @returns {bool} True if `attribute` is set, otherwise null.
+	 */
 	ModelBase.prototype.has = function (attr) {
 	  return this.get(attr) != null;
 	};
 
-	// **parse** converts a response into the hash of attributes to be `set` on
-	// the model. The default implementation is just to pass the response along.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * The parse method is called whenever a {@link Model model}'s data is returned
+	 * in a {@link Model#fetch fetch} call. The function is passed the raw database
+	 * response object, and should return the {@link ModelBase#attributes
+	 * attributes} hash to be {@link ModelBase#set set} on the model. The default
+	 * implementation is a no-op, simply passing through the JSON response.
+	 * Override this if you need to format the database responses - for example
+	 * calling {@link
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+	 * JSON.parse} on a text field containing JSON, or explicitly typecasting a
+	 * boolean in a sqlite3 database response.
+	 *
+	 * @example
+	 *
+	 * // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
+	 * model.parse = function(attrs) {
+	 *   return _.reduce(attrs, function(memo, val, key) {
+	 *     memo[_.str.camelize(key)] = val;
+	 *     return memo;
+	 *   }, {});
+	 * };
+	 *
+	 * @param {Object} response Hash of attributes to parse.
+	 * @returns {Object} Parsed attributes.
+	 */
 	ModelBase.prototype.parse = function (resp) {
 	  return resp;
 	};
 
-	// Remove an attribute from the model, firing `"change"`. `unset` is a noop
-	// if the attribute doesn't exist.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Remove an attribute from the model. `unset` is a noop if the attribute
+	 * doesn't exist.
+	 *
+	 * @param attribute Attribute to unset.
+	 * @returns {Model} This model.
+	 */
 	ModelBase.prototype.unset = function (attr, options) {
 	  return this.set(attr, void 0, _.extend({}, options, { unset: true }));
 	};
 
-	// Clear all attributes on the model, firing `"change"`.
+	/**
+	 * @method
+	 * @description Clear all attributes on the model.
+	 * @returns {Model} This model.
+	 */
 	ModelBase.prototype.clear = function (options) {
 	  var attrs = {};
 	  for (var key in this.attributes) attrs[key] = void 0;
 	  return this.set(attrs, _.extend({}, options, { unset: true }));
 	};
 
-	// **format** converts a model into the values that should be saved into
-	// the database table. The default implementation is just to pass the data along.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * The `format` method is used to modify the current state of the model before
+	 * it is persisted to the database. The `attributes` passed are a shallow clone
+	 * of the {@link Model model}, and are only used for inserting/updating - the
+	 * current values of the model are left intact.
+	 *
+	 * @param {Object} attributes The attributes to be converted.
+	 * @returns {Object} Formatted attributes.
+	 */
 	ModelBase.prototype.format = function (attrs) {
 	  return attrs;
 	};
 
-	// Returns the related item, or creates a new
-	// related item by creating a new model or collection.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * The `related` method returns a specified relation loaded on the relations
+	 * hash on the model, or calls the associated relation method and adds it to
+	 * the relations hash if one exists and has not yet been loaded.
+	 *
+	 * @example
+	 *
+	 * new Photo({id: 1}).fetch({
+	 *   withRelated: ['account']
+	 * }).then(function(photo) {
+	 *   if (photo) {
+	 *     var account = photo.related('account');
+	 *     if (account.id) {
+	 *        return account.related('trips').fetch();
+	 *     }
+	 *   }
+	 * });
+	 *
+	 * @returns {Model|Collection|undefined} The specified relation as defined by a
+	 *   method on the model, or undefined if it does not exist.
+	 */
 	ModelBase.prototype.related = function (name) {
 	  return this.relations[name] || (this[name] ? this.relations[name] = this[name]() : void 0);
 	};
 
-	// Create a new model with identical attributes to this one,
-	// including any relations on the current model.
+	/**
+	 * @method
+	 * @description
+	 * Returns a new instance of the model with identical {@link
+	 * ModelBase#attributes attributes}, including any relations from the cloned
+	 * model.
+	 *
+	 * @returns {Model} Cloned instance of this model.
+	 */
 	ModelBase.prototype.clone = function () {
 	  var model = new this.constructor(this.attributes);
 	  var relations = this.relations;
@@ -3424,21 +5084,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return model;
 	};
 
-	// Returns the method that will be used on save, either 'update' or 'insert'.
-	// This is an internal helper that uses `isNew` and `options.method` to
-	// determine the correct method. If `option.method` is provided, it will be
-	// returned, but lowercased for later comparison.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 *
+	 * Returns the method that will be used on save, either 'update' or 'insert'.
+	 * This is an internal helper that uses `isNew` and `options.method` to
+	 * determine the correct method. If `option.method` is provided, it will be
+	 * returned, but lowercased for later comparison.
+	 *
+	 * @returns {string} Either `'insert'` or `'update'`.
+	 */
 	ModelBase.prototype.saveMethod = function (options) {
 	  var method = options && options.method && options.method.toLowerCase();
 	  return method || (this.isNew(options) ? 'insert' : 'update');
 	};
 
-	// Sets the timestamp attributes on the model, if `hasTimestamps` is set to true
-	// or an array. Check if the model `isNew` or if `{method: 'insert'}` is
-	// provided as an option and set the `created_at` and `updated_at` attributes to
-	// the current date if it is being inserted, and just the `updated_at` attribute
-	// if it's being updated. This method may be overriden to use different column
-	// names or types for the timestamps.
+	/**
+	 * @method
+	 * @description
+	 * Sets the timestamp attributes on the model, if {@link Model#hasTimestamps
+	 * hasTimestamps} is set to `true` or an array. Check if the model {@link
+	 * Model#isNew isNew} or if `{method: 'insert'}` is provided as an option and
+	 * set the `created_at` and `updated_at` attributes to the current date if it
+	 * is being inserted, and just the `updated_at` attribute if it's being updated.
+	 * This method may be overriden to use different column names or types for the
+	 * timestamps.
+	 *
+	 * @param {Object=} options
+	 * @param {string} [options.method="update"]
+	 *   Either `'insert'` or `'update'`. Specify what kind of save the attribute
+	 *   update is for.
+	 *
+	 * @returns {Object} A hash of timestamp attributes that were set.
+	 */
 	ModelBase.prototype.timestamp = function (options) {
 	  if (!this.hasTimestamps) return {};
 
@@ -3462,34 +5142,95 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return attributes;
 	};
 
-	// Determine if the model has changed since the last `"change"` event.
-	// If you specify an attribute name, determine if that attribute has changed.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Returns true if any {@link Model#attributes attribute} attribute has changed
+	 * since the last {@link Model#fetch fetch}, {@link Model#save save}, or {@link
+	 * Model#destroy destroy}. If an attribute is passed, returns true only if that
+	 * specific attribute has changed.
+	 *
+	 * @param {string=} attribute 
+	 * @returns {bool}
+	 * `true` if any attribute has changed. Or, if `attribute` was specified, true
+	 * if it has changed.
+	 */
 	ModelBase.prototype.hasChanged = function (attr) {
 	  if (attr == null) return !_.isEmpty(this.changed);
 	  return _.has(this.changed, attr);
 	};
 
-	// Get the previous value of an attribute, recorded at the time the last
-	// `"change"` event was fired.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Returns the this previous value of a changed {@link Model#attributes
+	 * attribute}, or `undefined` if one had not been specified previously.
+	 *
+	 * @param {string} attribute The attribute to check
+	 * @returns {mixed} The previous value
+	 */
 	ModelBase.prototype.previous = function (attr) {
 	  if (attr == null || !this._previousAttributes) return null;
 	  return this._previousAttributes[attr];
 	};
 
-	// Get all of the attributes of the model at the time of the previous
-	// `"change"` event.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Return a copy of the {@link Model model}'s previous attributes from the
+	 * model's last {@link Model#fetch fetch}, {@link Model#save save}, or {@link
+	 * Model#destroy destroy}. Useful for getting a diff between versions of a
+	 * model, or getting back to a valid state after an error occurs.
+	 *
+	 * @returns {Object} The attributes as they were before the last change.
+	 */
 	ModelBase.prototype.previousAttributes = function () {
 	  return _.clone(this._previousAttributes);
 	};
 
-	// Resets the `_previousAttributes` and `changed` hash for the model.
-	// Typically called after a `sync` action (save, fetch, delete) -
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 *
+	 * Resets the `_previousAttributes` and `changed` hash for the model.
+	 * Typically called after a `sync` action (save, fetch, delete) -
+	 *
+	 * @returns {Model} This model.
+	 */
 	ModelBase.prototype._reset = function () {
 	  this._previousAttributes = _.clone(this.attributes);
 	  this.changed = Object.create(null);
 	  return this;
 	};
 
+	/**
+	 * @method ModelBase#keys
+	 * @see http://lodash.com/docs/#keys
+	 */
+	/**
+	 * @method ModelBase#values
+	 * @see http://lodash.com/docs/#values
+	 */
+	/**
+	 * @method ModelBase#pairs
+	 * @see http://lodash.com/docs/#pairs
+	 */
+	/**
+	 * @method ModelBase#invert
+	 * @see http://lodash.com/docs/#invert
+	 */
+	/**
+	 * @method ModelBase#pick
+	 * @see http://lodash.com/docs/#pick
+	 */
+	/**
+	 * @method ModelBase#omit
+	 * @see http://lodash.com/docs/#omit
+	 */
 	// "_" methods that we want to implement on the Model.
 	var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
 
@@ -3502,6 +5243,75 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	});
 
+	/**
+	 * @method Model.extend
+	 * @description
+	 *
+	 * To create a Model class of your own, you extend {@link Model bookshelf.Model}.
+	 *
+	 * `extend` correctly sets up the prototype chain, so subclasses created with
+	 * `extend` can be further extended and subclassed as far as you like.
+	 *
+	 *     var checkit  = require('checkit');
+	 *     var Promise  = require('bluebird');
+	 *     var bcrypt   = Promise.promisifyAll(require('bcrypt'));
+	 *     
+	 *     var Customer = bookshelf.Model.extend({
+	 *     
+	 *       initialize: function() {
+	 *         this.on('saving', this.validateSave);
+	 *       },
+	 *     
+	 *       validateSave: function() {
+	 *         return checkit(rules).run(this.attributes);
+	 *       },
+	 *     
+	 *       account: function() {
+	 *         return this.belongsTo(Account);
+	 *       },
+	 *     
+	 *     }, {
+	 *     
+	 *       login: Promise.method(function(email, password) {
+	 *         if (!email || !password) throw new Error('Email and password are both required');
+	 *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
+	 *           return bcrypt.compareAsync(customer.get('password'), password);
+	 *         });
+	 *       })
+	 *     
+	 *     });
+	 *     
+	 *     Customer.login(email, password)
+	 *       .then(function(customer) {
+	 *         res.json(customer.omit('password'));
+	 *       }).catch(Customer.NotFoundError, function() {
+	 *         res.json(400, {error: email + ' not found'});
+	 *       }).catch(function(err) {
+	 *         console.error(err);
+	 *       });
+	 *
+	 * _Brief aside on `super`: JavaScript does not provide a simple way to call
+	 * `super` — the function of the same name defined higher on the prototype
+	 * chain. If you override a core function like {@link Model#set set}, or {@link
+	 * Model#save save}, and you want to invoke the parent object's implementation,
+	 * you'll have to explicitly call it, along these lines:_
+	 *
+	 *     var Customer = bookshelf.Model.extend({
+	 *       set: function() {
+	 *         ...
+	 *         bookshelf.Model.prototype.set.apply(this, arguments);
+	 *         ...
+	 *       }
+	 *     });
+	 *
+	 * @param {Object=} prototypeProperties
+	 *   Instance methods and properties to be attached to instances of the new
+	 *   class.
+	 * @param {Object=} classProperties
+	 *   Class (ie. static) functions and properties to be attached to the
+	 *   constructor of the new class.
+	 * @returns {Function} Constructor for new `Model` subclass.
+	 */
 	ModelBase.extend = __webpack_require__(27);
 
 	module.exports = ModelBase;
@@ -3529,6 +5339,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var splice = array.splice;
 	var noop = _.noop;
 
+	/**
+	 * @class
+	 */
 	function CollectionBase(models, options) {
 	  if (options) _.extend(this, _.pick(options, collectionProps));
 	  this._reset();
@@ -3553,14 +5366,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	var setOptions = { add: true, remove: true, merge: true };
 	var addOptions = { add: true, remove: false };
 
+	/**
+	 * @method CollectionBase#initialize
+	 * @description
+	 * Custom initialization function.
+	 * @see Collection
+	 */
 	CollectionBase.prototype.initialize = noop;
 
-	// The `tableName` on the associated Model, used in relation building.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * The `tableName` on the associated Model, used in relation building.
+	 * @returns {string} The {@link Model#tableName tableName} of the associated model.
+	 */
 	CollectionBase.prototype.tableName = function () {
 	  return _.result(this.model.prototype, 'tableName');
 	};
 
-	// The `idAttribute` on the associated Model, used in relation building.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * The `idAttribute` on the associated Model, used in relation building.
+	 * @returns {string} The {@link Model#idAttribute idAttribute} of the associated model.
+	 */
 	CollectionBase.prototype.idAttribute = function () {
 	  return this.model.prototype.idAttribute;
 	};
@@ -3569,22 +5400,70 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return '[Object Collection]';
 	};
 
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Return a raw array of the collection's {@link ModelBase#attributes
+	 * attributes} for JSON stringification. If the {@link Model models} have any
+	 * relations defined, this will also call {@link ModelBase ModelBase#toJSON} on
+	 * each of the related objects, and include them on the object unless
+	 * `{shallow: true}` is passed as an option.
+	 *
+	 * `serialize` is called internally by {@link CollectionBase#toJSON toJSON}.
+	 * Override this function if you want to customize its output.
+	*
+	 * @param {Object=} options
+	 * @param {bool}    [options.shallow=false]   Exclude relations.
+	 * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+	 * @returns {Object} Serialized model as a plain object.
+	 */
 	CollectionBase.prototype.serialize = function (options) {
 	  return this.map(function (model) {
 	    return model.toJSON(options);
 	  });
 	};
 
-	// The JSON representation of a Collection is an array of the
-	// models' attributes.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Called automatically by {@link
+	 * https://developer.mozilla.org/en-US/docs/Glossary/JSON#toJSON()_method
+	 * `JSON.stringify`}. To customize serialization, override {@link
+	 * CollectionBase#serialize serialize}.
+	 *
+	 * @param {options} Options passed to {@link CollectionBase#serialize}.
+	 */
 	CollectionBase.prototype.toJSON = function (options) {
 	  return this.serialize(options);
 	};
 
-	// A simplified version of Backbone's `Collection#set` method,
-	// removing the comparator, and getting rid of the temporary model creation,
-	// since there's *no way* we'll be getting the data in an inconsistent
-	// form from the database.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * A simplified version of Backbone's `Collection#set` method, removing the
+	 * comparator, and getting rid of the temporary model creation, since there's
+	 * *no way* we'll be getting the data in an inconsistent form from the database.
+	 *
+	 * The set method performs a "smart" update of the collection with the passed
+	 * list of models. If a model in the list isn't yet in the collection it will be
+	 * added; if the model is already in the collection its attributes will be
+	 * merged; and if the collection contains any models that aren't present in the
+	 * list, they'll be removed. If you'd like to customize the behavior, you can
+	 * disable it with options: `{add: false}`, `{remove: false}`, or
+	 * `{merge: false}`.
+	 *
+	 * @example
+	 *
+	 * var vanHalen = new bookshelf.Collection([eddie, alex, stone, roth]);
+	 * vanHalen.set([eddie, alex, stone, hagar]);
+	 * 
+	 * @param {Model[]|Object[]} models Array of models or raw attribute objects.
+	 * @param {Object=} options See description.
+	 * @returns {Collection} Self, this method is chainable.
+	 */
 	CollectionBase.prototype.set = function (models, options) {
 	  options = _.defaults({}, options, setOptions);
 	  if (options.parse) models = this.parse(models, options);
@@ -3667,23 +5546,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this;
 	};
 
-	// Prepare a model or hash of attributes to be added to this collection.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * Prepare a model or hash of attributes to be added to this collection.
+	 */
 	CollectionBase.prototype._prepareModel = function (attrs, options) {
 	  if (attrs instanceof ModelBase) return attrs;
 	  return new this.model(attrs, options);
 	};
 
-	// Run "Promise.map" over the models
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * Run "Promise.map" over the models
+	 */
 	CollectionBase.prototype.mapThen = function (iterator, context) {
 	  return Promise.bind(context).thenReturn(this.models).map(iterator);
 	};
 
-	// Convenience method for invoke, returning a `Promise.all` promise.
+	/**
+	 * @method
+	 * @description
+	 * Shortcut for calling `Promise.all` around a {@link Collection#invoke}, this
+	 * will delegate to the collection's `invoke` method, resolving the promise with
+	 * an array of responses all async (and sync) behavior has settled. Useful for
+	 * bulk saving or deleting models:
+	 *
+	 * @param {string} method The {@link Model model} method to invoke.
+	 * @param {...mixed} arguments Arguments to `method`.
+	 * @returns {Promise<mixed[]>}
+	 *   Promise resolving to array of results from invocation.
+	 */
 	CollectionBase.prototype.invokeThen = function () {
 	  return Promise.all(this.invoke.apply(this, arguments));
 	};
 
-	// Run "reduce" over the models in the collection.
+	/**
+	 * @method
+	 * @description
+	 * Run "reduce" over the models in the collection.
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce | MDN `Array.prototype.reduce` reference.}
+	 * @param {Function} iterator
+	 * @param {mixed} initialValue
+	 * @param {Object} Bound to `this` in the `iterator` callback.
+	 * @returns {Promise<mixed[]>}
+	 *   Promise resolving to array of results from invocation.
+	 *
+	 */
 	CollectionBase.prototype.reduceThen = function (iterator, initialValue, context) {
 	  return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
 	};
@@ -3692,12 +5604,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Promise.rejected('The fetch method has not been implemented');
 	};
 
-	// Add a model, or list of models to the set.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Add a {@link Model model} (or an array of models) to the collection, You may
+	 * also pass raw attributes objects, and have them be vivified as instances of
+	 * the model. Pass `{at: index}` to splice the model into the collection at the
+	 * specified `index`. If you're adding models to the collection that are already
+	 * in the collection, they'll be ignored, unless you pass `{merge: true}`, in
+	 * which case their {@link Model#attributes attributes} will be merged into the
+	 * corresponding models.
+	 *
+	 * *Note that adding the same model (a model with the same id) to a collection
+	 * more than once is a no-op.*
+	 *
+	 * @example
+	 *
+	 * var ships = new bookshelf.Collection;
+	 * 
+	 * ships.add([
+	 *   {name: "Flying Dutchman"},
+	 *   {name: "Black Pearl"}
+	 * ]);
+	 *
+	 * @param {Object[]|Model[]} models Array of models or raw attribute objects.
+	 * @param {Object=} options See description.
+	 * @returns {Collection} Self, this method is chainable.
+	 */
 	CollectionBase.prototype.add = function (models, options) {
 	  return this.set(models, _.extend({ merge: false }, options, addOptions));
 	};
 
-	// Remove a model, or a list of models from the set.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Remove a {@link Model model} (or an array of models) from the collection,
+	 * but does not remove the model from the database, use the model's {@link
+	 * Model#destroy destroy} method for this.
+	 *
+	 * @param {Model|Model[]} models The model, or models, to be removed.
+	 * @param {Object} options
+	 * @returns {Model|Model[]} The same value passed as `models` argument.
+	 */
 	CollectionBase.prototype.remove = function (models, options) {
 	  var singular = !_.isArray(models);
 	  models = singular ? [models] : _.clone(models);
@@ -3719,10 +5669,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return singular ? models[0] : models;
 	};
 
-	// When you have more items than you want to add or remove individually,
-	// you can reset the entire set with a new list of models, without firing
-	// any granular `add` or `remove` events. Fires `reset` when finished.
-	// Useful for bulk operations and optimizations.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Adding and removing models one at a time is all well and good, but sometimes
+	 * you have so many models to change that you'd rather just update the
+	 * collection in bulk. Use `reset` to replace a collection with a new list of
+	 * models (or attribute hashes). Calling `collection.reset()` without passing
+	 * any models as arguments will empty the entire collection.
+	 *
+	 * @param {Object[]|Model[]} Array of models or raw attribute objects.
+	 * @param {Object} options See {@link CollectionBase#add add}.
+	 * @returns {Model[]} Array of models.
+	 */
 	CollectionBase.prototype.reset = function (models, options) {
 	  options = options || {};
 	  options.previousModels = this.models;
@@ -3732,48 +5692,91 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return models;
 	};
 
-	// Add a model to the end of the collection.
+	/**
+	 * @method
+	 * @description
+	 * Add a model to the end of the collection.
+	 * @returns {Collection} Self, this method is chainable.
+	 */
 	CollectionBase.prototype.push = function (model, options) {
 	  return this.add(model, _.extend({ at: this.length }, options));
 	};
 
-	// Remove a model from the end of the collection.
+	/**
+	 * @method
+	 * @description
+	 * Remove a model from the end of the collection.
+	 */
 	CollectionBase.prototype.pop = function (options) {
 	  var model = this.at(this.length - 1);
 	  this.remove(model, options);
 	  return model;
 	};
 
-	// Add a model to the beginning of the collection.
+	/**
+	 * @method
+	 * @description
+	 * Add a model to the beginning of the collection.
+	 */
 	CollectionBase.prototype.unshift = function (model, options) {
 	  return this.add(model, _.extend({ at: 0 }, options));
 	};
 
-	// Remove a model from the beginning of the collection.
+	/**
+	 * @method
+	 * @description
+	 * Remove a model from the beginning of the collection.
+	 */
 	CollectionBase.prototype.shift = function (options) {
 	  var model = this.at(0);
 	  this.remove(model, options);
 	  return model;
 	};
 
-	// Slice out a sub-array of models from the collection.
+	/**
+	 * @method
+	 * @description
+	 * Slice out a sub-array of models from the collection.
+	 */
 	CollectionBase.prototype.slice = function () {
 	  return slice.apply(this.models, arguments);
 	};
 
-	// Get a model from the set by id.
+	/**
+	 * @method
+	 * @description
+	 *
+	 * Get a model from a collection, specified by an {@link Model#id id}, a {@link
+	 * Model#cid cid}, or by passing in a {@link Model model}.
+	 *
+	 * @example
+	 *
+	 * var book = library.get(110);
+	 *
+	 * @returns {Model} The model, or `undefined` if it is not in the collection.
+	 */
 	CollectionBase.prototype.get = function (obj) {
 	  if (obj == null) return void 0;
 	  return this._byId[obj.id] || this._byId[obj.cid] || this._byId[obj];
 	};
 
-	// Get the model at the given index.
+	/**
+	 * @method
+	 * @description
+	 * Get a model from a collection, specified by index. Useful if your collection
+	 * is sorted, and if your collection isn't sorted, `at` will still retrieve
+	 * models in insertion order.
+	 */
 	CollectionBase.prototype.at = function (index) {
 	  return this.models[index];
 	};
 
-	// Return models with matching attributes. Useful for simple cases of
-	// `filter`.
+	/**
+	 * @method
+	 * @description
+	 * Return models with matching attributes. Useful for simple cases of `filter`.
+	 * @returns {Model[]} Array of matching models.
+	 */
 	CollectionBase.prototype.where = function (attrs, first) {
 	  if (_.isEmpty(attrs)) return first ? void 0 : [];
 	  return this[first ? 'find' : 'filter'](function (model) {
@@ -3784,13 +5787,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	};
 
-	// Return the first model with matching attributes. Useful for simple cases
-	// of `find`.
+	/**
+	 * @method
+	 * @description
+	 * Return the first model with matching attributes. Useful for simple cases of
+	 * `find`.
+	 * @returns {Model} The first matching model.
+	 */
 	CollectionBase.prototype.findWhere = function (attrs) {
 	  return this.where(attrs, true);
 	};
 
-	// Force the collection to re-sort itself, based on a comporator defined on the model.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * Force the collection to re-sort itself, based on a comporator defined on the model.
+	 */
 	CollectionBase.prototype.sort = function (options) {
 	  if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
 	  options = options || {};
@@ -3806,36 +5819,222 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this;
 	};
 
-	// Pluck an attribute from each model in the collection.
+	/**
+	 * @method
+	 * @description
+	 * Pluck an attribute from each model in the collection.
+	 * @returns {mixed[]} An array of attribute values.
+	 */
 	CollectionBase.prototype.pluck = function (attr) {
 	  return this.invoke('get', attr);
 	};
 
-	// **parse** converts a response into a list of models to be added to the
-	// collection. The default implementation is just to pass it through.
+	/**
+	 * @method
+	 * @description
+	 * The `parse` method is called whenever a collection's data is returned in a
+	 * {@link CollectionBase#fetch fetch} call. The function is passed the raw
+	 * database `response` array, and should return an array to be set on the
+	 * collection. The default implementation is a no-op, simply passing through
+	 * the JSON response.
+	 *
+	 * @param {Object[]} resp Raw database response array.
+	 */
 	CollectionBase.prototype.parse = function (resp) {
 	  return resp;
 	};
 
-	// Create a new collection with an identical list of models as this one.
+	/**
+	 * @method
+	 * @description
+	 * Create a new collection with an identical list of models as this one.
+	 */
 	CollectionBase.prototype.clone = function () {
 	  return new this.constructor(this.models, _.pick(this, collectionProps));
 	};
 
-	// Private method to reset all internal state. Called when the collection
-	// is first initialized or reset.
+	/**
+	 * @method
+	 * @private
+	 * @description
+	 * Reset all internal state. Called when the collection is first initialized or reset.
+	 */
 	CollectionBase.prototype._reset = function () {
 	  this.length = 0;
 	  this.models = [];
 	  this._byId = Object.create(null);
 	};
 
-	// Underscore methods that we want to implement on the Collection.
+	/**
+	 * @method CollectionBase#keys
+	 * @see http://lodash.com/docs/#keys
+	 */
+	/**
+	 * @method CollectionBase#forEach
+	 * @see http://lodash.com/docs/#forEach
+	 */
+	/**
+	 * @method CollectionBase#each
+	 * @see http://lodash.com/docs/#each
+	 */
+	/**
+	 * @method CollectionBase#map
+	 * @see http://lodash.com/docs/#map
+	 */
+	/**
+	 * @method CollectionBase#collect
+	 * @see http://lodash.com/docs/#collect
+	 */
+	/**
+	 * @method CollectionBase#reduce
+	 * @see http://lodash.com/docs/#reduce
+	 */
+	/**
+	 * @method CollectionBase#foldl
+	 * @see http://lodash.com/docs/#foldl
+	 */
+	/**
+	 * @method CollectionBase#inject
+	 * @see http://lodash.com/docs/#inject
+	 */
+	/**
+	 * @method CollectionBase#reduceRight
+	 * @see http://lodash.com/docs/#reduceRight
+	 */
+	/**
+	 * @method CollectionBase#foldr
+	 * @see http://lodash.com/docs/#foldr
+	 */
+	/**
+	 * @method CollectionBase#find
+	 * @see http://lodash.com/docs/#find
+	 */
+	/**
+	 * @method CollectionBase#detect
+	 * @see http://lodash.com/docs/#detect
+	 */
+	/**
+	 * @method CollectionBase#filter
+	 * @see http://lodash.com/docs/#filter
+	 */
+	/**
+	 * @method CollectionBase#select
+	 * @see http://lodash.com/docs/#select
+	 */
+	/**
+	 * @method CollectionBase#reject
+	 * @see http://lodash.com/docs/#reject
+	 */
+	/**
+	 * @method CollectionBase#every
+	 * @see http://lodash.com/docs/#every
+	 */
+	/**
+	 * @method CollectionBase#all
+	 * @see http://lodash.com/docs/#all
+	 */
+	/**
+	 * @method CollectionBase#some
+	 * @see http://lodash.com/docs/#some
+	 */
+	/**
+	 * @method CollectionBase#any
+	 * @see http://lodash.com/docs/#any
+	 */
+	/**
+	 * @method CollectionBase#include
+	 * @see http://lodash.com/docs/#include
+	 */
+	/**
+	 * @method CollectionBase#contains
+	 * @see http://lodash.com/docs/#contains
+	 */
+	/**
+	 * @method CollectionBase#invoke
+	 * @see http://lodash.com/docs/#invoke
+	 */
+	/**
+	 * @method CollectionBase#max
+	 * @see http://lodash.com/docs/#max
+	 */
+	/**
+	 * @method CollectionBase#min
+	 * @see http://lodash.com/docs/#min
+	 */
+	/**
+	 * @method CollectionBase#toArray
+	 * @see http://lodash.com/docs/#toArray
+	 */
+	/**
+	 * @method CollectionBase#size
+	 * @see http://lodash.com/docs/#size
+	 */
+	/**
+	 * @method CollectionBase#first
+	 * @see http://lodash.com/docs/#first
+	 */
+	/**
+	 * @method CollectionBase#head
+	 * @see http://lodash.com/docs/#head
+	 */
+	/**
+	 * @method CollectionBase#take
+	 * @see http://lodash.com/docs/#take
+	 */
+	/**
+	 * @method CollectionBase#initial
+	 * @see http://lodash.com/docs/#initial
+	 */
+	/**
+	 * @method CollectionBase#rest
+	 * @see http://lodash.com/docs/#rest
+	 */
+	/**
+	 * @method CollectionBase#tail
+	 * @see http://lodash.com/docs/#tail
+	 */
+	/**
+	 * @method CollectionBase#drop
+	 * @see http://lodash.com/docs/#drop
+	 */
+	/**
+	 * @method CollectionBase#last
+	 * @see http://lodash.com/docs/#last
+	 */
+	/**
+	 * @method CollectionBase#without
+	 * @see http://lodash.com/docs/#without
+	 */
+	/**
+	 * @method CollectionBase#difference
+	 * @see http://lodash.com/docs/#difference
+	 */
+	/**
+	 * @method CollectionBase#indexOf
+	 * @see http://lodash.com/docs/#indexOf
+	 */
+	/**
+	 * @method CollectionBase#shuffle
+	 * @see http://lodash.com/docs/#shuffle
+	 */
+	/**
+	 * @method CollectionBase#lastIndexOf
+	 * @see http://lodash.com/docs/#lastIndexOf
+	 */
+	/**
+	 * @method CollectionBase#isEmpty
+	 * @see http://lodash.com/docs/#isEmpty
+	 */
+	/**
+	 * @method CollectionBase#chain
+	 * @see http://lodash.com/docs/#chain
+	 */
+	// Lodash methods that we want to implement on the Collection.
 	// 90% of the core usefulness of Backbone Collections is actually implemented
 	// right here:
 	var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl', 'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke', 'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest', 'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle', 'lastIndexOf', 'isEmpty', 'chain'];
 
-	// Mix in each Underscore method as a proxy to `Collection#models`.
+	// Mix in each Lodash method as a proxy to `Collection#models`.
 	_.each(methods, function (method) {
 	  CollectionBase.prototype[method] = function () {
 	    var args = slice.call(arguments);
@@ -3844,7 +6043,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	});
 
-	// Underscore methods that take a property name as an argument.
+	/**
+	 * @method CollectionBase#groupBy
+	 * @see http://lodash.com/docs/#groupBy
+	 */
+	// Underscore methods that we want to implement on the Collection.
+	/**
+	 * @method CollectionBase#countBy
+	 * @see http://lodash.com/docs/#countBy
+	 */
+	// Underscore methods that we want to implement on the Collection.
+	/**
+	 * @method CollectionBase#sortBy
+	 * @see http://lodash.com/docs/#sortBy
+	 */
+	// Lodash methods that take a property name as an argument.
 	var attributeMethods = ['groupBy', 'countBy', 'sortBy'];
 
 	// Use attributes instead of properties.
@@ -3857,6 +6070,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	});
 
+	/**
+	 * @method Collection.extend
+	 * @description
+	 *
+	 * To create a {@link Collection} class of your own, extend
+	 * `Bookshelf.Collection`.
+	 *
+	 * @param {Object=} prototypeProperties
+	 *   Instance methods and properties to be attached to instances of the new
+	 *   class.
+	 * @param {Object=} classProperties
+	 *   Class (ie. static) functions and properties to be attached to the
+	 *   constructor of the new class.
+	 * @returns {Function} Constructor for new `Collection` subclass.
+	 */
 	CollectionBase.extend = __webpack_require__(27);
 
 	module.exports = CollectionBase;
@@ -3919,6 +6147,113 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	var escapeStringRegexp = __webpack_require__(29);
+	var ansiStyles = __webpack_require__(31);
+	var stripAnsi = __webpack_require__(30);
+	var hasAnsi = __webpack_require__(32);
+	var supportsColor = __webpack_require__(33);
+	var defineProps = Object.defineProperties;
+
+	function Chalk(options) {
+		// detect mode if not set manually
+		this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
+	}
+
+	// use bright blue on Windows as the normal blue color is illegible
+	if (process.platform === 'win32') {
+		ansiStyles.blue.open = '\u001b[94m';
+	}
+
+	function build(_styles) {
+		var builder = function builder() {
+			return applyStyle.apply(builder, arguments);
+		};
+		builder._styles = _styles;
+		builder.enabled = this.enabled;
+		// __proto__ is used because we must return a function, but there is
+		// no way to create a function with a different prototype.
+		builder.__proto__ = proto;
+		return builder;
+	}
+
+	var styles = (function () {
+		var ret = {};
+
+		Object.keys(ansiStyles).forEach(function (key) {
+			ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
+
+			ret[key] = {
+				get: function () {
+					return build.call(this, this._styles.concat(key));
+				}
+			};
+		});
+
+		return ret;
+	})();
+
+	var proto = defineProps(function chalk() {}, styles);
+
+	function applyStyle() {
+		// support varags, but simply cast to string in case there's only one arg
+		var args = arguments;
+		var argsLen = args.length;
+		var str = argsLen !== 0 && String(arguments[0]);
+		if (argsLen > 1) {
+			// don't slice `arguments`, it prevents v8 optimizations
+			for (var a = 1; a < argsLen; a++) {
+				str += ' ' + args[a];
+			}
+		}
+
+		if (!this.enabled || !str) {
+			return str;
+		}
+
+		/*jshint validthis: true */
+		var nestedStyles = this._styles;
+
+		var i = nestedStyles.length;
+		while (i--) {
+			var code = ansiStyles[nestedStyles[i]];
+			// Replace any instances already present with a re-opening code
+			// otherwise only the part of the string until said closing code
+			// will be colored, and the rest will simply be 'plain'.
+			str = code.open + str.replace(code.closeRe, code.open) + code.close;
+		}
+
+		return str;
+	}
+
+	function init() {
+		var ret = {};
+
+		Object.keys(styles).forEach(function (name) {
+			ret[name] = {
+				get: function () {
+					return build.call(this, [name]);
+				}
+			};
+		});
+
+		return ret;
+	}
+
+	defineProps(Chalk.prototype, init());
+
+	module.exports = new Chalk();
+	module.exports.styles = ansiStyles;
+	module.exports.hasColor = hasAnsi;
+	module.exports.stripColor = stripAnsi;
+	module.exports.supportsColor = supportsColor;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
+
+/***/ },
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -4225,113 +6560,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-	var escapeStringRegexp = __webpack_require__(28);
-	var ansiStyles = __webpack_require__(30);
-	var stripAnsi = __webpack_require__(31);
-	var hasAnsi = __webpack_require__(32);
-	var supportsColor = __webpack_require__(33);
-	var defineProps = Object.defineProperties;
-
-	function Chalk(options) {
-		// detect mode if not set manually
-		this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
-	}
-
-	// use bright blue on Windows as the normal blue color is illegible
-	if (process.platform === 'win32') {
-		ansiStyles.blue.open = '\u001b[94m';
-	}
-
-	function build(_styles) {
-		var builder = function builder() {
-			return applyStyle.apply(builder, arguments);
-		};
-		builder._styles = _styles;
-		builder.enabled = this.enabled;
-		// __proto__ is used because we must return a function, but there is
-		// no way to create a function with a different prototype.
-		builder.__proto__ = proto;
-		return builder;
-	}
-
-	var styles = (function () {
-		var ret = {};
-
-		Object.keys(ansiStyles).forEach(function (key) {
-			ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
-
-			ret[key] = {
-				get: function () {
-					return build.call(this, this._styles.concat(key));
-				}
-			};
-		});
-
-		return ret;
-	})();
-
-	var proto = defineProps(function chalk() {}, styles);
-
-	function applyStyle() {
-		// support varags, but simply cast to string in case there's only one arg
-		var args = arguments;
-		var argsLen = args.length;
-		var str = argsLen !== 0 && String(arguments[0]);
-		if (argsLen > 1) {
-			// don't slice `arguments`, it prevents v8 optimizations
-			for (var a = 1; a < argsLen; a++) {
-				str += ' ' + args[a];
-			}
-		}
-
-		if (!this.enabled || !str) {
-			return str;
-		}
-
-		/*jshint validthis: true */
-		var nestedStyles = this._styles;
-
-		var i = nestedStyles.length;
-		while (i--) {
-			var code = ansiStyles[nestedStyles[i]];
-			// Replace any instances already present with a re-opening code
-			// otherwise only the part of the string until said closing code
-			// will be colored, and the rest will simply be 'plain'.
-			str = code.open + str.replace(code.closeRe, code.open) + code.close;
-		}
-
-		return str;
-	}
-
-	function init() {
-		var ret = {};
-
-		Object.keys(styles).forEach(function (name) {
-			ret[name] = {
-				get: function () {
-					return build.call(this, [name]);
-				}
-			};
-		});
-
-		return ret;
-	}
-
-	defineProps(Chalk.prototype, init());
-
-	module.exports = new Chalk();
-	module.exports.styles = ansiStyles;
-	module.exports.hasColor = hasAnsi;
-	module.exports.stripColor = stripAnsi;
-	module.exports.supportsColor = supportsColor;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(29)))
-
-/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4539,7 +6767,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Only allow one of a certain nested type per-level.
 	      if (handled[relationName]) continue;
 
-	      relation = target[relationName]();
+	      if (_.isFunction(target[relationName])) {
+	        relation = target[relationName]();
+	      }
 
 	      if (!relation) throw new Error(relationName + ' is not defined on the model.');
 
@@ -4661,23 +6891,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
-
-	module.exports = function (str) {
-		if (typeof str !== 'string') {
-			throw new TypeError('Expected a string');
-		}
-
-		return str.replace(matchOperatorsRe,  '\\$&');
-	};
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// shim for using process in browser
 
 	var process = module.exports = {};
@@ -4739,7 +6952,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
+
+	module.exports = function (str) {
+		if (typeof str !== 'string') {
+			throw new TypeError('Expected a string');
+		}
+
+		return str.replace(matchOperatorsRe,  '\\$&');
+	};
+
+
+/***/ },
 /* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	var ansiRegex = __webpack_require__(34)();
+
+	module.exports = function (str) {
+		return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
+	};
+
+
+/***/ },
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4801,18 +7043,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	var ansiRegex = __webpack_require__(34)();
-
-	module.exports = function (str) {
-		return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
-	};
-
-
-/***/ },
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4870,7 +7100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		return false;
 	})();
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(29)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
 
 /***/ },
 /* 34 */
