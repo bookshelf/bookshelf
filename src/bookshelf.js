@@ -25,7 +25,7 @@ import Errors from './errors';
  * @param {Knex} knex Knex instance.
  */
 function Bookshelf(knex) {
-  let bookshelf  = {
+  let bookshelf = {
     VERSION: '0.8.1'
   };
 

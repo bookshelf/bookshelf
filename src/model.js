@@ -311,12 +311,14 @@ let BookshelfModel = ModelBase.extend({
    * @param {string=}   name        Prefix for `_id` and `_type` columns.
    * @param {(string[])=}  columnNames
    *
-   *   Array containing two column names, the first is the `_type`, the second is the `_id`.
+   *   Array containing two column names, the first is the `_type`, the second
+   *   is the `_id`.
    *
-   * @param {string=} [morphValue=Target#{@link Model#tableName tablename}]
+   * @param {string=} [morphValue=Target#{@link Model#tableName tableName}]
    *
    *   The string value associated with this relationship. Stored in the `_type`
-   *   column of the polymorphic table. Defaults to `Target#{@link Model#tableName|tablename}`.
+   *   column of the polymorphic table. Defaults to `Target#{@link
+   *   Model#tableName tableName}`.
    *
    * @returns {Model} The related model.
    */
