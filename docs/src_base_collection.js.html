@@ -1,21 +1,93 @@
-// Base Collection
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <link rel="icon" href="images/favicon.ico" />
+      <link rel="canonical" href="http://bookshelfjs.org" />
+      <title>src/base/collection.js</title>
+      <!--
+      ._.                                                      ._.
+      | |    ______             _        _          _  __      | |
+      | |    | ___ \           | |      | |        | |/ _|     | |
+      | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+      | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+      | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+      | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+      |                                                          |
+      \________\  /__________________________________\  /________/
+                \/                                    \/
+      -->
+      <script src="scripts/prettify/prettify.js"></script>
+      <script src="scripts/prettify/lang-css.js"></script>
+      <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!-- Import fonts from Open Font Library -->
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/noto-serif" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+      <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+
+    <a class="fork-me" href="https://github.com/tgriesser/bookshelf">
+      Fork me on GitHub
+    </a>
+
+    <!--
+      Not sure what this is.
+
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" class="navicon-button x">
+        <div class="navicon"></div>
+      </label>
+
+      <label for="nav-trigger" class="overlay"></label>
+    -->
+
+    <nav class="sidebar">
+      <a href="../index.html#">
+  <header class="nav-header">
+    <img class="nav-logo" src="images/bookshelf-icon.svg" />
+    <h1>Bookshelf.js</h1>
+  </header>
+</a>
+
+      
+    </nav>
+
+    <div class="main-container source-page">
+      <div class="main-column">
+        
+          <h1 class="page-title">src/base/collection.js</h1>
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Base Collection
 // ---------------
 
 // All exernal dependencies required in this scope.
-'use strict';
-
-var _ = require('lodash');
-var inherits = require('inherits');
+var _         = require('lodash');
+var inherits  = require('inherits');
 
 // All components that need to be referenced in this scope.
-var Events = require('./events');
-var Promise = require('./promise');
+var Events    = require('./events');
+var Promise   = require('./promise');
 var ModelBase = require('./model');
 
-var array = [];
-var slice = array.slice;
+var array  = [];
+var slice  = array.slice;
 var splice = array.splice;
-var noop = _.noop;
+var noop   = _.noop;
 
 /**
  * @class CollectionBase
@@ -25,11 +97,11 @@ var noop = _.noop;
 function CollectionBase(models, options) {
   if (options) _.extend(this, _.pick(options, collectionProps));
   this._reset();
-  this.initialize.apply(this, arguments);
+  this.initialize.apply(this, arguments)
   if (!_.isFunction(this.model)) {
     throw new Error('A valid `model` constructor must be defined for all collections.');
   }
-  if (models) this.reset(models, _.extend({ silent: true }, options));
+  if (models) this.reset(models, _.extend({silent: true}, options));
 }
 inherits(CollectionBase, Events);
 
@@ -43,8 +115,8 @@ inherits(CollectionBase, Events);
 var collectionProps = ['model', 'comparator', 'relatedData'];
 
 // Copied over from Backbone.
-var setOptions = { add: true, remove: true, merge: true };
-var addOptions = { add: true, remove: false };
+var setOptions = {add: true, remove: true, merge: true};
+var addOptions = {add: true, remove: false};
 
 /**
  * @method CollectionBase#initialize
@@ -61,7 +133,7 @@ CollectionBase.prototype.initialize = noop;
  * The `tableName` on the associated Model, used in relation building.
  * @returns {string} The {@link Model#tableName tableName} of the associated model.
  */
-CollectionBase.prototype.tableName = function () {
+CollectionBase.prototype.tableName = function() {
   return _.result(this.model.prototype, 'tableName');
 };
 
@@ -72,11 +144,11 @@ CollectionBase.prototype.tableName = function () {
  * The `idAttribute` on the associated Model, used in relation building.
  * @returns {string} The {@link Model#idAttribute idAttribute} of the associated model.
  */
-CollectionBase.prototype.idAttribute = function () {
+CollectionBase.prototype.idAttribute = function() {
   return this.model.prototype.idAttribute;
 };
 
-CollectionBase.prototype.toString = function () {
+CollectionBase.prototype.toString = function() {
   return '[Object Collection]';
 };
 
@@ -98,11 +170,11 @@ CollectionBase.prototype.toString = function () {
  * @param {bool}    [options.omitPivot=false] Exclude pivot values.
  * @returns {Object} Serialized model as a plain object.
  */
-CollectionBase.prototype.serialize = function (options) {
-  return this.map(function (model) {
-    return model.toJSON(options);
+CollectionBase.prototype.serialize = function(options) {
+  return this.map(function(model){ 
+    return model.toJSON(options); 
   });
-};
+}
 
 /**
  * @method
@@ -115,8 +187,8 @@ CollectionBase.prototype.serialize = function (options) {
  *
  * @param {options} Options passed to {@link CollectionBase#serialize}.
  */
-CollectionBase.prototype.toJSON = function (options) {
-  return this.serialize(options);
+CollectionBase.prototype.toJSON = function(options) {
+  return this.serialize(options)
 };
 
 /**
@@ -144,24 +216,20 @@ CollectionBase.prototype.toJSON = function (options) {
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
  */
-CollectionBase.prototype.set = function (models, options) {
+CollectionBase.prototype.set = function(models, options) {
   options = _.defaults({}, options, setOptions);
   if (options.parse) models = this.parse(models, options);
   if (!_.isArray(models)) models = models ? [models] : [];
   var i, l, id, model, attrs;
   var at = options.at;
   var targetModel = this.model;
-  var toAdd = [],
-      toRemove = [],
-      modelMap = {};
-  var add = options.add,
-      merge = options.merge,
-      remove = options.remove;
-  var order = add && remove ? [] : false;
+  var toAdd = [], toRemove = [], modelMap = {};
+  var add = options.add, merge = options.merge, remove = options.remove;
+  var order = add &amp;&amp; remove ? [] : false;
 
   // Turn bare objects into model references, and prevent invalid models
   // from being added.
-  for (i = 0, l = models.length; i < l; i++) {
+  for (i = 0, l = models.length; i &lt; l; i++) {
     attrs = models[i];
     if (attrs instanceof ModelBase) {
       id = model = attrs;
@@ -171,7 +239,7 @@ CollectionBase.prototype.set = function (models, options) {
 
     // If a duplicate is found, prevent it from being added and
     // optionally merge it into the existing model.
-    var existing = this.get(id);
+    let existing = this.get(id)
     if (existing) {
       if (remove) {
         modelMap[existing.cid] = true;
@@ -194,14 +262,14 @@ CollectionBase.prototype.set = function (models, options) {
 
   // Remove nonexistent models if appropriate.
   if (remove) {
-    for (i = 0, l = this.length; i < l; ++i) {
+    for (i = 0, l = this.length; i &lt; l; ++i) {
       if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
     }
     if (toRemove.length) this.remove(toRemove, options);
   }
 
   // See if sorting is needed, update `length` and splice in new models.
-  if (toAdd.length || order && order.length) {
+  if (toAdd.length || (order &amp;&amp; order.length)) {
     this.length += toAdd.length;
     if (at != null) {
       splice.apply(this.models, [at, 0].concat(toAdd));
@@ -211,7 +279,7 @@ CollectionBase.prototype.set = function (models, options) {
       } else {
         order = toAdd;
       }
-      for (i = 0, l = order.length; i < l; ++i) {
+      for (i = 0, l = order.length; i &lt; l; ++i) {
         this.models.push(order[i]);
       }
     }
@@ -220,7 +288,7 @@ CollectionBase.prototype.set = function (models, options) {
   if (options.silent) return this;
 
   // Trigger `add` events.
-  for (i = 0, l = toAdd.length; i < l; i++) {
+  for (i = 0, l = toAdd.length; i &lt; l; i++) {
     (model = toAdd[i]).trigger('add', model, this, options);
   }
   return this;
@@ -232,7 +300,7 @@ CollectionBase.prototype.set = function (models, options) {
  * @description
  * Prepare a model or hash of attributes to be added to this collection.
  */
-CollectionBase.prototype._prepareModel = function (attrs, options) {
+CollectionBase.prototype._prepareModel = function(attrs, options) {
   if (attrs instanceof ModelBase) return attrs;
   return new this.model(attrs, options);
 };
@@ -243,7 +311,7 @@ CollectionBase.prototype._prepareModel = function (attrs, options) {
  * @description
  * Run "Promise.map" over the models
  */
-CollectionBase.prototype.mapThen = function (iterator, context) {
+CollectionBase.prototype.mapThen = function(iterator, context) {
   return Promise.bind(context).thenReturn(this.models).map(iterator);
 };
 
@@ -265,10 +333,10 @@ CollectionBase.prototype.mapThen = function (iterator, context) {
  *
  * @param {string} method The {@link Model model} method to invoke.
  * @param {...mixed} arguments Arguments to `method`.
- * @returns {Promise<mixed[]>}
+ * @returns {Promise&lt;mixed[]>}
  *   Promise resolving to array of results from invocation.
  */
-CollectionBase.prototype.invokeThen = function () {
+CollectionBase.prototype.invokeThen = function() {
   return Promise.all(this.invoke.apply(this, arguments));
 };
 
@@ -280,15 +348,15 @@ CollectionBase.prototype.invokeThen = function () {
  * @param {Function} iterator
  * @param {mixed} initialValue
  * @param {Object} context Bound to `this` in the `iterator` callback.
- * @returns {Promise<mixed[]>}
+ * @returns {Promise&lt;mixed[]>}
  *   Promise resolving to array of results from invocation.
  *
  */
-CollectionBase.prototype.reduceThen = function (iterator, initialValue, context) {
+CollectionBase.prototype.reduceThen = function(iterator, initialValue, context) {
   return Promise.bind(context).thenReturn(this.models).reduce(iterator, initialValue).bind();
 };
 
-CollectionBase.prototype.fetch = function () {
+CollectionBase.prototype.fetch = function() {
   return Promise.rejected('The fetch method has not been implemented');
 };
 
@@ -320,8 +388,8 @@ CollectionBase.prototype.fetch = function () {
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
  */
-CollectionBase.prototype.add = function (models, options) {
-  return this.set(models, _.extend({ merge: false }, options, addOptions));
+CollectionBase.prototype.add = function(models, options) {
+  return this.set(models, _.extend({merge: false}, options, addOptions));
 };
 
 /**
@@ -336,19 +404,19 @@ CollectionBase.prototype.add = function (models, options) {
  * @param {Object} options
  * @returns {Model|Model[]} The same value passed as `models` argument.
  */
-CollectionBase.prototype.remove = function (models, options) {
+CollectionBase.prototype.remove = function(models, options) {
   var singular = !_.isArray(models);
   models = singular ? [models] : _.clone(models);
   options = options || {};
-  var i = -1;
-  while (++i < models.length) {
-    var model = models[i] = this.get(models[i]);
+  var i = -1
+  while (++i &lt; models.length) {
+    let model = models[i] = this.get(models[i]);
     if (!model) continue;
     delete this._byId[model.id];
     delete this._byId[model.cid];
-    var index = this.indexOf(model);
+    let index = this.indexOf(model);
     this.models.splice(index, 1);
-    this.length = this.length - 1;
+    this.length = this.length - 1
     if (!options.silent) {
       options.index = index;
       model.trigger('remove', model, this, options);
@@ -371,11 +439,11 @@ CollectionBase.prototype.remove = function (models, options) {
  * @param {Object} options See {@link CollectionBase#add add}.
  * @returns {Model[]} Array of models.
  */
-CollectionBase.prototype.reset = function (models, options) {
+CollectionBase.prototype.reset = function(models, options) {
   options = options || {};
   options.previousModels = this.models;
   this._reset();
-  models = this.add(models, _.extend({ silent: true }, options));
+  models = this.add(models, _.extend({silent: true}, options));
   if (!options.silent) this.trigger('reset', this, options);
   return models;
 };
@@ -386,8 +454,8 @@ CollectionBase.prototype.reset = function (models, options) {
  * Add a model to the end of the collection.
  * @returns {Collection} Self, this method is chainable.
  */
-CollectionBase.prototype.push = function (model, options) {
-  return this.add(model, _.extend({ at: this.length }, options));
+CollectionBase.prototype.push = function(model, options) {
+  return this.add(model, _.extend({at: this.length}, options));
 };
 
 /**
@@ -395,7 +463,7 @@ CollectionBase.prototype.push = function (model, options) {
  * @description
  * Remove a model from the end of the collection.
  */
-CollectionBase.prototype.pop = function (options) {
+CollectionBase.prototype.pop = function(options) {
   var model = this.at(this.length - 1);
   this.remove(model, options);
   return model;
@@ -406,8 +474,8 @@ CollectionBase.prototype.pop = function (options) {
  * @description
  * Add a model to the beginning of the collection.
  */
-CollectionBase.prototype.unshift = function (model, options) {
-  return this.add(model, _.extend({ at: 0 }, options));
+CollectionBase.prototype.unshift = function(model, options) {
+  return this.add(model, _.extend({at: 0}, options));
 };
 
 /**
@@ -415,7 +483,7 @@ CollectionBase.prototype.unshift = function (model, options) {
  * @description
  * Remove a model from the beginning of the collection.
  */
-CollectionBase.prototype.shift = function (options) {
+CollectionBase.prototype.shift = function(options) {
   var model = this.at(0);
   this.remove(model, options);
   return model;
@@ -426,7 +494,7 @@ CollectionBase.prototype.shift = function (options) {
  * @description
  * Slice out a sub-array of models from the collection.
  */
-CollectionBase.prototype.slice = function () {
+CollectionBase.prototype.slice = function() {
   return slice.apply(this.models, arguments);
 };
 
@@ -443,7 +511,7 @@ CollectionBase.prototype.slice = function () {
  *
  * @returns {Model} The model, or `undefined` if it is not in the collection.
  */
-CollectionBase.prototype.get = function (obj) {
+CollectionBase.prototype.get = function(obj) {
   if (obj == null) return void 0;
   return this._byId[obj.id] || this._byId[obj.cid] || this._byId[obj];
 };
@@ -455,7 +523,7 @@ CollectionBase.prototype.get = function (obj) {
  * is sorted, and if your collection isn't sorted, `at` will still retrieve
  * models in insertion order.
  */
-CollectionBase.prototype.at = function (index) {
+CollectionBase.prototype.at = function(index) {
   return this.models[index];
 };
 
@@ -465,9 +533,9 @@ CollectionBase.prototype.at = function (index) {
  * Return models with matching attributes. Useful for simple cases of `filter`.
  * @returns {Model[]} Array of matching models.
  */
-CollectionBase.prototype.where = function (attrs, first) {
+CollectionBase.prototype.where = function(attrs, first) {
   if (_.isEmpty(attrs)) return first ? void 0 : [];
-  return this[first ? 'find' : 'filter'](function (model) {
+  return this[first ? 'find' : 'filter'](function(model) {
     for (var key in attrs) {
       if (attrs[key] !== model.get(key)) return false;
     }
@@ -482,7 +550,7 @@ CollectionBase.prototype.where = function (attrs, first) {
  * `find`.
  * @returns {Model} The first matching model.
  */
-CollectionBase.prototype.findWhere = function (attrs) {
+CollectionBase.prototype.findWhere = function(attrs) {
   return this.where(attrs, true);
 };
 
@@ -492,9 +560,9 @@ CollectionBase.prototype.findWhere = function (attrs) {
  * @description
  * Force the collection to re-sort itself, based on a comporator defined on the model.
  */
-CollectionBase.prototype.sort = function (options) {
+CollectionBase.prototype.sort = function(options) {
   if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
-  options = options || {};
+  options = options || {}
 
   // Run sort based on type of `comparator`.
   if (_.isString(this.comparator) || this.comparator.length === 1) {
@@ -513,7 +581,7 @@ CollectionBase.prototype.sort = function (options) {
  * Pluck an attribute from each model in the collection.
  * @returns {mixed[]} An array of attribute values.
  */
-CollectionBase.prototype.pluck = function (attr) {
+CollectionBase.prototype.pluck = function(attr) {
   return this.invoke('get', attr);
 };
 
@@ -528,7 +596,7 @@ CollectionBase.prototype.pluck = function (attr) {
  *
  * @param {Object[]} resp Raw database response array.
  */
-CollectionBase.prototype.parse = function (resp) {
+CollectionBase.prototype.parse = function(resp) {
   return resp;
 };
 
@@ -537,7 +605,7 @@ CollectionBase.prototype.parse = function (resp) {
  * @description
  * Create a new collection with an identical list of models as this one.
  */
-CollectionBase.prototype.clone = function () {
+CollectionBase.prototype.clone = function() {
   return new this.constructor(this.models, _.pick(this, collectionProps));
 };
 
@@ -547,10 +615,10 @@ CollectionBase.prototype.clone = function () {
  * @description
  * Reset all internal state. Called when the collection is first initialized or reset.
  */
-CollectionBase.prototype._reset = function () {
+CollectionBase.prototype._reset = function() {
   this.length = 0;
   this.models = [];
-  this._byId = Object.create(null);
+  this._byId  = Object.create(null);
 };
 
 /**
@@ -720,11 +788,16 @@ CollectionBase.prototype._reset = function () {
 // Lodash methods that we want to implement on the Collection.
 // 90% of the core usefulness of Backbone Collections is actually implemented
 // right here:
-var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl', 'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke', 'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest', 'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle', 'lastIndexOf', 'isEmpty', 'chain'];
+var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
+  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
+  'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
+  'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
+  'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
+  'lastIndexOf', 'isEmpty', 'chain'];
 
 // Mix in each Lodash method as a proxy to `Collection#models`.
-_.each(methods, function (method) {
-  CollectionBase.prototype[method] = function () {
+_.each(methods, function(method) {
+  CollectionBase.prototype[method] = function() {
     var args = slice.call(arguments);
     args.unshift(this.models);
     return _[method].apply(_, args);
@@ -749,9 +822,9 @@ _.each(methods, function (method) {
 var attributeMethods = ['groupBy', 'countBy', 'sortBy'];
 
 // Use attributes instead of properties.
-_.each(attributeMethods, function (method) {
-  CollectionBase.prototype[method] = function (value, context) {
-    var iterator = _.isFunction(value) ? value : function (model) {
+_.each(attributeMethods, function(method) {
+  CollectionBase.prototype[method] = function(value, context) {
+    var iterator = _.isFunction(value) ? value : function(model) {
       return model.get(value);
     };
     return _[method](this.models, iterator, context);
@@ -776,3 +849,44 @@ _.each(attributeMethods, function (method) {
 CollectionBase.extend = require('../extend');
 
 module.exports = CollectionBase;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+      </div>
+
+      <footer>
+        <div>
+          Documentation generated by
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+          
+            on
+          August 28th 2015
+        </div>
+        <div>
+          <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
+            "Fork me on GitHub" ribbon
+          </a>
+          Copyright © 2013 Aral Balkan
+        </div>
+      </footer>
+    </div>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+    <script src="assets/knex.min.js"></script>
+    <script src="../build/bookshelf.js"></script>
+    <script>
+      var knex = Knex({client: 'websql'});
+      var bookshelf = Bookshelf(knex);
+    </script>
+
+  </body>
+</html>

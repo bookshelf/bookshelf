@@ -1,4 +1,78 @@
-import _ from 'lodash';
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <link rel="icon" href="images/favicon.ico" />
+      <link rel="canonical" href="http://bookshelfjs.org" />
+      <title>src/model.js</title>
+      <!--
+      ._.                                                      ._.
+      | |    ______             _        _          _  __      | |
+      | |    | ___ \           | |      | |        | |/ _|     | |
+      | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+      | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+      | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+      | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+      |                                                          |
+      \________\  /__________________________________\  /________/
+                \/                                    \/
+      -->
+      <script src="scripts/prettify/prettify.js"></script>
+      <script src="scripts/prettify/lang-css.js"></script>
+      <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!-- Import fonts from Open Font Library -->
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/noto-serif" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+      <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+
+    <a class="fork-me" href="https://github.com/tgriesser/bookshelf">
+      Fork me on GitHub
+    </a>
+
+    <!--
+      Not sure what this is.
+
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" class="navicon-button x">
+        <div class="navicon"></div>
+      </label>
+
+      <label for="nav-trigger" class="overlay"></label>
+    -->
+
+    <nav class="sidebar">
+      <a href="../index.html#">
+  <header class="nav-header">
+    <img class="nav-logo" src="images/bookshelf-icon.svg" />
+    <h1>Bookshelf.js</h1>
+  </header>
+</a>
+
+      
+    </nav>
+
+    <div class="main-container source-page">
+      <div class="main-column">
+        
+          <h1 class="page-title">src/model.js</h1>
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _ from 'lodash';
 import createError from 'create-error';
 
 import Sync from './sync';
@@ -108,19 +182,6 @@ let BookshelfModel = ModelBase.extend({
   /**
    * The `hasMany` relation specifies that this model has one or more rows in
    * another table which match on this model's primary key.
-   *
-   *     let Author = bookshelf.Model.extend({
-   *       tableName: 'authors',
-   *       books: function() {
-   *         return this.hasMany(Book);
-   *       }
-   *     });
-   *
-   *     // select * from `authors` where id = 1
-   *     // select * from `books` where author_id = 1
-   *     Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
-   *       console.log(JSON.stringify(author.related('books')));
-   *     });
    *
    * @method Model#hasMany
    *
@@ -598,7 +659,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @throws {Model.NotFoundError}
    *
-   * @returns {Promise<Model|undefined>}
+   * @returns {Promise&lt;Model|undefined>}
    *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
    *
    */
@@ -698,7 +759,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *  Rejects the promise in the event of an empty response if the `require: true` option.
    *
-   * @returns {Promise<Collection>} A promise resolving to the fetched {@link Collection collection}.
+   * @returns {Promise&lt;Collection>} A promise resolving to the fetched {@link Collection collection}.
    *
    */
   fetchAll(options) {
@@ -763,7 +824,7 @@ let BookshelfModel = ModelBase.extend({
    * @param {Object=}      options Hash of options.
    * @param {Transaction=} options.transacting
    *   Optionally run the query in a transaction.
-   * @returns {Promise<Model>} A promise resolving to this {@link Model model}
+   * @returns {Promise&lt;Model>} A promise resolving to this {@link Model model}
    */
   load: Promise.method(function(relations, options) {
     return Promise.bind(this)
@@ -849,7 +910,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @throws {Model.NoRowsUpdatedError}
    *
-   * @returns {Promise<Model>} A promise resolving to the saved and updated model.
+   * @returns {Promise&lt;Model>} A promise resolving to the saved and updated model.
    */
   save: Promise.method(function(key, val, options) {
     let attrs;
@@ -890,7 +951,7 @@ let BookshelfModel = ModelBase.extend({
       }
 
       // If there are any save constraints, set them on the model.
-      if (this.relatedData && this.relatedData.type !== 'morphTo') {
+      if (this.relatedData &amp;&amp; this.relatedData.type !== 'morphTo') {
         Helpers.saveConstraints(this, this.relatedData);
       }
 
@@ -943,14 +1004,14 @@ let BookshelfModel = ModelBase.extend({
       return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
       .bind(this)
       .then(function() {
-        return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
+        return sync[options.method](method === 'update' &amp;&amp; options.patch ? attrs : this.attributes);
       })
       .then(function(resp) {
 
         // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && this.id == null) {
+        if (method === 'insert' &amp;&amp; this.id == null) {
           this.attributes[this.idAttribute] = this.id = resp[0];
-        } else if (method === 'update' && resp === 0) {
+        } else if (method === 'update' &amp;&amp; resp === 0) {
           if (options.require !== false) {
             throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
           }
@@ -1055,7 +1116,7 @@ let BookshelfModel = ModelBase.extend({
     }).then(function() {
       return sync.del();
     }).then(function(resp) {
-      if (options.require && resp === 0) {
+      if (options.require &amp;&amp; resp === 0) {
         throw new this.constructor.NoRowsDeletedError('No Rows Deleted');
       }
       this.clear();
@@ -1142,7 +1203,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * @example
    *
-   * model.where('favorite_color', '<>', 'green').fetch().then(function() { //...
+   * model.where('favorite_color', '&lt;>', 'green').fetch().then(function() { //...
    * // or
    * model.where('favorite_color', 'red').fetch().then(function() { //...
    * // or
@@ -1206,7 +1267,7 @@ let BookshelfModel = ModelBase.extend({
   _handleResponse(response) {
     let relatedData = this.relatedData;
     this.set(this.parse(response[0]), {silent: true})._reset();
-    if (relatedData && relatedData.isJoined()) {
+    if (relatedData &amp;&amp; relatedData.isJoined()) {
       relatedData.parsePivot([this]);
     }
   },
@@ -1263,3 +1324,44 @@ BookshelfModel.NoRowsUpdatedError = Errors.NoRowsUpdatedError
 BookshelfModel.NoRowsDeletedError = Errors.NoRowsDeletedError
 
 module.exports = BookshelfModel;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+      </div>
+
+      <footer>
+        <div>
+          Documentation generated by
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+          
+            on
+          August 28th 2015
+        </div>
+        <div>
+          <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
+            "Fork me on GitHub" ribbon
+          </a>
+          Copyright © 2013 Aral Balkan
+        </div>
+      </footer>
+    </div>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+    <script src="assets/knex.min.js"></script>
+    <script src="../build/bookshelf.js"></script>
+    <script>
+      var knex = Knex({client: 'websql'});
+      var bookshelf = Bookshelf(knex);
+    </script>
+
+  </body>
+</html>

@@ -15,12 +15,18 @@
     "monospaceLinks": false,
     "default": {
       "outputSourceFiles": true,
-      "showInheritedFrom": false
+      "showInheritedFrom": false,
+      "staticFiles": {
+        "include": [
+          "./scripts/jsdoc-static"
+        ]
+      }
     }
   },
   "opts": {
     "tutorials": "./tutorials",
-    "destination": "./docs/html",
+    "changelog": "./CHANGELOG.md",
+    "destination": "./",
     "template": "./node_modules/minami",
     "recurse": true,
     "private": false,
@@ -28,7 +34,8 @@
     "whitelist": [
       "Bookshelf",
       "Model",
-      "Collection"
+      "Collection",
+      "Events"
     ]
   }
 }

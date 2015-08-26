@@ -6,6 +6,14 @@ var inherits     = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var _            = require('lodash');
 
+/**
+ * @class Events
+ * @class
+ *
+ * Bookshelf includes events based on those provided by
+ * [Backbone](http://backbonejs.org/).
+ *
+ */
 function Events() {
   EventEmitter.apply(this, arguments);
 }
@@ -13,6 +21,13 @@ inherits(Events, EventEmitter);
 
 // Regular expression used to split event strings.
 var eventSplitter = /\s+/;
+
+/**
+ * @method Events#on
+ * @description
+ * Register an event listener.
+ * @see {@link http://backbonejs.org/#Events-on Backbone.js `Events#on`}
+ */
 Events.prototype.on = function(name, handler) {
   // Handle space separated event names.
   if (eventSplitter.test(name)) {
@@ -25,7 +40,12 @@ Events.prototype.on = function(name, handler) {
   return EventEmitter.prototype.on.apply(this, arguments);
 };
 
-// Add "off", "trigger", and "" method, for parity with Backbone.Events
+/**
+ * @method Events#off
+ * @description
+ * Deregister an event listener.
+ * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
+ */
 Events.prototype.off = function(event, listener) {
   if (arguments.length === 0) {
     return this.removeAllListeners();
@@ -35,6 +55,13 @@ Events.prototype.off = function(event, listener) {
   }
   return this.removeListener(event, listener);
 };
+
+/**
+ * @method Events#off
+ * @description
+ * Deregister an event listener.
+ * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
+ */
 Events.prototype.trigger = function(name) {
   // Handle space separated event names.
   if (eventSplitter.test(name)) {
@@ -51,6 +78,25 @@ Events.prototype.trigger = function(name) {
   return this;
 };
 
+/**
+ * @method Events#triggerThen
+ * @description
+ * A promise version of {@link Events#trigger}, returning a promise which
+ * resolves with all return values from triggered event handlers. If any of the
+ * event handlers throw an `Error` or return a rejected promise, the promise
+ * will be rejected. Used internally on the {@link Model#creating "creating"},
+ * {@link Model#updating "updating"}, {@link Model#saving "saving"}, and {@link
+ * Model@destroying "destroying"} events, and can be helpful when needing async
+ * event handlers (for validations, etc).
+ *
+ * @param {string} name
+ *   The event name, or a whitespace-separated list of event names, to be
+ *   triggered.
+ * @param {...mixed} args
+ *   Arguments to be passed to any registered event handlers.
+ * @returns Promise<mixed[]>
+ *   A promise resolving the the resolved return values of any triggered handlers.
+ */
 Events.prototype.triggerThen = function(name) {
   var i, l, rest, listeners = [];
   // Handle space separated event names.
@@ -80,6 +126,12 @@ Events.prototype.triggerThen = function(name) {
 };
 Events.prototype.emitThen = Events.prototype.triggerThen;
 
+/**
+ * @method Events#once
+ * @description
+ * Register a one-off event handler.
+ * @see {@link http://backbonejs.org/#Events-once Backbone.js `Events#once`}
+ */
 Events.prototype.once = function(name, callback, context) {
   var self = this;
   var once = _.once(function() {

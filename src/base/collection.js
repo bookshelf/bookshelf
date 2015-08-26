@@ -16,7 +16,9 @@ var splice = array.splice;
 var noop   = _.noop;
 
 /**
- * @class
+ * @class CollectionBase
+ * @extends Events
+ * @inheritdoc
  */
 function CollectionBase(models, options) {
   if (options) _.extend(this, _.pick(options, collectionProps));
@@ -247,6 +249,14 @@ CollectionBase.prototype.mapThen = function(iterator, context) {
  * an array of responses all async (and sync) behavior has settled. Useful for
  * bulk saving or deleting models:
  *
+ *     collection.invokeThen('save', null, options).then(function() {
+ *       // ... all models in the collection have been saved
+ *     });
+ *     
+ *     collection.invokeThen('destroy', options).then(function() {
+ *       // ... all models in the collection have been destroyed
+ *     });
+ *
  * @param {string} method The {@link Model model} method to invoke.
  * @param {...mixed} arguments Arguments to `method`.
  * @returns {Promise<mixed[]>}
@@ -263,7 +273,7 @@ CollectionBase.prototype.invokeThen = function() {
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce | MDN `Array.prototype.reduce` reference.}
  * @param {Function} iterator
  * @param {mixed} initialValue
- * @param {Object} Bound to `this` in the `iterator` callback.
+ * @param {Object} context Bound to `this` in the `iterator` callback.
  * @returns {Promise<mixed[]>}
  *   Promise resolving to array of results from invocation.
  *
