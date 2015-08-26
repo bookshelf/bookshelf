@@ -109,6 +109,19 @@ let BookshelfModel = ModelBase.extend({
    * The `hasMany` relation specifies that this model has one or more rows in
    * another table which match on this model's primary key.
    *
+   *     let Author = bookshelf.Model.extend({
+   *       tableName: 'authors',
+   *       books: function() {
+   *         return this.hasMany(Book);
+   *       }
+   *     });
+   *
+   *     // select * from `authors` where id = 1
+   *     // select * from `books` where author_id = 1
+   *     Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
+   *       console.log(JSON.stringify(author.related('books')));
+   *     });
+   *
    * @method Model#hasMany
    *
    * @param {Model} Target
