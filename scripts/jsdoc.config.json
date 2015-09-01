@@ -27,7 +27,7 @@
     "tutorials": "./tutorials",
     "changelog": "./CHANGELOG.md",
     "destination": "./",
-    "template": "./node_modules/minami",
+    "template": "./node_modules/bookshelf-jsdoc-theme",
     "recurse": true,
     "private": false,
     "encoding": "utf-8",

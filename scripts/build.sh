@@ -20,7 +20,7 @@ node -p 'p=require("./package");p.main="bookshelf.js";p.scripts=p.devDependencie
 
 $webpack --config scripts/webpack.config.js tmp build/bookshelf.js
 
-uglifyjs node_modules/knex/build/knex.js > docs/assets/knex.min.js
-cp node_modules/inflection/inflection.min.js docs/assets/inflection.min.js
+uglifyjs node_modules/knex/build/knex.js > scripts/jsdoc-static/knex.js
+npm run jsdoc
 
 rm -rf tmp

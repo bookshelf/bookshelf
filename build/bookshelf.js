@@ -198,15 +198,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @method Model.count
 	     * @belongsTo Model
+	     * @since 0.8.2
 	     * @description
 	     *
 	     * Gets the number of matching records in the database, respecting any
 	     * previous calls to {@link Model#query query}. If a `column` is provided,
 	     * records with a null value in that column will be excluded from the count.
 	     *
-	     * @param {string=} [column='*']
+	     * @param {string} [column='*']
+	     *   Specify a column to count - rows with null values in this column will be excluded.
 	     * @param {Object=} options
-	     * @returns {Promise<number>}
+	     *   Hash of options.
+	     * @returns {Promise<Number>}
+	     *   A promise resolving to the number of matching rows.
 	     */
 	    count: function count(column, options) {
 	      return this.forge().count(column, options);
@@ -529,6 +533,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var EventEmitter = __webpack_require__(23).EventEmitter;
 	var _ = __webpack_require__(2);
 
+	/**
+	 * @class Events
+	 * @class
+	 *
+	 * Bookshelf includes events based on those provided by
+	 * [Backbone](http://backbonejs.org/).
+	 *
+	 */
 	function Events() {
 	  EventEmitter.apply(this, arguments);
 	}
@@ -536,6 +548,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Regular expression used to split event strings.
 	var eventSplitter = /\s+/;
+
+	/**
+	 * @method Events#on
+	 * @description
+	 * Register an event listener.
+	 * @see {@link http://backbonejs.org/#Events-on Backbone.js `Events#on`}
+	 */
 	Events.prototype.on = function (name, handler) {
 	  // Handle space separated event names.
 	  if (eventSplitter.test(name)) {
@@ -548,7 +567,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return EventEmitter.prototype.on.apply(this, arguments);
 	};
 
-	// Add "off", "trigger", and "" method, for parity with Backbone.Events
+	/**
+	 * @method Events#off
+	 * @description
+	 * Deregister an event listener.
+	 * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
+	 */
 	Events.prototype.off = function (event, listener) {
 	  if (arguments.length === 0) {
 	    return this.removeAllListeners();
@@ -558,6 +582,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return this.removeListener(event, listener);
 	};
+
+	/**
+	 * @method Events#off
+	 * @description
+	 * Deregister an event listener.
+	 * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
+	 */
 	Events.prototype.trigger = function (name) {
 	  // Handle space separated event names.
 	  if (eventSplitter.test(name)) {
@@ -574,6 +605,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this;
 	};
 
+	/**
+	 * @method Events#triggerThen
+	 * @description
+	 * A promise version of {@link Events#trigger}, returning a promise which
+	 * resolves with all return values from triggered event handlers. If any of the
+	 * event handlers throw an `Error` or return a rejected promise, the promise
+	 * will be rejected. Used internally on the {@link Model#creating "creating"},
+	 * {@link Model#updating "updating"}, {@link Model#saving "saving"}, and {@link
+	 * Model@destroying "destroying"} events, and can be helpful when needing async
+	 * event handlers (for validations, etc).
+	 *
+	 * @param {string} name
+	 *   The event name, or a whitespace-separated list of event names, to be
+	 *   triggered.
+	 * @param {...mixed} args
+	 *   Arguments to be passed to any registered event handlers.
+	 * @returns Promise<mixed[]>
+	 *   A promise resolving the the resolved return values of any triggered handlers.
+	 */
 	Events.prototype.triggerThen = function (name) {
 	  var i,
 	      l,
@@ -610,6 +660,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	Events.prototype.emitThen = Events.prototype.triggerThen;
 
+	/**
+	 * @method Events#once
+	 * @description
+	 * Register a one-off event handler.
+	 * @see {@link http://backbonejs.org/#Events-once Backbone.js `Events#once`}
+	 */
 	Events.prototype.once = function (name, callback, context) {
 	  var self = this;
 	  var once = _.once(function () {
@@ -762,6 +818,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * The `hasMany` relation specifies that this model has one or more rows in
 	   * another table which match on this model's primary key.
 	   *
+	   *     let Author = bookshelf.Model.extend({
+	   *       tableName: 'authors',
+	   *       books: function() {
+	   *         return this.hasMany(Book);
+	   *       }
+	   *     });
+	   *
+	   *     // select * from `authors` where id = 1
+	   *     // select * from `books` where author_id = 1
+	   *     Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
+	   *       console.log(JSON.stringify(author.related('books')));
+	   *     });
+	   *
 	   * @method Model#hasMany
 	   *
 	   * @param {Model} Target
@@ -784,8 +853,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * The `belongsTo` relationship is used when a model is a member of
 	   * another `Target` model.
 	   *
-	   * It can be used in a {@tutorial one-to-one} associations as the inverse
-	   * of a {@link Model#hasOne hasOne}. It can also used in {@tutorial
+	   * It can be used in a {@linkplain one-to-one} associations as the inverse
+	   * of a {@link Model#hasOne hasOne}. It can also used in {@linkplain
 	   * one-to-many} associations as the inverse of a {@link Model#hasMany hasMany}
 	   * (and is the one side of that association). In both cases, the {@link
 	   * Model#belongsTo belongsTo} relationship is used for a model that is a
@@ -1155,9 +1224,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.relatedData.through(this, Interim, { throughForeignKey: throughForeignKey, otherKey: otherKey });
 	  },
 
-	  // Update the attributes of a model, fetching it by its primary key. If
-	  // no attribute matches its `idAttribute`, then fetch by all available
-	  // fields.
+	  /**
+	   * @method Model#refresh
+	   * @since 0.8.2
+	   * @description
+	   *
+	   * Update the attributes of a model, fetching it by its primary key. If no
+	   * attribute matches its {@link Model#idAttribute idAttribute}, then fetch by
+	   * all available fields.
+	   *
+	   * @param {Object} options
+	   *   A hash of options. See {@link Model#fetch} for details.
+	   * @returns {Promise<Model>}
+	   *   A promise resolving to this model.
+	   */
 	  refresh: function refresh(options) {
 
 	    // If this is new, we use all its attributes. Otherwise we just grab the
@@ -1291,6 +1371,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }),
 
+	  // Private for now.
 	  all: function all() {
 	    var collection = this.constructor.collection();
 	    collection._knex = this.query().clone();
@@ -1299,6 +1380,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return collection;
 	  },
 
+	  /**
+	   * @method Model#count
+	   * @since 0.8.2
+	   * @description
+	   *
+	   * Gets the number of matching records in the database, respecting any
+	   * previous calls to {@link Model#query}.
+	   *
+	   * @example
+	   *
+	   * Duck.where('color', 'blue').count('name')
+	   *   .then(function(count) { //...
+	   *
+	   * @param {string} [column='*']
+	   *   Specify a column to count - rows with null values in this column will be excluded.
+	   * @param {Object=} options
+	   *   Hash of options.
+	   * @returns {Promise<Number>}
+	   *   A promise resolving to the number of matching rows.
+	   */
 	  count: function count(column, options) {
 	    return this.all().count(column, options);
 	  },
@@ -2042,8 +2143,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })['return'](this);
 	  }),
 
-	  // Counts all models in collection, respecting relational constrains and query
-	  // modifications.
+	  /**
+	   * @method Collection#count
+	   * @since 0.8.2
+	   * @description
+	   *
+	   * Get the number of records in the collection's table.
+	   *
+	   * @example
+	   *
+	   * // select count(*) from shareholders where company_id = 1 and share &gt; 0.1;
+	   * Company.forge(({id:1})
+	   *   .shareholders()
+	   *   .query('where', 'share', '>', '0.1')
+	   *   .count()
+	   *   .then(function(count) {
+	   *     assert(count === 3);
+	   *   });
+	   *
+	   * @param {string} [column='*']
+	   *   Specify a column to count - rows with null values in this column will be excluded.
+	   * @param {Object=} options
+	   *   Hash of options.
+	   * @returns {Promise<Number>}
+	   *   A promise resolving to the number of matching rows.
+	   */
 	  count: _basePromise2['default'].method(function (column, options) {
 	    if (!_lodash2['default'].isString(column)) {
 	      options = column;
@@ -4735,6 +4859,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @class
 	 * @classdesc
+	 * @extends Events
+	 * @inheritdoc
 	 *
 	 * The "ModelBase" is similar to the 'Active Model' in Rails, it defines a
 	 * standard interface from which other objects may inherit.
@@ -4755,6 +4881,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	inherits(ModelBase, Events);
 
+	/**
+	 * @method ModelBase#initialize
+	 * @description
+	 *
+	 * Called by the {@link Model Model constructor} when creating a new instance.
+	 * Override this function to add custom initialization, such as event listeners.
+	 *
+	 * @see Model
+	 *
+	 * @param {Object} attributes
+	 *   Initial values for this model's attributes.
+	 * @param {Object=}  options
+	 *   The hash of options passed to {@link Model constructor}.
+	 */
 	ModelBase.prototype.initialize = function () {};
 
 	/**
@@ -5340,7 +5480,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var noop = _.noop;
 
 	/**
-	 * @class
+	 * @class CollectionBase
+	 * @extends Events
+	 * @inheritdoc
 	 */
 	function CollectionBase(models, options) {
 	  if (options) _.extend(this, _.pick(options, collectionProps));
@@ -5575,6 +5717,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * an array of responses all async (and sync) behavior has settled. Useful for
 	 * bulk saving or deleting models:
 	 *
+	 *     collection.invokeThen('save', null, options).then(function() {
+	 *       // ... all models in the collection have been saved
+	 *     });
+	 *     
+	 *     collection.invokeThen('destroy', options).then(function() {
+	 *       // ... all models in the collection have been destroyed
+	 *     });
+	 *
 	 * @param {string} method The {@link Model model} method to invoke.
 	 * @param {...mixed} arguments Arguments to `method`.
 	 * @returns {Promise<mixed[]>}
@@ -5591,7 +5741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce | MDN `Array.prototype.reduce` reference.}
 	 * @param {Function} iterator
 	 * @param {mixed} initialValue
-	 * @param {Object} Bound to `this` in the `iterator` callback.
+	 * @param {Object} context Bound to `this` in the `iterator` callback.
 	 * @returns {Promise<mixed[]>}
 	 *   Promise resolving to array of results from invocation.
 	 *
@@ -6151,8 +6301,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	var escapeStringRegexp = __webpack_require__(29);
-	var ansiStyles = __webpack_require__(31);
-	var stripAnsi = __webpack_require__(30);
+	var ansiStyles = __webpack_require__(30);
+	var stripAnsi = __webpack_require__(31);
 	var hasAnsi = __webpack_require__(32);
 	var supportsColor = __webpack_require__(33);
 	var defineProps = Object.defineProperties;
@@ -6973,18 +7123,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var ansiRegex = __webpack_require__(34)();
-
-	module.exports = function (str) {
-		return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
-	};
-
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
 
 	var styles = module.exports = {
 		modifiers: {
@@ -7040,6 +7178,18 @@ return /******/ (function(modules) { // webpackBootstrap
 			enumerable: false
 		});
 	});
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	var ansiRegex = __webpack_require__(34)();
+
+	module.exports = function (str) {
+		return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
+	};
 
 
 /***/ },

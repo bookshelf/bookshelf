@@ -201,8 +201,31 @@ let BookshelfCollection = CollectionBase.extend({
       .return(this);
   }),
 
-  // Counts all models in collection, respecting relational constrains and query
-  // modifications.
+  /**
+   * @method Collection#count
+   * @since 0.8.2
+   * @description
+   *
+   * Get the number of records in the collection's table.
+   *
+   * @example
+   *
+   * // select count(*) from shareholders where company_id = 1 and share &amp;gt; 0.1;
+   * Company.forge(({id:1})
+   *   .shareholders()
+   *   .query('where', 'share', '>', '0.1')
+   *   .count()
+   *   .then(function(count) {
+   *     assert(count === 3);
+   *   });
+   *
+   * @param {string} [column='*']
+   *   Specify a column to count - rows with null values in this column will be excluded.
+   * @param {Object=} options
+   *   Hash of options.
+   * @returns {Promise&lt;Number>}
+   *   A promise resolving to the number of matching rows.
+   */
   count: Promise.method(function(column, options) {
     if (!_.isString(column)) {
       options = column;
@@ -437,7 +460,7 @@ export default BookshelfCollection;
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
           
             on
-          August 28th 2015
+          September 1st 2015
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">

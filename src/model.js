@@ -514,9 +514,20 @@ let BookshelfModel = ModelBase.extend({
     return this.relatedData.through(this, Interim, {throughForeignKey: throughForeignKey, otherKey: otherKey});
   },
 
-  // Update the attributes of a model, fetching it by its primary key. If
-  // no attribute matches its `idAttribute`, then fetch by all available
-  // fields.
+  /**
+   * @method Model#refresh
+   * @since 0.8.2
+   * @description
+   *
+   * Update the attributes of a model, fetching it by its primary key. If no
+   * attribute matches its {@link Model#idAttribute idAttribute}, then fetch by
+   * all available fields.
+   *
+   * @param {Object} options
+   *   A hash of options. See {@link Model#fetch} for details.
+   * @returns {Promise<Model>}
+   *   A promise resolving to this model.
+   */
   refresh(options) {
 
     // If this is new, we use all its attributes. Otherwise we just grab the
@@ -658,6 +669,7 @@ let BookshelfModel = ModelBase.extend({
       });
   }),
 
+  // Private for now.
   all() {
     let collection = this.constructor.collection();
     collection._knex = this.query().clone();
@@ -666,6 +678,26 @@ let BookshelfModel = ModelBase.extend({
     return collection;
   },
 
+  /**
+   * @method Model#count
+   * @since 0.8.2
+   * @description
+   *
+   * Gets the number of matching records in the database, respecting any
+   * previous calls to {@link Model#query}.
+   *
+   * @example
+   *
+   * Duck.where('color', 'blue').count('name')
+   *   .then(function(count) { //...
+   *
+   * @param {string} [column='*']
+   *   Specify a column to count - rows with null values in this column will be excluded.
+   * @param {Object=} options
+   *   Hash of options.
+   * @returns {Promise<Number>}
+   *   A promise resolving to the number of matching rows.
+   */
   count(column, options) {
     return this.all().count(column, options);
   },
