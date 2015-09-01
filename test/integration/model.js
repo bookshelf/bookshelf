@@ -558,6 +558,15 @@ module.exports = function(bookshelf) {
         });
       });
 
+        it('passes custom `options` passed to `timestamp()` - #881', function () {
+          function stubTimestamp(options) {
+            expect(options.customOption).to.equal(testOptions.customOption);
+          }
+          var site = Models.Site.forge({id: 881}, {hasTimestamps: true});
+          var testOptions = {method: 'insert', customOption: 'CUSTOM_OPTION'}
+          site.timestamp = stubTimestamp;
+          site.save(null, testOptions).call('destroy');
+      });
     });
 
     describe('destroy', function() {
