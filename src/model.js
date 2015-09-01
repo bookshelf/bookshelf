@@ -918,7 +918,7 @@ let BookshelfModel = ModelBase.extend({
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
       if (this.hasTimestamps) {
-        _.extend(attrs, this.timestamp({method: method, silent: true}));
+        _.extend(attrs, this.timestamp(_.extend(options, {silent: true})));
       }
 
       // If there are any save constraints, set them on the model.
