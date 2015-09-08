@@ -935,12 +935,9 @@ module.exports = function(bookshelf) {
 
           equal(promise instanceof Promise, true);
 
-          promise.then(function(result) {
-              equal(result, 1);
+          return promise.then(function(results) {
+              deepEqual(results, [1]);
           });
-
-          return promise;
-
       });
 
     });
