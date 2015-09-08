@@ -8,7 +8,7 @@ module.exports = function() {
 
     describe('normalizeSaveMethod', function() {
 
-      normalizeSaveMethod = helpers.normalizeSaveMethod;
+      var normalizeSaveMethod = helpers.normalizeSaveMethod;
 
       it('converts "update" and "insert" to lowercase', function() {
         expect(normalizeSaveMethod('UPDATE')).to.equal('update');
