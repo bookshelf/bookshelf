@@ -8,7 +8,7 @@
     "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
     "eslint": "eslint bookshelf.js src/.",
-    "test": "npm run eslint && npm run babel && mocha -b -t 5000 --check-leaks -R spec test/index.js",
+    "test": "npm run eslint && npm run babel && istanbul --config=test/.istanbul.yml cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "jsdoc": "rm -rf ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json"
   },
   "homepage": "http://bookshelfjs.org",
