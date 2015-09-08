@@ -8,7 +8,7 @@
     "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
     "eslint": "eslint bookshelf.js src/.",
-    "test": "npm run eslint && npm run babel && istanbul --config=test/.istanbul.yml cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
+    "test": "npm run eslint && npm run babel && ./node_modules/istanbul/lib/cli.js --config=test/.istanbul.yml cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "jsdoc": "rm -rf ./docs/html/* && jsdoc --configure ./scripts/jsdoc.config.json"
   },
   "homepage": "http://bookshelfjs.org",
@@ -39,6 +39,7 @@
     "bookshelf-jsdoc-theme": "^0.1.0",
     "chai": "~1.9.1",
     "eslint": "^0.23.0",
+    "istanbul": "^0.3.19",
     "jsdoc": "^3.3.1",
     "knex": "^0.8.0",
     "minimist": "^1.1.0",
