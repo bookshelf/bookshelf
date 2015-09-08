@@ -4,7 +4,7 @@ var uuid = require('node-uuid');
 var Promise   = global.testPromise;
 
 var assert    = require('assert')
-var equal     = require('assert').equal;
+var equal     = require('assert').strictEqual;
 var deepEqual = require('assert').deepEqual;
 
 module.exports = function(bookshelf) {
@@ -867,7 +867,7 @@ module.exports = function(bookshelf) {
       it('will return the previous value of an attribute the last time it was synced', function() {
         var count = 0;
         var model = new Models.Site({id: 1});
-        equal(model.previous('id'), void 0);
+        equal(model.previous('id'), undefined);
 
         return model.fetch().then(function() {
           deepEqual(model.previousAttributes(), {id: 1, name: 'knexjs.org'});
@@ -879,6 +879,11 @@ module.exports = function(bookshelf) {
           deepEqual(model.changed, {});
         });
 
+      });
+
+      it('will return `undefined` if no attribute is supplied', function() {
+        var model = new Models.Site({id: 1});
+        equal(model.previous(null), undefined);
       });
 
     });
