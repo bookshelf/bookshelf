@@ -261,17 +261,17 @@ let BookshelfModel = ModelBase.extend({
    * @param {Model} Target
    *
    *   Constructor of {@link Model} targeted by join.
+   * 
+   * @param {string=} table
+   *
+   *   Name of the joining table. Defaults to the two table names, joined by an
+   *   underscore, ordered alphabetically.
    *
    * @param {string=} foreignKey
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
-   *
-   * @param {string=} table
-   *
-   *   Name of the joining table. Defaults to the two table names, joined by an
-   *   underscore, ordered alphabetically.
    *
    * @param {string=} otherKey
    *
