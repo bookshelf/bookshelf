@@ -558,14 +558,57 @@ module.exports = function(bookshelf) {
         });
       });
 
-        it('passes custom `options` passed to `timestamp()` - #881', function () {
-          function stubTimestamp(options) {
-            expect(options.customOption).to.equal(testOptions.customOption);
+      it('passes custom `options` passed to `timestamp()` - #881', function () {
+        function stubTimestamp(options) {
+          expect(options.customOption).to.equal(testOptions.customOption);
+        }
+        var model = Models.Admin.forge(null, {hasTimestamps: true});
+        var testOptions = {method: 'insert', customOption: 'CUSTOM_OPTION'};
+        model.timestamp = stubTimestamp;
+        return model.save(null, testOptions).call('destroy');
+      });
+
+      it('correctly determines whether to `insert` or `update` when `isNew()` is overridden to return a promise', function() {
+        var stubIsNew = function(isNew) {
+          return function() {
+            return Promise.resolve(isNew);
           }
-          var site = Models.Site.forge({id: 881}, {hasTimestamps: true});
-          var testOptions = {method: 'insert', customOption: 'CUSTOM_OPTION'}
-          site.timestamp = stubTimestamp;
-          site.save(null, testOptions).call('destroy');
+        }
+        var stubSync = function(expectedMethod) {
+          debugger;
+          return function() {
+            return {
+              insert: function() {
+                if (expectedMethod !== 'insert') {
+                  throw new Error('Called incorrect method insert, expected ' + expectedMethod);
+                }
+                return [{id: 1}]
+              },
+              update: function() {
+                if (expectedMethod !== 'update') {
+                  throw new Error('Called incorrect method update, expected ' + expectedMethod);
+                }
+                return [{id: 1}]
+              }
+            };
+          }
+        };
+
+        var insertModel = new bookshelf.Model();
+        insertModel.isNew = stubIsNew(true);
+        insertModel.sync = stubSync('insert');
+
+        var updateModel = new bookshelf.Model();
+        updateModel.isNew = stubIsNew(false);
+        updateModel.sync = stubSync('update');
+
+        return Promise.all([
+          insertModel.save(),
+          updateModel.save()
+        ]).catch(function (e) {
+          console.log('error', e.stack);
+          throw e;
+        });
       });
     });
 

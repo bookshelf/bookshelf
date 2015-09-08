@@ -60,5 +60,4 @@ module.exports = function(Bookshelf) {
     });
 
   });
-
 };

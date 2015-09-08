@@ -5,6 +5,18 @@ var chalk = require('chalk')
 
 var helpers = {
 
+  normalizeSaveMethod(method) {
+    if (method == null) return undefined;
+    let result;
+    if (_.isString(method)) {
+      result = method.toLowerCase();
+    }
+    if (result !== 'update' && result !== 'insert') throw new TypeError(
+      `Expected \`method\` to be either "update" or "insert". Got \`${method}\``
+    );
+    return result;
+  },
+
   // Sets the constraints necessary during a `model.save` call.
   saveConstraints: function(model, relatedData) {
     var data = {};

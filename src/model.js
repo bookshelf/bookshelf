@@ -2,7 +2,7 @@ import _ from 'lodash';
 import createError from 'create-error';
 
 import Sync from './sync';
-import Helpers from './helpers';
+import Helpers, { normalizeSaveMethod } from './helpers';
 import EagerRelation from './eager';
 import Errors from './errors';
 
@@ -532,9 +532,9 @@ let BookshelfModel = ModelBase.extend({
 
     // If this is new, we use all its attributes. Otherwise we just grab the
     // primary key.
-    let attributes = this.isNew()
+    let attributes = this.id == null
       ? this.attributes
-      : _.pick(this.attributes, this.idAttribute)
+      : _.pick(this.attributes, this.idAttribute);
 
     return this._doFetch(attributes, options);
   },
@@ -895,19 +895,19 @@ let BookshelfModel = ModelBase.extend({
       options = options ? _.clone(options) : {};
     }
 
-    return Promise.bind(this).then(function() {
-      return this.saveMethod(options);
-    }).then(function(method) {
+    return Promise.resolve(this.isNew())
+    .then((isNew) => {
 
       // Determine whether which kind of save we will do, update or insert.
-      options.method = method
+      let method = options.method = normalizeSaveMethod(options.method) ||
+        (isNew ? 'insert' : 'update');
 
       // If the object is being created, we merge any defaults here rather than
       // during object creation.
       if (method === 'insert' || options.defaults) {
         let defaults = _.result(this, 'defaults');
         if (defaults) {
-          attrs = _.extend({}, defaults, this.attributes, attrs);
+          attrs = {...defaults, ...this.attributes, ...attrs};
         }
       }
 
@@ -918,7 +918,7 @@ let BookshelfModel = ModelBase.extend({
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
       if (this.hasTimestamps) {
-        _.extend(attrs, this.timestamp(_.extend(options, {silent: true})));
+        _.extend(attrs, this._timestamp({silent: true, ...options}));
       }
 
       // If there are any save constraints, set them on the model.
@@ -928,7 +928,7 @@ let BookshelfModel = ModelBase.extend({
 
       // Gives access to the `query` object in the `options`, in case we need it
       // in any event handlers.
-      let sync = this.sync(options);
+      const sync = this.sync(options);
       options.query = sync.query;
 
       /**
@@ -972,12 +972,20 @@ let BookshelfModel = ModelBase.extend({
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
-      return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
-      .bind(this)
-      .then(function() {
-        return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
-      })
-      .then(function(resp) {
+      return this.triggerThen(
+        (method === 'insert' ? 'creating saving' : 'updating saving'),
+        this, attrs, options
+      ).then(() => {
+
+        // Use `options.method` (rather than `method`) here as it may have been
+        // mutated by an event handler.
+        const syncAttrs = options.method === 'update' && options.patch
+          ? attrs
+          : this.attributes;
+
+        return sync[options.method](syncAttrs);
+
+      }).then((resp) => {
 
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && this.id == null) {
