@@ -120,7 +120,7 @@ function Bookshelf(knex) {
      * @belongsTo Model
      * @description
      *
-     * Simple helper function for retireving all instances of the given model.
+     * Simple helper function for retrieving all instances of the given model.
      *
      * @see Model#fetchAll
      * @returns {Promise<Collection>}
