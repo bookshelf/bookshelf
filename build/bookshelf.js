@@ -1557,7 +1557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   *
 	   * @param {string=}      key                      Attribute name.
 	   * @param {string=}      val                      Attribute value.
-	   * @param {Object=}      attrs                    A has of attributes.
+	   * @param {Object=}      attrs                    A hash of attributes.
 	   * @param {Object=}      options
 	   * @param {Transaction=} options.transacting
 	   *   Optionally run the query in a transaction.
