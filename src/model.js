@@ -997,7 +997,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Saved event.
          *
-         * Fired before after an `insert` or `update` query.
+         * Fired after an `insert` or `update` query.
          *
          * @event Model#saved
          * @param {Model}  model    The model firing the event.
@@ -1009,7 +1009,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Created event.
          *
-         * Fired before after an `insert` query.
+         * Fired after an `insert` query.
          *
          * @event Model#created
          * @param {Model}  model    The model firing the event.
@@ -1021,7 +1021,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Updated event.
          *
-         * Fired before after an `update` query.
+         * Fired after an `update` query.
          *
          * @event Model#updated
          * @param {Model}  model    The model firing the event.
