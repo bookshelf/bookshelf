@@ -472,12 +472,13 @@ ModelBase.prototype.saveMethod = function(options) {
  * @method
  * @description
  * Sets the timestamp attributes on the model, if {@link Model#hasTimestamps
- * hasTimestamps} is set to `true` or an array. Check if the model {@link
- * Model#isNew isNew} or if `{method: 'insert'}` is provided as an option and
- * set the `created_at` and `updated_at` attributes to the current date if it
- * is being inserted, and just the `updated_at` attribute if it's being updated.
- * This method may be overriden to use different column names or types for the
- * timestamps.
+ * hasTimestamps} is set to `true` or an array to override the default column names. 
+ * If an array is passed the first element will be the 'created' column name and the second 
+ * element will be the 'updated' column name. Check if the model {@link Model#isNew isNew} or 
+ * if `{method: 'insert'}` is provided as an option and set the `created_at` and `updated_at` 
+ * attributes to the current date if it is being inserted, and just the `updated_at` 
+ * attribute if it's being updated.
+ *
  *
  * @param {Object=} options
  * @param {string} [options.method="update"]
