@@ -164,7 +164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {string=}  options.tableName     Initial value for {@linkcode Model#tableName tableName}.
 	     * @param {boolean=} [options.hasTimestamps=false]
 	     *
-	     *   Initial value for {@linkcode Model#hasTimestamps hasTimestamps}.
+	     *   Initial value for {@linkcode Model#hasTimestamps hasTimestamps}. Can be an array to override default column names.
 	     *
 	     * @param {boolean} [options.parse=false]
 	     *
@@ -761,7 +761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {string=}  options.tableName     Initial value for {@link Model#tableName tableName}.
 	 * @param {boolean=} [options.hasTimestamps=false]
 	 *
-	 *   Initial value for {@link Model#hasTimestamps hasTimestamps}.
+	 *   Initial value for {@link Model#hasTimestamps hasTimestamps}. Can be an array to override default column names.
 	 *
 	 * @param {boolean} [options.parse=false]
 	 *
