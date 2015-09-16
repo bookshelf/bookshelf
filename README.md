@@ -53,7 +53,7 @@ This initialization should likely only ever happen once in your application. As 
 ```js
 // In a file named something like bookshelf.js
 var knex = require('knex')(dbConfig);
-module.exports require('bookshelf')(knex);
+module.exports = require('bookshelf')(knex);
 
 // elsewhere, to use the bookshelf client:
 var bookshelf = require('./bookshelf');
