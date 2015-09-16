@@ -76,7 +76,7 @@ let BookshelfCollection = CollectionBase.extend({
    *   Upon a sucessful query resulting in no records returns. Only fired if `require: true` is passed as an option.
    *
    * @param {Object=} options
-   * @param {bool} [options.required=false] Trigger a {@link Collection.EmptyError} if no records are found.
+   * @param {bool} [options.require=false] Trigger a {@link Collection.EmptyError} if no records are found.
    * @param {string|string[]} [options.withRelated=[]] A relation, or list of relations, to be eager loaded as part of the `fetch` operation.
    * @returns {Promise<Collection>}
    */
