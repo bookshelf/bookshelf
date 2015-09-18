@@ -82,6 +82,21 @@ ModelBase.prototype.initialize = function() {};
 ModelBase.prototype.idAttribute = 'id';
 
 /**
+ * @member {boolean|Array}
+ * @default false
+ * @description
+ *
+ * Sets the current date/time on the timestamps columns `created_at` and 
+ * `updated_at` for a given method.  'insert' method will only update 
+ * `updated_at`.  To override the default column names, assign an array
+ * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
+ * be the created column name and the second will be the updated
+ * column name.
+ *
+ */
+ModelBase.prototype.hasTimestamps = false;
+
+/**
  * @method
  * @description  Get the current value of an attribute from the model.
  * @example      note.get("title")
