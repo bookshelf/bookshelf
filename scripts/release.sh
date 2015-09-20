@@ -25,9 +25,11 @@ git add -u
 npm run build
 git add -A build
 
-npm test
-
+# Update version in package.json before running tests (tests will catch if the
+# version number is out of sync).
 update_version 'package.json' $next_version
+
+npm test
 
 git commit -am "release $next_version"
 git tag $next_version

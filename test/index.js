@@ -34,6 +34,18 @@ global.AssertionError = chai.AssertionError;
 global.Assertion      = chai.Assertion;
 global.assert         = chai.assert;
 
+describe('Bookshelf', function () {
+
+  it('VERSION should equal version number in package.json',
+    function () {
+    var Knex = require('knex');
+    var bookshelf = Bookshelf(Knex({}));
+    var p = require('../package.json');
+    expect(p.version).to.equal(bookshelf.VERSION);
+  });
+
+});
+
 // Unit test all of the abstract base interfaces
 describe('Unit Tests', function () {
 
