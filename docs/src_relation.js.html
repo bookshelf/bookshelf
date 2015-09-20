@@ -1,24 +1,96 @@
-// Relation
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <link rel="icon" href="images/favicon.ico" />
+      <link rel="canonical" href="http://bookshelfjs.org" />
+      <title>src/relation.js</title>
+      <!--
+      ._.                                                      ._.
+      | |    ______             _        _          _  __      | |
+      | |    | ___ \           | |      | |        | |/ _|     | |
+      | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+      | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+      | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+      | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+      |                                                          |
+      \________\  /__________________________________\  /________/
+                \/                                    \/
+      -->
+      <script src="scripts/prettify/prettify.js"></script>
+      <script src="scripts/prettify/lang-css.js"></script>
+      <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!-- Import fonts from Open Font Library -->
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/noto-serif" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+      <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+
+    <a class="fork-me" href="https://github.com/tgriesser/bookshelf">
+      Fork me on GitHub
+    </a>
+
+    <!--
+      Not sure what this is.
+
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" class="navicon-button x">
+        <div class="navicon"></div>
+      </label>
+
+      <label for="nav-trigger" class="overlay"></label>
+    -->
+
+    <nav class="sidebar">
+      <a href="../index.html#">
+  <header class="nav-header">
+    <img class="nav-logo" src="images/bookshelf-icon.svg" />
+    <h1>Bookshelf.js</h1>
+  </header>
+</a>
+
+      
+    </nav>
+
+    <div class="main-container source-page">
+      <div class="main-column">
+        
+          <h1 class="page-title">src/relation.js</h1>
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Relation
 // ---------------
-'use strict';
+var _            = require('lodash');
+var inflection   = require('inflection');
 
-var _ = require('lodash');
-var inflection = require('inflection');
-
-var Helpers = require('./helpers');
-var ModelBase = require('./base/model');
+var Helpers      = require('./helpers');
+var ModelBase    = require('./base/model');
 var RelationBase = require('./base/relation');
-var Promise = require('./base/promise');
-var push = [].push;
+var Promise      = require('./base/promise');
+var push         = [].push;
 
 var BookshelfRelation = RelationBase.extend({
 
   // Assembles the new model or collection we're creating an instance of,
   // gathering any relevant primitives from the parent object,
   // without keeping any hard references.
-  init: function init(parent) {
-    this.parentId = parent.id;
-    this.parentTableName = _.result(parent, 'tableName');
+  init: function(parent) {
+    this.parentId          = parent.id;
+    this.parentTableName   = _.result(parent, 'tableName');
     this.parentIdAttribute = _.result(parent, 'idAttribute');
 
     if (this.isInverse()) {
@@ -28,9 +100,9 @@ var BookshelfRelation = RelationBase.extend({
 
       // If the parent object is eager loading, and it's a polymorphic `morphTo` relation,
       // we can't know what the target will be until the models are sorted and matched.
-      if (this.type === 'morphTo' && !parent._isEager) {
+      if (this.type === 'morphTo' &amp;&amp; !parent._isEager) {
         this.target = Helpers.morphCandidate(this.candidates, attributes[this.key('morphKey')]);
-        this.targetTableName = _.result(this.target.prototype, 'tableName');
+        this.targetTableName   = _.result(this.target.prototype, 'tableName');
         this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
       }
       this.parentFk = attributes[this.key('foreignKey')];
@@ -39,7 +111,7 @@ var BookshelfRelation = RelationBase.extend({
     }
 
     var target = this.target ? this.relatedInstance() : {};
-    target.relatedData = this;
+        target.relatedData = this;
 
     if (this.type === 'belongsToMany') {
       _.extend(target, pivotHelpers);
@@ -50,9 +122,9 @@ var BookshelfRelation = RelationBase.extend({
 
   // Initializes a `through` relation, setting the `Target` model and `options`,
   // which includes any additional keys for the relation.
-  through: function through(source, Target, options) {
+  through: function(source, Target, options) {
     var type = this.type;
-    if (type !== 'hasOne' && type !== 'hasMany' && type !== 'belongsToMany' && type !== 'belongsTo') {
+    if (type !== 'hasOne' &amp;&amp; type !== 'hasMany' &amp;&amp; type !== 'belongsToMany' &amp;&amp; type !== 'belongsTo') {
       throw new Error('`through` is only chainable from `hasOne`, `belongsTo`, `hasMany`, or `belongsToMany`');
     }
 
@@ -78,7 +150,7 @@ var BookshelfRelation = RelationBase.extend({
 
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
-  key: function key(keyName) {
+  key: function(keyName) {
     var idKeyName;
     if (this[keyName]) return this[keyName];
     switch (keyName) {
@@ -91,7 +163,9 @@ var BookshelfRelation = RelationBase.extend({
       case 'foreignKey':
         switch (this.type) {
           case 'morphTo':
-            idKeyName = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
+            idKeyName = (this.columnNames &amp;&amp; this.columnNames[1])
+              ? this.columnNames[1] 
+              : this.morphName + '_id';
             this[keyName] = idKeyName;
             break;
           case 'belongsTo':
@@ -99,7 +173,9 @@ var BookshelfRelation = RelationBase.extend({
             break;
           default:
             if (this.isMorph()) {
-              this[keyName] = this.columnNames && this.columnNames[1] ? this.columnNames[1] : this.morphName + '_id';
+              this[keyName] = (this.columnNames &amp;&amp; this.columnNames[1]) 
+                ? this.columnNames[1] 
+                : this.morphName + '_id';
               break;
             }
             this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
@@ -107,20 +183,22 @@ var BookshelfRelation = RelationBase.extend({
         }
         break;
       case 'morphKey':
-        this[keyName] = this.columnNames && this.columnNames[0] ? this.columnNames[0] : this.morphName + '_type';
+        this[keyName] = (this.columnNames &amp;&amp; this.columnNames[0]) 
+          ? this.columnNames[0] 
+          : this.morphName + '_type';
         break;
       case 'morphValue':
         this[keyName] = this.parentTableName || this.targetTableName;
         break;
     }
-    return this[keyName];
+    return this[keyName]
   },
 
   // Injects the necessary `select` constraints into a `knex` query builder.
-  selectConstraints: function selectConstraints(knex, options) {
+  selectConstraints: function(knex, options) {
     var resp = options.parentResponse;
 
-    // The `belongsToMany` and `through` relations have joins & pivot columns.
+    // The `belongsToMany` and `through` relations have joins &amp; pivot columns.
     if (this.isJoined()) this.joinClauses(knex);
 
     // Call the function, if one exists, to constrain the eager loaded query.
@@ -131,7 +209,7 @@ var BookshelfRelation = RelationBase.extend({
       knex.columns(options.columns);
     }
 
-    var currentColumns = _.findWhere(knex._statements, { grouping: 'columns' });
+    var currentColumns = _.findWhere(knex._statements, {grouping: 'columns'});
 
     if (!currentColumns || currentColumns.length === 0) {
       knex.column(this.targetTableName + '.*');
@@ -141,54 +219,68 @@ var BookshelfRelation = RelationBase.extend({
 
     // If this is a single relation and we're not eager loading,
     // limit the query to a single item.
-    if (this.isSingle() && !resp) knex.limit(1);
+    if (this.isSingle() &amp;&amp; !resp) knex.limit(1);
 
     // Finally, add (and validate) the where conditions, necessary for constraining the relation.
     this.whereClauses(knex, resp);
   },
 
-  // Inject & validates necessary `through` constraints for the current model.
-  joinColumns: function joinColumns(knex) {
+  // Inject &amp; validates necessary `through` constraints for the current model.
+  joinColumns: function(knex) {
     var columns = [];
     var joinTable = this.joinTable();
     if (this.isThrough()) columns.push(this.throughIdAttribute);
     columns.push(this.key('foreignKey'));
     if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
     push.apply(columns, this.pivotColumns);
-    knex.columns(_.map(columns, function (col) {
+    knex.columns(_.map(columns, function(col) {
       return joinTable + '.' + col + ' as _pivot_' + col;
     }));
   },
 
   // Generates the join clauses necessary for the current relation.
-  joinClauses: function joinClauses(knex) {
+  joinClauses: function(knex) {
     var joinTable = this.joinTable();
 
     if (this.type === 'belongsTo' || this.type === 'belongsToMany') {
 
-      var targetKey = this.type === 'belongsTo' ? this.key('foreignKey') : this.key('otherKey');
+      var targetKey = (this.type === 'belongsTo' ? this.key('foreignKey') : this.key('otherKey'));
 
-      knex.join(joinTable, joinTable + '.' + targetKey, '=', this.targetTableName + '.' + this.targetIdAttribute);
+      knex.join(
+        joinTable,
+        joinTable + '.' + targetKey, '=',
+        this.targetTableName + '.' + this.targetIdAttribute
+      );
 
       // A `belongsTo` -> `through` is currently the only relation with two joins.
       if (this.type === 'belongsTo') {
-        knex.join(this.parentTableName, joinTable + '.' + this.throughIdAttribute, '=', this.parentTableName + '.' + this.key('throughForeignKey'));
+        knex.join(
+          this.parentTableName,
+          joinTable + '.' + this.throughIdAttribute, '=',
+          this.parentTableName + '.' + this.key('throughForeignKey')
+        );
       }
+
     } else {
-      knex.join(joinTable, joinTable + '.' + this.throughIdAttribute, '=', this.targetTableName + '.' + this.key('throughForeignKey'));
+      knex.join(
+        joinTable,
+        joinTable + '.' + this.throughIdAttribute, '=',
+        this.targetTableName + '.' + this.key('throughForeignKey')
+      );
     }
   },
 
   // Check that there isn't an incorrect foreign key set, vs. the one
   // passed in when the relation was formed.
-  whereClauses: function whereClauses(knex, resp) {
+  whereClauses: function(knex, resp) {
     var key;
 
     if (this.isJoined()) {
       var targetTable = this.type === 'belongsTo' ? this.parentTableName : this.joinTable();
       key = targetTable + '.' + (this.type === 'belongsTo' ? this.parentIdAttribute : this.key('foreignKey'));
     } else {
-      key = this.targetTableName + '.' + (this.isInverse() ? this.targetIdAttribute : this.key('foreignKey'));
+      key = this.targetTableName + '.' +
+        (this.isInverse() ? this.targetIdAttribute : this.key('foreignKey'));
     }
 
     knex[resp ? 'whereIn' : 'where'](key, resp ? this.eagerKeys(resp) : this.parentFk);
@@ -199,20 +291,23 @@ var BookshelfRelation = RelationBase.extend({
   },
 
   // Fetches all `eagerKeys` from the current relation.
-  eagerKeys: function eagerKeys(resp) {
-    var key = this.isInverse() && !this.isThrough() ? this.key('foreignKey') : this.parentIdAttribute;
+  eagerKeys: function(resp) {
+    var key = this.isInverse() &amp;&amp; !this.isThrough() ? this.key('foreignKey') : this.parentIdAttribute;
     return _.uniq(_.pluck(resp, key));
   },
 
   // Generates the appropriate standard join table.
-  joinTable: function joinTable() {
+  joinTable: function() {
     if (this.isThrough()) return this.throughTableName;
-    return this.joinTableName || [this.parentTableName, this.targetTableName].sort().join('_');
+    return this.joinTableName || [
+      this.parentTableName,
+      this.targetTableName
+    ].sort().join('_');
   },
 
   // Creates a new model or collection instance, depending on
   // the `relatedData` settings and the models passed in.
-  relatedInstance: function relatedInstance(models) {
+  relatedInstance: function(models) {
     models = models || [];
 
     var Target = this.target;
@@ -221,7 +316,7 @@ var BookshelfRelation = RelationBase.extend({
     // we can pick from... otherwise create a new instance.
     if (this.isSingle()) {
       if (!(Target.prototype instanceof ModelBase)) {
-        throw new Error('The ' + this.type + ' related object must be a Bookshelf.Model');
+        throw new Error(`The ${this.type} related object must be a Bookshelf.Model`);
       }
       return models[0] || new Target();
     }
@@ -229,41 +324,40 @@ var BookshelfRelation = RelationBase.extend({
     // Allows us to just use a model, but create a temporary
     // collection for a "*-many" relation.
     if (Target.prototype instanceof ModelBase) {
-      return Target.collection(models, { parse: true });
+      return Target.collection(models, {parse: true});
     }
-    return new Target(models, { parse: true });
+    return new Target(models, {parse: true});
   },
 
   // Groups the related response according to the type of relationship
   // we're handling, for easy attachment to the parent models.
-  eagerPair: function eagerPair(relationName, related, parentModels) {
-    var _this = this;
-
+  eagerPair: function(relationName, related, parentModels) {
     var model;
 
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
-      parentModels = _.filter(parentModels, function (m) {
-        return m.get(_this.key('morphKey')) === _this.key('morphValue');
+      parentModels = _.filter(parentModels, (m) => {
+        return m.get(this.key('morphKey')) === this.key('morphValue');
       });
     }
 
-    // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
+    // If this is a `through` or `belongsToMany` relation, we need to cleanup &amp; setup the `interim` model.
     if (this.isJoined()) related = this.parsePivot(related);
 
     // Group all of the related models for easier association with their parent models.
-    var grouped = _.groupBy(related, function (m) {
+    var grouped = _.groupBy(related, (m) => {
       if (m.pivot) {
-        return _this.isInverse() && _this.isThrough() ? m.pivot.id : m.pivot.get(_this.key('foreignKey'));
+        return this.isInverse() &amp;&amp; this.isThrough() ? m.pivot.id :
+          m.pivot.get(this.key('foreignKey'));
       } else {
-        return _this.isInverse() ? m.id : m.get(_this.key('foreignKey'));
+        return this.isInverse() ? m.id : m.get(this.key('foreignKey'));
       }
     });
 
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     var i = -1;
-    while (++i < parentModels.length) {
+    while (++i &lt; parentModels.length) {
       model = parentModels[i];
       var groupedKey;
       if (!this.isInverse()) {
@@ -279,8 +373,8 @@ var BookshelfRelation = RelationBase.extend({
 
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
-    i = -1;
-    while (++i < related.length) {
+    i = -1
+    while(++i &lt; related.length) {
       model = related[i];
       model.attributes = model.parse(model.attributes);
     }
@@ -291,13 +385,10 @@ var BookshelfRelation = RelationBase.extend({
   // The `models` is an array of models returned from the fetch,
   // after they're `set`... parsing out any of the `_pivot_` items from the
   // join table and assigning them on the pivot model or object as appropriate.
-  parsePivot: function parsePivot(models) {
+  parsePivot: function(models) {
     var Through = this.throughTarget;
-    return _.map(models, function (model) {
-      var data = {},
-          keep = {},
-          attrs = model.attributes,
-          through;
+    return _.map(models, function(model) {
+      var data = {}, keep = {}, attrs = model.attributes, through;
       if (Through) through = new Through();
       for (var key in attrs) {
         if (key.indexOf('_pivot_') === 0) {
@@ -308,7 +399,7 @@ var BookshelfRelation = RelationBase.extend({
       }
       model.attributes = keep;
       if (!_.isEmpty(data)) {
-        model.pivot = through ? through.set(data, { silent: true }) : new this.Model(data, {
+        model.pivot = through ? through.set(data, {silent: true}) : new this.Model(data, {
           tableName: this.joinTable()
         });
       }
@@ -317,25 +408,25 @@ var BookshelfRelation = RelationBase.extend({
   },
 
   // A few predicates to help clarify some of the logic above.
-  isThrough: function isThrough() {
-    return this.throughTarget != null;
+  isThrough: function() {
+    return (this.throughTarget != null);
   },
-  isJoined: function isJoined() {
-    return this.type === 'belongsToMany' || this.isThrough();
+  isJoined: function() {
+    return (this.type === 'belongsToMany' || this.isThrough());
   },
-  isMorph: function isMorph() {
-    return this.type === 'morphOne' || this.type === 'morphMany';
+  isMorph: function() {
+    return (this.type === 'morphOne' || this.type === 'morphMany');
   },
-  isSingle: function isSingle() {
+  isSingle: function() {
     var type = this.type;
-    return type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo';
+    return (type === 'hasOne' || type === 'belongsTo' || type === 'morphOne' || type === 'morphTo');
   },
-  isInverse: function isInverse() {
-    return this.type === 'belongsTo' || this.type === 'morphTo';
+  isInverse: function() {
+    return (this.type === 'belongsTo' || this.type === 'morphTo');
   },
 
   // Sets the `pivotColumns` to be retrieved along with the current model.
-  withPivot: function withPivot(columns) {
+  withPivot: function(columns) {
     if (!_.isArray(columns)) columns = [columns];
     this.pivotColumns = this.pivotColumns || [];
     push.apply(this.pivotColumns, columns);
@@ -344,15 +435,15 @@ var BookshelfRelation = RelationBase.extend({
 });
 
 // Simple memoization of the singularize call.
-var singularMemo = (function () {
+var singularMemo = (function() {
   var cache = Object.create(null);
-  return function (arg) {
+  return function(arg) {
     if (!(arg in cache)) {
       cache[arg] = inflection.singularize(arg);
     }
     return cache[arg];
   };
-})();
+}());
 
 // Specific to many-to-many relationships, these methods are mixed
 // into the `belongsToMany` relationships when they are created,
@@ -386,19 +477,17 @@ var pivotHelpers = {
    *   A hash of options.
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
-   * @returns {Promise<Collection>}
+   * @returns {Promise&lt;Collection>}
    *   A promise resolving to the updated Collection.
    */
-  attach: function attach(ids, options) {
-    var _this2 = this;
-
-    return Promise['try'](function () {
-      return _this2.triggerThen('attaching', _this2, ids, options);
-    }).then(function () {
-      return _this2._handler('insert', ids, options);
-    }).then(function (response) {
-      return _this2.triggerThen('attached', _this2, response, options);
-    })['return'](this);
+  attach(ids, options) {
+    return Promise.try(() =>
+      this.triggerThen('attaching', this, ids, options)
+    ).then(() =>
+      this._handler('insert', ids, options)
+    ).then(response =>
+      this.triggerThen('attached', this, response, options)
+    ).return(this);
   },
 
   /**
@@ -418,19 +507,17 @@ var pivotHelpers = {
    *   A hash of options.
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
-   * @returns {Promise<undefined>}
+   * @returns {Promise&lt;undefined>}
    *   A promise resolving to `undefined`.
    */
-  detach: function detach(ids, options) {
-    var _this3 = this;
-
-    return Promise['try'](function () {
-      return _this3.triggerThen('detaching', _this3, ids, options);
-    }).then(function () {
-      return _this3._handler('delete', ids, options);
-    }).then(function (response) {
-      return _this3.triggerThen('detached', _this3, response, options);
-    })['return'](this);
+  detach(ids, options) {
+    return Promise.try(() =>
+      this.triggerThen('detaching', this, ids, options)
+    ).then(() =>
+      this._handler('delete', ids, options)
+    ).then(response =>
+      this.triggerThen('detached', this, response, options)
+    ).return(this);
   },
 
   /**
@@ -454,10 +541,10 @@ var pivotHelpers = {
    *   Causes promise to be rejected with an Error if no rows were updated.
    * @param {Transaction} [options.transacting]
    *   Optionally run the query in a transaction.
-   * @returns {Promise<Number>}
+   * @returns {Promise&lt;Number>}
    *   A promise resolving to number of rows updated.
    */
-  updatePivot: function updatePivot(attributes, options) {
+  updatePivot: function(attributes, options) {
     return this._handler('update', attributes, options);
   },
 
@@ -478,35 +565,35 @@ var pivotHelpers = {
    * @returns {Collection}
    *   Self, this method is chainable.
    */
-  withPivot: function withPivot(columns) {
+  withPivot: function(columns) {
     this.relatedData.withPivot(columns);
     return this;
   },
 
   // Helper for handling either the `attach` or `detach` call on
   // the `belongsToMany` or `hasOne` / `hasMany` :through relationship.
-  _handler: Promise.method(function (method, ids, options) {
+  _handler: Promise.method(function(method, ids, options) {
     var pending = [];
     if (ids == null) {
       if (method === 'insert') return Promise.resolve(this);
       if (method === 'delete') pending.push(this._processPivot(method, null, options));
     }
     if (!_.isArray(ids)) ids = ids ? [ids] : [];
-    for (var i = 0, l = ids.length; i < l; i++) {
+    for (var i = 0, l = ids.length; i &lt; l; i++) {
       pending.push(this._processPivot(method, ids[i], options));
     }
-    return Promise.all(pending)['return'](this);
+    return Promise.all(pending).return(this);
   }),
 
   // Handles preparing the appropriate constraints and then delegates
   // the database interaction to _processPlainPivot for non-.through()
   // pivot definitions, or _processModelPivot for .through() models.
   // Returns a promise.
-  _processPivot: Promise.method(function (method, item) {
-    var relatedData = this.relatedData,
-        args = Array.prototype.slice.call(arguments),
-        fks = {},
-        data = {};
+  _processPivot: Promise.method(function(method, item) {
+    var relatedData = this.relatedData
+      , args        = Array.prototype.slice.call(arguments)
+      , fks         = {}
+      , data        = {};
 
     fks[relatedData.key('foreignKey')] = relatedData.parentFk;
 
@@ -535,14 +622,14 @@ var pivotHelpers = {
   // Applies constraints to the knex builder and handles shelling out
   // to either the `insert` or `delete` call for the current model,
   // returning a promise.
-  _processPlainPivot: Promise.method(function (method, item, options, data) {
+  _processPlainPivot: Promise.method(function(method, item, options, data) {
     var relatedData = this.relatedData;
 
     // Grab the `knex` query builder for the current model, and
     // check if we have any additional constraints for the query.
     var builder = this._builder(relatedData.joinTable());
-    if (options && options.query) {
-      Helpers.query.call(null, { _knex: builder }, [options.query]);
+    if (options &amp;&amp; options.query) {
+      Helpers.query.call(null, {_knex: builder}, [options.query]);
     }
 
     if (options) {
@@ -552,9 +639,9 @@ var pivotHelpers = {
 
     var collection = this;
     if (method === 'delete') {
-      return builder.where(data).del().then(function () {
+      return builder.where(data).del().then(function() {
         if (!item) return collection.reset();
-        var model = collection.get(data[relatedData.key('otherKey')]);
+        var model = collection.get(data[relatedData.key('otherKey')])
         if (model) {
           collection.remove(model);
         }
@@ -562,14 +649,14 @@ var pivotHelpers = {
     }
     if (method === 'update') {
       return builder.where(data).update(item).then(function (numUpdated) {
-        if (options && options.require === true && numUpdated === 0) {
+        if (options &amp;&amp; options.require === true &amp;&amp; numUpdated === 0) {
           throw new Error('No rows were updated');
         }
         return numUpdated;
       });
     }
 
-    return builder.insert(data).then(function () {
+    return builder.insert(data).then(function() {
       collection.add(item);
     });
   }),
@@ -577,12 +664,12 @@ var pivotHelpers = {
   // Loads or prepares a pivot model based on the constraints and deals with
   // pivot model changes by calling the appropriate Bookshelf Model API
   // methods. Returns a promise.
-  _processModelPivot: Promise.method(function (method, item, options, data, fks) {
+  _processModelPivot: Promise.method(function(method, item, options, data, fks) {
     var relatedData = this.relatedData,
-        JoinModel = relatedData.throughTarget,
-        joinModel = new JoinModel();
+        JoinModel   = relatedData.throughTarget,
+        joinModel   = new JoinModel();
 
-    fks = joinModel.parse(fks);
+    fks  = joinModel.parse(fks);
     data = joinModel.parse(data);
 
     if (method === 'insert') {
@@ -602,3 +689,44 @@ var pivotHelpers = {
 };
 
 module.exports = BookshelfRelation;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+      </div>
+
+      <footer>
+        <div>
+          Documentation generated by
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+          
+            on
+          September 20th 2015
+        </div>
+        <div>
+          <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
+            "Fork me on GitHub" ribbon
+          </a>
+          Copyright © 2013 Aral Balkan
+        </div>
+      </footer>
+    </div>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+    <script src="assets/knex.min.js"></script>
+    <script src="../build/bookshelf.js"></script>
+    <script>
+      var knex = Knex({client: 'websql'});
+      var bookshelf = Bookshelf(knex);
+    </script>
+
+  </body>
+</html>

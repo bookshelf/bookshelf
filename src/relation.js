@@ -376,46 +376,121 @@ var singularMemo = (function() {
 // providing helpers for attaching and detaching related models.
 var pivotHelpers = {
 
-  // Attach one or more "ids" from a foreign
-  // table to the current. Creates & saves a new model
-  // and attaches the model with a join table entry.
-  attach: function(ids, options) {
-    return Promise.bind(this).then(function(){
-      return this.triggerThen('attaching', this, ids, options);
-    }).then(function() {
-      return this._handler('insert', ids, options);
-    }).then(function(resp) {
-      return this.triggerThen('attached', this, resp, options);
-    }).then(function() {
-      return this;
-    });
+  /**
+   * Attaches one or more `ids` or models from a foreign table to the current
+   * table, on a {@linkplain many-to-many} relation. Creates and saves a new
+   * model and attaches the model with the related model.
+   *
+   *     var admin1 = new Admin({username: 'user1', password: 'test'});
+   *     var admin2 = new Admin({username: 'user2', password: 'test'});
+   *
+   *     Promise.all([admin1.save(), admin2.save()])
+   *       .then(function() {
+   *         return Promise.all([
+   *         new Site({id: 1}).admins().attach([admin1, admin2]),
+   *         new Site({id: 2}).admins().attach(admin2)
+   *       ]);
+   *     })
+   *
+   * This method (along with {@link Collection#detach} and {@link
+   * Collection#updatePivot}) are mixed in to a {@link Collection} when
+   * returned by a {@link Model#belongsToMany belongsToMany} relation.
+   *
+   * @method Collection#attach
+   * @param {mixed|mixed[]} ids
+   *   One or more ID values or models to be attached to the relation.
+   * @param {Object} options
+   *   A hash of options.
+   * @param {Transaction} options.transacting
+   *   Optionally run the query in a transaction.
+   * @returns {Promise<Collection>}
+   *   A promise resolving to the updated Collection.
+   */
+  attach(ids, options) {
+    return Promise.try(() =>
+      this.triggerThen('attaching', this, ids, options)
+    ).then(() =>
+      this._handler('insert', ids, options)
+    ).then(response =>
+      this.triggerThen('attached', this, response, options)
+    ).return(this);
   },
 
-  // Detach related object from their pivot tables.
-  // If a model or id is passed, it attempts to remove the
-  // pivot table based on that foreign key. If a hash is passed,
-  // it attempts to remove the item based on a where clause with
-  // these parameters. If no parameters are specified, we assume we will
-  // detach all related associations.
-  detach: function(ids, options) {
-    return Promise.bind(this).then(function(){
-      return this.triggerThen('detaching', this, ids, options);
-    }).then(function() {
-      return this._handler('delete', ids, options);
-    }).then(function(resp) {
-      return this.triggerThen('detached', this, resp, options);
-    });
+  /**
+   * Detach one or more related objects from their pivot tables. If a model or
+   * id is passed, it attempts to remove the pivot table based on that foreign
+   * key. If no parameters are specified, we assume we will detach all related
+   * associations.
+   *
+   * This method (along with {@link Collection#attach} and {@link
+   * Collection#updatePivot}) are mixed in to a {@link Collection} when returned
+   * by a {@link Model#belongsToMany belongsToMany} relation.
+   *
+   * @method Collection#detach
+   * @param {mixed|mixed[]} [ids]
+   *   One or more ID values or models to be detached from the relation.
+   * @param {Object} options
+   *   A hash of options.
+   * @param {Transaction} options.transacting
+   *   Optionally run the query in a transaction.
+   * @returns {Promise<undefined>}
+   *   A promise resolving to `undefined`.
+   */
+  detach(ids, options) {
+    return Promise.try(() =>
+      this.triggerThen('detaching', this, ids, options)
+    ).then(() =>
+      this._handler('delete', ids, options)
+    ).then(response =>
+      this.triggerThen('detached', this, response, options)
+    ).return(this);
   },
 
-  // Update an existing relation's pivot table entry.
-  updatePivot: function(data, options) {
-    return this._handler('update', data, options);
+  /**
+   * The `updatePivot` method is used exclusively on {@link Model#belongsToMany
+   * belongsToMany} relations, and allows for updating pivot rows on the joining
+   * table.
+   *
+   * This method (along with {@link Collection#attach} and {@link
+   * Collection#detach}) are mixed in to a {@link Collection} when returned
+   * by a {@link Model#belongsToMany belongsToMany} relation.
+   *
+   * @method Collection#updatePivot
+   * @param {Object} attributes
+   *   Values to be set in the `update` query.
+   * @param {Object} [options]
+   *   A hash of options.
+   * @param {function|Object} [options.query]
+   *   Constrain the update query. Similar to the `method` argument to {@link
+   *   Model#query}.
+   * @param {bool} [options.require=false]
+   *   Causes promise to be rejected with an Error if no rows were updated.
+   * @param {Transaction} [options.transacting]
+   *   Optionally run the query in a transaction.
+   * @returns {Promise<Number>}
+   *   A promise resolving to number of rows updated.
+   */
+  updatePivot: function(attributes, options) {
+    return this._handler('update', attributes, options);
   },
 
-  // Selects any additional columns on the pivot table,
-  // taking a hash of columns which specifies the pivot
-  // column name, and the value the column should take on the
-  // output to the model attributes.
+  /**
+   * The `withPivot` method is used exclusively on {@link Model#belongsToMany
+   * belongsToMany} relations, and allows for additional fields to be pulled
+   * from the joining table.
+   *
+   *     var Tag = bookshelf.Model.extend({
+   *       comments: function() {
+   *         return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
+   *       }
+   *     });
+   *
+   * @method Collection#withPivot
+   * @param {string[]} columns
+   *   Names of columns to be included when retrieving pivot table rows.
+   * @returns {Collection}
+   *   Self, this method is chainable.
+   */
   withPivot: function(columns) {
     this.relatedData.withPivot(columns);
     return this;

@@ -1,9 +1,10 @@
  {
    "associations": {
      "title": "Associations",
-     "children": ["one-to-one", "one-to-many","many-to-many"]
+     "children": ["one-to-one", "one-to-many","many-to-many", "polymorphic"]
    },
    "one-to-one":   { "title": "One-to-one" },
    "one-to-many":  { "title": "One-to-many" },
-   "many-to-many": { "title": "Many-to-many" }
+   "many-to-many": { "title": "Many-to-many" },
+   "polymorphic": { "title": "Polymorphic" }
  }

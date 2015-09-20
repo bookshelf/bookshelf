@@ -195,21 +195,16 @@ let BookshelfModel = ModelBase.extend({
    *     });
    *     
    *     let User = bookshelf.Model.extend({
-   *     
    *       tableName: 'users',
-   *     
    *       allAccounts: function () {
    *         return this.belongsToMany(Account);
    *       },
-   *     
    *       adminAccounts: function() {
    *         return this.belongsToMany(Account).query({where: {access: 'admin'}});
    *       },
-   *     
    *       viewAccounts: function() {
    *         return this.belongsToMany(Account).query({where: {access: 'readonly'}});
    *       }
-   *     
    *     });  
    *
    *  The default key names in the joining table are the singular versions of the
@@ -229,32 +224,31 @@ let BookshelfModel = ModelBase.extend({
    * {@link Relation#through through} relation:
    *
    *     let Doctor = bookshelf.Model.extend({
-   *     
    *       patients: function() {
    *         return this.belongsToMany(Patient).through(Appointment);
    *       }
-   *     
    *     });
    *     
    *     let Appointment = bookshelf.Model.extend({
-   *     
    *       patient: function() {
    *         return this.belongsTo(Patient);
    *       },
-   *     
    *       doctor: function() {
    *         return this.belongsTo(Doctor);
    *       }
-   *     
    *     });
    *     
    *     let Patient = bookshelf.Model.extend({
-   *     
    *       doctors: function() {
    *         return this.belongsToMany(Doctor).through(Appointment);
    *       }
-   *     
    *     });
+   *
+   * Collections returned by a `belongsToMany` relation are decorated with
+   * several pivot helper methods. See {@link Collection#attach attach},
+   * {@link Collection#detach detach}, {@link Collection#updatePivot
+   * updatePivot} and {@link Collection#withPivot withPivot} for more
+   * information.
    *
    * @belongsTo Model
    * @method  Model#belongsToMany

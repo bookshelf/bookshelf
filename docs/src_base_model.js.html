@@ -156,6 +156,21 @@ ModelBase.prototype.initialize = function() {};
 ModelBase.prototype.idAttribute = 'id';
 
 /**
+ * @member {boolean|Array}
+ * @default false
+ * @description
+ *
+ * Sets the current date/time on the timestamps columns `created_at` and 
+ * `updated_at` for a given method.  'insert' method will only update 
+ * `updated_at`.  To override the default column names, assign an array
+ * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
+ * be the created column name and the second will be the updated
+ * column name.
+ *
+ */
+ModelBase.prototype.hasTimestamps = false;
+
+/**
  * @method
  * @description  Get the current value of an attribute from the model.
  * @example      note.get("title")
@@ -538,9 +553,8 @@ ModelBase.prototype.hasChanged = function(attr) {
  * @param {string} attribute The attribute to check
  * @returns {mixed} The previous value
  */
-ModelBase.prototype.previous = function(attr) {
-  if (attr == null || !this._previousAttributes) return null;
-  return this._previousAttributes[attr];
+ModelBase.prototype.previous = function(attribute) {
+  return this._previousAttributes[attribute];
 };
 
 /**
@@ -698,7 +712,7 @@ module.exports = ModelBase;
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
           
             on
-          September 1st 2015
+          September 20th 2015
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">

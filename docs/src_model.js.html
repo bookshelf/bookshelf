@@ -269,21 +269,16 @@ let BookshelfModel = ModelBase.extend({
    *     });
    *     
    *     let User = bookshelf.Model.extend({
-   *     
    *       tableName: 'users',
-   *     
    *       allAccounts: function () {
    *         return this.belongsToMany(Account);
    *       },
-   *     
    *       adminAccounts: function() {
    *         return this.belongsToMany(Account).query({where: {access: 'admin'}});
    *       },
-   *     
    *       viewAccounts: function() {
    *         return this.belongsToMany(Account).query({where: {access: 'readonly'}});
    *       }
-   *     
    *     });  
    *
    *  The default key names in the joining table are the singular versions of the
@@ -303,49 +298,48 @@ let BookshelfModel = ModelBase.extend({
    * {@link Relation#through through} relation:
    *
    *     let Doctor = bookshelf.Model.extend({
-   *     
    *       patients: function() {
    *         return this.belongsToMany(Patient).through(Appointment);
    *       }
-   *     
    *     });
    *     
    *     let Appointment = bookshelf.Model.extend({
-   *     
    *       patient: function() {
    *         return this.belongsTo(Patient);
    *       },
-   *     
    *       doctor: function() {
    *         return this.belongsTo(Doctor);
    *       }
-   *     
    *     });
    *     
    *     let Patient = bookshelf.Model.extend({
-   *     
    *       doctors: function() {
    *         return this.belongsToMany(Doctor).through(Appointment);
    *       }
-   *     
    *     });
+   *
+   * Collections returned by a `belongsToMany` relation are decorated with
+   * several pivot helper methods. See {@link Collection#attach attach},
+   * {@link Collection#detach detach}, {@link Collection#updatePivot
+   * updatePivot} and {@link Collection#withPivot withPivot} for more
+   * information.
    *
    * @belongsTo Model
    * @method  Model#belongsToMany
    * @param {Model} Target
    *
    *   Constructor of {@link Model} targeted by join.
+   * 
+   * @param {string=} table
+   *
+   *   Name of the joining table. Defaults to the two table names, joined by an
+   *   underscore, ordered alphabetically.
    *
    * @param {string=} foreignKey
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
-   *
-   * @param {string=} table
-   *
-   *   Name of the joining table. Defaults to the two table names, joined by an
-   *   underscore, ordered alphabetically.
    *
    * @param {string=} otherKey
    *
@@ -1071,7 +1065,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Saved event.
          *
-         * Fired before after an `insert` or `update` query.
+         * Fired after an `insert` or `update` query.
          *
          * @event Model#saved
          * @param {Model}  model    The model firing the event.
@@ -1083,7 +1077,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Created event.
          *
-         * Fired before after an `insert` query.
+         * Fired after an `insert` query.
          *
          * @event Model#created
          * @param {Model}  model    The model firing the event.
@@ -1095,7 +1089,7 @@ let BookshelfModel = ModelBase.extend({
         /**
          * Updated event.
          *
-         * Fired before after an `update` query.
+         * Fired after an `update` query.
          *
          * @event Model#updated
          * @param {Model}  model    The model firing the event.
@@ -1385,7 +1379,7 @@ module.exports = BookshelfModel;
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
           
             on
-          September 1st 2015
+          September 20th 2015
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
