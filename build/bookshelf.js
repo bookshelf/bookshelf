@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * For all details and documentation:
 	 * http://bookshelfjs.org
 	 *
-	 * version 0.8.1
+	 * version 0.8.2
 	 *
 	 */
 	module.exports = __webpack_require__(1)
@@ -128,7 +128,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function Bookshelf(knex) {
 	  var bookshelf = {
-	    VERSION: '0.8.1'
+	    VERSION: '0.8.2'
 	  };
 
 	  var range = '>=0.6.10 <0.9.0';
