@@ -934,7 +934,7 @@ let BookshelfModel = ModelBase.extend({
        *
        * @event Model#saving
        * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Model firing the event.
+       * @param {Object} attrs    Attributes that will be inserted or updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -948,7 +948,7 @@ let BookshelfModel = ModelBase.extend({
        *
        * @event Model#creating
        * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Model firing the event.
+       * @param {Object} attrs    Attributes that will be inserted.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -962,7 +962,7 @@ let BookshelfModel = ModelBase.extend({
        *
        * @event Model#updating
        * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Model firing the event.
+       * @param {Object} attrs    Attributes that will be updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
