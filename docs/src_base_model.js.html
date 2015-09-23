@@ -433,8 +433,25 @@ ModelBase.prototype.format = function(attrs) {
  * }).then(function(photo) {
  *   if (photo) {
  *     var account = photo.related('account');
+ *
+ *     // Test single element association presence
  *     if (account.id) {
  *        return account.related('trips').fetch();
+ *     }
+ *   }
+ * });
+ *
+ * new Book({'ISBN-13': '9780440180296'}).fetch({
+ *   withRelated: ['editions']
+ * }).then(function(book) {
+ *   if (book) {
+ *     var editions = book.related('editions');
+ *
+ *     // Test multiple elements association presence
+ *     if (editions.length) {
+ *         // Do something
+ *     } else {
+ *         // Do something else
  *     }
  *   }
  * });
