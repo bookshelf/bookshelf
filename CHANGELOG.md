@@ -1,6 +1,6 @@
 ## Change Log
 
-**0.8.2** — <small>_August 20, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.2...0.8.1)  
+**0.8.2** — <small>_August 20, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.1...0.8.2)  
 
 *   ES6/7: Move code base to `/src` — code is now compiled into `/lib` via [Babel](https://babeljs.io/).
 *   Add `collection.count`, `model.count` and `Model.count`.
