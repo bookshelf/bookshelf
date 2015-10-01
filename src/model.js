@@ -563,7 +563,8 @@ let BookshelfModel = ModelBase.extend({
    * The `withRelated` parameter may be specified to fetch the resource, along
    * with any specified {@link Model#relations relations} named on the model. A
    * single property, or an array of properties can be specified as a value for
-   * the `withRelated` property. The results of these relation queries will be
+   * the `withRelated` property. You can also execute callbacks on properties(such 
+	 * as sorting a relation). The results of these relation queries will be
    * loaded into a {@link Model#relations relations} property on the model, may
    * be retrieved with the {@link Model#related related} method, and will be
    * serialized as properties on a {@link Model#toJSON toJSON} call unless
@@ -574,13 +575,16 @@ let BookshelfModel = ModelBase.extend({
    *       editions: function() {
    *         return this.hasMany(Edition);
    *       },
+	 *       chapters: function{
+	 *         return this.hasMany(Chapter);
+	 *       },
    *       genre: function() {
    *         return this.belongsTo(Genre);
    *       }
    *     })
    *     
    *     new Book({'ISBN-13': '9780440180296'}).fetch({
-   *       withRelated: ['genre', 'editions']
+   *       withRelated: ['genre', {chapters: function(query){query.orderBy('created_at');}}, 'editions']
    *     }).then(function(book) {
    *       console.log(book.related('genre').toJSON());
    *       console.log(book.related('editions').toJSON());
