@@ -563,12 +563,12 @@ let BookshelfModel = ModelBase.extend({
    * The `withRelated` parameter may be specified to fetch the resource, along
    * with any specified {@link Model#relations relations} named on the model. A
    * single property, or an array of properties can be specified as a value for
-   * the `withRelated` property. You can also execute callbacks on properties(such 
-   * as sorting a relation). The results of these relation queries will be
-   * loaded into a {@link Model#relations relations} property on the model, may
-   * be retrieved with the {@link Model#related related} method, and will be
-   * serialized as properties on a {@link Model#toJSON toJSON} call unless
-   * `{shallow: true}` is passed.  
+   * the `withRelated` property. You can also execute callbacks on relations
+   * queries (eg. for sorting a relation). The results of these relation queries
+   * will be loaded into a {@link Model#relations relations} property on the
+   * model, may be retrieved with the {@link Model#related related} method, and
+   * will be serialized as properties on a {@link Model#toJSON toJSON} call
+   * unless `{shallow: true}` is passed.  
    *
    *     let Book = bookshelf.Model.extend({
    *       tableName: 'books',
@@ -584,7 +584,10 @@ let BookshelfModel = ModelBase.extend({
    *     })
    *     
    *     new Book({'ISBN-13': '9780440180296'}).fetch({
-   *       withRelated: ['genre', {chapters: function(query){query.orderBy('created_at');}}, 'editions']
+   *       withRelated: [
+   *         'genre', 'editions',
+   *         { chapters: function(query) { query.orderBy('chapter_number'); }}
+   *       ]
    *     }).then(function(book) {
    *       console.log(book.related('genre').toJSON());
    *       console.log(book.related('editions').toJSON());
@@ -595,12 +598,15 @@ let BookshelfModel = ModelBase.extend({
    *
    * @param {Object=}  options - Hash of options.
    * @param {boolean=} [options.require=false]
-   *   If `true`, will reject the returned response with a {@link
-   *   Model.NotFoundError NotFoundError} if no result is found.
-   * @param {(string|string[])=} [options.columns='*']
-   *   Limit the number of columns fetched.
-   * @param {Transaction=} options.transacting
+   *   Reject the returned response with a {@link Model.NotFoundError
+   *   NotFoundError} if no results are empty.
+   * @param {string|string[]} [options.columns='*']
+   *   Specify columns to be retireved.
+   * @param {Transaction} [options.transacting]
    *  Optionally run the query in a transaction.
+   * @param {string|Object|mixed[]} [options.withRelated]
+   *  Relations to be retrieved with `Model` instance. Either one or more
+   *  relation names or objects mapping relation names to query callbacks.
    *
    * @fires Model#fetching
    * @fires Model#fetched
