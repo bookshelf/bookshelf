@@ -2995,7 +2995,7 @@ model.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_model.js.html#line685" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line689" class="source-link">source</a></h4>
 
         
     
@@ -3155,7 +3155,7 @@ previous calls to <a href="#Model-instance-query"><code>Model#query</code></a>.<
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1043" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1047" class="source-link">source</a></h4>
 
         
     
@@ -3655,7 +3655,8 @@ removal is completed.</p>
 
 
 <span class="param-desc">
-  <p>A promise resolving to the fetched <a href="#Model"><code>model</code></a> or <code>undefined</code> if none exists.</p>
+  <p>A promise resolving to the fetched <a href="#Model"><code>model</code></a> or <code>undefined</code> if
+ none exists.</p>
 </span>
 
 
@@ -3666,9 +3667,9 @@ removal is completed.</p>
     <div class="item-description">
         <p>Fetches a <a href="#Model"><code>model</code></a> from the database, using any <code>attributes</code> currently set on the model to form a <code>select</code>
 query. </p>
-<p>A <code>&quot;fetching&quot;</code> event will be fired just before the
-record is fetched; a good place to hook into for validation. <code>&quot;fetched&quot;</code> event will be fired when a record is successfully
-retrieved.</p>
+<p>A <a href="#Model-event-fetching"><code>&quot;fetching&quot;</code></a> event will be fired just before the
+record is fetched; a good place to hook into for validation. <a href="#Model-event-fetched"><code>&quot;fetched&quot;</code></a> event will be fired when a record is
+successfully retrieved.</p>
 <p>If you need to constrain the query
 performed by fetch, you can call <a href="#Model-instance-query"><code>query</code></a> before calling
 <a href="#Model-instance-fetch"><code>fetch</code></a>.  </p>
@@ -3681,9 +3682,7 @@ new Book({'ISBN-13': '9780440180296'})
   });</code></pre><p><em>If you'd like to only fetch specific columns, you may specify a <code>columns</code>
 property in the <code>options</code> for the <a href="#Model-instance-fetch"><code>fetch</code></a> call, or use
 <a href="#Model-instance-query"><code>query</code></a>, tapping into the <code>Knex</code> <code>column</code> method to specify which columns will be fetched.</em></p>
-<p>The <code>withRelated</code> parameter may be specified to fetch the resource, along
-with any specified <code>relations</code> named on the model. A
-single property, or an array of properties can be specified as a value for
+<p>single property, or an array of properties can be specified as a value for
 the <code>withRelated</code> property. You can also execute callbacks on relations
 queries (eg. for sorting a relation). The results of these relation queries
 will be loaded into a <code>relations</code> property on the
@@ -3731,7 +3730,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-fetchAll">fetchAll</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line709" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line713" class="source-link">source</a></h4>
 
         
     
@@ -4768,7 +4767,7 @@ let Patient = bookshelf.Model.extend({
 // select * from `health_records` where `patient_id` = 1;
 new Patient({id: 1}).related('record').fetch().then(function(model) {
   ...
-}); 
+});
 
 // alternatively, if you don't need the relation loaded on the patient's relations hash:
 new Patient({id: 1}).record().fetch().then(function(model) {
@@ -4890,7 +4889,7 @@ considered &quot;new&quot;.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-load">load</a></span><span class="parenthesis">(</span><span class="item-name">relations</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line772" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line776" class="source-link">source</a></h4>
 
         
     
@@ -6343,7 +6342,7 @@ model, or getting back to a valid state after an error occurs.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|QueryBuilder</span>
           </span
-          ><a href="docs/src_model.js.html#line1128" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1132" class="source-link">source</a></h4>
 
         
     
@@ -6781,7 +6780,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1115" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1119" class="source-link">source</a></h4>
 
         
     
@@ -6887,7 +6886,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-save">save</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">key</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">val</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">attrs</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line818" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line822" class="source-link">source</a></h4>
 
         
     
@@ -8376,7 +8375,7 @@ doesn't exist.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1172" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1176" class="source-link">source</a></h4>
 
         
     
@@ -8588,7 +8587,7 @@ additional knex methods may be accessed using <a href="#Model-instance-query"><c
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetched:collection"">"fetched:collection"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">collection</span><span class="comma">, </span><span class="item-name">resp</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line757" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line761" class="source-link">source</a></h4>
 
         
     
@@ -8751,7 +8750,7 @@ may be returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetching:collection"">"fetching:collection"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">collection</span><span class="comma">, </span><span class="item-name">columns</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line744" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line748" class="source-link">source</a></h4>
 
         
     
@@ -8914,7 +8913,7 @@ may be returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1013" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1017" class="source-link">source</a></h4>
 
         
     
@@ -9077,7 +9076,7 @@ may be returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line952" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line956" class="source-link">source</a></h4>
 
         
     
@@ -9242,7 +9241,7 @@ exception from the handler will cancel the save operation.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1099" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1103" class="source-link">source</a></h4>
 
         
     
@@ -9406,7 +9405,7 @@ handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1077" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1081" class="source-link">source</a></h4>
 
         
     
@@ -9571,7 +9570,7 @@ will reject the promise and cancel the deletion.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetched">"fetched"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">reponse</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line657" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line656" class="source-link">source</a></h4>
 
         
     
@@ -9707,6 +9706,11 @@ will reject the promise and cancel the deletion.</p>
 
 
 
+
+<span class="param-desc">
+  <p>If the handler returns a promise, <code>fetch</code> will wait for it to
+  be resolved.</p>
+</span>
 
 
         
@@ -9897,7 +9901,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">resp</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1001" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1005" class="source-link">source</a></h4>
 
         
     
@@ -10060,7 +10064,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line938" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line942" class="source-link">source</a></h4>
 
         
     
@@ -10225,7 +10229,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1025" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1029" class="source-link">source</a></h4>
 
         
     
@@ -10388,7 +10392,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line966" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line970" class="source-link">source</a></h4>
 
         
     
@@ -10580,7 +10584,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1285" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1289" class="source-link">source</a></h4>
 
         
     
@@ -10720,7 +10724,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsUpdated">NoRowsUpdated</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1276" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1280" class="source-link">source</a></h4>
 
         
     
@@ -10860,7 +10864,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1266" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1270" class="source-link">source</a></h4>
 
         
     
@@ -12139,7 +12143,7 @@ returned by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code>
         <h5>Example</h5>
         
     <pre class="prettyprint"><code>// select count(*) from shareholders where company_id = 1 and share &amp;gt; 0.1;
-Company.forge(({id:1})
+Company.forge({id:1})
   .shareholders()
   .query('where', 'share', '>', '0.1')
   .count()

@@ -58,14 +58,14 @@ import Promise from './base/promise';
  *
  *   Convert attributes by {@link Model#parse parse} before being {@link
  *   Model#set set} on the model.
- *   
+ *
  */
 let BookshelfModel = ModelBase.extend({
 
   /**
    * The `hasOne` relation specifies that this table has exactly one of another
    * type of object, specified by a foreign key in the other table.
-   * 
+   *
    *     let Record = bookshelf.Model.extend({
    *       tableName: 'health_records'
    *     });
@@ -80,7 +80,7 @@ let BookshelfModel = ModelBase.extend({
    *     // select * from `health_records` where `patient_id` = 1;
    *     new Patient({id: 1}).related('record').fetch().then(function(model) {
    *       ...
-   *     }); 
+   *     });
    *
    *     // alternatively, if you don't need the relation loaded on the patient's relations hash:
    *     new Patient({id: 1}).record().fetch().then(function(model) {
@@ -193,7 +193,7 @@ let BookshelfModel = ModelBase.extend({
    *     let Account = bookshelf.Model.extend({
    *       tableName: 'accounts'
    *     });
-   *     
+   *
    *     let User = bookshelf.Model.extend({
    *       tableName: 'users',
    *       allAccounts: function () {
@@ -538,10 +538,10 @@ let BookshelfModel = ModelBase.extend({
    * Model#attributes attributes} currently set on the model to form a `select`
    * query. 
    *
-   * A {@link Model#fetching "fetching"} event will be fired just before the
+   * A {@link Model#event:fetching "fetching"} event will be fired just before the
    * record is fetched; a good place to hook into for validation. {@link
-   * Model#fetched "fetched"} event will be fired when a record is successfully
-   * retrieved.
+   * Model#event:fetched "fetched"} event will be fired when a record is
+   * successfully retrieved.
    *
    * If you need to constrain the query
    * performed by fetch, you can call {@link Model#query query} before calling
@@ -560,8 +560,6 @@ let BookshelfModel = ModelBase.extend({
    * {@link Model#query query}, tapping into the {@link Knex} {@link
    * Knex#column column} method to specify which columns will be fetched._
    *
-   * The `withRelated` parameter may be specified to fetch the resource, along
-   * with any specified {@link Model#relations relations} named on the model. A
    * single property, or an array of properties can be specified as a value for
    * the `withRelated` property. You can also execute callbacks on relations
    * queries (eg. for sorting a relation). The results of these relation queries
@@ -582,7 +580,7 @@ let BookshelfModel = ModelBase.extend({
    *         return this.belongsTo(Genre);
    *       }
    *     })
-   *     
+   *
    *     new Book({'ISBN-13': '9780440180296'}).fetch({
    *       withRelated: [
    *         'genre', 'editions',
@@ -614,7 +612,8 @@ let BookshelfModel = ModelBase.extend({
    * @throws {Model.NotFoundError}
    *
    * @returns {Promise<Model|undefined>}
-   *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
+   *  A promise resolving to the fetched {@link Model model} or `undefined` if
+   *  none exists.
    *
    */
   fetch(options) {
@@ -644,8 +643,8 @@ let BookshelfModel = ModelBase.extend({
 
       // If the "withRelated" is specified, we also need to eager load all of the
       // data on the model, as a side-effect, before we ultimately jump into the
-      // next step of the model. Since the `columns` are only relevant to the current
-      // level, ensure those are omitted from the options.
+      // next step of the model. Since the `columns` are only relevant to the
+      // current level, ensure those are omitted from the options.
       .tap(function(response) {
         if (options.withRelated) {
           return this._handleEager(response, _.omit(options, 'columns'));
@@ -659,10 +658,15 @@ let BookshelfModel = ModelBase.extend({
          * event handler for async behaviour.
          *
          * @event Model#fetched
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} reponse  Knex query response.
-         * @param {Object} options  Options object passed to {@link Model#fetch fetch}.
+         * @param {Model} model
+         *   The model firing the event.
+         * @param {Object} reponse
+         *   Knex query response.
+         * @param {Object} options
+         *   Options object passed to {@link Model#fetch fetch}.
          * @returns {Promise}
+         *   If the handler returns a promise, `fetch` will wait for it to
+         *   be resolved.
          */
         return this.triggerThen('fetched', this, response, options);
       })

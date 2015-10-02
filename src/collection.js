@@ -137,7 +137,7 @@ let BookshelfCollection = CollectionBase.extend({
    * @example
    *
    * // select count(*) from shareholders where company_id = 1 and share &gt; 0.1;
-   * Company.forge(({id:1})
+   * Company.forge({id:1})
    *   .shareholders()
    *   .query('where', 'share', '>', '0.1')
    *   .count()
