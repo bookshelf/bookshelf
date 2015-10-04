@@ -20,7 +20,7 @@ _.extend(EagerBase.prototype, {
   // This helper function is used internally to determine which relations
   // are necessary for fetching based on the `model.load` or `withRelated` option.
   fetch: Promise.method(function(options) {
-    var relationName, related, relation;
+    var relationName, related;
     var target      = this.target;
     var handled     = this.handled = {};
     var withRelated = this.prepWithRelated(options.withRelated);
@@ -32,6 +32,7 @@ _.extend(EagerBase.prototype, {
     // Eager load each of the `withRelated` relation item, splitting on '.'
     // which indicates a nested eager load.
     for (var key in withRelated) {
+      var relation = null;
 
       related = key.split('.');
       relationName = related[0];
@@ -46,7 +47,7 @@ _.extend(EagerBase.prototype, {
 
       // Only allow one of a certain nested type per-level.
       if (handled[relationName]) continue;
-      
+
       if (_.isFunction(target[relationName])){
         relation = target[relationName]();
       }
@@ -85,7 +86,7 @@ _.extend(EagerBase.prototype, {
       var related = withRelated[i];
       if (_.isString(related)) {
         obj[related] = noop
-      } else { 
+      } else {
         _.extend(obj, related);
       }
     }
