@@ -32,8 +32,6 @@ _.extend(EagerBase.prototype, {
     // Eager load each of the `withRelated` relation item, splitting on '.'
     // which indicates a nested eager load.
     for (var key in withRelated) {
-      var relation = null;
-
       related = key.split('.');
       relationName = related[0];
 
@@ -48,11 +46,11 @@ _.extend(EagerBase.prototype, {
       // Only allow one of a certain nested type per-level.
       if (handled[relationName]) continue;
 
-      if (_.isFunction(target[relationName])){
-        relation = target[relationName]();
+      if (!_.isFunction(target[relationName])){
+        throw new Error(relationName + ' is not defined on the model.');
       }
 
-      if (!relation) throw new Error(relationName + ' is not defined on the model.');
+      const relation = target[relationName]();
 
       handled[relationName] = relation;
     }
