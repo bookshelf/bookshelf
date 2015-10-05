@@ -127,6 +127,26 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('throws an error on undefined first withRelated relations', function() {
+          return new Site({id: 1}).fetch({
+            withRelated: ['undefinedRelation']
+          }).then(function() {
+            throw new Error('This should not succeed');
+          }, function(err) {
+            expect(err.message).to.equal('undefinedRelation is not defined on the model.');
+          });
+        });
+
+        it('throws an error on undefined non-first withRelated relations', function() {
+          return new Site({id: 1}).fetch({
+            withRelated: ['authors', 'undefinedRelation']
+          }).then(function() {
+            throw new Error('This should not succeed');
+          }, function(err) {
+            expect(err.message).to.equal('undefinedRelation is not defined on the model.');
+          });
+        });
+
       });
 
       describe('Eager Loading - Collections', function() {
