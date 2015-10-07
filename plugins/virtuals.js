@@ -82,6 +82,8 @@ module.exports = function (Bookshelf) {
           this.patchAttributes[key] = value;
         }
         return this;
+      } else if (isPatching) {
+        this.patchAttributes[key] = value;
       }
       return proto.set.apply(this, arguments);
     },
