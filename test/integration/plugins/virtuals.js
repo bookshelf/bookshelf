@@ -205,35 +205,73 @@ module.exports = function (bookshelf) {
       deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
     });
 
-    it('behaves correctly during a `patch` save - #542', function() {
-      var Model = bookshelf.Model.extend({
-        tableName: 'authors',
-        virtuals: {
-          full_name: {
-            set: function(fullName) {
-              var names = fullName.split(' ');
-              return this.set({
-                first_name: names[0],
-                last_name:  names[1]
-              });
-            },
-            get: function() {
-              return [this.get('first_name'), this.get('last_name')].join(' ');
-            }
-          }
-        }
-      });
-
-      return new Model({site_id: 5}).save()
-        .then(function(model) {
-          return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
-        }).tap(function(result) {
+    describe('behaves correctly during a `patch` save - #542', function() {
+      var generalExpect = function(result) {
           expect(result.get('site_id')).to.equal(2);
           expect(result.get('first_name')).to.equal('Oderus');
           expect(result.get('last_name')).to.equal('Urungus');
-          return result.destroy();
+      };
+    
+      it('by using the `{key: value}` style assignment call', function() {
+        var Model = bookshelf.Model.extend({
+          tableName: 'authors',
+          virtuals: {
+            full_name: {
+              set: function(fullName) {
+                var names = fullName.split(' ');
+                return this.set({
+                  first_name: names[0],
+                  last_name:  names[1]
+                });
+              },
+              get: function() {
+                return [this.get('first_name'), this.get('last_name')].join(' ');
+              }
+            }
+          }
         });
 
+        return new Model({site_id: 5}).save()
+          .then(function(model) {
+            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
+          }).tap(generalExpect)
+          .then(function(result){
+            return result.refresh();
+          }).tap(generalExpect)
+          .tap(function(result) {
+            return result.destroy();
+          });
+      });
+      
+      it('by using the `"key", value` style assignment call', function() {
+        var Model = bookshelf.Model.extend({
+          tableName: 'authors',
+          virtuals: {
+            full_name: {
+              set: function(fullName) {
+                var names = fullName.split(' ');
+                this.set('first_name', names[0]);
+                this.set('last_name', names[1]);
+                return this.get('full_name');
+              },
+              get: function() {
+                return [this.get('first_name'), this.get('last_name')].join(' ');
+              }
+            }
+          }
+        });
+
+        return new Model({site_id: 5}).save()
+          .then(function(model) {
+            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
+          }).tap(generalExpect)
+          .then(function(result){
+            return result.refresh();
+          }).tap(generalExpect)
+          .tap(function(result) {
+            return result.destroy();
+          });
+      });
     });
 
     it('save should be rejected after `set` throws an exception during a `patch` operation.', function() {
