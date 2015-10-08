@@ -76,13 +76,17 @@ module.exports = function (Bookshelf) {
         return proto.set.call(this, nonVirtuals, value, options);
       }
 
-      // Handle `"key", value` style arguments.
+      // Handle `"key", value` style arguments for virtual setter.
       if (setVirtual.call(this, value, key)) {
-        if (isPatching) {
-          this.patchAttributes[key] = value;
-        }
         return this;
       }
+
+      // Handle `"key", value` style assignment call to be added to patching
+      // attributes if set("key", value, ...) called from inside a virtual setter.
+      if (isPatching) {
+        this.patchAttributes[key] = value;
+      }
+      
       return proto.set.apply(this, arguments);
     },
 
