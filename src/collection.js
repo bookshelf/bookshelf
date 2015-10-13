@@ -192,8 +192,8 @@ let BookshelfCollection = CollectionBase.extend({
    *  Optionally run the query in a transaction.
    *
    * @throws {Model.NotFoundError}
-   * @returns {Promise<Model|undefined>}
-   *  A promise resolving to the fetched {@link Model model} or `undefined` if none exists.
+   * @returns {Promise<Model|null>}
+   *  A promise resolving to the fetched {@link Model model} or `null` if none exists.
    */
   fetchOne: Promise.method(function(options) {
     let model = new this.model();
