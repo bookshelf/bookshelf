@@ -155,6 +155,17 @@ module.exports = function(bookshelf) {
 
       });
 
+      it ('resolves to null if no model exists', function() {
+
+        return new Site({id:1})
+          .authors()
+          .query({where: {id: 40}})
+          .fetchOne()
+          .then(function(model) {
+            equal(model, null);
+          });
+      })
+
     });
 
     describe('sync', function() {
