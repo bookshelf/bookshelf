@@ -582,7 +582,10 @@ _.each(modelMethods, function(method) {
  *       login: Promise.method(function(email, password) {
  *         if (!email || !password) throw new Error('Email and password are both required');
  *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
- *           return bcrypt.compareAsync(customer.get('password'), password);
+ *           return bcrypt.compareAsync(customer.get('password'), password)
+ *            .then(function(res) {
+ *              if (!res) throw new Error('Invalid password');
+ *            });
  *         });
  *       })
  *     
