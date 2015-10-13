@@ -611,8 +611,8 @@ let BookshelfModel = ModelBase.extend({
    *
    * @throws {Model.NotFoundError}
    *
-   * @returns {Promise<Model|undefined>}
-   *  A promise resolving to the fetched {@link Model model} or `undefined` if
+   * @returns {Promise<Model|null>}
+   *  A promise resolving to the fetched {@link Model model} or `null` if
    *  none exists.
    *
    */
