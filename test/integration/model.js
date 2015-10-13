@@ -391,6 +391,13 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('resolves to null if no record exists', function() {
+        var model = new Author({id: 200}).fetch()
+          .then(function (model) {
+            equal(model, null);
+          });
+      });
+
     });
 
     describe('save', function() {
