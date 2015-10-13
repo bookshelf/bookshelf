@@ -1,7 +1,6 @@
 var _       = require('lodash');
 var Promise = global.testPromise;
 
-
 module.exports = function(bookshelf) {
 
   var isJsonSupported;

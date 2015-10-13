@@ -3,6 +3,7 @@
 var _        = require('lodash');
 var inherits = require('inherits');
 
+import { normalizeSaveMethod } from '../helpers';
 var Events   = require('./events');
 var slice    = Array.prototype.slice
 
@@ -427,15 +428,33 @@ ModelBase.prototype.saveMethod = function(options) {
  *
  * @returns {Object} A hash of timestamp attributes that were set.
  */
-ModelBase.prototype.timestamp = function(options) {
+ModelBase.prototype.timestamp = function(options = {}) {
+
+  // Ensure that passed in `options.method` is checked before `isNew`
+  // to support returning a promise from an overridden `isNew`.
+  options.method = normalizeSaveMethod(options.method) ||
+    (this.isNew() ? 'insert' : 'update');
+
+  return this._timestamp(options);
+}
+
+ModelBase.prototype._timestampKeys = function() {
+  const timestamps = this.hasTimestamps;
+  if (_.isArray(timestamps)) {
+    return timestamps;
+  }
+  return timestamps
+    ? ['created_at', 'updated_at']
+    : [];
+}
+
+ModelBase.prototype._timestamp = function(options) {
   if (!this.hasTimestamps) return {};
 
-  var now          = new Date();
-  var attributes   = {};
-  var method       = this.saveMethod(options);
-  var keys         = _.isArray(this.hasTimestamps) ? this.hasTimestamps : ['created_at', 'updated_at'];
-  var createdAtKey = keys[0];
-  var updatedAtKey = keys[1];
+  const now          = new Date();
+  const attributes   = {};
+  const { method }   = options;
+  const [createdAtKey, updatedAtKey] = this._timestampKeys();
 
   if (updatedAtKey) {
     attributes[updatedAtKey] = now;

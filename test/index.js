@@ -57,7 +57,7 @@ describe('Unit Tests', function () {
 
   require('./unit/sql/sync')();
   require('./unit/sql/model')();
-
+  require('./unit/helpers')();
 });
 
 describe('Integration Tests', function () {
