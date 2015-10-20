@@ -575,7 +575,7 @@ module.exports = function(bookshelf) {
           site.save(null, testOptions).call('destroy');
       });
 
-      it('Will not break with prefixed id, #583 #897', function() {
+      it('Will not break with prefixed id, #583', function() {
 
         var acmeOrg = new Models.OrgModel ({name: "ACME, Inc", is_active: true});
         var acmeOrg1;
