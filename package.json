@@ -41,7 +41,7 @@
     "eslint": "^0.23.0",
     "istanbul": "^0.3.19",
     "jsdoc": "^3.3.1",
-    "knex": "^0.8.0",
+    "knex": "git://github.com/tgriesser/knex.git#255daec",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",
     "mysql": "^2.5.2",
