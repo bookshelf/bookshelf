@@ -989,7 +989,10 @@ let BookshelfModel = ModelBase.extend({
 
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && this.id == null) {
-          this.attributes[this.idAttribute] = this.id = resp[0];
+          var updatedCols = {};
+          updatedCols[this.idAttribute] = this.id =  resp[0];
+          var updatedAttrs = this.parse(updatedCols);
+          for (var attr in updatedAttrs) {this.attributes[attr] = updatedAttrs[attr]}
         } else if (method === 'update' && resp === 0) {
           if (options.require !== false) {
             throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
