@@ -8,7 +8,7 @@ var drops = [
   'users', 'roles', 'photos', 'users_roles', 'info',
   'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
   'parsed_users', 'tokens', 'thumbnails',
-  'lefts', 'rights', 'lefts_rights'
+  'lefts', 'rights', 'lefts_rights', 'organization'
 ];
 
 module.exports = function(Bookshelf) {
@@ -158,6 +158,11 @@ module.exports = function(Bookshelf) {
       table.string('parsed_name');
       table.integer('left_id').notNullable();
       table.integer('right_id').notNullable();
+    })
+    .createTable('organization', function(table) {
+      table.increments('organization_id');
+      table.string('organization_name').notNullable();
+      table.boolean('organization_is_active').defaultTo(false);
     });
 
   });

@@ -329,6 +329,25 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var OrgModel = Bookshelf.Model.extend({
+    tableName: 'organization',
+    // defaults: { parsedName: '' },
+    idAttribute: 'organization_id',
+    format: function (fields) {
+      var cols = {};
+      for (var f in fields) {
+        cols['organization_'+f] = fields[f];
+      }
+      return cols;
+    },
+    parse: function (cols) {
+      var fields = {};
+      for (var c in cols) {
+        fields[c.replace (/^organization_/, '')] = cols[c];
+      }
+      return fields;
+    }
+  });
 
   return {
     Models: {
@@ -358,7 +377,8 @@ module.exports = function(Bookshelf) {
       Uuid: Uuid,
       LeftModel: LeftModel,
       RightModel: RightModel,
-      JoinModel: JoinModel
+      JoinModel: JoinModel,
+      OrgModel: OrgModel
     }
   };
 
