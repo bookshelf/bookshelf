@@ -1281,11 +1281,11 @@ let BookshelfModel = ModelBase.extend({
     child.NotFoundError = createError(this.NotFoundError)
 
     /**
-     * @class Model.NoRowsUpdated
+     * @class Model.NoRowsUpdatedError
      * @description
      *
-     *   Thrown when no records are found by {@link Model#fetch fetch} or
-     *   {@link Model#refresh} unless called with the `{require: false}` option.
+     *   Thrown when no records are saved by {@link Model#save save}
+     *   unless called with the `{require: false}` option.
      */
     child.NoRowsUpdatedError = createError(this.NoRowsUpdatedError)
 
