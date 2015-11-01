@@ -1,3 +1,4 @@
+require('core-js/modules/es6.symbol');
 
 /**
  * (c) 2014 Tim Griesser
