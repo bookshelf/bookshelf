@@ -1,4 +1,4 @@
-import _, { isString } from 'lodash';
+import _ from 'lodash';
 import semver from 'semver';
 import helpers from './helpers';
 
@@ -35,7 +35,7 @@ function Bookshelf(knex) {
   }
 
   let Model = bookshelf.Model = BookshelfModel.extend({
-    
+
     _builder: builderFn,
 
     // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
@@ -290,7 +290,7 @@ function Bookshelf(knex) {
   function builderFn(tableNameOrBuilder) {
     let builder = null;
 
-    if (isString(tableNameOrBuilder)) {
+    if (_.isString(tableNameOrBuilder)) {
       builder = knex(tableNameOrBuilder);
     } else if (tableNameOrBuilder == null) {
       builder = knex.queryBuilder();
