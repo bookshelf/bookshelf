@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.9.0-test.1",
+  "version": "0.9.0",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -10,8 +10,7 @@
     "eslint": "$(npm bin)/eslint bookshelf.js src/.",
     "cover": "npm run eslint && npm run babel && $(npm bin)/istanbul cover $(npm bin)/_mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "test": "npm run eslint && npm run babel && mocha --check-leaks -t 5000 -b -R spec test/index.js",
-    "jsdoc": "./scripts/jsdoc.sh",
-    "postinstall": "babel --version || npm install -g babel-cli && npm run babel"
+    "jsdoc": "./scripts/jsdoc.sh"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
