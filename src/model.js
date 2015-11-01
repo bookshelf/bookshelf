@@ -1207,6 +1207,15 @@ let BookshelfModel = ModelBase.extend({
     return this.query.apply(this, ['where'].concat(args));
   },
 
+  /* Ensure that QueryBuilder is copied on clone. */
+  clone() {
+    const cloned = ModelBase.prototype.clone.apply(this, arguments);
+    if (this._knex != null) {
+      cloned._knex = cloned._builder(this._knex.clone());
+    }
+    return cloned;
+  },
+
   /**
    * Creates and returns a new Bookshelf.Sync instance.
    *
