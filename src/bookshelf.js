@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { isString } from 'lodash';
 import semver from 'semver';
 import helpers from './helpers';
 
@@ -287,10 +287,19 @@ function Bookshelf(knex) {
     return (Object(obj) === obj ? obj : inst);
   }
 
-  function builderFn(tableName) {
-    let builder = tableName
-      ? knex(tableName)
-      : knex.queryBuilder();
+  function builderFn(tableNameOrBuilder) {
+    let builder = null;
+
+    if (isString(tableNameOrBuilder)) {
+      builder = knex(tableNameOrBuilder);
+    } else if (tableNameOrBuilder == null) {
+      builder = knex.queryBuilder();
+    } else {
+      // Assuming here that `tableNameOrBuilder` is a QueryBuilder instance. Not
+      // aware of a way to check that this is the case (ie. using
+      // `Knex.isQueryBuilder` or equivalent).
+      builder = tableNameOrBuilder;
+    }
 
     return builder.on('query', data =>
       this.trigger('query', data)

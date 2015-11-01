@@ -985,6 +985,21 @@ module.exports = function(bookshelf) {
 
         deepEqual(_.omit(cloned, 'cid'), _.omit(original, 'cid'));
       });
+
+      it('should contain a copy of internal QueryBuilder object - #945', function() {
+        var original = Post.forge({author: 'Rhys'})
+          .where('share_count', '>', 10)
+          .query('orderBy', 'created_at');
+
+        var cloned = original.clone();
+
+        expect(original.query()).to.not.equal(cloned.query());
+        expect(original.query().toString()).to.equal(cloned.query().toString());
+
+        // Check that a query listener is registered. We must assume that this
+        // is the link to `Model.on('query').
+        expect(cloned.query()._events).to.have.property('query');
+      });
     });
 
   });
