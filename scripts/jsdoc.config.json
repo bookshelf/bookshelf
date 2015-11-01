@@ -18,7 +18,7 @@
       "showInheritedFrom": false,
       "staticFiles": {
         "include": [
-          "./scripts/jsdoc-static"
+          "./.jsdoc-temp"
         ]
       }
     }

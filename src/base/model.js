@@ -14,6 +14,7 @@ var modelProps = ['tableName', 'hasTimestamps'];
  * @classdesc
  * @extends Events
  * @inheritdoc
+ * @description
  *
  * The "ModelBase" is similar to the 'Active Model' in Rails, it defines a
  * standard interface from which other objects may inherit.
