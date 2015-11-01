@@ -4,14 +4,14 @@
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
-    "dev": "rm -rf ./lib && mkdir ./lib && $(npm bin)/babel -w -L -D src/ --out-dir lib/",
-    "babel": "rm -rf ./lib && mkdir ./lib && $(npm bin)/babel -L -D src/ --out-dir lib/",
+    "dev": "rm -rf ./lib && mkdir ./lib && babel -w -L -D src/ --out-dir lib/",
+    "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
     "eslint": "$(npm bin)/eslint bookshelf.js src/.",
     "cover": "npm run eslint && npm run babel && $(npm bin)/istanbul cover $(npm bin)/_mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "test": "npm run eslint && npm run babel && mocha --check-leaks -t 5000 -b -R spec test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
-    "postinstall": "npm install babel && npm run babel"
+    "postinstall": "babel --version || npm install -g babel-cli && npm run babel"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -36,8 +36,8 @@
     "semver": "^4.3.3"
   },
   "devDependencies": {
-    "babel": "^5.5.8",
     "babel-eslint": "^3.1.15",
+    "babel-preset-es2015": "^6.0.14",
     "bookshelf-jsdoc-theme": "^0.1.0",
     "chai": "~1.9.1",
     "eslint": "^0.23.0",

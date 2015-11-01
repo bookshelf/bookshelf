@@ -8,4 +8,4 @@
  * version 0.8.2
  *
  */
-module.exports = require('./lib/bookshelf')
+module.exports = require('./lib/bookshelf').default;

@@ -6,6 +6,7 @@ node_js:
   - '0.12'
 
 before_script:
+  - npm install babel-cli -g
   - psql -c 'create database bookshelf_test;' -U postgres
   - mysql -e 'create database bookshelf_test;'
 
