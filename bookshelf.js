@@ -6,7 +6,7 @@ require('core-js/modules/es6.symbol');
  * For all details and documentation:
  * http://bookshelfjs.org
  *
- * version 0.8.2
+ * version 0.9.0
  *
  */
 module.exports = require('./lib/bookshelf').default;

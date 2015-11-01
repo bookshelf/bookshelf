@@ -26,7 +26,7 @@ import Errors from './errors';
  */
 function Bookshelf(knex) {
   let bookshelf = {
-    VERSION: '0.8.2'
+    VERSION: '0.9.0'
   };
 
   let range = '>=0.6.10 <0.9.0';
