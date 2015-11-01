@@ -7,9 +7,7 @@
 [codebase](https://github.com/tgriesser/bookshelf/blob/master/src/bookshelf.js).
 
 * Make changes in the /src directory, running "npm run dev" which will kick off 
-transpilation from ES6 in the background
-
-* Files in the `/browser` folder are built automatically. You don't need to edit them.
+transpilation from ES6 in the background.
 
 * All pull requests should be made to the `master` branch.
 
