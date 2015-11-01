@@ -57,10 +57,10 @@ Events.prototype.off = function(event, listener) {
 };
 
 /**
- * @method Events#off
+ * @method Events#trigger
  * @description
  * Deregister an event listener.
- * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
+ * @see {@link http://backbonejs.org/#Events-trigger Backbone.js `Events#trigger`}
  */
 Events.prototype.trigger = function(name) {
   // Handle space separated event names.
