@@ -21,7 +21,7 @@ module.exports = function(protoProps, staticProps) {
     while (++i < keys.length) {
       let key = keys[i]
       child.prototype[key] = protoProps[key]
-    }    
+    }
   }
 
   if (staticProps) {

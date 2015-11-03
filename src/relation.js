@@ -90,7 +90,7 @@ var BookshelfRelation = RelationBase.extend({
         switch (this.type) {
           case 'morphTo':
             idKeyName = (this.columnNames && this.columnNames[1])
-              ? this.columnNames[1] 
+              ? this.columnNames[1]
               : this.morphName + '_id';
             this[keyName] = idKeyName;
             break;
@@ -99,8 +99,8 @@ var BookshelfRelation = RelationBase.extend({
             break;
           default:
             if (this.isMorph()) {
-              this[keyName] = (this.columnNames && this.columnNames[1]) 
-                ? this.columnNames[1] 
+              this[keyName] = (this.columnNames && this.columnNames[1])
+                ? this.columnNames[1]
                 : this.morphName + '_id';
               break;
             }
@@ -109,8 +109,8 @@ var BookshelfRelation = RelationBase.extend({
         }
         break;
       case 'morphKey':
-        this[keyName] = (this.columnNames && this.columnNames[0]) 
-          ? this.columnNames[0] 
+        this[keyName] = (this.columnNames && this.columnNames[0])
+          ? this.columnNames[0]
           : this.morphName + '_type';
         break;
       case 'morphValue':

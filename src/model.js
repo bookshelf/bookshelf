@@ -139,7 +139,7 @@ let BookshelfModel = ModelBase.extend({
   hasMany(Target, foreignKey) {
     return this._relation('hasMany', Target, {foreignKey}).init(this);
   },
- 
+
   /**
    * The `belongsTo` relationship is used when a model is a member of
    * another `Target` model.
@@ -158,13 +158,13 @@ let BookshelfModel = ModelBase.extend({
    *         return this.belongsTo(Author);
    *       }
    *     });
-   * 
+   *
    *     // select * from `books` where id = 1
    *     // select * from `authors` where id = book.author_id
    *     Book.where({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
    *       console.log(JSON.stringify(book.related('author')));
    *     });
-   * 
+   *
    * @method Model#belongsTo
    *
    * @param {Model} Target
@@ -205,7 +205,7 @@ let BookshelfModel = ModelBase.extend({
    *       viewAccounts: function() {
    *         return this.belongsToMany(Account).query({where: {access: 'readonly'}});
    *       }
-   *     });  
+   *     });
    *
    *  The default key names in the joining table are the singular versions of the
    *  model table names, followed by `_id` /
@@ -228,7 +228,7 @@ let BookshelfModel = ModelBase.extend({
    *         return this.belongsToMany(Patient).through(Appointment);
    *       }
    *     });
-   *     
+   *
    *     let Appointment = bookshelf.Model.extend({
    *       patient: function() {
    *         return this.belongsTo(Patient);
@@ -237,7 +237,7 @@ let BookshelfModel = ModelBase.extend({
    *         return this.belongsTo(Doctor);
    *       }
    *     });
-   *     
+   *
    *     let Patient = bookshelf.Model.extend({
    *       doctors: function() {
    *         return this.belongsToMany(Doctor).through(Appointment);
@@ -255,7 +255,7 @@ let BookshelfModel = ModelBase.extend({
    * @param {Model} Target
    *
    *   Constructor of {@link Model} targeted by join.
-   * 
+   *
    * @param {string=} table
    *
    *   Name of the joining table. Defaults to the two table names, joined by an
@@ -338,7 +338,7 @@ let BookshelfModel = ModelBase.extend({
    * Model#morphOne morphOne}, but creating a {@link Collection collection}
    * rather than a {@link Model model} (similar to a {@link Model#hasOne
    * hasOne} vs. {@link Model#hasMany hasMany} relation).
-   *  
+   *
    * {@link Model#morphMany morphMany} is used to signify a {@link oneToMany
    * one-to-many} or {@link manyToMany many-to-many} {@link polymorphicRelation
    * polymorphic relation} with another `Target` model, where the `name` of the
@@ -407,7 +407,7 @@ let BookshelfModel = ModelBase.extend({
    *         return this.morphTo('imageable', ["ImageableType", "ImageableId"], Site, Post);
    *       }
    *     });
-   * 
+   *
    * @method Model#morphTo
    *
    * @param {string}      name        Prefix for `_id` and `_type` columns.
@@ -436,51 +436,51 @@ let BookshelfModel = ModelBase.extend({
    * Helps to create dynamic relations between {@link Model models} and {@link
    * Collection collections}, where a {@link Model#hasOne hasOne}, {@link
    * Model#hasMany hasMany}, {@link Model#belongsTo belongsTo}, or {@link
-   * Model#belongsToMany belongsToMany} relation may run through a `JoinModel`.  
+   * Model#belongsToMany belongsToMany} relation may run through a `JoinModel`.
    *
    * A good example of where this would be useful is if a book {@link
    * Model#hasMany hasMany} paragraphs through chapters. Consider the following examples:
    *
    *
    *     let Book = bookshelf.Model.extend({
-   *     
+   *
    *       tableName: 'books',
-   *     
+   *
    *       // Find all paragraphs associated with this book, by
    *       // passing through the "Chapter" model.
    *       paragraphs: function() {
    *         return this.hasMany(Paragraph).through(Chapter);
    *       },
-   *     
+   *
    *       chapters: function() {
    *         return this.hasMany(Chapter);
    *       }
-   *     
+   *
    *     });
-   *     
+   *
    *     let Chapter = bookshelf.Model.extend({
-   *     
+   *
    *       tableName: 'chapters',
-   *     
+   *
    *       paragraphs: function() {
    *         return this.hasMany(Paragraph);
    *       }
-   *     
+   *
    *     });
-   *     
+   *
    *     let Paragraph = bookshelf.Model.extend({
-   *     
+   *
    *       tableName: 'paragraphs',
-   *     
+   *
    *       chapter: function() {
    *         return this.belongsTo(Chapter);
    *       },
-   *     
+   *
    *       // A reverse relation, where we can get the book from the chapter.
    *       book: function() {
    *         return this.belongsTo(Book).through(Chapter);
    *       }
-   *     
+   *
    *     });
    *
    * The "through" table creates a pivot model, which it assigns to {@link
@@ -536,7 +536,7 @@ let BookshelfModel = ModelBase.extend({
   /**
    * Fetches a {@link Model model} from the database, using any {@link
    * Model#attributes attributes} currently set on the model to form a `select`
-   * query. 
+   * query.
    *
    * A {@link Model#event:fetching "fetching"} event will be fired just before the
    * record is fetched; a good place to hook into for validation. {@link
@@ -545,7 +545,7 @@ let BookshelfModel = ModelBase.extend({
    *
    * If you need to constrain the query
    * performed by fetch, you can call {@link Model#query query} before calling
-   * {@link Model#fetch fetch}.  
+   * {@link Model#fetch fetch}.
    *
    *     // select * from `books` where `ISBN-13` = '9780440180296'
    *     new Book({'ISBN-13': '9780440180296'})
@@ -566,7 +566,7 @@ let BookshelfModel = ModelBase.extend({
    * will be loaded into a {@link Model#relations relations} property on the
    * model, may be retrieved with the {@link Model#related related} method, and
    * will be serialized as properties on a {@link Model#toJSON toJSON} call
-   * unless `{shallow: true}` is passed.  
+   * unless `{shallow: true}` is passed.
    *
    *     let Book = bookshelf.Model.extend({
    *       tableName: 'books',
@@ -789,7 +789,7 @@ let BookshelfModel = ModelBase.extend({
    *     JSON.stringify(model);
    *   });
    * });
-   * 
+   *
    * {
    *   title: 'post title',
    *   author: {...},
@@ -798,7 +798,7 @@ let BookshelfModel = ModelBase.extend({
    *     {tags: [...]}, {tags: [...]}
    *   ]
    * }
-   *  
+   *
    * @param {string|string[]} relations The relation, or relations, to be loaded.
    * @param {Object=}      options Hash of options.
    * @param {Transaction=} options.transacting
@@ -1107,7 +1107,7 @@ let BookshelfModel = ModelBase.extend({
        * Destroyed event.
        *
        * Fired before a `delete` query. A promise may be returned from the event
-       * handler for async behaviour. 
+       * handler for async behaviour.
        *
        * @event Model#destroyed
        * @param {Model}  model    The model firing the event.
@@ -1149,19 +1149,19 @@ let BookshelfModel = ModelBase.extend({
    *   .then(function(model) {
    *     // ...
    *   });
-   *   
+   *
    * model
    *   .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
    *   .fetch()
    *   .then(function(model) {
    *     // ...
    *   });
-   *   
+   *
    * model.query(function(qb) {
    *   qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
    * }).fetch()
    *   .then(function(model) { // ...
-   *   
+   *
    * let qb = model.query();
    *     qb.where({id: 1}).select().then(function(resp) { // ...
    *
