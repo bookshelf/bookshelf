@@ -20,7 +20,6 @@
     "consistent-return": 0,
     "no-proto": 0,
     "no-use-before-define": 0,
-    "no-trailing-spaces": 0,
     "no-multi-spaces": 0,
     "no-mixed-requires": 0,
     "no-underscore-dangle": 0
