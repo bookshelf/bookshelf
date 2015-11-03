@@ -7,11 +7,11 @@
     "dev": "rm -rf ./lib && mkdir ./lib && babel -w -L -D src/ --out-dir lib/",
     "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
-    "eslint": "$(npm bin)/eslint bookshelf.js src/.",
-    "cover": "npm run eslint && npm run babel && $(npm bin)/istanbul cover $(npm bin)/_mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
+    "eslint": "eslint bookshelf.js src/",
+    "cover": "npm run eslint && npm run babel && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "test": "npm run eslint && npm run babel && mocha --check-leaks -t 5000 -b -R spec test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
-    "postinstall": "babel --version || npm install -g babel-cli && npm run babel"
+    "postinstall": "$(npm bin)/babel --version || npm install babel-cli && npm run babel"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -37,6 +37,7 @@
     "semver": "^4.3.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.0.15",
     "babel-eslint": "^3.1.15",
     "babel-preset-es2015": "^6.0.14",
     "bookshelf-jsdoc-theme": "^0.1.2",
