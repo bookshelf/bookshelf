@@ -28,9 +28,9 @@
     "active record"
   ],
   "dependencies": {
+    "babel-polyfill": "^6.0.16",
     "bluebird": "^2.9.4",
     "chalk": "^1.0.0",
-    "core-js": "^1.2.4",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",

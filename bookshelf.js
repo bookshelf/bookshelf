@@ -1,4 +1,4 @@
-require('core-js/modules/es6.symbol');
+require('babel-polyfill');
 
 /**
  * (c) 2014 Tim Griesser
