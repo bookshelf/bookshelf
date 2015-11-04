@@ -10,7 +10,8 @@
     "eslint": "eslint bookshelf.js src/",
     "cover": "npm run eslint && npm run babel && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "test": "npm run eslint && npm run babel && mocha --check-leaks -t 5000 -b -R spec test/index.js",
-    "jsdoc": "./scripts/jsdoc.sh"
+    "jsdoc": "./scripts/jsdoc.sh",
+    "postinstall": "$(npm bin)/babel --version || npm install babel-cli && npm run babel"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
