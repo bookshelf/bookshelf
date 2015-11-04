@@ -97,7 +97,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *   ForeignKey in the `Target` model. By default, the `foreignKey` is assumed to
    *   be the singular form of this model's {@link Model#tableName tableName},
-   *   followed by `_id` / `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   followed by `_id` / `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Model}
    */
@@ -132,7 +132,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *   ForeignKey in the `Target` model. By default, the foreignKey is assumed to
    *   be the singular form of this model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Collection}
    */
@@ -175,7 +175,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *   ForeignKey in this model. By default, the foreignKey is assumed to
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Model}
    */
@@ -209,7 +209,7 @@ let BookshelfModel = ModelBase.extend({
    *
    *  The default key names in the joining table are the singular versions of the
    *  model table names, followed by `_id` /
-   *  _{{{@link ModelBase#idAttribute idAttribute}}}. So in the above case, the
+   *  _{{{@link Model#idAttribute idAttribute}}}. So in the above case, the
    *  columns in the joining table
    *  would be `user_id`, `account_id`, and `access`, which is used as an
    *  example of how dynamic relations can be formed using different contexts.
@@ -265,13 +265,13 @@ let BookshelfModel = ModelBase.extend({
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @param {string=} otherKey
    *
    *   Foreign key in the `Target` model. By default, the `otherKey` is assumed to
    *   be the singular form of this model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Collection}
    */
@@ -494,13 +494,13 @@ let BookshelfModel = ModelBase.extend({
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @param {string=} otherKey
    *
    *   Foreign key in the `Interim` model. By default, the `otherKey` is assumed to
    *   be the singular form of this model's tableName, followed by `_id` /
-   *   `_{{{@link ModelBase#idAttribute idAttribute}}}`.
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Collection}
    */
@@ -826,7 +826,7 @@ let BookshelfModel = ModelBase.extend({
    * `save` is used to perform either an insert or update query using the
    * model's set {@link Model#attributes attributes}.
    *
-   * If the model {@link ModelBase#isNew isNew}, any {@link Model#defaults defaults}
+   * If the model {@link Model#isNew isNew}, any {@link Model#defaults defaults}
    * will be set and an `insert` query will be performed. Otherwise it will
    * `update` the record with a corresponding ID. This behaviour can be overriden
    * with the `method` option.
@@ -1049,7 +1049,7 @@ let BookshelfModel = ModelBase.extend({
 
   /**
    * `destroy` performs a `delete` on the model, using the model's {@link
-   * ModelBase#idAttribute idAttribute} to constrain the query.
+   * Model#idAttribute idAttribute} to constrain the query.
    *
    * A {@link Model#destroying "destroying"} event is triggered on the model before being
    * destroyed. To prevent destroying the model (with validation, etc.), throwing an error
