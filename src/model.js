@@ -1063,6 +1063,8 @@ let BookshelfModel = ModelBase.extend({
    *
    * @param {Object=}      options                  Hash of options.
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
+   * @param {bool} [options.require=true]
+   *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy.
    *
    * @example
    *
@@ -1074,6 +1076,10 @@ let BookshelfModel = ModelBase.extend({
    *
    * @fires Model#destroying
    * @fires Model#destroyed
+   *
+   * @throws {Model.NoRowsDeletedError}
+   *
+   * @returns {Promise<Model>} A promise resolving to the destroyed and thus "empty" model.
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
