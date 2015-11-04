@@ -548,10 +548,6 @@ CollectionBase.prototype._reset = function() {
 };
 
 /**
- * @method CollectionBase#keys
- * @see http://lodash.com/docs/#keys
- */
-/**
  * @method CollectionBase#forEach
  * @see http://lodash.com/docs/#forEach
  */
