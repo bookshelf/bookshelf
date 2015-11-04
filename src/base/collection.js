@@ -97,8 +97,8 @@ CollectionBase.prototype.toString = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
-  return this.map(function(model){ 
-    return model.toJSON(options); 
+  return this.map(function(model){
+    return model.toJSON(options);
   });
 }
 
@@ -137,7 +137,7 @@ CollectionBase.prototype.toJSON = function(options) {
  *
  * var vanHalen = new bookshelf.Collection([eddie, alex, stone, roth]);
  * vanHalen.set([eddie, alex, stone, hagar]);
- * 
+ *
  * @param {Model[]|Object[]} models Array of models or raw attribute objects.
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
@@ -252,7 +252,7 @@ CollectionBase.prototype.mapThen = function(iterator, context) {
  *     collection.invokeThen('save', null, options).then(function() {
  *       // ... all models in the collection have been saved
  *     });
- *     
+ *
  *     collection.invokeThen('destroy', options).then(function() {
  *       // ... all models in the collection have been destroyed
  *     });
@@ -304,7 +304,7 @@ CollectionBase.prototype.fetch = function() {
  * @example
  *
  * var ships = new bookshelf.Collection;
- * 
+ *
  * ships.add([
  *   {name: "Flying Dutchman"},
  *   {name: "Black Pearl"}

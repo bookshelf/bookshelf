@@ -172,7 +172,7 @@ let BookshelfCollection = CollectionBase.extend({
    * like to return a single model from the associated collection.
    *
    * @example
-   * 
+   *
    * // select * from authors where site_id = 1 and id = 2 limit 1;
    * new Site({id:1})
    *   .authors()
@@ -296,12 +296,12 @@ let BookshelfCollection = CollectionBase.extend({
    *
    * let qb = collection.query();
    *     qb.where({id: 1}).select().then(function(resp) {...
-   * 
+   *
    * collection.query(function(qb) {
    *   qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
    * }).fetch()
    *   .then(function(collection) {...
-   * 
+   *
    * collection
    *   .query('where', 'other_id', '=', '5')
    *   .fetch()

@@ -53,7 +53,7 @@ ModelBase.prototype.initialize = function() {};
 
 /**
  * @name ModelBase#tableName
- * @member {string} 
+ * @member {string}
  * @description
  *
  * A required property for any database usage, The
@@ -87,8 +87,8 @@ ModelBase.prototype.idAttribute = 'id';
  * @default false
  * @description
  *
- * Sets the current date/time on the timestamps columns `created_at` and 
- * `updated_at` for a given method.  'insert' method will only update 
+ * Sets the current date/time on the timestamps columns `created_at` and
+ * `updated_at` for a given method.  'insert' method will only update
  * `updated_at`.  To override the default column names, assign an array
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
@@ -172,7 +172,7 @@ ModelBase.prototype.set = function(key, val, options) {
  *
  * var modelA = new bookshelf.Model();
  * modelA.isNew(); // true
- * 
+ *
  * var modelB = new bookshelf.Model({id: 1});
  * modelB.isNew(); // false
  */
@@ -224,7 +224,7 @@ ModelBase.prototype.serialize = function(options) {
       attrs['_pivot_' + key] = pivot[key];
     }
   }
-  return attrs;  
+  return attrs;
 }
 
 /**
@@ -461,7 +461,7 @@ ModelBase.prototype.timestamp = function(options) {
  * Model#destroy destroy}. If an attribute is passed, returns true only if that
  * specific attribute has changed.
  *
- * @param {string=} attribute 
+ * @param {string=} attribute
  * @returns {bool}
  * `true` if any attribute has changed. Or, if `attribute` was specified, true
  * if it has changed.
@@ -564,23 +564,23 @@ _.each(modelMethods, function(method) {
  *     var checkit  = require('checkit');
  *     var Promise  = require('bluebird');
  *     var bcrypt   = Promise.promisifyAll(require('bcrypt'));
- *     
+ *
  *     var Customer = bookshelf.Model.extend({
- *     
+ *
  *       initialize: function() {
  *         this.on('saving', this.validateSave);
  *       },
- *     
+ *
  *       validateSave: function() {
  *         return checkit(rules).run(this.attributes);
  *       },
- *     
+ *
  *       account: function() {
  *         return this.belongsTo(Account);
  *       },
- *     
+ *
  *     }, {
- *     
+ *
  *       login: Promise.method(function(email, password) {
  *         if (!email || !password) throw new Error('Email and password are both required');
  *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
@@ -590,9 +590,9 @@ _.each(modelMethods, function(method) {
  *            });
  *         });
  *       })
- *     
+ *
  *     });
- *     
+ *
  *     Customer.login(email, password)
  *       .then(function(customer) {
  *         res.json(customer.omit('password'));

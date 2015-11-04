@@ -106,7 +106,7 @@ function Bookshelf(knex) {
      *   A promise resolving to the number of matching rows.
      */
     count(column, options) {
-      return this.forge().count(column, options); 
+      return this.forge().count(column, options);
     },
 
     /**
@@ -120,16 +120,16 @@ function Bookshelf(knex) {
      * @returns {Promise<Collection>}
      */
     fetchAll(options) {
-      return this.forge().fetchAll(options); 
+      return this.forge().fetchAll(options);
     }
   })
 
   let Collection = bookshelf.Collection = BookshelfCollection.extend({
-    
+
     _builder: builderFn
-  
+
   }, {
-  
+
     /**
      * @method Collection.forge
      * @belongsTo Collection
@@ -161,7 +161,7 @@ function Bookshelf(knex) {
      */
      forge
 
-  
+
   });
 
   // The collection also references the correct `Model`, specified above, for creating
@@ -191,7 +191,7 @@ function Bookshelf(knex) {
      * rolled back.
      *
      *     var Promise = require('bluebird');
-     *     
+     *
      *     Bookshelf.transaction(function(t) {
      *       return new Library({name: 'Old Books'})
      *         .save(null, {transacting: t})
@@ -201,7 +201,7 @@ function Bookshelf(knex) {
      *             {title: 'Moby Dick'},
      *             {title: 'Hamlet'}
      *           ], function(info) {
-     *     
+     *
      *             // Some validation could take place here.
      *             return new Book(info).save({'shelf_id': model.id}, {transacting: t});
      *           });
@@ -248,7 +248,7 @@ function Bookshelf(knex) {
             throw e;
           }
           if (!process.browser) {
-            require(plugin)(this, options)  
+            require(plugin)(this, options)
           }
         }
       } else if (_.isArray(plugin)) {
@@ -307,7 +307,7 @@ function Bookshelf(knex) {
       return model[method].apply(model, arguments);
     };
   });
-  
+
   return bookshelf;
 }
 
