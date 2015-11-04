@@ -1,5 +1,10 @@
 ## Change Log
 
+**0.9.1** — <small>_November 4, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.0...0.9.1)
+
+* {@link Events#off} can now deregister multiple methods at once. #983
+* Permit Knex 0.10.0 via `peerDependencies`. #998
+
 **0.9.0** — <small>_November 1, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.2...0.9.0)
 
 * Repo no longer includes built source or generated documentation. Release script updated to include these only in the tagged release commit. #950.
