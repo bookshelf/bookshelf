@@ -82,13 +82,13 @@ CollectionBase.prototype.toString = function() {
  * @method
  * @description
  *
- * Return a raw array of the collection's {@link ModelBase#attributes
+ * Return a raw array of the collection's {@link Model#attributes
  * attributes} for JSON stringification. If the {@link Model models} have any
- * relations defined, this will also call {@link ModelBase ModelBase#toJSON} on
+ * relations defined, this will also call {@link Model#toJSON toJSON} on
  * each of the related objects, and include them on the object unless
  * `{shallow: true}` is passed as an option.
  *
- * `serialize` is called internally by {@link CollectionBase#toJSON toJSON}.
+ * `serialize` is called internally by {@link Collection#toJSON toJSON}.
  * Override this function if you want to customize its output.
 *
  * @param {Object=} options
@@ -107,11 +107,11 @@ CollectionBase.prototype.serialize = function(options) {
  * @description
  *
  * Called automatically by {@link
- * https://developer.mozilla.org/en-US/docs/Glossary/JSON#toJSON()_method
+ * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
  * `JSON.stringify`}. To customize serialization, override {@link
- * CollectionBase#serialize serialize}.
+ * Collection#serialize serialize}.
  *
- * @param {options} Options passed to {@link CollectionBase#serialize}.
+ * @param {options} Options passed to {@link Collection#serialize}.
  */
 CollectionBase.prototype.toJSON = function(options) {
   return this.serialize(options)
@@ -362,7 +362,7 @@ CollectionBase.prototype.remove = function(models, options) {
  * any models as arguments will empty the entire collection.
  *
  * @param {Object[]|Model[]} Array of models or raw attribute objects.
- * @param {Object} options See {@link CollectionBase#add add}.
+ * @param {Object} options See {@link Collection#add add}.
  * @returns {Model[]} Array of models.
  */
 CollectionBase.prototype.reset = function(models, options) {
@@ -515,7 +515,7 @@ CollectionBase.prototype.pluck = function(attr) {
  * @method
  * @description
  * The `parse` method is called whenever a collection's data is returned in a
- * {@link CollectionBase#fetch fetch} call. The function is passed the raw
+ * {@link Collection#fetch fetch} call. The function is passed the raw
  * database `response` array, and should return an array to be set on the
  * collection. The default implementation is a no-op, simply passing through
  * the JSON response.

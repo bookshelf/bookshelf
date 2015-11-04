@@ -184,13 +184,13 @@ ModelBase.prototype.isNew = function() {
  * @method
  * @description
  *
- * Return a copy of the model's {@link ModelBase#attributes attributes} for JSON
+ * Return a copy of the model's {@link Model#attributes attributes} for JSON
  * stringification. If the {@link Model model} has any relations defined, this
- * will also call {@link ModelBase ModelBase#toJSON} on each of the related
+ * will also call {@link Model#toJSON toJSON} on each of the related
  * objects, and include them on the object unless `{shallow: true}` is
  * passed as an option.
  *
- * `serialize` is called internally by {@link ModelBase#toJSON toJSON}. Override
+ * `serialize` is called internally by {@link Model#toJSON toJSON}. Override
  * this function if you want to customize its output.
  *
  * @example
@@ -232,11 +232,11 @@ ModelBase.prototype.serialize = function(options) {
  * @description
  *
  * Called automatically by {@link
- * https://developer.mozilla.org/en-US/docs/Glossary/JSON#toJSON()_method
+ * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
  * `JSON.stringify`}. To customize serialization, override {@link
- * BaseModel#serialize serialize}.
+ * Model#serialize serialize}.
  *
- * @param {Object=} options Options passed to {@link BaseModel#serialize}.
+ * @param {Object=} options Options passed to {@link Model#serialize}.
  */
 ModelBase.prototype.toJSON = function(options) {
   return this.serialize(options)
@@ -278,8 +278,8 @@ ModelBase.prototype.has = function(attr) {
  *
  * The parse method is called whenever a {@link Model model}'s data is returned
  * in a {@link Model#fetch fetch} call. The function is passed the raw database
- * response object, and should return the {@link ModelBase#attributes
- * attributes} hash to be {@link ModelBase#set set} on the model. The default
+ * response object, and should return the {@link Model#attributes
+ * attributes} hash to be {@link Model#set set} on the model. The default
  * implementation is a no-op, simply passing through the JSON response.
  * Override this if you need to format the database responses - for example
  * calling {@link
@@ -378,7 +378,7 @@ ModelBase.prototype.related = function(name) {
  * @method
  * @description
  * Returns a new instance of the model with identical {@link
- * ModelBase#attributes attributes}, including any relations from the cloned
+ * Model#attributes attributes}, including any relations from the cloned
  * model.
  *
  * @returns {Model} Cloned instance of this model.
