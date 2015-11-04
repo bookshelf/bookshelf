@@ -33,8 +33,7 @@
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
-    "lodash": "^3.7.0",
-    "semver": "^4.3.3"
+    "lodash": "^3.7.0"
   },
   "devDependencies": {
     "babel-cli": "^6.0.15",
@@ -45,16 +44,20 @@
     "eslint": "^0.23.0",
     "istanbul": "^0.3.19",
     "jsdoc": "3.3.2",
-    "knex": "^0.8.0",
+    "knex": "^0.9.0",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",
     "mysql": "^2.5.2",
     "node-uuid": "~1.4.1",
     "pg": "^4.3.0",
+    "semver": "^5.0.3",
     "sinon": "^1.11.1",
     "sinon-chai": "^2.6.0",
     "sqlite3": "^3.0.5",
     "uglify-js": "^2.5.0"
+  },
+  "peerDependencies": {
+    "knex": ">=0.6.10 <0.10.0"
   },
   "author": {
     "name": "Tim Griesser",
