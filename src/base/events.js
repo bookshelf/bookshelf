@@ -4,7 +4,7 @@
 import Promise from './promise';
 import inherits from 'inherits';
 import events from 'events'
-import _, { flatten, flow, map } from 'lodash';
+import _, { each, flatten, flow, map, words } from 'lodash';
 
 const { EventEmitter } = events;
 
@@ -23,11 +23,6 @@ function Events() {
 }
 inherits(Events, EventEmitter);
 
-// Regular expression used to split event strings.
-const eventSplitter = /\s+/;
-
-const toNames = (nameOrNames) => nameOrNames.split(eventSplitter);
-
 /**
  * @method Events#on
  * @description
@@ -35,7 +30,7 @@ const toNames = (nameOrNames) => nameOrNames.split(eventSplitter);
  * @see {@link http://backbonejs.org/#Events-on Backbone.js `Events#on`}
  */
 Events.prototype.on = function(nameOrNames, handler, ...args) {
-  for (const name of toNames(nameOrNames)) {
+  for (const name of words(nameOrNames)) {
     EventEmitter.prototype.on.apply(this, [name, handler, ...args]);
   }
   return this;
@@ -47,26 +42,19 @@ Events.prototype.on = function(nameOrNames, handler, ...args) {
  * Deregister an event listener.
  * @see {@link http://backbonejs.org/#Events-off Backbone.js `Events#off`}
  */
-Events.prototype.off = function(event, listener) {
-  if (arguments.length === 0) {
-    return this.removeAllListeners();
+Events.prototype.off = function(nameOrNames, listener) {
+  if (nameOrNames == null) {
+    return listener == null
+      ? this.removeAllListeners()
+      : this.removeAllListeners(listener);
   }
-  // Handle space separated event names.
-  if (eventSplitter.test(event)) {
-    var events = event.split(eventSplitter);
-    for (var i = 0, l = events.length; i < l; i++) {
-      if(arguments.length === 1) {
-        this.off(events[i]);
-      } else {
-        this.off(events[i], listener);
-      }
-    }
-    return this;
-  }
-  if (arguments.length === 1) {
-    return this.removeAllListeners(event);
-  }
-  return this.removeListener(event, listener);
+
+  each(words(nameOrNames), listener == null
+    ? name => this.removeAllListeners(name)
+    : name => this.removeAllListeners(name, listener)
+  );
+
+  return this;
 };
 
 /**
@@ -102,7 +90,7 @@ Events.prototype.trigger = function(nameOrNames, ...args) {
  *   A promise resolving the the resolved return values of any triggered handlers.
  */
 Events.prototype.triggerThen = function(nameOrNames, ...args) {
-  const names = toNames(nameOrNames);
+  const names = words(nameOrNames);
   const listeners = flatMap(names, this.listeners, this);
   return Promise.map(listeners, listener =>
     listener.apply(this, args)
