@@ -50,6 +50,18 @@ Events.prototype.off = function(event, listener) {
   if (arguments.length === 0) {
     return this.removeAllListeners();
   }
+  // Handle space separated event names.
+  if (eventSplitter.test(event)) {
+    var events = event.split(eventSplitter);
+    for (var i = 0, l = events.length; i < l; i++) {
+      if(arguments.length === 1) {
+        this.off(events[i]);
+      } else {
+        this.off(events[i], listener);
+      }
+    }
+    return this;
+  }
   if (arguments.length === 1) {
     return this.removeAllListeners(event);
   }
