@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import semver from 'semver';
 import helpers from './helpers';
 
 // We've supplemented `Events` with a `triggerThen`
@@ -28,11 +27,6 @@ function Bookshelf(knex) {
   let bookshelf = {
     VERSION: '0.9.0'
   };
-
-  let range = '>=0.6.10 <0.9.0';
-  if (!semver.satisfies(knex.VERSION, range)) {
-    throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
-  }
 
   let Model = bookshelf.Model = BookshelfModel.extend({
 
