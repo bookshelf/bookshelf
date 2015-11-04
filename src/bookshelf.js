@@ -24,11 +24,11 @@ import Errors from './errors';
  * @param {Knex} knex Knex instance.
  */
 function Bookshelf(knex) {
-  let bookshelf = {
+  const bookshelf = {
     VERSION: '0.9.1'
   };
 
-  let Model = bookshelf.Model = BookshelfModel.extend({
+  const Model = bookshelf.Model = BookshelfModel.extend({
 
     _builder: builderFn,
 
@@ -106,7 +106,7 @@ function Bookshelf(knex) {
      *   A promise resolving to the number of matching rows.
      */
     count(column, options) {
-      return this.forge().count(column, options); 
+      return this.forge().count(column, options);
     },
 
     /**
@@ -120,16 +120,16 @@ function Bookshelf(knex) {
      * @returns {Promise<Collection>}
      */
     fetchAll(options) {
-      return this.forge().fetchAll(options); 
+      return this.forge().fetchAll(options);
     }
   })
 
-  let Collection = bookshelf.Collection = BookshelfCollection.extend({
-    
+  const Collection = bookshelf.Collection = BookshelfCollection.extend({
+
     _builder: builderFn
-  
+
   }, {
-  
+
     /**
      * @method Collection.forge
      * @belongsTo Collection
@@ -161,7 +161,7 @@ function Bookshelf(knex) {
      */
      forge
 
-  
+
   });
 
   // The collection also references the correct `Model`, specified above, for creating
@@ -169,7 +169,7 @@ function Bookshelf(knex) {
   Collection.prototype.model = Model;
   Model.prototype.Collection = Collection;
 
-  let Relation = BookshelfRelation.extend({
+  const Relation = BookshelfRelation.extend({
     Model, Collection
   });
 
@@ -191,7 +191,7 @@ function Bookshelf(knex) {
      * rolled back.
      *
      *     var Promise = require('bluebird');
-     *     
+     *
      *     Bookshelf.transaction(function(t) {
      *       return new Library({name: 'Old Books'})
      *         .save(null, {transacting: t})
@@ -201,7 +201,7 @@ function Bookshelf(knex) {
      *             {title: 'Moby Dick'},
      *             {title: 'Hamlet'}
      *           ], function(info) {
-     *     
+     *
      *             // Some validation could take place here.
      *             return new Book(info).save({'shelf_id': model.id}, {transacting: t});
      *           });
@@ -248,7 +248,7 @@ function Bookshelf(knex) {
             throw e;
           }
           if (!process.browser) {
-            require(plugin)(this, options)  
+            require(plugin)(this, options)
           }
         }
       } else if (_.isArray(plugin)) {
@@ -276,8 +276,8 @@ function Bookshelf(knex) {
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
   function forge() {
-    let inst = Object.create(this.prototype);
-    let obj = this.apply(inst, arguments);
+    const inst = Object.create(this.prototype);
+    const obj = this.apply(inst, arguments);
     return (Object(obj) === obj ? obj : inst);
   }
 
@@ -303,11 +303,11 @@ function Bookshelf(knex) {
   // Attach `where`, `query`, and `fetchAll` as static methods.
   ['where', 'query'].forEach((method) => {
     Model[method] = Collection[method] = function() {
-      let model = this.forge();
+      const model = this.forge();
       return model[method].apply(model, arguments);
     };
   });
-  
+
   return bookshelf;
 }
 

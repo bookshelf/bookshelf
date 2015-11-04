@@ -1,13 +1,15 @@
+/* eslint no-console: 0 */
+
 // Helpers
 // ---------------
-var _     = require('lodash');
-var chalk = require('chalk')
+const _     = require('lodash');
+const chalk = require('chalk')
 
-var helpers = {
+const helpers = {
 
   // Sets the constraints necessary during a `model.save` call.
   saveConstraints: function(model, relatedData) {
-    var data = {};
+    const data = {};
     if (relatedData
         && !relatedData.isThrough()
         && relatedData.type !== 'belongsToMany'
@@ -22,7 +24,7 @@ var helpers = {
   // Finds the specific `morphTo` table we should be working with, or throws
   // an error if none is matched.
   morphCandidate: function(candidates, foreignTable) {
-    var Target = _.find(candidates, function(Candidate) {
+    const Target = _.find(candidates, function(Candidate) {
       return (_.result(Candidate.prototype, 'tableName') === foreignTable);
     });
     if (!Target) {
@@ -40,14 +42,14 @@ var helpers = {
 
     // Ensure the object has a query builder.
     if (!obj._knex) {
-      var tableName = _.result(obj, 'tableName');
+      const tableName = _.result(obj, 'tableName');
       obj._knex = obj._builder(tableName);
     }
 
     // If there are no arguments, return the query builder.
     if (args.length === 0) return obj._knex;
 
-    var method = args[0];
+    const method = args[0];
 
     if (_.isFunction(method)) {
 
@@ -58,8 +60,8 @@ var helpers = {
 
       // `method` is an object. Use keys as methods and values as arguments to
       // the query builder.
-      for (var key in method) {
-        var target = _.isArray(method[key]) ?  method[key] : [method[key]];
+      for (const key in method) {
+        const target = _.isArray(method[key]) ?  method[key] : [method[key]];
         obj._knex[key].apply(obj._knex, target);
       }
     } else {

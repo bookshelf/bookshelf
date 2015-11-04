@@ -1,21 +1,23 @@
-var Promise = require('bluebird/js/main/promise')();
-var helpers = require('../helpers')
+import promiseModule from 'bluebird/js/main/promise';
+import { deprecate } from '../helpers';
+
+const Promise = promiseModule();
 
 Promise.prototype.yield = function() {
-  helpers.deprecate('.yield', '.return')
+  deprecate('.yield', '.return')
   return this.return.apply(this, arguments);
 }
 Promise.prototype.ensure = function() {
-  helpers.deprecate('.ensure', '.finally')
+  deprecate('.ensure', '.finally')
   return this.finally.apply(this, arguments);
 }
 Promise.prototype.otherwise = function() {
-  helpers.deprecate('.otherwise', '.catch')
+  deprecate('.otherwise', '.catch')
   return this.catch.apply(this, arguments);
 }
 Promise.prototype.exec = function() {
-  helpers.deprecate('bookshelf.exec', 'bookshelf.asCallback')
+  deprecate('bookshelf.exec', 'bookshelf.asCallback')
   return this.nodeify.apply(this, arguments);
 };
 
-module.exports = Promise;
+export default Promise;

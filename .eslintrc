@@ -1,5 +1,6 @@
 {
   "parser": "babel-eslint",
+  "extends": "eslint:recommended",
   "env": {
     "es6": true,
     "node": true
@@ -9,20 +10,11 @@
     "modules": true
   },
   "rules": {
-    "quotes": 0,
-    "curly": 0,
-    "camelcase": 0,
-    "semi": 0,
-    "eol-last": 0,
-    "key-spacing": 0,
-    "new-cap": 0,
-    "comma-dangle": 0,
-    "consistent-return": 0,
-    "no-proto": 0,
-    "no-use-before-define": 0,
-    "no-trailing-spaces": 0,
-    "no-multi-spaces": 0,
-    "no-mixed-requires": 0,
-    "no-underscore-dangle": 0
+    "no-console": 1,
+    "no-const-assign": 2,
+    "no-unused-vars": [1, {"vars": "all", "args": "none"}],
+    "no-var": 1,
+    "prefer-const": 1,
+    "no-trailing-spaces": 1
   }
 }

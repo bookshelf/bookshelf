@@ -1,4 +1,5 @@
-var Promise = require('../lib/base/promise');
+require('babel-polyfill');
+var Promise = require('../lib/base/promise').default;
 
 Promise.longStackTraces();
 Promise.onPossiblyUnhandledRejection(function (err) {

@@ -36,7 +36,7 @@ import createError from 'create-error';
  * @param {bool} [options.comparator=false]
  *   {@link Collection#comparator Comparator} for collection, or `false` to disable sorting.
  */
-let BookshelfCollection = CollectionBase.extend({
+const BookshelfCollection = CollectionBase.extend({
 
   /**
    * @method Collection#through
@@ -172,7 +172,7 @@ let BookshelfCollection = CollectionBase.extend({
    * like to return a single model from the associated collection.
    *
    * @example
-   * 
+   *
    * // select * from authors where site_id = 1 and id = 2 limit 1;
    * new Site({id:1})
    *   .authors()
@@ -196,7 +196,7 @@ let BookshelfCollection = CollectionBase.extend({
    *  A promise resolving to the fetched {@link Model model} or `null` if none exists.
    */
   fetchOne: Promise.method(function(options) {
-    let model = new this.model();
+    const model = new this.model();
     model._knex = this.query().clone();
     this.resetQuery();
     if (this.relatedData) model.relatedData = this.relatedData;
@@ -244,8 +244,8 @@ let BookshelfCollection = CollectionBase.extend({
    * model}.
    */
   create: Promise.method(function(model, options) {
-    options = options ? _.clone(options) : {};
-    let relatedData = this.relatedData;
+    options = options != null ? _.clone(options) : {};
+    const { relatedData } = this;
     model = this._prepareModel(model, options);
 
     // If we've already added things on the query chain,
@@ -296,12 +296,12 @@ let BookshelfCollection = CollectionBase.extend({
    *
    * let qb = collection.query();
    *     qb.where({id: 1}).select().then(function(resp) {...
-   * 
+   *
    * collection.query(function(qb) {
    *   qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
    * }).fetch()
    *   .then(function(collection) {...
-   * 
+   *
    * collection
    *   .query('where', 'other_id', '=', '5')
    *   .fetch()
@@ -345,7 +345,7 @@ let BookshelfCollection = CollectionBase.extend({
    * collection's `fetch` call.
    */
   _handleResponse: function(response) {
-    let relatedData = this.relatedData;
+    const { relatedData } = this;
     this.set(response, {silent: true, parse: true}).invoke('_reset');
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot(this.models);
@@ -359,7 +359,8 @@ let BookshelfCollection = CollectionBase.extend({
    * Handle the related data loading on the collection.
    */
   _handleEager: function(response, options) {
-    return new EagerRelation(this.models, response, new this.model()).fetch(options);
+    return new EagerRelation(this.models, response, new this.model())
+      .fetch(options);
   }
 
 }, {

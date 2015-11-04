@@ -10,7 +10,7 @@ module.exports = function() {
   var path     = require('path');
   var basePath = process.cwd();
 
-  var Events = require(path.resolve(basePath + '/lib/base/events'));
+  var Events = require(path.resolve(basePath + '/lib/base/events')).default;
 
   describe('Events', function() {
 

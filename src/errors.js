@@ -1,4 +1,4 @@
-var createError = require('create-error');
+import createError from 'create-error';
 
 module.exports = {
 
