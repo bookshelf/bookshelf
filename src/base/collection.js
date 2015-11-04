@@ -2,18 +2,16 @@
 // ---------------
 
 // All exernal dependencies required in this scope.
-var _         = require('lodash');
-var inherits  = require('inherits');
+import _, { invoke, noop } from 'lodash';
+import inherits from 'inherits';
 
 // All components that need to be referenced in this scope.
-var Events    = require('./events');
-var Promise   = require('./promise');
-var ModelBase = require('./model');
+import Events from './events';
+import Promise from './promise';
+import ModelBase from './model';
+import extend from '../extend';
 
-var array  = [];
-var slice  = array.slice;
-var splice = array.splice;
-var noop   = _.noop;
+const { splice, slice } = Array.prototype;
 
 /**
  * @class CollectionBase
@@ -38,11 +36,11 @@ inherits(CollectionBase, Events);
 // `relatedData` does not mutate itself after declaration. This is only
 // here because `clone` needs to duplicate this property. It should not
 // be documented as a valid argument for consumer code.
-var collectionProps = ['model', 'comparator', 'relatedData'];
+const collectionProps = ['model', 'comparator', 'relatedData'];
 
 // Copied over from Backbone.
-var setOptions = {add: true, remove: true, merge: true};
-var addOptions = {add: true, remove: false};
+const setOptions = {add: true, remove: true, merge: true};
+const addOptions = {add: true, remove: false};
 
 /**
  * @method CollectionBase#initialize
@@ -97,9 +95,7 @@ CollectionBase.prototype.toString = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
-  return this.map(function(model){ 
-    return model.toJSON(options); 
-  });
+  return invoke(this.models, 'toJSON', options);
 }
 
 /**
@@ -137,7 +133,7 @@ CollectionBase.prototype.toJSON = function(options) {
  *
  * var vanHalen = new bookshelf.Collection([eddie, alex, stone, roth]);
  * vanHalen.set([eddie, alex, stone, hagar]);
- * 
+ *
  * @param {Model[]|Object[]} models Array of models or raw attribute objects.
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
@@ -146,12 +142,14 @@ CollectionBase.prototype.set = function(models, options) {
   options = _.defaults({}, options, setOptions);
   if (options.parse) models = this.parse(models, options);
   if (!_.isArray(models)) models = models ? [models] : [];
-  var i, l, id, model, attrs;
-  var at = options.at;
-  var targetModel = this.model;
-  var toAdd = [], toRemove = [], modelMap = {};
-  var add = options.add, merge = options.merge, remove = options.remove;
-  var order = add && remove ? [] : false;
+  let i, l, id, model, attrs;
+  const at = options.at;
+  const targetModel = this.model;
+  const toAdd = []
+  const toRemove = [];
+  const modelMap = {};
+  const { add, merge, remove } = options;
+  let order = add && remove ? [] : false;
 
   // Turn bare objects into model references, and prevent invalid models
   // from being added.
@@ -165,7 +163,7 @@ CollectionBase.prototype.set = function(models, options) {
 
     // If a duplicate is found, prevent it from being added and
     // optionally merge it into the existing model.
-    let existing = this.get(id)
+    const existing = this.get(id)
     if (existing) {
       if (remove) {
         modelMap[existing.cid] = true;
@@ -252,7 +250,7 @@ CollectionBase.prototype.mapThen = function(iterator, context) {
  *     collection.invokeThen('save', null, options).then(function() {
  *       // ... all models in the collection have been saved
  *     });
- *     
+ *
  *     collection.invokeThen('destroy', options).then(function() {
  *       // ... all models in the collection have been destroyed
  *     });
@@ -303,8 +301,8 @@ CollectionBase.prototype.fetch = function() {
  *
  * @example
  *
- * var ships = new bookshelf.Collection;
- * 
+ * const ships = new bookshelf.Collection;
+ *
  * ships.add([
  *   {name: "Flying Dutchman"},
  *   {name: "Black Pearl"}
@@ -331,16 +329,15 @@ CollectionBase.prototype.add = function(models, options) {
  * @returns {Model|Model[]} The same value passed as `models` argument.
  */
 CollectionBase.prototype.remove = function(models, options) {
-  var singular = !_.isArray(models);
+  const singular = !_.isArray(models);
   models = singular ? [models] : _.clone(models);
   options = options || {};
-  var i = -1
-  while (++i < models.length) {
-    let model = models[i] = this.get(models[i]);
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i] = this.get(models[i]);
     if (!model) continue;
     delete this._byId[model.id];
     delete this._byId[model.cid];
-    let index = this.indexOf(model);
+    const index = this.indexOf(model);
     this.models.splice(index, 1);
     this.length = this.length - 1
     if (!options.silent) {
@@ -390,7 +387,7 @@ CollectionBase.prototype.push = function(model, options) {
  * Remove a model from the end of the collection.
  */
 CollectionBase.prototype.pop = function(options) {
-  var model = this.at(this.length - 1);
+  const model = this.at(this.length - 1);
   this.remove(model, options);
   return model;
 };
@@ -410,7 +407,7 @@ CollectionBase.prototype.unshift = function(model, options) {
  * Remove a model from the beginning of the collection.
  */
 CollectionBase.prototype.shift = function(options) {
-  var model = this.at(0);
+  const model = this.at(0);
   this.remove(model, options);
   return model;
 };
@@ -433,7 +430,7 @@ CollectionBase.prototype.slice = function() {
  *
  * @example
  *
- * var book = library.get(110);
+ * const book = library.get(110);
  *
  * @returns {Model} The model, or `undefined` if it is not in the collection.
  */
@@ -462,7 +459,7 @@ CollectionBase.prototype.at = function(index) {
 CollectionBase.prototype.where = function(attrs, first) {
   if (_.isEmpty(attrs)) return first ? void 0 : [];
   return this[first ? 'find' : 'filter'](function(model) {
-    for (var key in attrs) {
+    for (const key in attrs) {
       if (attrs[key] !== model.get(key)) return false;
     }
     return true;
@@ -710,7 +707,7 @@ CollectionBase.prototype._reset = function() {
 // Lodash methods that we want to implement on the Collection.
 // 90% of the core usefulness of Backbone Collections is actually implemented
 // right here:
-var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
+const methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
   'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
   'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
   'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
@@ -720,7 +717,7 @@ var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
 // Mix in each Lodash method as a proxy to `Collection#models`.
 _.each(methods, function(method) {
   CollectionBase.prototype[method] = function() {
-    var args = slice.call(arguments);
+    const args = slice.call(arguments);
     args.unshift(this.models);
     return _[method].apply(_, args);
   };
@@ -741,12 +738,12 @@ _.each(methods, function(method) {
  * @see http://lodash.com/docs/#sortBy
  */
 // Lodash methods that take a property name as an argument.
-var attributeMethods = ['groupBy', 'countBy', 'sortBy'];
+const attributeMethods = ['groupBy', 'countBy', 'sortBy'];
 
 // Use attributes instead of properties.
 _.each(attributeMethods, function(method) {
   CollectionBase.prototype[method] = function(value, context) {
-    var iterator = _.isFunction(value) ? value : function(model) {
+    const iterator = _.isFunction(value) ? value : function(model) {
       return model.get(value);
     };
     return _[method](this.models, iterator, context);
@@ -768,6 +765,12 @@ _.each(attributeMethods, function(method) {
  *   constructor of the new class.
  * @returns {Function} Constructor for new `Collection` subclass.
  */
-CollectionBase.extend = require('../extend');
+CollectionBase.extend = extend;
 
+/*
+ * NOTE: For some reason `export` is failing in the version of Babel I'm
+ * currently using. At some stage it should be corrected to:
+ *
+ *     export default CollectionBase;
+ */
 module.exports = CollectionBase;

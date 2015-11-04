@@ -1,10 +1,14 @@
 // Events
 // ---------------
 
-var Promise      = require('./promise');
-var inherits     = require('inherits');
-var EventEmitter = require('events').EventEmitter;
-var _            = require('lodash');
+import Promise from './promise';
+import inherits from 'inherits';
+import events from 'events'
+import _, { flatten, flow, map } from 'lodash';
+
+const { EventEmitter } = events;
+
+const flatMap = flow(map, flatten);
 
 /**
  * @class Events
@@ -20,7 +24,9 @@ function Events() {
 inherits(Events, EventEmitter);
 
 // Regular expression used to split event strings.
-var eventSplitter = /\s+/;
+const eventSplitter = /\s+/;
+
+const toNames = (nameOrNames) => nameOrNames.split(eventSplitter);
 
 /**
  * @method Events#on
@@ -28,16 +34,11 @@ var eventSplitter = /\s+/;
  * Register an event listener.
  * @see {@link http://backbonejs.org/#Events-on Backbone.js `Events#on`}
  */
-Events.prototype.on = function(name, handler) {
-  // Handle space separated event names.
-  if (eventSplitter.test(name)) {
-    var names = name.split(eventSplitter);
-    for (var i = 0, l = names.length; i < l; i++) {
-      this.on(names[i], handler);
-    }
-    return this;
+Events.prototype.on = function(nameOrNames, handler, ...args) {
+  for (const name of toNames(nameOrNames)) {
+    EventEmitter.prototype.on.apply(this, [name, handler, ...args]);
   }
-  return EventEmitter.prototype.on.apply(this, arguments);
+  return this;
 };
 
 /**
@@ -74,19 +75,10 @@ Events.prototype.off = function(event, listener) {
  * Deregister an event listener.
  * @see {@link http://backbonejs.org/#Events-trigger Backbone.js `Events#trigger`}
  */
-Events.prototype.trigger = function(name) {
-  // Handle space separated event names.
-  if (eventSplitter.test(name)) {
-    var len  = arguments.length;
-    var rest = new Array(len - 1);
-    for (i = 1; i < len; i++) rest[i - 1] = arguments[i];
-    var names = name.split(eventSplitter);
-    for (var i = 0, l = names.length; i < l; i++) {
-      EventEmitter.prototype.emit.apply(this, [names[i]].concat(rest));
-    }
-    return this;
+Events.prototype.trigger = function(nameOrNames, ...args) {
+  for (const name of nameOrNames) {
+    EventEmitter.prototype.emit.apply(this, [name, ...args]);
   }
-  EventEmitter.prototype.emit.apply(this, arguments);
   return this;
 };
 
@@ -109,32 +101,12 @@ Events.prototype.trigger = function(name) {
  * @returns Promise<mixed[]>
  *   A promise resolving the the resolved return values of any triggered handlers.
  */
-Events.prototype.triggerThen = function(name) {
-  var i, l, rest, listeners = [];
-  // Handle space separated event names.
-  if (eventSplitter.test(name)) {
-    var names = name.split(eventSplitter);
-    for (i = 0, l = names.length; i < l; i++) {
-      listeners = listeners.concat(this.listeners(names[i]));
-    }
-  } else {
-    listeners = this.listeners(name);
-  }
-  var len = arguments.length;
-  switch (len) {
-    case 1: rest = []; break;
-    case 2: rest = [arguments[1]]; break;
-    case 3: rest = [arguments[1], arguments[2]]; break;
-    default: rest = new Array(len - 1); for (i = 1; i < len; i++) rest[i - 1] = arguments[i];
-  }
-  var events = this
-  return Promise.try(function() {
-    var pending = [];
-    for (i = 0, l = listeners.length; i < l; i++) {
-      pending[i] = listeners[i].apply(events, rest);
-    }
-    return Promise.all(pending);
-  })
+Events.prototype.triggerThen = function(nameOrNames, ...args) {
+  const names = toNames(nameOrNames);
+  const listeners = flatMap(names, this.listeners, this);
+  return Promise.map(listeners, listener =>
+    listener.apply(this, args)
+  );
 };
 Events.prototype.emitThen = Events.prototype.triggerThen;
 
@@ -145,13 +117,12 @@ Events.prototype.emitThen = Events.prototype.triggerThen;
  * @see {@link http://backbonejs.org/#Events-once Backbone.js `Events#once`}
  */
 Events.prototype.once = function(name, callback, context) {
-  var self = this;
-  var once = _.once(function() {
-      self.off(name, once);
-      return callback.apply(this, arguments);
+  const once = _.once(() => {
+    this.off(name, once);
+    return callback.apply(this, arguments);
   });
   once._callback = callback;
   return this.on(name, once, context);
 };
 
-module.exports = Events;
+export default Events;
