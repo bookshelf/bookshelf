@@ -107,7 +107,7 @@ CollectionBase.prototype.serialize = function(options) {
  * @description
  *
  * Called automatically by {@link
- * https://developer.mozilla.org/en-US/docs/Glossary/JSON#toJSON()_method
+ * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
  * `JSON.stringify`}. To customize serialization, override {@link
  * Collection#serialize serialize}.
  *
