@@ -366,6 +366,7 @@ ModelBase.prototype.format = function(attrs) {
  *   }
  * });
  *
+ * @param name {string} The name of the relation to retrieve.
  * @returns {Model|Collection|undefined} The specified relation as defined by a
  *   method on the model, or undefined if it does not exist.
  */
