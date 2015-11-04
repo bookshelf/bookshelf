@@ -9,8 +9,8 @@ rm -rf ./docs index.html
 rm -rf $static_assets
 mkdir $static_assets
 
-# Generate static assets. (assumes uglifyjs is installed globally...)
-uglifyjs node_modules/knex/build/knex.js > $static_assets/knex.min.js
+# Generate static assets.
+$(npm bin)/uglifyjs node_modules/knex/build/knex.js > $static_assets/knex.min.js
 
 # Then create the docs.
 $(npm bin)/jsdoc --configure ./scripts/jsdoc.config.json
