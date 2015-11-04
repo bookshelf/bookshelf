@@ -7,10 +7,9 @@
     "dev": "rm -rf ./lib && mkdir ./lib && babel -w -L -D src/ --out-dir lib/",
     "babel": "rm -rf ./lib && mkdir ./lib && babel -L -D src/ --out-dir lib/",
     "build": "./scripts/build.sh",
-    "eslint": "eslint bookshelf.js src/",
-    "cover": "npm run eslint && npm run babel && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
-    "test-bckup": "npm run eslint && npm run babel && mocha --check-leaks -t 5000 -b -R spec test/index.js",
-    "test": "npm run babel && mocha --check-leaks -t 5000 -b test/index.js",
+    "lint": "eslint bookshelf.js src/",
+    "cover": "npm run lint && npm run babel && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
+    "test": "npm run lint && npm run babel && mocha --check-leaks -t 5000 -b test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
     "postinstall": "$(npm bin)/babel --version || npm install babel-cli && npm run babel"
   },
