@@ -29,7 +29,7 @@ function Bookshelf(knex) {
     VERSION: '0.9.0'
   };
 
-  let range = '>=0.6.10 <0.9.0';
+  let range = '>=0.6.10 <0.10.0';
   if (!semver.satisfies(knex.VERSION, range)) {
     throw new Error('The knex version is ' + knex.VERSION + ' which does not satisfy the Bookshelf\'s requirement ' + range);
   }
