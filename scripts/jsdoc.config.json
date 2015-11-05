@@ -34,7 +34,8 @@
     "whitelist": [
       "Bookshelf",
       "Model",
-      "Collection"
+      "Collection",
+      "Events"
     ]
   }
 }
