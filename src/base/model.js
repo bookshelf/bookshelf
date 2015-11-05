@@ -432,7 +432,7 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
  * timestamps.
  *
  * @param {Object=} options
- * @param {string} [options.method="update"]
+ * @param {string} [options.method]
  *   Either `'insert'` or `'update'`. Specify what kind of save the attribute
  *   update is for.
  *
