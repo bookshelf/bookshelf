@@ -1,4 +1,4 @@
-import _, { assign } from 'lodash';
+import _, { assign, isArray } from 'lodash';
 import createError from 'create-error';
 
 import Sync from './sync';
@@ -806,17 +806,11 @@ const BookshelfModel = ModelBase.extend({
    * @returns {Promise<Model>} A promise resolving to this {@link Model model}
    */
   load: Promise.method(function(relations, options) {
-    return Promise.bind(this)
-      .then(function() {
-        return [this.format(_.extend(Object.create(null), this.attributes))];
-      })
-      .then(function(response) {
-        return this._handleEager(response, _.extend({}, options, {
-          shallow: true,
-          withRelated: _.isArray(relations) ? relations : [relations]
-        }));
-      })
-      .return(this);
+    const columns = this.format({ ...this.attributes });
+    const withRelated = isArray(relations) ? relations : [relations];
+    return this._handleEager(
+      [columns], { ...options, shallow: true, withRelated }
+    ).return(this);
   }),
 
   /**
