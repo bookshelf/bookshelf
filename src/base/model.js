@@ -36,6 +36,36 @@ function ModelBase(attributes, options) {
   this.set(attrs, options);
   this.initialize.apply(this, arguments);
 }
+
+/**
+ * @method ModelBase#on
+ * @example
+ *
+ * customer.on('fetching', function(model, columns) {
+ *   // Do something before the data is fetched from the database
+ * })
+ *
+ * @see Events#on
+ */
+
+/**
+ * @method ModelBase#off
+ * @example
+ *
+ * customer.off('fetched fetching')
+ * ship.off() // This will remove all event listeners
+ *
+ * @see Events#off
+ */
+
+/**
+ * @method ModelBase#trigger
+ * @example
+ *
+ * ship.trigger('fetched')
+ *
+ * @see Events#trigger
+ */
 inherits(ModelBase, Events);
 
 /**

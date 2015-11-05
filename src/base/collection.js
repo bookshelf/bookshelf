@@ -27,6 +27,36 @@ function CollectionBase(models, options) {
   }
   if (models) this.reset(models, _.extend({silent: true}, options));
 }
+
+/**
+ * @method CollectionBase#on
+ * @example
+ *
+ * const ships = new bookshelf.Collection;
+ * ships.on('fetched', function(collection, response) {
+ *   // Do something after the data has been fectched from the database
+ * })
+ *
+ * @see Events#on
+ */
+
+/**
+ * @method CollectionBase#off
+ * @example
+ *
+ * ships.off('fetched') // Remove the 'fetched' event listener
+ *
+ * @see Events#off
+ */
+
+/**
+ * @method CollectionBase#trigger
+ * @example
+ *
+ * ships.trigger('fetched')
+ *
+ * @see Events#trigger
+ */
 inherits(CollectionBase, Events);
 
 // List of attributes attached directly from the constructor's options object.
@@ -116,10 +146,6 @@ CollectionBase.prototype.toJSON = function(options) {
 /**
  * @method
  * @description
- *
- * A simplified version of Backbone's `Collection#set` method, removing the
- * comparator, and getting rid of the temporary model creation, since there's
- * *no way* we'll be getting the data in an inconsistent form from the database.
  *
  * The set method performs a "smart" update of the collection with the passed
  * list of models. If a model in the list isn't yet in the collection it will be
