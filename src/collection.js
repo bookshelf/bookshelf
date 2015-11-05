@@ -369,8 +369,9 @@ const BookshelfCollection = CollectionBase.extend({
     /**
      * @class Collection.EmptyError
      * @description
-     *   Thrown when no records are found by {@link Collection#fetch fetch} or {@link Model#fetchAll},
-     *   when called with the `{require: true}` option.
+     *   Thrown when no records are found by {@link Collection#fetch fetch},
+     *   {@link Model#fetchAll}, or {@link Model.fetchAll} when called with
+     *   the `{require: true}` option.
      */
     child.EmptyError = createError(this.EmptyError)
   }
