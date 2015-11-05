@@ -408,8 +408,14 @@ ModelBase.prototype.clone = function() {
  *
  * @returns {string} Either `'insert'` or `'update'`.
  */
-ModelBase.prototype.saveMethod = function({ method = null } = {}) {
-  return method == null
+ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {}) {
+  if (patch) {
+    if (method == 'insert') throw new TypeError(
+      `Cannot accept incompatible options: methods=${method}, patch=${patch}`
+    );
+    method = 'update';
+  }
+  return (patch && 'update' || method) == null
     ? this.isNew() ? 'insert' : 'update'
     : method.toLowerCase();
 };

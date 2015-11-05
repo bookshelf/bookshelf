@@ -1002,6 +1002,32 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('model.saveMethod', function() {
+      var Post = Models.Post;
+
+      it('should default to insert for new model', function() {
+        var post = Post.forge();
+        post.isNew = function() { return true; }
+        expect(post.saveMethod()).to.equal('insert');
+      });
+
+      it('should default to update for non-new model', function() {
+        var post = Post.forge();
+        post.isNew = function() { return false; }
+        expect(post.saveMethod()).to.equal('update');
+      });
+
+      it('should normalize to lowercase', function() {
+        var post = Post.forge();
+        expect(post.saveMethod({method: 'UpDATe'})).to.equal('update');
+        expect(post.saveMethod({method: 'INSERT'})).to.equal('insert');
+      });
+
+      it('should always update on patch', function() {
+        var post = Post.forge();
+        expect(post.saveMethod({patch: true})).to.equal('update');
+      });
+    });
   });
 
 };
