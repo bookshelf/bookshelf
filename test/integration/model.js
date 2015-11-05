@@ -76,7 +76,7 @@ module.exports = function(bookshelf) {
         equal(new User().item, 'test');
       });
 
-      it('doesnt have ommitted Backbone properties', function() {
+      it('doesn\'t have ommitted properties', function() {
         equal(User.prototype.changedAttributes, undefined);
         equal((new User()).changedAttributes, undefined);
       });
@@ -304,7 +304,7 @@ module.exports = function(bookshelf) {
 
     describe('refresh', function() {
       var Site = Models.Site;
-      
+
       it('will fetch a record by present attributes without an ID attribute', function() {
         Site.forge({name: 'knexjs.org'}).refresh().then(function (model) {
           expect(model.id).to.equal(1);
