@@ -74,16 +74,6 @@ _.extend(Sync.prototype, {
         fks[relatedData.key('foreignKey')] = relatedData.parentFk;
         const through = new relatedData.throughTarget(fks);
 
-        /**
-         * Fired before a `fetch` operation. A promise may be returned from the
-         * event handler for async behaviour.
-         *
-         * @event Model#fetching
-         * @param   {Model}    model      The model that has been fetched.
-         * @param   {string[]} columns    The columns being retrieved by the query.
-         * @param   {Object}   options    Options object passed to {@link Model#fetch fetch}.
-         * @returns {Promise}
-         */
         return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
           .then(function () {
             relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
@@ -157,6 +147,17 @@ _.extend(Sync.prototype, {
       // Set the query builder on the options, for access in the `fetching`
       // event handlers.
       options.query = knex;
+
+      /**
+       * Fired before a `fetch` operation. A promise may be returned from the
+       * event handler for async behaviour.
+       *
+       * @event Model#fetching
+       * @param   {Model}    model      The model that has been fetched.
+       * @param   {string[]} columns    The columns being retrieved by the query.
+       * @param   {Object}   options    Options object passed to {@link Model#fetch fetch}.
+       * @returns {Promise}
+       */
       return this.syncing.triggerThen('fetching', this.syncing, columns, options);
     }).then(() => knex.select(columns));
   }),
