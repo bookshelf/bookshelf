@@ -56,7 +56,7 @@ export default class Events extends EventEmitter {
   /**
    * @method Events#trigger
    * @description
-   * Deregister an event listener.
+   * Trigger all registered callbacks for the named event(s).
    * @see {@link http://backbonejs.org/#Events-trigger Backbone.js `Events#trigger`}
    */
   trigger(nameOrNames, ...args) {
