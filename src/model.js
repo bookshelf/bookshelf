@@ -1135,11 +1135,15 @@ const BookshelfModel = ModelBase.extend({
   /**
    * The `query` method is used to tap into the underlying Knex query builder
    * instance for the current model. If called with no arguments, it will
-   * return the query builder directly. Otherwise, it will call the specified
-   * method on the query builder, applying any additional arguments from the
-   * `model.query` call. If the method argument is a function, it will be
-   * called with the Knex query builder as the context and the first argument,
-   * returning the current model.
+   * return the query builder directly. If the first argument is a string, `query`
+   * will call the specified method on the query builder, applying any additional
+   * arguments from the `model.query` call. If the first argument is a
+   * function, it will be called with the Knex query builder as the context
+   * and the first argument, returning the current model. If the first
+   * argument is an object, it must be a dictionary of method-arguments
+   * pairs. For each pair, `query` will call the specified method on the
+   * query builder. The value is an argument or array of arguments that will
+   * be passed.
    *
    * @example
    *
@@ -1151,6 +1155,7 @@ const BookshelfModel = ModelBase.extend({
    *   });
    *
    * model
+   *   .query({whereNot: ['name', 'LIKE', '%Doe']})
    *   .query({where: {other_id: '5'}, orWhere: {key: 'value'}})
    *   .fetch()
    *   .then(function(model) {
@@ -1166,7 +1171,9 @@ const BookshelfModel = ModelBase.extend({
    *     qb.where({id: 1}).select().then(function(resp) { // ...
    *
    * @method Model#query
-   * @param {function|Object|...string=} arguments The query method.
+   * @param {function|Object|string} [method] The query method, a
+   * callback, or a dictionary of method-argument(s) pairs.
+   * @param {...mixed[]} [args] Arguments to the query method.
    * @returns {Model|QueryBuilder}
    *   Will return this model or, if called with no arguments, the underlying query builder.
    *
