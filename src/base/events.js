@@ -47,18 +47,12 @@ export default class Events extends EventEmitter {
    *   The name of the event or space separated list of events to stop listening
    *   to.
    */
-  off(nameOrNames, listener) {
+  off(nameOrNames) {
     if (nameOrNames == null) {
-      return listener == null
-        ? this.removeAllListeners()
-        : this.removeAllListeners(listener);
+      return this.removeAllListeners();
     }
 
-    each(words(nameOrNames), listener == null
-      ? name => this.removeAllListeners(name)
-      : name => this.removeAllListeners(name, listener)
-    );
-
+    each(words(nameOrNames), name => this.removeAllListeners(name));
     return this;
   }
 
