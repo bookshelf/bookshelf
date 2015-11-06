@@ -725,7 +725,7 @@ const BookshelfModel = ModelBase.extend({
    * @param {Object=}  options - Hash of options.
    * @param {boolean=} [options.require=false]
    *
-   *  Rejects the returned promise with an `EmptyError` if no records are returned.
+   *  Rejects the returned promise with an `Collection.EmptyError` if no records are returned.
    *
    * @param {Transaction=} options.transacting
    *
@@ -734,7 +734,7 @@ const BookshelfModel = ModelBase.extend({
    * @fires Model#"fetching:collection"
    * @fires Model#"fetched:collection"
    *
-   * @throws {Model.EmptyError}
+   * @throws {Collection.EmptyError}
    *
    *  Rejects the promise in the event of an empty response if the `require: true` option.
    *
@@ -1282,8 +1282,8 @@ const BookshelfModel = ModelBase.extend({
      * @class Model.NotFoundError
      * @description
      *
-     *   Thrown when no records are found by {@link Model#fetch fetch}, {@link
-     *   Model#fetchAll fetchAll} or {@link Model#refresh} when called with the
+     *   Thrown when no records are found by {@link Model#fetch fetch} or
+     *   {@link Model#refresh} when called with the
      *   `{require: true}` option.
      */
     child.NotFoundError = createError(this.NotFoundError)
