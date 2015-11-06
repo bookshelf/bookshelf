@@ -30,9 +30,9 @@ export default class Events extends EventEmitter {
    * @param {function} callback
    *   That callback to invoke whenever the event is fired.
    */
-  on(nameOrNames, handler, ...args) {
+  on(nameOrNames, handler) {
     for (const name of words(nameOrNames)) {
-      EventEmitter.prototype.on.apply(this, [name, handler, ...args]);
+      EventEmitter.prototype.on.apply(this, [name, handler]);
     }
     return this;
   }
@@ -118,13 +118,13 @@ export default class Events extends EventEmitter {
    * @param {function} callback
    *   That callback to invoke only once when the event is fired.
    */
-  once(name, callback, context) {
+  once(name, callback) {
     const once = _.once(() => {
       this.off(name, once);
       return callback.apply(this, arguments);
     });
     once._callback = callback;
-    return this.on(name, once, context);
+    return this.on(name, once);
   }
 }
 
