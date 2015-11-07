@@ -3,7 +3,10 @@
 
 import Promise from './promise';
 import events from 'events'
-import _, { each, flatten, flow, map, words } from 'lodash';
+import words from 'lodash/string/words';
+import flatten from 'lodash/array/flatten';
+import { each, map } from 'lodash/collection';
+import { flow, once } from 'lodash/function';
 
 const { EventEmitter } = events;
 
@@ -24,7 +27,7 @@ export default class Events extends EventEmitter {
    * is fired. The event string may also be a space-delimited list of several
    * event names.
    *
-   * @param {string} eventName
+   * @param {string} nameOrNames
    *   The name of the event or space separated list of events to register a
    *   callback for.
    * @param {function} callback
@@ -32,7 +35,7 @@ export default class Events extends EventEmitter {
    */
   on(nameOrNames, handler) {
     for (const name of words(nameOrNames)) {
-      EventEmitter.prototype.on.apply(this, [name, handler]);
+      super.on(name, handler);
     }
     return this;
   }
@@ -43,7 +46,7 @@ export default class Events extends EventEmitter {
    * Remove a previously-bound callback event listener from an object. If no
    * event name is specified, callbacks for all events will be removed.
    *
-   * @param {string} eventName
+   * @param {string} nameOrNames
    *   The name of the event or space separated list of events to stop listening
    *   to.
    */
@@ -63,15 +66,15 @@ export default class Events extends EventEmitter {
    * Subsequent arguments to `trigger` will be passed along to the event
    * callback.
    *
-   * @param {string} eventName
+   * @param {string} nameOrNames
    *   The name of the event to trigger. Also accepts a space separated list of
    *   event names.
-   * @param {mixed} [arguments]
+   * @param {...mixed} [args]
    *   Extra arguments to pass to the event listener callback function.
    */
   trigger(nameOrNames, ...args) {
-    for (const name of nameOrNames) {
-      EventEmitter.prototype.emit.apply(this, [name, ...args]);
+    for (const name of words(nameOrNames)) {
+      this.emit(name, ...args);
     }
     return this;
   }
@@ -90,7 +93,7 @@ export default class Events extends EventEmitter {
    * @param {string} name
    *   The event name, or a whitespace-separated list of event names, to be
    *   triggered.
-   * @param {...mixed} args
+   * @param {...mixed} [args]
    *   Arguments to be passed to any registered event handlers.
    * @returns Promise<mixed[]>
    *   A promise resolving the the resolved return values of any triggered handlers.
@@ -112,19 +115,19 @@ export default class Events extends EventEmitter {
    * syntax, the event will fire once for every event you passed in, not once
    * for a combination of all events.
    *
-   * @param {string} eventName
+   * @param {string} nameOrNames
    *   The name of the event or space separated list of events to register a
    *   callback for.
    * @param {function} callback
    *   That callback to invoke only once when the event is fired.
    */
   once(name, callback) {
-    const once = _.once(() => {
-      this.off(name, once);
-      return callback.apply(this, arguments);
+    const wrapped = once((...args) => {
+      this.off(name, wrapped);
+      return callback.apply(this, args);
     });
-    once._callback = callback;
-    return this.on(name, once);
+    wrapped._callback = callback;
+    return this.on(name, wrapped);
   }
 }
 
