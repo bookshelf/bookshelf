@@ -148,26 +148,27 @@ CollectionBase.prototype.toJSON = function(options) {
  * @description
  *
  * The set method performs a "smart" update of the collection with the passed
- * list of models. If a model in the list isn't yet in the collection it will be
- * added; if the model is already in the collection its attributes will be
- * merged; and if the collection contains any models that aren't present in the
- * list, they'll be removed. If you'd like to customize the behavior, you can
- * disable it with options: `{add: false}`, `{remove: false}`, or
- * `{merge: false}`.
+ * model or list of models. If a model in the list isn't yet in the
+ * collection it will be added; if the model is already in the collection
+ * its attributes will be merged; and if the collection contains any models
+ * that aren't present in the list, they'll be removed. If you'd like to
+ * customize the behavior, you can disable it with options: `{add: false}`,
+ * `{remove: false}`, or `{merge: false}`.
  *
  * @example
  *
  * var vanHalen = new bookshelf.Collection([eddie, alex, stone, roth]);
  * vanHalen.set([eddie, alex, stone, hagar]);
  *
- * @param {Model[]|Object[]} models Array of models or raw attribute objects.
+ * @param {Object[]|Model[]|Object|Model} models One or more models or raw
+ * attribute objects.
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
  */
 CollectionBase.prototype.set = function(models, options) {
   options = _.defaults({}, options, setOptions);
-  if (options.parse) models = this.parse(models, options);
   if (!_.isArray(models)) models = models ? [models] : [];
+  if (options.parse) models = this.parse(models, options);
   let i, l, id, model, attrs;
   const at = options.at;
   const targetModel = this.model;
@@ -334,7 +335,8 @@ CollectionBase.prototype.fetch = function() {
  *   {name: "Black Pearl"}
  * ]);
  *
- * @param {Object[]|Model[]} models Array of models or raw attribute objects.
+ * @param {Object[]|Model[]|Object|Model} models One or more models or raw
+ * attribute objects.
  * @param {Object=} options See description.
  * @returns {Collection} Self, this method is chainable.
  */
@@ -384,7 +386,8 @@ CollectionBase.prototype.remove = function(models, options) {
  * models (or attribute hashes). Calling `collection.reset()` without passing
  * any models as arguments will empty the entire collection.
  *
- * @param {Object[]|Model[]} Array of models or raw attribute objects.
+ * @param {Object[]|Model[]|Object|Model} models One or more models or raw
+ * attribute objects.
  * @param {Object} options See {@link Collection#add add}.
  * @returns {Model[]} Array of models.
  */
@@ -401,6 +404,8 @@ CollectionBase.prototype.reset = function(models, options) {
  * @method
  * @description
  * Add a model to the end of the collection.
+ * @param {Object[]|Model[]|Object|Model} model One or more models or raw
+ * attribute objects.
  * @returns {Collection} Self, this method is chainable.
  */
 CollectionBase.prototype.push = function(model, options) {
