@@ -121,7 +121,7 @@ ModelBase.prototype.idAttribute = 'id';
  * @description
  *
  * Sets the current date/time on the timestamps columns `created_at` and
- * `updated_at` for a given method.  'insert' method will only update
+ * `updated_at` for a given method. The 'update' method will only update
  * `updated_at`.  To override the default column names, assign an array
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
