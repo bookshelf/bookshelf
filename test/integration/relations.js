@@ -11,8 +11,26 @@ module.exports = function(Bookshelf) {
     var json    = function(model) {
       return JSON.parse(JSON.stringify(model));
     };
+    var sortModels = function (models) {
+      return models.sort (function (a, b) {
+        sortRelations (a.relations);
+        sortRelations (b.relations);
+        return a.attributes.id > b.attributes.id;
+      })
+    };
+    var sortRelations = function (relations) {
+      if (!relations) return;
+      if (!Object.keys (relations).length) return;
+      for (var relModel in relations) {
+        if (!relations[relModel].models)
+          continue;
+        relations[relModel].models = sortModels (relations[relModel].models);
+      }
+    };
     var checkTest = function(ctx) {
       return function(resp) {
+        if (resp.relations) sortRelations (resp.relations);
+        if (resp.models) resp.models = sortModels (resp.models);
         expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);
       };
     };
