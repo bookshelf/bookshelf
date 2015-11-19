@@ -34,7 +34,7 @@ function CollectionBase(models, options) {
  *
  * const ships = new bookshelf.Collection;
  * ships.on('fetched', function(collection, response) {
- *   // Do something after the data has been fectched from the database
+ *   // Do something after the data has been fetched from the database
  * })
  *
  * @see Events#on
