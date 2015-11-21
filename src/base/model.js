@@ -327,6 +327,10 @@ ModelBase.prototype.has = function(attr) {
  * JSON.parse} on a text field containing JSON, or explicitly typecasting a
  * boolean in a sqlite3 database response.
  *
+ * If you need to format your data before it is saved to the database, override
+ * the {@link Model#format format} method in your models.
+ *
+ *
  * @example
  *
  * // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
@@ -374,6 +378,9 @@ ModelBase.prototype.clear = function(options) {
  * it is persisted to the database. The `attributes` passed are a shallow clone
  * of the {@link Model model}, and are only used for inserting/updating - the
  * current values of the model are left intact.
+ *
+ * If you need to modify the database data before it is given to the model,
+ * override the {@link Model#parse parse} method.
  *
  * @param {Object} attributes The attributes to be converted.
  * @returns {Object} Formatted attributes.

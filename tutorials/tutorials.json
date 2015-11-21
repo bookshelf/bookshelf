@@ -6,5 +6,10 @@
    "one-to-one":   { "title": "One-to-one" },
    "one-to-many":  { "title": "One-to-many" },
    "many-to-many": { "title": "Many-to-many" },
-   "polymorphic": { "title": "Polymorphic" }
+   "polymorphic": { "title": "Polymorphic"},
+   "guides": {
+     "title": "Guides",
+     "children": ["parse-and-format"]
+   },
+   "parse-and-format": { "title": "Parse and Format" }
  }
