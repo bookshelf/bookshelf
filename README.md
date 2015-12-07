@@ -4,7 +4,7 @@ Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org
 
 It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
-The project is [hosted on GitHub](http://github.com/tgriesser/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/tgriesser/bookshelf).
+[Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/tgriesser/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/tgriesser/bookshelf).
 
 ## Introduction
 
