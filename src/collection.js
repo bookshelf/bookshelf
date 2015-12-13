@@ -40,7 +40,6 @@ const BookshelfCollection = CollectionBase.extend({
 
   /**
    * @method Collection#through
-   * @private
    * @description
    * Used to define passthrough relationships - `hasOne`, `hasMany`, `belongsTo`
    * or `belongsToMany`, "through" an `Interim` model or collection.
