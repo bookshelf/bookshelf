@@ -276,9 +276,7 @@ function Bookshelf(knex) {
   // without needing the `new` operator... to make object creation cleaner
   // and more chainable.
   function forge() {
-    const inst = Object.create(this.prototype);
-    const obj = this.apply(inst, arguments);
-    return (Object(obj) === obj ? obj : inst);
+    return new this(...arguments);
   }
 
   function builderFn(tableNameOrBuilder) {
