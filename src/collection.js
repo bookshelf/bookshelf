@@ -230,11 +230,25 @@ const BookshelfCollection = CollectionBase.extend({
    * @method Collection#create
    * @description
    *
-   * Convenience to create a new instance of a {@link Model model} within a
+   * Convenience method to create a new {@link Model model} instance within a
    * collection. Equivalent to instantiating a model with a hash of {@link
    * Model#attributes attributes}, {@link Model#save saving} the model to the
-   * database, and adding the model to the collection after being successfully
-   * created.
+   * database then adding the model to the collection.
+   *
+   * When used on a relation, `create` will automatically set foreign key
+   * attributes before persisting the `Model`.
+   *
+   * ```
+   * const { courses, ...attributes } = req.body;
+   *
+   * Student.forge(attributes).save().tap(student =>
+   *   Promise.map(courses, course => student.related('courses').create(course))
+   * ).then(student =>
+   *   res.status(200).send(student)
+   * ).catch(error =>
+   *   res.status(500).send(error.message)
+   * );
+   * ```
    *
    * @param {Object} model A set of attributes to be set on the new model.
    * @param {Object=} options
