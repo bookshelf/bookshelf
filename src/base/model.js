@@ -242,10 +242,8 @@ ModelBase.prototype.isNew = function() {
  * @param {bool}    [options.omitPivot=false] Exclude pivot values.
  * @returns {Object} Serialized model as a plain object.
  */
-ModelBase.prototype.serialize = function(
-  { shallow = false, omitPivot = false, ...rest } = {}
-) {
-
+ModelBase.prototype.serialize = function(options = {}) {
+  const { shallow = false, omitPivot = false, ...rest } = options;
   const { attributes } = this;
 
   if (!shallow) {
