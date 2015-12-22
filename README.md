@@ -75,7 +75,7 @@ var bookshelf = require('bookshelf')(knex);
 
 var User = bookshelf.Model.extend({
   tableName: 'users',
-  messages: function() {
+  posts: function() {
     return this.hasMany(Posts);
   }
 });
