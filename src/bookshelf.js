@@ -294,7 +294,10 @@ function Bookshelf(knex) {
     }
 
     return builder.on('query', data =>
-      this.trigger('query', data)
+      this.trigger('query', {
+          sql: data,
+          query: builder.toString()
+      })
     );
   }
 
