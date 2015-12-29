@@ -248,7 +248,12 @@ function Bookshelf(knex) {
             throw e;
           }
           if (!process.browser) {
-            require(plugin)(this, options)
+            console.log("REQUIRING PLUGIN");
+            console.log(plugin);
+            console.log(options);
+            console.log(this);
+            require.main.require(plugin)(this, options)
+            // require(plugin)(this, options)
           }
         }
       } else if (_.isArray(plugin)) {
@@ -294,7 +299,10 @@ function Bookshelf(knex) {
     }
 
     return builder.on('query', data =>
-      this.trigger('query', data)
+      this.trigger('query', {
+          sql: data,
+          query: builder.toString()
+      })
     );
   }
 
