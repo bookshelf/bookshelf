@@ -175,7 +175,11 @@ ModelBase.prototype.set = function(key, val, options) {
   const prev    = this._previousAttributes;
 
   // Check for changes of `id`.
-  if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+  if (this.idAttribute in attrs) {
+    this.id = attrs[this.idAttribute];
+  } else if(this.parsedIdAttribute in attrs) {
+    this.id = attrs[this.parsedIdAttribute];
+  }
 
   // For each `set` attribute, update or delete the current value.
   for (const attr in attrs) {
