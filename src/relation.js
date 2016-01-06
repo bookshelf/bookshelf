@@ -303,6 +303,9 @@ export default RelationBase.extend({
       }
     });
 
+    // Keep track of the number of related objects are assigned to parentModels
+    let assignedCount = 0;
+
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     for (const model of parentModels) {
@@ -316,6 +319,9 @@ export default RelationBase.extend({
         const formatted = model.format(clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
+      if (grouped[groupedKey]) {
+        assignedCount = assignedCount + grouped[groupedKey].length;
+      }
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);
@@ -326,6 +332,16 @@ export default RelationBase.extend({
     related.map(model => {
       model.attributes = model.parse(model.attributes)
     });
+
+    // Check that the number of assigned related models is at least equal to
+    // the number of related models provided as input.
+    if (related.length > assignedCount) {
+      const errorMsg = [
+        'Could not assign all retrieved relations to parent models.',
+        'Please check that the idAttribute of your parent model is correct.'
+      ].join(' ');
+      throw new Error(errorMsg);
+    }
 
     return related;
   },
