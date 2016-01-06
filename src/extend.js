@@ -34,8 +34,12 @@ module.exports = function(protoProps, staticProps) {
   if (isFunction(Parent.extended)) Parent.extended(Child);
 
   // Create a parsedIdAttribute for use when setting `model.id` in `Model.set`
-  tmpParsedObj = Child.prototype.parse({[this.idAttribute]: null});
-  Child.prototype.parsedIdAttribute = Object.keys(tmpParsedObj)[0];
+  if (isFunction(Child.prototype.parse)) {
+    tmpParsedObj = Child.prototype.parse({[Child.prototype.idAttribute]: null});
+    Child.prototype.parsedIdAttribute = Object.keys(tmpParsedObj)[0];
+  } else {
+    Child.prototype.parsedIdAttribute = Child.prototype.idAttribute;
+  }
 
   return Child;
 };
