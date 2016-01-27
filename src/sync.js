@@ -153,9 +153,16 @@ _.extend(Sync.prototype, {
        * event handler for async behaviour.
        *
        * @event Model#fetching
-       * @param   {Model}    model      The model that has been fetched.
-       * @param   {string[]} columns    The columns being retrieved by the query.
-       * @param   {Object}   options    Options object passed to {@link Model#fetch fetch}.
+       * @param {Model} model
+       *   The model which is about to be fetched.
+       * @param {string[]} columns
+       *   The columns to be retrieved by the query.
+       * @param {Object} options
+       *   Options object passed to {@link Model#fetch fetch}.
+       * @param {QueryBuilder} options.query
+       *   Query builder to be used for fetching. This can be modified to
+       *   change the query before it is executed.
+       *
        * @returns {Promise}
        */
       return this.syncing.triggerThen('fetching', this.syncing, columns, options);
