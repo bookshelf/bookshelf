@@ -21,16 +21,15 @@ module.exports = function(bookshelf) {
       del:    function() { return Promise.resolve({}); }
     };
 
-    var checkCount = function(ctx) {
-      var dialect = bookshelf.knex.client.dialect;
-      var formatNumber = {
-        mysql:      _.identity,
-        sqlite3:    _.identity,
-        postgresql: function(count) { return count.toString() }
-      }[dialect];
-      return function(actual, expected) {
-        expect(actual, formatNumber(expected));
-      }
+    var dialect = bookshelf.knex.client.dialect;
+    var formatNumber = {
+      mysql:      _.identity,
+      sqlite3:    _.identity,
+      postgresql: function(count) { return count.toString() }
+    }[dialect];
+
+    var checkCount = function(actual, expected) {
+      expect(actual).to.equal(formatNumber(expected));
     };
 
     describe('extend/constructor/initialize', function() {

@@ -78,6 +78,9 @@ _.extend(Sync.prototype, {
           .then(function () {
             relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
           });
+      } else if(relatedData.type === 'hasMany' && options.isCount) {
+        const fk = relatedData.key('foreignKey');
+        knex.where(fk, '=', relatedData.parentFk);
       }
     })
   }),
@@ -89,6 +92,7 @@ _.extend(Sync.prototype, {
       , options = this.options;
 
     return Promise.bind(this).then(function () {
+      options.isCount = true;
       return this.constrain();
     }).then(function() {
       return this.syncing.triggerThen('counting', this.syncing, options);
