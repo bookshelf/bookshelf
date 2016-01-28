@@ -1,4 +1,4 @@
-if(!global._babelPolyfill) { require('babel-polyfill'); }
+require('babel-polyfill');
 
 /**
  * (c) 2014 Tim Griesser

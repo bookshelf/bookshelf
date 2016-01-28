@@ -27,7 +27,7 @@
     "active record"
   ],
   "dependencies": {
-    "babel-polyfill": "^6.2.0",
+    "babel-polyfill": "^6.0.16",
     "bluebird": "^2.9.4",
     "chalk": "^1.0.0",
     "create-error": "~0.3.1",
