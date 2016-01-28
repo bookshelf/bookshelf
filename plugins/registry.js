@@ -24,7 +24,8 @@ module.exports = function (bookshelf) {
       this._models[name] = ModelCtor;
     }
     return (this._models[name] = this._models[name] || bookshelf.resolve(name));
-  };
+  }.bind(bookshelf);
+
   bookshelf.collection = function(name, CollectionCtor, staticProps) {
     this._collections = this._collections || Object.create(null);
     if (CollectionCtor) {
@@ -35,7 +36,7 @@ module.exports = function (bookshelf) {
       this._collections[name] = CollectionCtor;
     }
     return (this._collections[name] = this._collections[name] || bookshelf.resolve(name));
-  };
+  }.bind(bookshelf);
 
   // Provide a custom function to resolve the location of a model or collection.
   bookshelf.resolve = function(name) { return void 0; };

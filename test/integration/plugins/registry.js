@@ -50,6 +50,20 @@ module.exports = function(Bookshelf) {
 				expect(Bookshelf.model.bind(Bookshelf, 'Model', Bookshelf.Model)).to.throw();
 			});
 
+			describe('with different calling context', function() {
+				beforeEach(function() {
+					Bookshelf._models = {};
+					this.Model = Bookshelf.Model.extend({
+						tableName: 'records'
+					});
+
+					this.ModelObj = Bookshelf.model.call(null, 'Model', this.Model);
+				});
+
+				it('returns the registered model', function() {
+					expect(this.ModelObj).to.equal(this.Model);
+				});
+			});
 		});
 
 		describe('Registering Models with plain object', function() {
@@ -105,6 +119,20 @@ module.exports = function(Bookshelf) {
 				expect(Bookshelf.collection.bind(Bookshelf, 'Collection', Bookshelf.Collection)).to.throw();
 			});
 
+			describe('with different calling context', function() {
+				beforeEach(function() {
+					Bookshelf._collections = {};
+					this.Collection = Bookshelf.Collection.extend({
+						property: {}
+					});
+
+					this.collection = Bookshelf.collection.call(null, 'Collection', this.Collection);
+				});
+
+				it('returns the registered collection', function() {
+					expect(this.collection).to.equal(this.Collection);
+				});
+			});
 		});
 
 		describe('Custom Relations', function() {
@@ -182,7 +210,7 @@ module.exports = function(Bookshelf) {
 		});
 
 		describe('bookshelf.resolve', function() {
-			
+
 			it('resolves the path to a model with a custom function', function() {
 				var one = Bookshelf.Model.extend({});
 				var two = Bookshelf.Model.extend({});
