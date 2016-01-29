@@ -13,16 +13,14 @@ module.exports = function(bookshelf) {
     var json    = function(model) {
       return JSON.parse(JSON.stringify(model));
     };
-    var checkCount = function(ctx) {
-      var formatNumber = {
-        mysql:      _.identity,
-        sqlite3:    _.identity,
-        postgresql: function(count) { return count.toString() }
-      }[dialect];
-      return function(actual, expected) {
-        expect(actual, formatNumber(expected));
-      }
-    };
+    var formatNumber = {
+      mysql:      _.identity,
+      sqlite3:    _.identity,
+      postgresql: function(count) { return count.toString() }
+    }[dialect];
+    var checkCount = function(actual, expected) {
+      expect(actual).to.equal(formatNumber(expected));
+    }
     var checkTest = function(ctx) {
       return function(resp) {
         expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);

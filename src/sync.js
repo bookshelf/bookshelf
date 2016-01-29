@@ -56,41 +56,30 @@ _.extend(Sync.prototype, {
     return this.select();
   }),
 
-  // Add relational constraints required for either a `count` or `select` query.
-  constrain: Promise.method(function() {
-    const knex        = this.query;
-    const options     = this.options;
-    const relatedData = this.syncing.relatedData;
-    const fks         = {};
-
-    // Set the query builder on the options, in-case we need to
-    // access in the `fetching` event handlers.
-    options.query = knex;
-
-    // Inject all appropriate select costraints dealing with the relation
-    // into the `knex` query builder for the current instance.
-    if (relatedData) return Promise.try(function () {
-      if (relatedData.isThrough()) {
-        fks[relatedData.key('foreignKey')] = relatedData.parentFk;
-        const through = new relatedData.throughTarget(fks);
-
-        return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
-          .then(function () {
-            relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
-          });
-      }
-    })
-  }),
-
   // Runs a `count` query on the database, adding any necessary relational
   // constraints. Returns a promise that resolves to an integer count.
   count: Promise.method(function (column) {
-    const knex    = this.query
-      , options = this.options;
+    const knex      = this.query
+      , options     = this.options
+      , relatedData = this.syncing.relatedData;
 
-    return Promise.bind(this).then(function () {
-      return this.constrain();
-    }).then(function() {
+    return Promise.bind(this).then(function() {
+      if(relatedData) {
+        if (relatedData.isThrough()) {
+
+          const fks = {};
+          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
+          const through = new relatedData.throughTarget(fks);
+          relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+
+        } else if(relatedData.type === 'hasMany') {
+
+          const fk = relatedData.key('foreignKey');
+          knex.where(fk, '=', relatedData.parentFk);
+
+        }
+      }
+    }).then(function () {
       return this.syncing.triggerThen('counting', this.syncing, options);
     }).then(function() {
       return knex.count((column || '*') + ' as count');
@@ -119,7 +108,30 @@ _.extend(Sync.prototype, {
       .where({grouping: 'columns'})
       .some('value.length');
 
-    return Promise.resolve(this.constrain()).tap(() => {
+    return Promise.bind(this).then(function() {
+
+      // Inject all appropriate select costraints dealing with the relation
+      // into the `knex` query builder for the current instance.
+      if (relatedData) return Promise.try(function () {
+        if (relatedData.isThrough()) {
+
+          // Set the query builder on the options, in-case we need to
+          // access in the `fetching` event handlers.
+          options.query = knex;
+
+          const fks = {};
+
+          fks[relatedData.key('foreignKey')] = relatedData.parentFk;
+          const through = new relatedData.throughTarget(fks);
+
+          return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
+            .then(function () {
+              relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+            });
+        }
+      });
+
+    }).tap(() => {
 
       // If this is a relation, apply the appropriate constraints.
       if (relatedData) {
