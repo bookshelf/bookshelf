@@ -731,8 +731,8 @@ const BookshelfModel = ModelBase.extend({
    *
    *   Optionally run the query in a transaction.
    *
-   * @fires Model#"fetching:collection"
-   * @fires Model#"fetched:collection"
+   * @fires Model#fetching:collection
+   * @fires Model#fetched:collection
    *
    * @throws {Collection.EmptyError}
    *
@@ -749,7 +749,7 @@ const BookshelfModel = ModelBase.extend({
          * Fired before a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#"fetching:collection"
+         * @event Model#fetching:collection
          * @param {Model}    collection The collection that has been fetched.
          * @param {string[]} columns    The columns being retrieved by the query.
          * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -762,7 +762,7 @@ const BookshelfModel = ModelBase.extend({
          * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#"fetched:collection"
+         * @event Model#fetched:collection
          * @param {Model}  collection The collection that has been fetched.
          * @param {Object} resp       The Knex query response.
          * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
