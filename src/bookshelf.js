@@ -25,7 +25,7 @@ import Errors from './errors';
  */
 function Bookshelf(knex) {
   const bookshelf = {
-    VERSION: '0.9.1'
+    VERSION: '0.9.2'
   };
 
   const Model = bookshelf.Model = BookshelfModel.extend({
