@@ -9647,7 +9647,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetching">"fetching"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">columns</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_sync.js.html#line151" class="source-link">source</a></h4>
+          ><a href="docs/src_sync.js.html#line157" class="source-link">source</a></h4>
 
         
     
@@ -9680,7 +9680,7 @@ event handler for async behaviour.</p>
       
 
       <div class="description">
-        <p>The model that has been fetched.</p>
+        <p>The model which is about to be fetched.</p>
         
       </div>
 
@@ -9698,7 +9698,7 @@ event handler for async behaviour.</p>
       
 
       <div class="description">
-        <p>The columns being retrieved by the query.</p>
+        <p>The columns to be retrieved by the query.</p>
         
       </div>
 
@@ -9717,6 +9717,32 @@ event handler for async behaviour.</p>
 
       <div class="description">
         <p>Options object passed to <a href="#Model-instance-fetch"><code>fetch</code></a>.</p>
+        
+          
+
+<ul class="params">
+  
+    <li>
+      <code class="param"><span class="item-name">query</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >QueryBuilder</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Query builder to be used for fetching. This can be modified to
+  change the query before it is executed.</p>
+        
+      </div>
+
+    </li>
+  
+</ul>
+
         
       </div>
 
@@ -18002,7 +18028,13 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.9.1</strong> — <small><em>November 4, 2015</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.0...0.9.1">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.9.2</strong> — <small><em>February 17, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2">Diff</a></p>
+<ul>
+<li>Permit up to Knex 0.11.0 via <code>peerDependencies</code>.</li>
+<li><code>Model.forge</code> works for ES6 classes. #924</li>
+<li>Fix <code>Collection#count</code> for <code>hasMany</code> relations. #1115</li>
+</ul>
+<p><strong>0.9.1</strong> — <small><em>November 4, 2015</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.0...0.9.1">Diff</a></p>
 <ul>
 <li><a href="#Events-instance-off"><code>Events#off</code></a> can now deregister multiple methods at once. #983</li>
 <li>Permit Knex 0.10.0 via <code>peerDependencies</code>. #998</li>
@@ -18249,7 +18281,7 @@ event handlers (for validations, etc).</p>
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
           
             on
-          December 22nd 2015
+          February 18th 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">

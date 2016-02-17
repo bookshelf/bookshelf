@@ -1,4 +1,4 @@
-require('babel-polyfill');
+if (!global._babelPolyfill) { require('babel-polyfill'); }
 
 /**
  * (c) 2014 Tim Griesser
@@ -6,7 +6,7 @@ require('babel-polyfill');
  * For all details and documentation:
  * http://bookshelfjs.org
  *
- * version 0.9.1
+ * version 0.9.2
  *
  */
 module.exports = require('./lib/bookshelf').default;
