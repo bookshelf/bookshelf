@@ -974,7 +974,7 @@ const BookshelfModel = ModelBase.extend({
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
-      return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
+      return this.triggerThen((method === 'insert' ? 'saving creating' : 'saving updating'), this, attrs, options)
       .bind(this)
       .then(function() {
         return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
