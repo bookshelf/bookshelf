@@ -517,6 +517,8 @@ const BookshelfModel = ModelBase.extend({
    * attribute matches its {@link Model#idAttribute idAttribute}, then fetch by
    * all available fields.
    *
+   * If not attributes are set on the model, it fetches the first row of the table.
+   *
    * @param {Object} options
    *   A hash of options. See {@link Model#fetch} for details.
    * @returns {Promise<Model>}
@@ -537,6 +539,8 @@ const BookshelfModel = ModelBase.extend({
    * Fetches a {@link Model model} from the database, using any {@link
    * Model#attributes attributes} currently set on the model to form a `select`
    * query.
+   *
+   * If not attributes are set on the model, it fetches the first row of the table.
    *
    * A {@link Model#event:fetching "fetching"} event will be fired just before the
    * record is fetched; a good place to hook into for validation. {@link
