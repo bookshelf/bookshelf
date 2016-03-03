@@ -2,7 +2,7 @@
 // ---------------
 import _ from 'lodash';
 import { clone, isEmpty } from 'lodash/lang';
-import { groupBy, map, reduce } from 'lodash/collection';
+import { groupBy, map, reduce, each } from 'lodash/collection';
 import { startsWith } from 'lodash/string';
 import inflection from 'inflection';
 
@@ -84,7 +84,6 @@ export default RelationBase.extend({
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
   key: function(keyName) {
-    let idKeyName;
     if (this[keyName]) return this[keyName];
     switch (keyName) {
       case 'otherKey':
@@ -95,12 +94,13 @@ export default RelationBase.extend({
         break;
       case 'foreignKey':
         switch (this.type) {
-          case 'morphTo':
-            idKeyName = (this.columnNames && this.columnNames[1])
+          case 'morphTo': {
+            const idKeyName = (this.columnNames && this.columnNames[1])
               ? this.columnNames[1]
               : this.morphName + '_id';
             this[keyName] = idKeyName;
             break;
+          }
           case 'belongsTo':
             this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
             break;
@@ -282,7 +282,7 @@ export default RelationBase.extend({
 
   // Groups the related response according to the type of relationship
   // we're handling, for easy attachment to the parent models.
-  eagerPair: function(relationName, related, parentModels) {
+  eagerPair(relationName, related, parentModels) {
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
       parentModels = _.filter(parentModels, (m) => {
@@ -305,7 +305,7 @@ export default RelationBase.extend({
 
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
-    for (const model of parentModels) {
+    each(parentModels, (model) => {
       let groupedKey;
       if (!this.isInverse()) {
         groupedKey = model.id;
@@ -319,7 +319,7 @@ export default RelationBase.extend({
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);
-    }
+    })
 
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
@@ -532,9 +532,7 @@ const pivotHelpers = {
       if (method === 'delete') pending.push(this._processPivot(method, null, options));
     }
     if (!_.isArray(ids)) ids = ids ? [ids] : [];
-    for (const id of ids) {
-      pending.push(this._processPivot(method, id, options));
-    }
+    each(ids, (id) => pending.push(this._processPivot(method, id, options)))
     return Promise.all(pending).return(this);
   }),
 

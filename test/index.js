@@ -1,4 +1,3 @@
-require('babel-polyfill');
 var Promise = require('../lib/base/promise').default;
 
 Promise.longStackTraces();

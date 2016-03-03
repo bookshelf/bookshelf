@@ -34,9 +34,9 @@ export default class Events extends EventEmitter {
    *   That callback to invoke whenever the event is fired.
    */
   on(nameOrNames, handler) {
-    for (const name of words(nameOrNames)) {
-      super.on(name, handler);
-    }
+    each(words(nameOrNames), (name) => {
+      super.on(name, handler)
+    })
     return this;
   }
 
@@ -73,9 +73,9 @@ export default class Events extends EventEmitter {
    *   Extra arguments to pass to the event listener callback function.
    */
   trigger(nameOrNames, ...args) {
-    for (const name of words(nameOrNames)) {
-      this.emit(name, ...args);
-    }
+    each(words(nameOrNames), (name) => {
+      this.emit(name, ...args)
+    })
     return this;
   }
 
