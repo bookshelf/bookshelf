@@ -20,7 +20,7 @@ process.stderr.on('data', function(data) {
 });
 
 var Bookshelf = require('../bookshelf');
-var base      = require('./base');
+var base = require('./base');
 
 global.sinon = require('sinon');
 
