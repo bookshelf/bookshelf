@@ -1,0 +1,26 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "before": true
+  },
+  "ecmaFeatures": {
+    "destructuring": true,
+    "modules": true
+  },
+  "rules": {
+    "no-console": 1,
+    "no-const-assign": 2,
+    "no-unused-vars": [1, {"vars": "all", "args": "none"}],
+    "no-var": 1,
+    "prefer-const": 1,
+    "no-trailing-spaces": 1
+  }
+}

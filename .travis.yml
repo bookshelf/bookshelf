@@ -6,6 +6,7 @@ sudo: false
 node_js:
   - '0.10'
   - '0.12'
+  - '4'
 
 before_script:
   - psql -c 'create database bookshelf_test;' -U postgres
