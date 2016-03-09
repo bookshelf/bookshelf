@@ -44,7 +44,7 @@
     "babel-preset-es2015": "^6.0.14",
     "bookshelf-jsdoc-theme": "^0.1.2",
     "chai": "~1.9.1",
-    "eslint": "^2.2.0",
+    "eslint": "2.2.0",
     "istanbul": "^0.3.19",
     "jsdoc": "^3.4.0",
     "knex": "^0.10.0",
