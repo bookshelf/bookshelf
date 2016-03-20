@@ -1,4 +1,78 @@
-import _ from 'lodash';
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <link rel="icon" href="images/favicon.ico" />
+      <link rel="canonical" href="http://bookshelfjs.org" />
+      <title>src/bookshelf.js</title>
+      <!--
+      ._.                                                      ._.
+      | |    ______             _        _          _  __      | |
+      | |    | ___ \           | |      | |        | |/ _|     | |
+      | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+      | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+      | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+      | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+      |                                                          |
+      \________\  /__________________________________\  /________/
+                \/                                    \/
+      -->
+      <script src="scripts/prettify/prettify.js"></script>
+      <script src="scripts/prettify/lang-css.js"></script>
+      <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!-- Import fonts from Open Font Library -->
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/noto-serif" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+      <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+
+    <a class="fork-me" href="https://github.com/tgriesser/bookshelf">
+      Fork me on GitHub
+    </a>
+
+    <!--
+      Not sure what this is.
+
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" class="navicon-button x">
+        <div class="navicon"></div>
+      </label>
+
+      <label for="nav-trigger" class="overlay"></label>
+    -->
+
+    <nav class="sidebar">
+      <a href="../index.html#">
+  <header class="nav-header">
+    <img class="nav-logo" src="images/bookshelf-icon.svg" />
+    <h1>Bookshelf.js</h1>
+  </header>
+</a>
+
+      
+    </nav>
+
+    <div class="main-container source-page">
+      <div class="main-column">
+        
+          <h1 class="page-title">src/bookshelf.js</h1>
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _ from 'lodash';
 import helpers from './helpers';
 
 // We've supplemented `Events` with a `triggerThen`
@@ -34,9 +108,9 @@ function Bookshelf(knex) {
 
     // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
     // mixing in the correct `builder` method, as well as the `relation` method,
-    // passing in the correct `Model` & `Collection` constructors for later reference.
+    // passing in the correct `Model` &amp; `Collection` constructors for later reference.
     _relation(type, Target, options) {
-      if (type !== 'morphTo' && !_.isFunction(Target)) {
+      if (type !== 'morphTo' &amp;&amp; !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
           _.result(this, 'tableName') + ' ' + type + ' relation');
       }
@@ -102,7 +176,7 @@ function Bookshelf(knex) {
      *   Specify a column to count - rows with null values in this column will be excluded.
      * @param {Object=} options
      *   Hash of options.
-     * @returns {Promise<Number>}
+     * @returns {Promise&lt;Number>}
      *   A promise resolving to the number of matching rows.
      */
     count(column, options) {
@@ -117,7 +191,7 @@ function Bookshelf(knex) {
      * Simple helper function for retrieving all instances of the given model.
      *
      * @see Model#fetchAll
-     * @returns {Promise<Collection>}
+     * @returns {Promise&lt;Collection>}
      */
     fetchAll(options) {
       return this.forge().fetchAll(options);
@@ -216,7 +290,7 @@ function Bookshelf(knex) {
      *    Callback containing transaction logic. The callback should return a
      *    promise.
      *
-     * @returns {Promise<mixed>}
+     * @returns {Promise&lt;mixed>}
      *    A promise resolving to the value returned from {@link
      *    Bookshelf~transactionCallback transactionCallback}.
      */
@@ -234,7 +308,7 @@ function Bookshelf(knex) {
      * @see Bookshelf#transaction
      *
      * @param {Transaction} transaction
-     * @returns {Promise<mixed>}
+     * @returns {Promise&lt;mixed>}
      */
 
     // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
@@ -319,3 +393,44 @@ Bookshelf.initialize = function(knex) {
 
 // Finally, export `Bookshelf` to the world.
 export default Bookshelf;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+      </div>
+
+      <footer>
+        <div>
+          Documentation generated by
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+          
+            on
+          February 18th 2016
+        </div>
+        <div>
+          <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
+            "Fork me on GitHub" ribbon
+          </a>
+          Copyright © 2013 Aral Balkan
+        </div>
+      </footer>
+    </div>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+    <script src="assets/knex.min.js"></script>
+    <script src="../build/bookshelf.js"></script>
+    <script>
+      var knex = Knex({client: 'websql'});
+      var bookshelf = Bookshelf(knex);
+    </script>
+
+  </body>
+</html>

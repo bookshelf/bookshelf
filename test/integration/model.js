@@ -21,16 +21,14 @@ module.exports = function(bookshelf) {
       del:    function() { return Promise.resolve({}); }
     };
 
-    var checkCount = function(ctx) {
-      var dialect = bookshelf.knex.client.dialect;
-      var formatNumber = {
-        mysql:      _.identity,
-        sqlite3:    _.identity,
-        postgresql: function(count) { return count.toString() }
-      }[dialect];
-      return function(actual, expected) {
-        expect(actual, formatNumber(expected));
-      }
+    var dialect = bookshelf.knex.client.dialect;
+    var formatNumber = {
+      mysql:      _.identity,
+      sqlite3:    _.identity,
+      postgresql: function(count) { return count.toString() }
+    }[dialect];
+    var checkCount = function(actual, expected) {
+      expect(actual, formatNumber(expected));
     };
 
     describe('extend/constructor/initialize', function() {
@@ -695,12 +693,12 @@ module.exports = function(bookshelf) {
 
       it('resets query after completing', function() {
         var posts =  Models.Post.collection();
-        posts.query('where', 'blog_id', 2).count()
+        posts.query('where', 'blog_id', 1).count()
           .then(function(count)  {
             checkCount(count, 2);
             return posts.count();
           })
-          .then(function(count) { checkCount(count, 2); });
+          .then(function(count) { checkCount(count, 5); });
       });
 
     });

@@ -1,5 +1,11 @@
 ## Change Log
 
+**0.9.2** — <small>_February 17, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2)
+
+* Permit up to Knex 0.11.0 via `peerDependencies`.
+* `Model.forge` works for ES6 classes. #924
+* Fix `Collection#count` for `hasMany` relations. #1115
+
 **0.9.1** — <small>_November 4, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.0...0.9.1)
 
 * {@link Events#off} can now deregister multiple methods at once. #983

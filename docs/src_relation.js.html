@@ -1,8 +1,82 @@
-// Relation
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <link rel="icon" href="images/favicon.ico" />
+      <link rel="canonical" href="http://bookshelfjs.org" />
+      <title>src/relation.js</title>
+      <!--
+      ._.                                                      ._.
+      | |    ______             _        _          _  __      | |
+      | |    | ___ \           | |      | |        | |/ _|     | |
+      | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+      | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+      | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+      | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+      |                                                          |
+      \________\  /__________________________________\  /________/
+                \/                                    \/
+      -->
+      <script src="scripts/prettify/prettify.js"></script>
+      <script src="scripts/prettify/lang-css.js"></script>
+      <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!-- Import fonts from Open Font Library -->
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/noto-serif" rel="stylesheet" type="text/css"/>
+      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+      <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+
+    <a class="fork-me" href="https://github.com/tgriesser/bookshelf">
+      Fork me on GitHub
+    </a>
+
+    <!--
+      Not sure what this is.
+
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger" class="navicon-button x">
+        <div class="navicon"></div>
+      </label>
+
+      <label for="nav-trigger" class="overlay"></label>
+    -->
+
+    <nav class="sidebar">
+      <a href="../index.html#">
+  <header class="nav-header">
+    <img class="nav-logo" src="images/bookshelf-icon.svg" />
+    <h1>Bookshelf.js</h1>
+  </header>
+</a>
+
+      
+    </nav>
+
+    <div class="main-container source-page">
+      <div class="main-column">
+        
+          <h1 class="page-title">src/relation.js</h1>
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Relation
 // ---------------
 import _ from 'lodash';
 import { clone, isEmpty } from 'lodash/lang';
-import { groupBy, map, reduce, each } from 'lodash/collection';
+import { groupBy, map, reduce } from 'lodash/collection';
 import { startsWith } from 'lodash/string';
 import inflection from 'inflection';
 
@@ -33,7 +107,7 @@ export default RelationBase.extend({
 
       // If the parent object is eager loading, and it's a polymorphic `morphTo` relation,
       // we can't know what the target will be until the models are sorted and matched.
-      if (this.type === 'morphTo' && !parent._isEager) {
+      if (this.type === 'morphTo' &amp;&amp; !parent._isEager) {
         this.target = Helpers.morphCandidate(this.candidates, attributes[this.key('morphKey')]);
         this.targetTableName   = _.result(this.target.prototype, 'tableName');
         this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
@@ -57,7 +131,7 @@ export default RelationBase.extend({
   // which includes any additional keys for the relation.
   through: function(source, Target, options) {
     const type = this.type;
-    if (type !== 'hasOne' && type !== 'hasMany' && type !== 'belongsToMany' && type !== 'belongsTo') {
+    if (type !== 'hasOne' &amp;&amp; type !== 'hasMany' &amp;&amp; type !== 'belongsToMany' &amp;&amp; type !== 'belongsTo') {
       throw new Error('`through` is only chainable from `hasOne`, `belongsTo`, `hasMany`, or `belongsToMany`');
     }
 
@@ -84,6 +158,7 @@ export default RelationBase.extend({
   // Generates and returns a specified key, for convenience... one of
   // `foreignKey`, `otherKey`, `throughForeignKey`.
   key: function(keyName) {
+    let idKeyName;
     if (this[keyName]) return this[keyName];
     switch (keyName) {
       case 'otherKey':
@@ -94,19 +169,18 @@ export default RelationBase.extend({
         break;
       case 'foreignKey':
         switch (this.type) {
-          case 'morphTo': {
-            const idKeyName = (this.columnNames && this.columnNames[1])
+          case 'morphTo':
+            idKeyName = (this.columnNames &amp;&amp; this.columnNames[1])
               ? this.columnNames[1]
               : this.morphName + '_id';
             this[keyName] = idKeyName;
             break;
-          }
           case 'belongsTo':
             this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
             break;
           default:
             if (this.isMorph()) {
-              this[keyName] = (this.columnNames && this.columnNames[1])
+              this[keyName] = (this.columnNames &amp;&amp; this.columnNames[1])
                 ? this.columnNames[1]
                 : this.morphName + '_id';
               break;
@@ -116,7 +190,7 @@ export default RelationBase.extend({
         }
         break;
       case 'morphKey':
-        this[keyName] = (this.columnNames && this.columnNames[0])
+        this[keyName] = (this.columnNames &amp;&amp; this.columnNames[0])
           ? this.columnNames[0]
           : this.morphName + '_type';
         break;
@@ -131,7 +205,7 @@ export default RelationBase.extend({
   selectConstraints: function(knex, options) {
     const resp = options.parentResponse;
 
-    // The `belongsToMany` and `through` relations have joins & pivot columns.
+    // The `belongsToMany` and `through` relations have joins &amp; pivot columns.
     if (this.isJoined()) this.joinClauses(knex);
 
     // Call the function, if one exists, to constrain the eager loaded query.
@@ -152,13 +226,13 @@ export default RelationBase.extend({
 
     // If this is a single relation and we're not eager loading,
     // limit the query to a single item.
-    if (this.isSingle() && !resp) knex.limit(1);
+    if (this.isSingle() &amp;&amp; !resp) knex.limit(1);
 
     // Finally, add (and validate) the where conditions, necessary for constraining the relation.
     this.whereClauses(knex, resp);
   },
 
-  // Inject & validates necessary `through` constraints for the current model.
+  // Inject &amp; validates necessary `through` constraints for the current model.
   joinColumns: function(knex) {
     const columns = [];
     const joinTable = this.joinTable();
@@ -241,7 +315,7 @@ export default RelationBase.extend({
 
   // Fetches all `eagerKeys` from the current relation.
   eagerKeys: function(response) {
-    const key = this.isInverse() && !this.isThrough()
+    const key = this.isInverse() &amp;&amp; !this.isThrough()
       ? this.key('foreignKey')
       : this.parentIdAttribute;
     return _(response).pluck(key).uniq().value();
@@ -282,7 +356,7 @@ export default RelationBase.extend({
 
   // Groups the related response according to the type of relationship
   // we're handling, for easy attachment to the parent models.
-  eagerPair(relationName, related, parentModels) {
+  eagerPair: function(relationName, related, parentModels) {
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
       parentModels = _.filter(parentModels, (m) => {
@@ -290,13 +364,13 @@ export default RelationBase.extend({
       });
     }
 
-    // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
+    // If this is a `through` or `belongsToMany` relation, we need to cleanup &amp; setup the `interim` model.
     if (this.isJoined()) related = this.parsePivot(related);
 
     // Group all of the related models for easier association with their parent models.
     const grouped = groupBy(related, (m) => {
       if (m.pivot) {
-        return this.isInverse() && this.isThrough() ? m.pivot.id :
+        return this.isInverse() &amp;&amp; this.isThrough() ? m.pivot.id :
           m.pivot.get(this.key('foreignKey'));
       } else {
         return this.isInverse() ? m.id : m.get(this.key('foreignKey'));
@@ -305,7 +379,7 @@ export default RelationBase.extend({
 
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
-    each(parentModels, (model) => {
+    for (const model of parentModels) {
       let groupedKey;
       if (!this.isInverse()) {
         groupedKey = model.id;
@@ -319,7 +393,7 @@ export default RelationBase.extend({
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);
-    })
+    }
 
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
@@ -430,7 +504,7 @@ const pivotHelpers = {
    *   A hash of options.
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
-   * @returns {Promise<Collection>}
+   * @returns {Promise&lt;Collection>}
    *   A promise resolving to the updated Collection.
    */
   attach(ids, options) {
@@ -460,7 +534,7 @@ const pivotHelpers = {
    *   A hash of options.
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
-   * @returns {Promise<undefined>}
+   * @returns {Promise&lt;undefined>}
    *   A promise resolving to `undefined`.
    */
   detach(ids, options) {
@@ -494,7 +568,7 @@ const pivotHelpers = {
    *   Causes promise to be rejected with an Error if no rows were updated.
    * @param {Transaction} [options.transacting]
    *   Optionally run the query in a transaction.
-   * @returns {Promise<Number>}
+   * @returns {Promise&lt;Number>}
    *   A promise resolving to number of rows updated.
    */
   updatePivot: function(attributes, options) {
@@ -532,7 +606,9 @@ const pivotHelpers = {
       if (method === 'delete') pending.push(this._processPivot(method, null, options));
     }
     if (!_.isArray(ids)) ids = ids ? [ids] : [];
-    each(ids, (id) => pending.push(this._processPivot(method, id, options)))
+    for (const id of ids) {
+      pending.push(this._processPivot(method, id, options));
+    }
     return Promise.all(pending).return(this);
   }),
 
@@ -579,7 +655,7 @@ const pivotHelpers = {
     // Grab the `knex` query builder for the current model, and
     // check if we have any additional constraints for the query.
     const builder = this._builder(relatedData.joinTable());
-    if (options && options.query) {
+    if (options &amp;&amp; options.query) {
       Helpers.query.call(null, {_knex: builder}, [options.query]);
     }
 
@@ -600,7 +676,7 @@ const pivotHelpers = {
     }
     if (method === 'update') {
       return builder.where(data).update(item).then(function (numUpdated) {
-        if (options && options.require === true && numUpdated === 0) {
+        if (options &amp;&amp; options.require === true &amp;&amp; numUpdated === 0) {
           throw new Error('No rows were updated');
         }
         return numUpdated;
@@ -638,3 +714,44 @@ const pivotHelpers = {
   })
 
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+      </div>
+
+      <footer>
+        <div>
+          Documentation generated by
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+          
+            on
+          February 18th 2016
+        </div>
+        <div>
+          <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
+            "Fork me on GitHub" ribbon
+          </a>
+          Copyright © 2013 Aral Balkan
+        </div>
+      </footer>
+    </div>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.24/bluebird.min.js"></script>
+    <script src="assets/knex.min.js"></script>
+    <script src="../build/bookshelf.js"></script>
+    <script>
+      var knex = Knex({client: 'websql'});
+      var bookshelf = Bookshelf(knex);
+    </script>
+
+  </body>
+</html>
