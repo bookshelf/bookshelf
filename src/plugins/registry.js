@@ -1,10 +1,10 @@
+import _ from 'lodash';
+
 // Registry Plugin -
 // Create a central registry of model/collection constructors to
 // help with the circular reference problem, and for convenience in relations.
 // -----
 module.exports = function (bookshelf) {
-  'use strict';
-  var _ = require('lodash');
 
   function preventOverwrite(store, name) {
     if (store[name]) throw new Error(name + ' is already defined in the registry');
@@ -53,12 +53,15 @@ module.exports = function (bookshelf) {
     return input;
   }
 
-  var Model = bookshelf.Model;
-  var Collection = bookshelf.Collection;
+  const { Collection, Model } = bookshelf;
 
-  // Re-implement the `bookshelf.Model` relation methods to include a check for the registered model.
-  _.each(['hasMany', 'hasOne', 'belongsToMany', 'morphOne', 'morphMany', 'belongsTo', 'through'], function(method) {
-    var original = Model.prototype[method];
+  // Re-implement the `bookshelf.Model` relation methods to include a check for
+  // the registered model.
+  _.each([
+    'belongsTo', 'belongsToMany', 'hasMany', 'hasOne', 'morphMany', 'morphOne',
+    'through'
+  ], method => {
+    const original = Model.prototype[method];
     Model.prototype[method] = function(Target) {
       // The first argument is always a model, so resolve it and call the original method.
       return original.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
@@ -67,7 +70,7 @@ module.exports = function (bookshelf) {
 
   // `morphTo` takes the relation name first, and then a variadic set of models so we
   // can't include it with the rest of the relational methods.
-  var morphTo = Model.prototype.morphTo;
+  const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
     return morphTo.apply(this, [relationName].concat(_.map(_.rest(arguments), function(model) {
       return resolveModel(model);
@@ -75,7 +78,7 @@ module.exports = function (bookshelf) {
   };
 
   // The `through` method exists on the Collection as well, for `hasMany` / `belongsToMany` through relations.
-  var collectionThrough = Collection.prototype.through;
+  const collectionThrough = Collection.prototype.through;
   Collection.prototype.through = function(Target) {
     return collectionThrough.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
   };

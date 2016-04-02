@@ -242,7 +242,7 @@ function Bookshelf(knex) {
     plugin(plugin, options) {
       if (_.isString(plugin)) {
         try {
-          require('../plugins/' + plugin)(this, options);
+          require('./plugins/' + plugin)(this, options);
         } catch (e) {
           if (e.code !== 'MODULE_NOT_FOUND') {
             throw e;
