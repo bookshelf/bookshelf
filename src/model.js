@@ -736,15 +736,26 @@ const BookshelfModel = ModelBase.extend({
    */
   orderBy(sort, order) {
     const tableName = this.constructor.prototype.tableName;
+    const idAttribute = this.constructor.prototype.idAttribute ?
+      this.constructor.prototype.idAttribute : 'id';
 
-    const _order = order || (sort.startsWith('-') ? 'DESC' : 'ASC');
+    let _sort;
 
-    let _sort = sort.startsWith('-') ? sort.slice(1) : sort;
+    if (sort && sort.startsWith('-')) {
+      _sort = sort.slice(1);
+    } else if (sort) {
+      _sort = sort;
+    } else {
+      _sort = idAttribute;
+    }
+
+    const _order = order || (
+      (sort && sort.startsWith('-')) ? 'DESC' : 'ASC'
+    );
 
     if (_sort.indexOf('.') === -1) {
       _sort = `${tableName}.${_sort}`;
     }
-
 
     return this.query(qb => {
       qb.orderBy(_sort, _order);
@@ -763,8 +774,9 @@ const BookshelfModel = ModelBase.extend({
    * in the options to this method.
    *
    * To perform pagination, include a `limit` and _either_ `offset` or `page`.
-   * If an invalid limit, offset, or page parameter is passed
-   * (i.e., limit < 1, offset < 0, page < 1), an error will be thrown.
+   *
+   * The defaults are page 1 (offset 0) and limit 10 when no parameters or invalid
+   * parameters are passed.
    *
    * Below is an example showing the user of a JOIN query with sort/ordering,
    * pagination, and related models.
@@ -781,6 +793,7 @@ const BookshelfModel = ModelBase.extend({
    * .fetchPage({
    *    limit: 15, // Defaults to 10 if not specified
    *    page: 3, // Defaults to 1 if not specified; same as {offset: 30} with limit of 15.
+   *    withRelated: ['engine'] // Passed to Model#fetchAll
    * })
    * .then(function (results) {
    *    console.log(results); // Paginated results object with metadata example below
@@ -800,24 +813,29 @@ const BookshelfModel = ModelBase.extend({
    * @param options {object}
    *    The pagination options, plus any additional options that will be passed to
    *    {@link Model#fetchAll}
-   * @returns {Promise<Collection>}
+   * @returns {Promise<Model|null>}
    */
   fetchPage(options) {
     const {limit, page, offset, ...fetchOptions} = options;
-    const _limit = limit ? parseInt(limit) : 10;
-    const _page = page ? parseInt(page) : 1;
-    const _offset = offset ? parseInt(offset) : _limit * (_page - 1);
 
-    if (_limit < 1) {
-      throw new Error(`Requested limit: ${limit}. Limit must be greater than 0.`);
+    let _limit = parseInt(limit);
+    let _page = parseInt(page);
+    let _offset = parseInt(offset);
+
+    if (Number.isNaN(_limit) || !Number.isInteger(_limit) || _limit < 0) {
+      _limit = 10;
     }
 
-    if (_page < 1) {
-      throw new Error(`Requested page: ${page}. Results start at page 1.`);
-    }
-
-    if (_offset < 0) {
-      throw new Error(`Requested offset: ${offset}. The first row has offset 0.`);
+    if (page && Number.isInteger(_page) && _page > 0) {
+      // Request by page number, calculate offset
+      _offset = _limit * (_page - 1);
+    } else if (offset && Number.isInteger(_offset) && _offset >= 0) {
+      // Request by offset, calculate page
+      _page = Math.floor(_offset / _limit) + 1;
+    } else {
+      // Defaults for erroneous or not defined page/offset
+      _page = 1;
+      _offset = 0;
     }
 
     const tableName = this.constructor.prototype.tableName;
@@ -845,7 +863,7 @@ const BookshelfModel = ModelBase.extend({
         'orderByBasic',
         'orderByRaw',
         'groupByBasic',
-        'groupByRaw',
+        'groupByRaw'
       ];
       const counter = this.constructor.forge();
 
@@ -864,7 +882,7 @@ const BookshelfModel = ModelBase.extend({
         .fetchAll()
 
         .then(result => {
-          const metadata = { page, limit, offset };
+          const metadata = { page: _page, limit: _limit, offset: _offset };
 
           if (result && result.length == 1) {
             metadata.total = result.models[0].get('count');
