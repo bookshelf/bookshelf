@@ -800,7 +800,7 @@ const BookshelfModel = ModelBase.extend({
    * @param options {object}
    *    The pagination options, plus any additional options that will be passed to
    *    {@link Model#fetchAll}
-   * @returns {Promise<Model|null>}
+   * @returns {Promise<Collection>}
    */
   fetchPage(options) {
     const {limit, page, offset, ...fetchOptions} = options;
