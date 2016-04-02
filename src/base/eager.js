@@ -20,7 +20,6 @@ _.extend(EagerBase.prototype, {
   // This helper function is used internally to determine which relations
   // are necessary for fetching based on the `model.load` or `withRelated` option.
   fetch: Promise.method(function(options) {
-    let relationName, related;
     const target      = this.target;
     const handled     = this.handled = {};
     const withRelated = this.prepWithRelated(options.withRelated);
@@ -32,8 +31,8 @@ _.extend(EagerBase.prototype, {
     // Eager load each of the `withRelated` relation item, splitting on '.'
     // which indicates a nested eager load.
     for (const key in withRelated) {
-      related = key.split('.');
-      relationName = related[0];
+      const related = key.split('.');
+      const relationName = related[0];
 
       // Add additional eager items to an array, to load at the next level in the query.
       if (related.length > 1) {
@@ -62,7 +61,7 @@ _.extend(EagerBase.prototype, {
     // an array of pending deferred objects, which will handle
     // all necessary pairing with parent objects, etc.
     const pendingDeferred = [];
-    for (relationName in handled) {
+    for (const relationName in handled) {
       pendingDeferred.push(this.eagerFetch(relationName, handled[relationName], _.extend({}, options, {
         isEager: true,
         withRelated: subRelated[relationName],
