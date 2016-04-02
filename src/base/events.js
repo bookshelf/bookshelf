@@ -3,13 +3,13 @@
 
 import Promise from './promise';
 import events from 'events'
-import words from 'lodash/string/words';
 import flatten from 'lodash/array/flatten';
 import { each, map } from 'lodash/collection';
 import { flow, once } from 'lodash/function';
 
 const { EventEmitter } = events;
 
+const eventNames = text => text.split(/\s+/);
 const flatMap = flow(map, flatten);
 
 /**
@@ -34,7 +34,7 @@ export default class Events extends EventEmitter {
    *   That callback to invoke whenever the event is fired.
    */
   on(nameOrNames, handler) {
-    each(words(nameOrNames), (name) => {
+    each(eventNames(nameOrNames), (name) => {
       super.on(name, handler)
     })
     return this;
@@ -55,7 +55,7 @@ export default class Events extends EventEmitter {
       return this.removeAllListeners();
     }
 
-    each(words(nameOrNames), name => this.removeAllListeners(name));
+    each(eventNames(nameOrNames), name => this.removeAllListeners(name));
     return this;
   }
 
@@ -73,7 +73,7 @@ export default class Events extends EventEmitter {
    *   Extra arguments to pass to the event listener callback function.
    */
   trigger(nameOrNames, ...args) {
-    each(words(nameOrNames), (name) => {
+    each(eventNames(nameOrNames), (name) => {
       this.emit(name, ...args)
     })
     return this;
@@ -99,7 +99,7 @@ export default class Events extends EventEmitter {
    *   A promise resolving the the resolved return values of any triggered handlers.
    */
   triggerThen(nameOrNames, ...args) {
-    const names = words(nameOrNames);
+    const names = eventNames(nameOrNames);
     const listeners = flatMap(names, this.listeners, this);
     return Promise.map(listeners, listener =>
       listener.apply(this, args)

@@ -1,13 +1,13 @@
+import _ from 'lodash';
+
 // Visibility plugin -
 // Useful for hiding/showing particular attributes on `toJSON`.
 // -----
 module.exports = function(Bookshelf) {
-  "use strict";
-  var _      = require('lodash');
-  var proto  = Bookshelf.Model.prototype;
-  var toJSON = proto.toJSON;
+  const proto  = Bookshelf.Model.prototype;
+  const toJSON = proto.toJSON;
 
-  var Model = Bookshelf.Model.extend({
+  const Model = Bookshelf.Model.extend({
 
     // Replace with an array of properties to blacklist on `toJSON`.
     hidden: null,
@@ -19,7 +19,7 @@ module.exports = function(Bookshelf) {
     // they're assumed to override whatever is on the model's prototype.
     constructor: function() {
       proto.constructor.apply(this, arguments);
-      var options = arguments[1] || {};
+      const options = arguments[1] || {};
       if (options.visible) {
         this.visible = _.clone(options.visible);
       }
@@ -31,7 +31,7 @@ module.exports = function(Bookshelf) {
     // Checks the `visible` and then `hidden` properties to see if there are
     // any keys we don't want to show when the object is json-ified.
     toJSON: function() {
-      var json = toJSON.apply(this, arguments);
+      let json = toJSON.apply(this, arguments);
       if (this.visible) {
         json = _.pick.apply(_, [json].concat(this.visible));
       }

@@ -1,26 +1,28 @@
+import _ from 'lodash';
+import Promise from 'bluebird';
+
 // Virtuals Plugin
 // Allows getting/setting virtual (computed) properties on model instances.
 // -----
 module.exports = function (Bookshelf) {
-  "use strict";
-  var _         = require('lodash');
-  var Promise   = require('bluebird');
-  var proto     = Bookshelf.Model.prototype;
 
-  var Model = Bookshelf.Model.extend({
+  const proto = Bookshelf.Model.prototype;
+  const Model = Bookshelf.Model.extend({
     outputVirtuals: true,
 
     // If virtual properties have been defined they will be created
     // as simple getters on the model.
     constructor: function (attributes, options) {
       proto.constructor.apply(this, arguments);
-      var virtuals = this.virtuals;
+      const { virtuals } = this;
       if (_.isObject(virtuals)) {
-        for (var virtualName in virtuals) {
-          var getter, setter;
+        for (const virtualName in virtuals) {
+          let getter, setter;
           if (virtuals[virtualName].get) {
             getter = virtuals[virtualName].get;
-            setter = virtuals[virtualName].set ? virtuals[virtualName].set : undefined;
+            setter = virtuals[virtualName].set
+              ? virtuals[virtualName].set
+              : undefined;
           } else {
             getter = virtuals[virtualName];
           }
@@ -37,7 +39,7 @@ module.exports = function (Bookshelf) {
     // controls including virtuals on function-level and overrides the
     // model-level setting
     toJSON: function(options) {
-      var attrs = proto.toJSON.call(this, options);
+      let attrs = proto.toJSON.call(this, options);
       if (!options || options.virtuals !== false) {
         if ((options && options.virtuals === true) || this.outputVirtuals) {
           attrs = _.extend(attrs, getVirtuals(this));
@@ -48,7 +50,7 @@ module.exports = function (Bookshelf) {
 
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
-      var virtuals = this.virtuals;
+      const { virtuals } = this;
       if (_.isObject(virtuals) && virtuals[attr]) {
         return getVirtual(this, attr);
       }
@@ -62,13 +64,13 @@ module.exports = function (Bookshelf) {
         return this;
       }
 
-      // Determine whether we're in the middle of a patch operation based on the 
+      // Determine whether we're in the middle of a patch operation based on the
       // existance of the `patchAttributes` object.
-      var isPatching = this.patchAttributes != null;
+      const isPatching = this.patchAttributes != null;
 
       // Handle `{key: value}` style arguments.
       if (_.isObject(key)) {
-        var nonVirtuals = _.omit(key, setVirtual, this);
+        const nonVirtuals = _.omit(key, setVirtual, this);
         if (isPatching) {
           _.extend(this.patchAttributes, nonVirtuals);
         }
@@ -86,13 +88,13 @@ module.exports = function (Bookshelf) {
       if (isPatching) {
         this.patchAttributes[key] = value;
       }
-      
+
       return proto.set.apply(this, arguments);
     },
 
     // Override `save` to keep track of state while doing a `patch` operation.
     save: function(key, value, options) {
-      var attrs;
+      let attrs;
 
       // Handle both `"key", value` and `{key: value}` -style arguments.
       if (key == null || typeof key === "object") {
@@ -104,7 +106,7 @@ module.exports = function (Bookshelf) {
       }
 
       // Determine whether which kind of save we will do, update or insert.
-      var method = options.method = this.saveMethod(options);
+      options.method = this.saveMethod(options);
 
       // Check if we're going to do a patch, in which case deal with virtuals now.
       if (options.method === 'update' && options.patch) {
@@ -145,19 +147,19 @@ module.exports = function (Bookshelf) {
   });
 
   // Underscore methods that we want to implement on the Model.
-  var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+  const modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
 
   // Mix in each Underscore method as a proxy to `Model#attributes`.
   _.each(modelMethods, function(method) {
     Model.prototype[method] = function() {
-      var args = _.toArray(arguments);
+      const args = _.toArray(arguments);
       args.unshift(_.extend({}, this.attributes, getVirtuals(this)));
       return _[method].apply(_, args);
     };
   });
 
   function getVirtual(model, virtualName) {
-    var virtuals = model.virtuals;
+    const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
       return virtuals[virtualName].get ? virtuals[virtualName].get.call(model)
         : virtuals[virtualName].call(model);
@@ -165,9 +167,10 @@ module.exports = function (Bookshelf) {
   }
 
   function getVirtuals(model) {
-    var virtuals, attrs = {};
-    if (virtuals = model.virtuals) {
-      for (var virtualName in virtuals) {
+    const { virtuals } = model;
+    const attrs = {};
+    if (virtuals != null) {
+      for (const virtualName in virtuals) {
         attrs[virtualName] = getVirtual(model, virtualName);
       }
     }
@@ -175,7 +178,7 @@ module.exports = function (Bookshelf) {
   }
 
   function setVirtual(value, key) {
-    var virtual = this.virtuals && this.virtuals[key];
+    const virtual = this.virtuals && this.virtuals[key];
     if (virtual) {
       if (virtual.set) {
         virtual.set.call(this, value);
