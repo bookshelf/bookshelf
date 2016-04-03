@@ -1,6 +1,12 @@
 import Promise from 'bluebird';
 import { remove as _remove, assign as _assign } from 'lodash';
 
+function isInteger(value) {
+  return typeof value === "number" &&
+    isFinite(value) &&
+    Math.floor(value) === value;
+}
+
 /**
  * Exports a plugin to pass into the bookshelf instance, i.e.:
  *
@@ -143,14 +149,14 @@ module.exports = function paginationPlugin (bookshelf) {
         let _page = parseInt(page);
         let _offset = parseInt(offset);
 
-        if (Number.isNaN(_limit) || !Number.isInteger(_limit) || _limit < 0) {
+        if (Number.isNaN(_limit) || !isInteger(_limit) || _limit < 0) {
             _limit = 10;
         }
 
-        if (page && Number.isInteger(_page) && _page > 0) {
+        if (page && isInteger(_page) && _page > 0) {
             // Request by page number, calculate offset
             _offset = _limit * (_page - 1);
-        } else if (offset && Number.isInteger(_offset) && _offset >= 0) {
+        } else if (offset && isInteger(_offset) && _offset >= 0) {
             // Request by offset, calculate page
             _page = Math.floor(_offset / _limit) + 1;
         } else {
