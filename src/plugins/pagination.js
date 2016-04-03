@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { remove as _remove } from 'lodash';
+import { remove as _remove, assign as _assign } from 'lodash';
 
 /**
  * Exports a plugin to pass into the bookshelf instance, i.e.:
@@ -58,7 +58,7 @@ module.exports = function paginationPlugin (bookshelf) {
 
         let _sort;
 
-        if (sort && sort.startsWith('-')) {
+        if (sort && sort.indexOf('-') === 0) {
             _sort = sort.slice(1);
         } else if (sort) {
             _sort = sort;
@@ -67,7 +67,7 @@ module.exports = function paginationPlugin (bookshelf) {
         }
 
         const _order = order || (
-            (sort && sort.startsWith('-')) ? 'DESC' : 'ASC'
+            (sort && sort.indexOf('-') === 0) ? 'DESC' : 'ASC'
         );
 
         if (_sort.indexOf('.') === -1) {
@@ -170,7 +170,7 @@ module.exports = function paginationPlugin (bookshelf) {
             return pager
 
                 .query(qb => {
-                    Object.assign(qb, this.query().clone());
+                    _assign(qb, this.query().clone());
                     qb.limit.apply(qb, [_limit]);
                     qb.offset.apply(qb, [_offset]);
                     return null;
@@ -191,7 +191,7 @@ module.exports = function paginationPlugin (bookshelf) {
             return counter
 
                 .query(qb => {
-                    Object.assign(qb, this.query().clone());
+                    _assign(qb, this.query().clone());
 
                     // Remove grouping and ordering. Ordering is unnecessary
                     // for a count, and grouping returns the entire result set
@@ -223,8 +223,8 @@ module.exports = function paginationPlugin (bookshelf) {
 
         return Promise.join(paginate(), count())
             .then(([rows, metadata]) => {
-                const pageData = Object.assign(metadata, {rowCount: rows.length});
-                return Object.assign(rows, {pagination: pageData});
+                const pageData = _assign(metadata, {rowCount: rows.length});
+                return _assign(rows, {pagination: pageData});
             });
     }
 }
