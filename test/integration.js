@@ -49,7 +49,7 @@ module.exports = function(Bookshelf) {
       } else if (dialect === 'postgresql') {
         require('./integration/json')(bookshelf);
       }
-      
+
       require('./integration/model')(bookshelf);
       require('./integration/collection')(bookshelf);
       require('./integration/relations')(bookshelf);
@@ -57,6 +57,7 @@ module.exports = function(Bookshelf) {
       require('./integration/plugins/virtuals')(bookshelf);
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);
+      require('./integration/plugins/pagination')(bookshelf);
     });
 
   });
