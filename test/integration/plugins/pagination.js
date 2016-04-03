@@ -5,24 +5,24 @@ var _ = require('lodash');
 
 module.exports = function(bookshelf) {
 
-	describe('Pagination Plugin', function() {
+    describe('Pagination Plugin', function() {
 
-		before(function () {
+        before(function () {
             return require('../helpers/migration')(bookshelf).then(function() {
                 return require('../helpers/inserts')(bookshelf);
             });
-		})
+        })
 
         bookshelf.plugin('pagination');
-		var Models = require('../helpers/objects')(bookshelf).Models;
+        var Models = require('../helpers/objects')(bookshelf).Models;
 
-		describe('orderBy', function() {
+        describe('orderBy', function() {
 
-			it('returns results in the correct order', function () {
+            it('returns results in the correct order', function () {
                 var asc = Models.Customer.forge().orderBy('id', 'ASC').fetchAll()
-					.then(function (result) {
-						return result.toJSON().map(function (row) {return row.id});
-					});
+                    .then(function (result) {
+                        return result.toJSON().map(function (row) {return row.id});
+                    });
 
                 var desc = Models.Customer.forge().orderBy('id', 'DESC').fetchAll()
                     .then(function (result) {
@@ -33,7 +33,7 @@ module.exports = function(bookshelf) {
                     .then(function (results) {
                         expect(results[0].reverse()).to.eql(results[1]);
                     });
-			});
+            });
 
             it('returns DESC order results with a minus sign', function () {
                 return Models.Customer.forge().orderBy('-id').fetchAll().then(function (results) {
@@ -41,7 +41,7 @@ module.exports = function(bookshelf) {
                 });
             })
 
-		});
+        });
 
         describe('fetchPage', function () {
 
@@ -85,5 +85,5 @@ module.exports = function(bookshelf) {
                 })
             })
         })
-	});
+    });
 };
