@@ -398,6 +398,38 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('fetchAll', function() {
+
+      var Site = Models.Site;
+
+      it('triggers `fetching:collection` and `fetched:collection` events', function() {
+        var site = new Site();
+        var isFetchingTriggered = false;
+        var isFetchedTriggered = false;
+
+        site.on('fetching:collection', function() {
+          equal(isFetchingTriggered, false);
+          equal(isFetchedTriggered, false);
+          isFetchingTriggered = true;
+        });
+
+        site.on('fetched:collection', function() {
+          equal(isFetchingTriggered, true);
+          equal(isFetchedTriggered, false);
+          isFetchedTriggered = true;
+        });
+
+        site.fetchAll().then(function() {
+          equal(isFetchingTriggered, true);
+          equal(isFetchedTriggered, true);
+        }).catch(function() {
+          equal(true, false);
+        });
+
+      });
+
+    });
+
     describe('save', function() {
 
       var Site = Models.Site;

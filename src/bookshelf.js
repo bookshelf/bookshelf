@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import helpers from './helpers';
 
-// We've supplemented `Events` with a `triggerThen`
-// method to allow for asynchronous event handling via promises. We also
-// mix this into the prototypes of the main objects in the library.
+// We've supplemented `Events` with a `triggerThen` method to allow for
+// asynchronous event handling via promises. We also mix this into the
+// prototypes of the main objects in the library.
 import Events from './base/events';
 
 // All core modules required for the bookshelf instance.
@@ -25,16 +25,17 @@ import Errors from './errors';
  */
 function Bookshelf(knex) {
   const bookshelf = {
-    VERSION: '0.9.2'
+    VERSION: '0.9.3'
   };
 
   const Model = bookshelf.Model = BookshelfModel.extend({
 
     _builder: builderFn,
 
-    // The `Model` constructor is referenced as a property on the `Bookshelf` instance,
-    // mixing in the correct `builder` method, as well as the `relation` method,
-    // passing in the correct `Model` & `Collection` constructors for later reference.
+    // The `Model` constructor is referenced as a property on the `Bookshelf`
+    // instance, mixing in the correct `builder` method, as well as the
+    // `relation` method, passing in the correct `Model` & `Collection`
+    // constructors for later reference.
     _relation(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
@@ -164,8 +165,8 @@ function Bookshelf(knex) {
 
   });
 
-  // The collection also references the correct `Model`, specified above, for creating
-  // new `Model` instances in the collection.
+  // The collection also references the correct `Model`, specified above, for
+  // creating new `Model` instances in the collection.
   Collection.prototype.model = Model;
   Model.prototype.Collection = Collection;
 
@@ -173,9 +174,10 @@ function Bookshelf(knex) {
     Model, Collection
   });
 
-  // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes in the
-  // `Events` object. It also contains the version number, and a `Transaction` method
-  // referencing the correct version of `knex` passed into the object.
+  // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes
+  // in the `Events` object. It also contains the version number, and a
+  // `Transaction` method referencing the correct version of `knex` passed into
+  // the object.
   _.extend(bookshelf, Events, Errors, {
 
     /**
@@ -237,12 +239,13 @@ function Bookshelf(knex) {
      * @returns {Promise<mixed>}
      */
 
-    // Provides a nice, tested, standardized way of adding plugins to a `Bookshelf` instance,
-    // injecting the current instance into the plugin, which should be a module.exports.
+    // Provides a nice, tested, standardized way of adding plugins to a
+    // `Bookshelf` instance, injecting the current instance into the plugin,
+    // which should be a module.exports.
     plugin(plugin, options) {
       if (_.isString(plugin)) {
         try {
-          require('../plugins/' + plugin)(this, options);
+          require('./plugins/' + plugin)(this, options);
         } catch (e) {
           if (e.code !== 'MODULE_NOT_FOUND') {
             throw e;
@@ -309,9 +312,9 @@ function Bookshelf(knex) {
   return bookshelf;
 }
 
-// Constructor for a new `Bookshelf` object, it accepts
-// an active `knex` instance and initializes the appropriate
-// `Model` and `Collection` constructors for use in the current instance.
+// Constructor for a new `Bookshelf` object, it accepts an active `knex`
+// instance and initializes the appropriate `Model` and `Collection`
+// constructors for use in the current instance.
 Bookshelf.initialize = function(knex) {
   helpers.warn("Bookshelf.initialize is deprecated, pass knex directly: require('bookshelf')(knex)")
   return new Bookshelf(knex)

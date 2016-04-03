@@ -1,5 +1,9 @@
 ## Change Log
 
+**0.9.3** — <small>_April 3, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.2...0.9.3)
+
+* Bugfix: Restore support for `camelCase` and `color:separated` event names. #1184
+
 **0.9.2** — <small>_February 17, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2)
 
 * Permit up to Knex 0.11.0 via `peerDependencies`.

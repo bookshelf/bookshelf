@@ -504,7 +504,7 @@ databases.</p></div>
                   >bookshelf</span
                 >.</span><span class="name"><a href="#Bookshelf-instance-knex">knex</a></span><span class="type-signature"> :Knex</span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line266" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line269" class="source-link">source</a></h4>
 
         
     
@@ -599,7 +599,7 @@ databases.</p></div>
                   >bookshelf</span
                 >.</span><span class="parameters"><span class="name"><a href="#Bookshelf-instance-transaction">transaction</a></span><span class="parenthesis">(</span><span class="item-name">transactionCallback</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<mixed></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line181" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line183" class="source-link">source</a></h4>
 
         
     
@@ -761,7 +761,7 @@ Bookshelf.transaction(function(t) {
           
           <span class="parameters"><span class="name"><a href="#Bookshelf~transactionCallback">transactionCallback</a></span><span class="parenthesis">(</span><span class="item-name">transaction</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<mixed></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line227" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line229" class="source-link">source</a></h4>
 
         
     
@@ -1292,7 +1292,7 @@ Override this function to add custom initialization, such as event listeners.</p
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-collection">collection</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">models</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line69" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line70" class="source-link">source</a></h4>
 
         
     
@@ -1446,7 +1446,7 @@ the current <code>model</code> as the collection's target.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line91" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line92" class="source-link">source</a></h4>
 
         
     
@@ -1801,7 +1801,7 @@ you'll have to explicitly call it, along these lines:</em></p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-fetchAll">fetchAll</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line112" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line113" class="source-link">source</a></h4>
 
         
     
@@ -1908,7 +1908,7 @@ you'll have to explicitly call it, along these lines:</em></p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-forge">forge</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attributes</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line48" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line49" class="source-link">source</a></h4>
 
         
     
@@ -11370,7 +11370,7 @@ option will prevent sorting. If you define an <a href="#Collection-instance-init
                   >Collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-static-forge">forge</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">models</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_bookshelf.js.html#line133" class="source-link">source</a></h4>
+          ><a href="docs/src_bookshelf.js.html#line134" class="source-link">source</a></h4>
 
         
     
@@ -18028,7 +18028,11 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.9.2</strong> — <small><em>February 17, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.9.3</strong> — <small><em>April 3, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.2...0.9.3">Diff</a></p>
+<ul>
+<li>Bugfix: Restore support for <code>camelCase</code> and <code>color:separated</code> event names. #1184</li>
+</ul>
+<p><strong>0.9.2</strong> — <small><em>February 17, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2">Diff</a></p>
 <ul>
 <li>Permit up to Knex 0.11.0 via <code>peerDependencies</code>.</li>
 <li><code>Model.forge</code> works for ES6 classes. #924</li>
@@ -18281,7 +18285,7 @@ event handlers (for validations, etc).</p>
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
           
             on
-          February 18th 2016
+          April 3rd 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
