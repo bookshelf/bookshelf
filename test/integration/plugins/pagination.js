@@ -10,34 +10,9 @@ module.exports = function (bookshelf) {
     bookshelf.plugin('pagination');
     var Models = require('../helpers/objects')(bookshelf).Models;
 
-    describe('orderBy', function () {
 
-      it('returns results in the correct order', function () {
-        var asc = Models.Customer.forge().orderBy('id', 'ASC').fetchAll()
-          .then(function (result) {
-            return result.toJSON().map(function (row) { return row.id });
-          });
 
-        var desc = Models.Customer.forge().orderBy('id', 'DESC').fetchAll()
-          .then(function (result) {
-            return result.toJSON().map(function (row) { return row.id });
-          })
-
-        return Promise.join(asc, desc)
-          .then(function (results) {
-            expect(results[0].reverse()).to.eql(results[1]);
-          });
-      });
-
-      it('returns DESC order results with a minus sign', function () {
-        return Models.Customer.forge().orderBy('-id').fetchAll().then(function (results) {
-          expect(parseInt(results.models[0].get('id'))).to.equal(4);
-        });
-      })
-
-    });
-
-    describe('fetchPage', function () {
+    describe('Model instance fetchPage', function () {
 
       it('fetches a single page of results with defaults', function () {
         return Models.Customer.forge().fetchPage().then(function (results) {
@@ -45,39 +20,54 @@ module.exports = function (bookshelf) {
             expect(results).to.have.property(prop);
           });
 
-          ['total', 'limit', 'offset', 'page', 'rowCount'].forEach(function (prop) {
+          ['rowCount', 'pageCount', 'page', 'pageSize'].forEach(function (prop) {
             expect(results.pagination).to.have.property(prop);
           })
 
-          var pagination = results.pagination;
+          var md = results.pagination;
 
-          expect(pagination.limit).to.equal(10);
-          expect(pagination.offset).to.equal(0);
-          expect(pagination.page).to.equal(1);
-          expect(parseInt(pagination.total)).to.equal(4);
+          expect(md.rowCount).to.equal(4);
+          expect(md.pageCount).to.equal(1);
+          expect(md.page).to.equal(1);
+          expect(md.pageSize).to.equal(10);
         })
       })
 
+      it('returns the limit and offset instead of page and pageSize', function () {
+        return Models.Customer.forge().fetchPage({ limit: 2, offset: 2 }).then(function (results) {
+          var md = results.pagination;
+          ['rowCount', 'pageCount', 'limit', 'offset'].forEach(function (prop) {
+            expect(md).to.have.property(prop);
+          })
+        });
+      })
+
       it('fetches a page of results with specified page size', function () {
-        return Models.Customer.forge().fetchPage({ limit: 2 }).then(function (results) {
-          expect(parseInt(results.pagination.rowCount)).to.equal(2);
-          expect(parseInt(results.pagination.total)).to.equal(4);
+        return Models.Customer.forge().fetchPage({ pageSize: 2 }).then(function (results) {
+          var md = results.pagination;
+          expect(md.rowCount).to.equal(4);
+          expect(md.pageCount).to.equal(2);
+          expect(md.page).to.equal(1);
         })
       })
 
       it('fetches a page with specified offset', function () {
         return Models.Customer.forge().orderBy('id', 'ASC').fetchPage({ limit: 2, offset: 2 }).then(function (results) {
-          expect(parseInt(results.models[0].get('id'))).to.equal(3);
-          expect(parseInt(results.models[1].get('id'))).to.equal(4);
+          var m = results.models
+          expect(parseInt(m[0].get('id'))).to.equal(3);
+          expect(parseInt(m[1].get('id'))).to.equal(4);
         })
       })
 
       it('fetches a page by page number', function () {
-        return Models.Customer.forge().orderBy('id', 'ASC').fetchPage({ limit: 2, page: 2 }).then(function (results) {
-          expect(parseInt(results.models[0].get('id'))).to.equal(3);
-          expect(parseInt(results.models[1].get('id'))).to.equal(4);
+        return Models.Customer.forge().orderBy('id', 'ASC').fetchPage({ pageSize: 2, page: 2 }).then(function (results) {
+          var m = results.models;
+          expect(parseInt(m[0].get('id'))).to.equal(3);
+          expect(parseInt(m[1].get('id'))).to.equal(4);
         })
       })
     })
+
+
   });
 };
