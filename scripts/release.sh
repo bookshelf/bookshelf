@@ -43,7 +43,7 @@ original_postinstall="$(get_property 'package.json' 'scripts.postinstall')"
 delete_property 'package.json' 'scripts.postinstall'
 
 # We must force add because these are usually ignored.
-git add --force --all index.html docs build lib
+git add --force --all index.html docs lib
 
 # Update version in package.json before running tests (tests will catch if the
 # version number is out of sync).
