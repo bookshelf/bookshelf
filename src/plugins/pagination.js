@@ -1,11 +1,9 @@
 import Promise from 'bluebird';
 import { remove as _remove, assign as _assign } from 'lodash';
 
-function isInteger(value) {
-  return typeof value === "number" &&
-    isFinite(value) &&
-    Math.floor(value) === value;
-}
+const DEFAULT_LIMIT = 10;
+const DEFAULT_OFFSET = 0;
+const DEFAULT_PAGE = 1;
 
 /**
  * Exports a plugin to pass into the bookshelf instance, i.e.:
@@ -34,58 +32,6 @@ function isInteger(value) {
 module.exports = function paginationPlugin (bookshelf) {
 
     /**
-     * @method Model#orderBy
-     * @since 0.9.3
-     * @description
-     *
-     * Specifies the column to sort on and sort order.
-     *
-     * The order parameter is optional, and defaults to 'ASC'. You may
-     * also specify 'DESC' order by prepending a hyphen to the sort column
-     * name. `orderBy("date", 'DESC')` is the same as `orderBy("-date")`.
-     *
-     * Unless specified using dot notation (i.e., "table.column"), the default
-     * table will be the table name of the model `orderBy` was called on.
-     *
-     * @example
-     *
-     * Cars.forge().orderBy('color', 'ASC').fetchAll()
-     *    .then(function (rows) { // ...
-     *
-     * @param sort {string}
-     *   Column to sort on
-     * @param order {string}
-     *   Ascending ('ASC') or descending ('DESC') order
-     */
-    bookshelf.Model.prototype.orderBy = function (sort, order) {
-        const tableName = this.constructor.prototype.tableName;
-        const idAttribute = this.constructor.prototype.idAttribute ?
-            this.constructor.prototype.idAttribute : 'id';
-
-        let _sort;
-
-        if (sort && sort.indexOf('-') === 0) {
-            _sort = sort.slice(1);
-        } else if (sort) {
-            _sort = sort;
-        } else {
-            _sort = idAttribute;
-        }
-
-        const _order = order || (
-            (sort && sort.indexOf('-') === 0) ? 'DESC' : 'ASC'
-        );
-
-        if (_sort.indexOf('.') === -1) {
-            _sort = `${tableName}.${_sort}`;
-        }
-
-        return this.query(qb => {
-            qb.orderBy(_sort, _order);
-        });
-    }
-
-    /**
      * @method Model#fetchPage
      * @since 0.9.3
      * @description
@@ -96,10 +42,12 @@ module.exports = function paginationPlugin (bookshelf) {
      * Any options that may be passed to {@link Model#fetchAll} may also be passed
      * in the options to this method.
      *
-     * To perform pagination, include a `limit` and _either_ `offset` or `page`.
+     * To perform pagination, you may include *either* an `offset` and `limit`, **or**
+     * a `page` and `pageSize`.
      *
-     * The defaults are page 1 (offset 0) and limit 10 when no parameters or invalid
-     * parameters are passed.
+     * By default, with no parameters or missing parameters, `fetchPage` will use an
+     * options object of `{page: 1, pageSize: 10}`
+     *
      *
      * Below is an example showing the user of a JOIN query with sort/ordering,
      * pagination, and related models.
@@ -114,8 +62,13 @@ module.exports = function paginationPlugin (bookshelf) {
      * })
      * .orderBy('-productionYear') // Same as .orderBy('cars.productionYear', 'DESC')
      * .fetchPage({
-     *    limit: 15, // Defaults to 10 if not specified
-     *    page: 3, // Defaults to 1 if not specified; same as {offset: 30} with limit of 15.
+     *    pageSize: 15, // Defaults to 10 if not specified
+     *    page: 3, // Defaults to 1 if not specified
+     *
+     *    // OR
+     *    // limit: 15,
+     *    // offset: 30,
+     *
      *    withRelated: ['engine'] // Passed to Model#fetchAll
      * })
      * .then(function (results) {
@@ -129,11 +82,14 @@ module.exports = function paginationPlugin (bookshelf) {
      *    // other standard Collection attributes
      *    ...
      *    pagination: {
-     *        rowCount: 15, // Would be less than 15 on the last page of results
-     *        total: 53, // Total number of rows found for the query before pagination
-     *        limit: 15, // The requested number of rows per page, same as rowCount except final page
+     *        rowCount: 53, // Total number of rows found for the query before pagination
+     *        pageCount: 4, // Total number of pages of results
      *        page: 3, // The requested page number
-     *        offset: 30 // The requested offset, calculated from the page/limit if not provided
+     *        pageSze: 15, // The requested number of rows per page
+     *
+     *  // OR, if limit/offset pagination is used instead of page/pageSize:
+     *        // offset: 30, // The requested offset
+     *        // limit: 15 // The requested limit
      *    }
      * }
      *
@@ -142,27 +98,39 @@ module.exports = function paginationPlugin (bookshelf) {
      *    {@link Model#fetchAll}
      * @returns {Promise<Model|null>}
      */
-    bookshelf.Model.prototype.fetchPage = function (options = {}) {
-        const {limit, page, offset, ...fetchOptions} = options;
+    function fetchPage (options = {}) {
+        const {page, pageSize, limit, offset, ...fetchOptions} = options;
 
-        let _limit = parseInt(limit);
-        let _page = parseInt(page);
-        let _offset = parseInt(offset);
+        let usingPageSize = false; // usingPageSize = false means offset/limit, true means page/pageSize
+        let _page;
+        let _pageSize;
+        let _limit;
+        let _offset;
 
-        if (Number.isNaN(_limit) || !isInteger(_limit) || _limit < 0) {
-            _limit = 10;
+        function ensureIntWithDefault (val, def) {
+            if (!val) {
+                return def;
+            }
+
+            const _val = parseInt(val);
+            if (Number.isNaN(_val)) {
+                return def;
+            }
+
+            return _val;
         }
 
-        if (page && isInteger(_page) && _page > 0) {
-            // Request by page number, calculate offset
+        if (!limit && !offset) {
+            usingPageSize = true;
+
+            _pageSize = ensureIntWithDefault(pageSize, DEFAULT_LIMIT);
+            _page = ensureIntWithDefault(page, DEFAULT_PAGE);
+
+            _limit = _pageSize;
             _offset = _limit * (_page - 1);
-        } else if (offset && isInteger(_offset) && _offset >= 0) {
-            // Request by offset, calculate page
-            _page = Math.floor(_offset / _limit) + 1;
         } else {
-            // Defaults for erroneous or not defined page/offset
-            _page = 1;
-            _offset = 0;
+            _limit = ensureIntWithDefault(limit, DEFAULT_LIMIT);
+            _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
         }
 
         const tableName = this.constructor.prototype.tableName;
@@ -209,7 +177,9 @@ module.exports = function paginationPlugin (bookshelf) {
                 .fetchAll()
 
                 .then(result => {
-                    const metadata = {page: _page, limit: _limit, offset: _offset};
+                    const metadata = usingPageSize ?
+                        {page: _page, pageSize: _limit} :
+                        {offset: _offset, limit: _limit};
 
                     if (result && result.length == 1) {
                         // We shouldn't have to do this, instead it should be
@@ -219,7 +189,7 @@ module.exports = function paginationPlugin (bookshelf) {
                         const keys = Object.keys(count.attributes);
                         if (keys.length === 1) {
                             const key = Object.keys(count.attributes)[0];
-                            metadata.total = count.attributes[key];
+                            metadata.rowCount = parseInt(count.attributes[key]);
                         }
                     }
 
@@ -229,8 +199,11 @@ module.exports = function paginationPlugin (bookshelf) {
 
         return Promise.join(paginate(), count())
             .then(([rows, metadata]) => {
-                const pageData = _assign(metadata, {rowCount: rows.length});
+                const pageCount = Math.ceil(metadata.rowCount / _limit);
+                const pageData = _assign(metadata, {pageCount});
                 return _assign(rows, {pagination: pageData});
             });
     }
+
+    bookshelf.Model.prototype.fetchPage = fetchPage;
 }
