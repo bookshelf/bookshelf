@@ -430,6 +430,31 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('orderBy', function () {
+      it('returns results in the correct order', function () {
+        var asc = Models.Customer.forge().orderBy('id', 'ASC').fetchAll()
+          .then(function (result) {
+            return result.toJSON().map(function (row) { return row.id });
+          });
+
+        var desc = Models.Customer.forge().orderBy('id', 'DESC').fetchAll()
+          .then(function (result) {
+            return result.toJSON().map(function (row) { return row.id });
+          })
+
+        return Promise.join(asc, desc)
+          .then(function (results) {
+            expect(results[0].reverse()).to.eql(results[1]);
+          });
+      });
+
+      it('returns DESC order results with a minus sign', function () {
+        return Models.Customer.forge().orderBy('-id').fetchAll().then(function (results) {
+          expect(parseInt(results.models[0].get('id'))).to.equal(4);
+        });
+      })
+    });
+
     describe('save', function() {
 
       var Site = Models.Site;
