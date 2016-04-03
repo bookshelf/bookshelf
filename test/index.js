@@ -14,8 +14,9 @@ it = function() {
   return oldIt.apply(this, arguments);
 };
 
-process.stderr.on('data', function(data) {
-  console.log(data);
+// http://bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events
+process.on("unhandledRejection", function(reason, promise) {
+    console.error(reason);
 });
 
 var Bookshelf = require('../bookshelf');
