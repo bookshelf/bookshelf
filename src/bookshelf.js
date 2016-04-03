@@ -122,6 +122,20 @@ function Bookshelf(knex) {
      */
     fetchAll(options) {
       return this.forge().fetchAll(options);
+    },
+
+    /**
+     * @method Model.fetchPage
+     * @belongsTo Model
+     * @description
+     *
+     * Simple helper function for retrieving one page of the given model.
+     *
+     * @see Model#fetchPage
+     * @returns {Promise<Collection>}
+     */
+    fetchPage(options) {
+      return this.forge().fetchPage(options);
     }
   })
 
