@@ -7,12 +7,6 @@ module.exports = function (bookshelf) {
 
   describe('Pagination Plugin', function () {
 
-    before(function () {
-      return require('../helpers/migration')(bookshelf).then(function () {
-        return require('../helpers/inserts')(bookshelf);
-      });
-    })
-
     bookshelf.plugin('pagination');
     var Models = require('../helpers/objects')(bookshelf).Models;
 
