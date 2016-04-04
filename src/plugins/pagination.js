@@ -32,10 +32,6 @@ const DEFAULT_PAGE = 1;
 module.exports = function paginationPlugin (bookshelf) {
 
     /**
-     * @method Model#fetchPage
-     * @since 0.9.3
-     * @description
-     *
      * Similar to {@link Model#fetchAll}, but fetches a single page of results
      * as specified by the limit (page size) and offset or page number.
      *
@@ -129,6 +125,7 @@ module.exports = function paginationPlugin (bookshelf) {
             _limit = _pageSize;
             _offset = _limit * (_page - 1);
         } else {
+            _pageSize = _limit; // not used, just for eslint `const` error
             _limit = ensureIntWithDefault(limit, DEFAULT_LIMIT);
             _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
         }
@@ -206,4 +203,13 @@ module.exports = function paginationPlugin (bookshelf) {
     }
 
     bookshelf.Model.prototype.fetchPage = fetchPage;
+
+    bookshelf.Model.fetchPage = function (...args) {
+        return this.forge().fetchPage(...args);
+    }
+
+    bookshelf.Collection.prototype.fetchPage = function (...args) {
+        return fetchPage.apply(this.model.forge(), ...args);
+    };
+
 }
