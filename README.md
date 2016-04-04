@@ -107,6 +107,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
  - [Registry](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Model-Registry): Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.
  - [Virtuals](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
  - [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility): Specify a whitelist/blacklist of model attributes when serialized toJSON.
+ - [Pagination](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Pagination): Adds `fetchPage` methods to use for pagination in place of `fetch` and `fetchAll`
 
 ## Support
 
