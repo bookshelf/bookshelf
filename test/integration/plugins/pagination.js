@@ -68,6 +68,25 @@ module.exports = function (bookshelf) {
       })
     })
 
+    describe('Model static fetchPage', function () {
+      it('fetches a page without calling forge', function () {
+        return Models.Customer.fetchPage().then(function (results) {
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        })
+      })
+    })
+
+    describe('Collection fetchPage', function () {
+      it('fetches a page from a collection', function () {
+        return Models.Customer.collection().fetchPage().then(function (results) {
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        })
+      })
+    })
 
   });
 };
