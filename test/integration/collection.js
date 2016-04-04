@@ -166,6 +166,28 @@ module.exports = function(bookshelf) {
 
     });
 
+    describe('orderBy', function () {
+      it('orders the results by column', function () {
+        var asc = new Site({id: 1})
+          .authors()
+          .orderBy('first_name', 'ASC')
+          .fetch();
+
+        var desc = new Site({id: 1})
+          .authors()
+          .orderBy('first_name', 'DESC')
+          .fetch();
+
+        return Promise.join(asc, desc).then(function (result) {
+          var r0 = result[0].toJSON().reverse();
+          var r1 = result[1].toJSON();
+          expect(r0).to.eql(r1);
+        })
+      })
+    })
+
+
+
     describe('sync', function() {
 
       it('creates a new instance of Sync', function(){

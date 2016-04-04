@@ -333,6 +333,34 @@ const BookshelfCollection = CollectionBase.extend({
   },
 
   /**
+   * @method Collection#orderBy
+   * @since 0.9.3
+   * @description
+   *
+   * Specifies the column to sort on and sort order.
+   *
+   * The order parameter is optional, and defaults to 'ASC'. You may
+   * also specify 'DESC' order by prepending a hyphen to the sort column
+   * name. `orderBy("date", 'DESC')` is the same as `orderBy("-date")`.
+   *
+   * Unless specified using dot notation (i.e., "table.column"), the default
+   * table will be the table name of the model `orderBy` was called on.
+   *
+   * @example
+   *
+   * Cars.forge().orderBy('color', 'ASC').fetch()
+   *    .then(function (rows) { // ...
+   *
+   * @param sort {string}
+   *   Column to sort on
+   * @param order {string}
+   *   Ascending ('ASC') or descending ('DESC') order
+   */
+  orderBy (...args) {
+    return Helpers.orderBy(this, ...args);
+  },
+
+  /**
    * @method Collection#query
    * @private
    * @description Creates and returns a new `Bookshelf.Sync` instance.

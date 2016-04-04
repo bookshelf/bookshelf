@@ -83,6 +83,44 @@ const helpers = {
 
   deprecate: function(a, b) {
     helpers.warn(a + ' has been deprecated, please use ' + b + ' instead')
+  },
+
+  orderBy (obj, sort, order) {
+
+    let tableName;
+    let idAttribute;
+
+    if (obj.model) {
+      tableName = obj.model.prototype.tableName;
+      idAttribute = obj.model.prototype.idAttribute ?
+        obj.model.prototype.idAttribute : 'id';
+    } else {
+      tableName = obj.constructor.prototype.tableName;
+      idAttribute = obj.constructor.prototype.idAttribute ?
+        obj.constructor.prototype.idAttribute : 'id';
+    }
+
+    let _sort;
+
+    if (sort && sort.indexOf('-') === 0) {
+      _sort = sort.slice(1);
+    } else if (sort) {
+      _sort = sort;
+    } else {
+      _sort = idAttribute;
+    }
+
+    const _order = order || (
+      (sort && sort.indexOf('-') === 0) ? 'DESC' : 'ASC'
+    );
+
+    if (_sort.indexOf('.') === -1) {
+      _sort = `${tableName}.${_sort}`;
+    }
+
+    return obj.query(qb => {
+      qb.orderBy(_sort, _order);
+    });
   }
 
 };
