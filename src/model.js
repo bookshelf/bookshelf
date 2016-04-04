@@ -1204,55 +1204,31 @@ const BookshelfModel = ModelBase.extend({
   },
 
   /**
- * @method Model#orderBy
- * @since 0.9.3
- * @description
- *
- * Specifies the column to sort on and sort order.
- *
- * The order parameter is optional, and defaults to 'ASC'. You may
- * also specify 'DESC' order by prepending a hyphen to the sort column
- * name. `orderBy("date", 'DESC')` is the same as `orderBy("-date")`.
- *
- * Unless specified using dot notation (i.e., "table.column"), the default
- * table will be the table name of the model `orderBy` was called on.
- *
- * @example
- *
- * Cars.forge().orderBy('color', 'ASC').fetchAll()
- *    .then(function (rows) { // ...
- *
- * @param sort {string}
- *   Column to sort on
- * @param order {string}
- *   Ascending ('ASC') or descending ('DESC') order
- */
-  orderBy(sort, order) {
-    const tableName = this.constructor.prototype.tableName;
-    const idAttribute = this.constructor.prototype.idAttribute ?
-      this.constructor.prototype.idAttribute : 'id';
-
-    let _sort;
-
-    if (sort && sort.indexOf('-') === 0) {
-      _sort = sort.slice(1);
-    } else if (sort) {
-      _sort = sort;
-    } else {
-      _sort = idAttribute;
-    }
-
-    const _order = order || (
-      (sort && sort.indexOf('-') === 0) ? 'DESC' : 'ASC'
-    );
-
-    if (_sort.indexOf('.') === -1) {
-      _sort = `${tableName}.${_sort}`;
-    }
-
-    return this.query(qb => {
-      qb.orderBy(_sort, _order);
-    });
+   * @method Model#orderBy
+   * @since 0.9.3
+   * @description
+   *
+   * Specifies the column to sort on and sort order.
+   *
+   * The order parameter is optional, and defaults to 'ASC'. You may
+   * also specify 'DESC' order by prepending a hyphen to the sort column
+   * name. `orderBy("date", 'DESC')` is the same as `orderBy("-date")`.
+   *
+   * Unless specified using dot notation (i.e., "table.column"), the default
+   * table will be the table name of the model `orderBy` was called on.
+   *
+   * @example
+   *
+   * Car.forge().orderBy('color', 'ASC').fetchAll()
+   *    .then(function (rows) { // ...
+   *
+   * @param sort {string}
+   *   Column to sort on
+   * @param order {string}
+   *   Ascending ('ASC') or descending ('DESC') order
+   */
+  orderBy(...args) {
+    return Helpers.orderBy(this, ...args);
   },
 
   /* Ensure that QueryBuilder is copied on clone. */
