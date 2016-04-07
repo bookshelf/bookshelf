@@ -424,10 +424,10 @@ const BookshelfModel = ModelBase.extend({
     let columnNames, candidates;
     if (_.isArray(arguments[1])) {
       columnNames = arguments[1];
-      candidates = _.rest(arguments, 2);
+      candidates = _.drop(arguments, 2);
     } else {
       columnNames = null;
-      candidates = _.rest(arguments);
+      candidates = _.drop(arguments);
     }
     return this._relation('morphTo', null, {morphName, columnNames, candidates}).init(this);
   },
