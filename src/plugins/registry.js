@@ -64,7 +64,7 @@ module.exports = function (bookshelf) {
     const original = Model.prototype[method];
     Model.prototype[method] = function(Target) {
       // The first argument is always a model, so resolve it and call the original method.
-      return original.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
+      return original.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
     };
   });
 
@@ -72,7 +72,7 @@ module.exports = function (bookshelf) {
   // can't include it with the rest of the relational methods.
   const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
-    return morphTo.apply(this, [relationName].concat(_.map(_.rest(arguments), function(model) {
+    return morphTo.apply(this, [relationName].concat(_.map(_.drop(arguments), function(model) {
       return resolveModel(model);
     }, this)));
   };
@@ -80,7 +80,7 @@ module.exports = function (bookshelf) {
   // The `through` method exists on the Collection as well, for `hasMany` / `belongsToMany` through relations.
   const collectionThrough = Collection.prototype.through;
   Collection.prototype.through = function(Target) {
-    return collectionThrough.apply(this, [resolveModel(Target)].concat(_.rest(arguments)));
+    return collectionThrough.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
   };
 
 };
