@@ -66,6 +66,15 @@ module.exports = function (bookshelf) {
           expect(parseInt(m[1].get('id'))).to.equal(4);
         })
       })
+
+      it('fetches a page when other columns are specified on the original query', function () {
+        return Models.Customer.forge().query(function (qb) {
+          qb.column.apply(qb, ['name'])
+        }).fetchPage().then(function (results) {
+          var md = results.pagination;
+          expect(md.rowCount).to.equal(4);
+        })
+      })
     })
 
     describe('Model static fetchPage', function () {
