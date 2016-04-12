@@ -167,8 +167,11 @@ module.exports = function paginationPlugin (bookshelf) {
                     // Remove grouping and ordering. Ordering is unnecessary
                     // for a count, and grouping returns the entire result set
                     // What we want instead is to use `DISTINCT`
+                    _remove(qb._statements, statement => {
+                        return (notNeededQueries.indexOf(statement.type) > -1) ||
+                            statement.grouping === 'columns';
+                    });
                     qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
-                    _remove(qb._statements, statement => notNeededQueries.indexOf(statement.type) > -1);
                 })
 
                 .fetchAll()
