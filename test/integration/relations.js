@@ -147,6 +147,53 @@ module.exports = function(Bookshelf) {
           });
         });
 
+        describe('emits \'fetching\' and \'fetched\' events for eagerly loaded relations with', function () {
+
+          afterEach(function () {
+            delete Site.prototype.initialize;
+          });
+
+          it('withRelated option', function () {          
+            var countFetching = 0;
+            var countFetched = 0;
+            Site.prototype.initialize = function () {
+              this.on('fetching', function () {
+                countFetching++;
+              });
+              this.on('fetched', function () {
+                countFetched++;
+              });
+            };
+            return Blog.forge({id: 1}).fetch({withRelated: ['site']})
+            .then(function() {
+              equal(countFetching, 1);
+              equal(countFetched, 1);
+            });
+          });
+
+          it('load() method', function () {
+            var countFetching = 0;
+            var countFetched = 0;
+            Site.prototype.initialize = function () {
+              this.on('fetching', function () {
+                countFetching++;
+              });
+              this.on('fetched', function () {
+                countFetched++;
+              });
+            };
+            return Blog.where({id: 1}).fetch()
+            .then(function (blog) {
+              return blog.load('site')
+              .then(function() {
+                equal(countFetching, 1);
+                equal(countFetched, 1);
+              });
+            })
+          });
+
+        });
+
       });
 
       describe('Eager Loading - Collections', function() {
