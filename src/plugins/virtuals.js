@@ -13,18 +13,27 @@ module.exports = function (Bookshelf) {
     // If virtual properties have been defined they will be created
     // as simple getters on the model.
     constructor: function (attributes, options) {
-      proto.constructor.apply(this, arguments);
-      const { virtuals } = this;
+      const virtuals = this.virtuals = _.cloneDeep(this.virtuals);
       if (_.isObject(virtuals)) {
         for (const virtualName in virtuals) {
           let getter, setter;
           if (virtuals[virtualName].get) {
-            getter = virtuals[virtualName].get;
-            setter = virtuals[virtualName].set
-              ? virtuals[virtualName].set
-              : undefined;
+            getter = virtuals[virtualName].get = enableVirtualNesting(
+              virtuals[virtualName].get,
+              proto.get
+            );
+
+            if (virtuals[virtualName].set) {
+              setter = virtuals[virtualName].set = enableVirtualNesting(
+                virtuals[virtualName].set,
+                proto.set
+              );
+            }
           } else {
-            getter = virtuals[virtualName];
+            getter = virtuals[virtualName] = enableVirtualNesting(
+              virtuals[virtualName],
+              proto.get
+            );
           }
           Object.defineProperty(this, virtualName, {
             enumerable: true,
@@ -33,6 +42,7 @@ module.exports = function (Bookshelf) {
           });
         }
       }
+      proto.constructor.apply(this, arguments);
     },
 
     // Passing `{virtuals: true}` or `{virtuals: false}` in the `options`
@@ -51,7 +61,7 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
       const { virtuals } = this;
-      if (_.isObject(virtuals) && virtuals[attr]) {
+      if (_.isObject(virtuals) && virtuals[attr] && !isNestedGet(virtuals[attr])) {
         return getVirtual(this, attr);
       }
       return proto.get.apply(this, arguments);
@@ -158,6 +168,37 @@ module.exports = function (Bookshelf) {
     };
   });
 
+  function enableVirtualNesting(virtualMethod, protoMethod) {
+    let method;
+    return method = function() {
+      try {
+        method.in = true;
+        return virtualMethod.apply(this, arguments);
+      } finally {
+        delete method.in;
+      }
+    };
+  }
+
+  function isNestedVirtual(virtualMethod) {
+    return !!virtualMethod.in;
+  }
+
+  function isNestedGet(virtual) {
+    const virtualGet = virtual && virtual.get || virtual;
+    if (!virtualGet) {
+      return false;
+    }
+    return isNestedVirtual(virtualGet);
+  }
+
+  function exceptNestedSet(virtual) {
+    if (!virtual) {
+      return false;
+    }
+    return (virtual.set && isNestedVirtual(virtual.set)) || virtual;
+  }
+
   function getVirtual(model, virtualName) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
@@ -178,7 +219,7 @@ module.exports = function (Bookshelf) {
   }
 
   function setVirtual(value, key) {
-    const virtual = this.virtuals && this.virtuals[key];
+    const virtual = this.virtuals && exceptNestedSet(this.virtuals[key]);
     if (virtual) {
       if (virtual.set) {
         virtual.set.call(this, value);
