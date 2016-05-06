@@ -17,16 +17,16 @@ module.exports = function (Bookshelf) {
       if (_.isObject(virtuals)) {
         for (const virtualName in virtuals) {
           let getter, setter;
-          if (virtuals[virtualName].get) {
-            if (virtuals[virtualName].set) {
-              setter = virtuals[virtualName].set = enableVirtualNesting(
-                virtuals[virtualName].set
-              );
-            }
-
+          if (virtuals[virtualName].get || virtuals[virtualName].set) {
             if (virtuals[virtualName].get) {
               getter = virtuals[virtualName].get = enableVirtualNesting(
                 virtuals[virtualName].get
+              );
+            }
+
+            if (virtuals[virtualName].set) {
+              setter = virtuals[virtualName].set = enableVirtualNesting(
+                virtuals[virtualName].set
               );
             }
           } else {
@@ -181,16 +181,15 @@ module.exports = function (Bookshelf) {
   }
 
   function isNestedVirtual(virtualMethod) {
-    return !!virtualMethod.in;
+    return virtualMethod && !!virtualMethod.in;
   }
 
   function isNestedGet(virtual) {
-    const virtualGet = virtual && virtual.get || virtual;
-    return virtualGet && isNestedVirtual(virtualGet);
+    return virtual && isNestedVirtual(virtual.get || virtual);
   }
 
   function isNestedSet(virtual) {
-    return virtual && virtual.set && isNestedVirtual(virtual.set);
+    return virtual && isNestedVirtual(virtual.set);
   }
 
   function hasVirtualGet(virtual) {
