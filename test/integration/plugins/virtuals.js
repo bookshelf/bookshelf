@@ -293,5 +293,35 @@ module.exports = function (bookshelf) {
           expect(error.message).to.equal('Deliberately failing');
         })
     });
+
+    it('when setter/getter called recursively for the same attribute key, it should call non-virtual setter/getter', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          is_owner: {
+            get: function () {
+              return this.get('is_owner');
+            },
+            set: function(value) {
+              if (value) {
+                this.set('is_authorized', true);
+              }
+              this.set('is_owner', value);
+            }
+          }
+        }
+      }))({is_owner: true});
+
+      // getter should return is_owner value from attributes
+      expect(m.get('is_owner')).to.be.true;
+      expect(m.attributes.is_owner).to.be.true;
+      expect(m.attributes.is_authorized).to.be.true;
+
+      m.set('is_owner', false);
+
+      // getter should return is_owner value from attributes
+      expect(m.get('is_owner')).to.be.false;
+      expect(m.attributes.is_owner).to.be.false;
+      expect(m.attributes.is_authorized).to.be.true;
+    });
   });
 };
