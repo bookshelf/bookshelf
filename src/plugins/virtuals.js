@@ -186,17 +186,11 @@ module.exports = function (Bookshelf) {
 
   function isNestedGet(virtual) {
     const virtualGet = virtual && virtual.get || virtual;
-    if (!virtualGet) {
-      return false;
-    }
-    return isNestedVirtual(virtualGet);
+    return virtualGet && isNestedVirtual(virtualGet);
   }
 
-  function exceptNestedSet(virtual) {
-    if (!virtual) {
-      return false;
-    }
-    return (virtual.set && isNestedVirtual(virtual.set)) || virtual;
+  function isNestedSet(virtual) {
+    return virtual && virtual.set && isNestedVirtual(virtual.set);
   }
 
   function getVirtual(model, virtualName) {
@@ -219,8 +213,8 @@ module.exports = function (Bookshelf) {
   }
 
   function setVirtual(value, key) {
-    const virtual = this.virtuals && exceptNestedSet(this.virtuals[key]);
-    if (virtual) {
+    const virtual = this.virtuals && this.virtuals[key];
+    if (virtual && !isNestedSet(virtual)) {
       if (virtual.set) {
         virtual.set.call(this, value);
       }
