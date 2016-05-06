@@ -47,7 +47,7 @@ module.exports = function (Bookshelf) {
       }
       // As the Model base class may call `set` method which will also use
       // virtual setters and getters it is requred to call base constructor
-      // after preparing the virtuals. 
+      // after preparing the virtuals.
       proto.constructor.apply(this, arguments);
     },
 
