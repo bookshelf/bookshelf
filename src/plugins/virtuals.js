@@ -13,8 +13,12 @@ module.exports = function (Bookshelf) {
     // If virtual properties have been defined they will be created
     // as simple getters on the model.
     constructor: function (attributes, options) {
+      // Initially model has a reference to prototype `virtuals`
+      // property. To not change the referenced `virtuals` property
+      // object it is required to deep clone it.
       const virtuals = this.virtuals = _.cloneDeep(this.virtuals);
       if (_.isObject(virtuals)) {
+        // Prepare virtual getters and setters
         for (const virtualName in virtuals) {
           let getter, setter;
           if (virtuals[virtualName].get || virtuals[virtualName].set) {
@@ -41,6 +45,9 @@ module.exports = function (Bookshelf) {
           });
         }
       }
+      // As the Model base class may call `set` method which will also use
+      // virtual setters and getters it is requred to call base constructor
+      // after preparing the virtuals. 
       proto.constructor.apply(this, arguments);
     },
 
