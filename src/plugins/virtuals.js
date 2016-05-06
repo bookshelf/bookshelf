@@ -18,21 +18,20 @@ module.exports = function (Bookshelf) {
         for (const virtualName in virtuals) {
           let getter, setter;
           if (virtuals[virtualName].get) {
-            getter = virtuals[virtualName].get = enableVirtualNesting(
-              virtuals[virtualName].get,
-              proto.get
-            );
-
             if (virtuals[virtualName].set) {
               setter = virtuals[virtualName].set = enableVirtualNesting(
-                virtuals[virtualName].set,
-                proto.set
+                virtuals[virtualName].set
+              );
+            }
+
+            if (virtuals[virtualName].get) {
+              getter = virtuals[virtualName].get = enableVirtualNesting(
+                virtuals[virtualName].get
               );
             }
           } else {
             getter = virtuals[virtualName] = enableVirtualNesting(
-              virtuals[virtualName],
-              proto.get
+              virtuals[virtualName]
             );
           }
           Object.defineProperty(this, virtualName, {
@@ -61,7 +60,8 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
       const { virtuals } = this;
-      if (_.isObject(virtuals) && virtuals[attr] && !isNestedGet(virtuals[attr])) {
+      const virtual = _.isObject(virtuals) && virtuals[attr]
+      if (hasVirtualGet(virtual) && !isNestedGet(virtual)) {
         return getVirtual(this, attr);
       }
       return proto.get.apply(this, arguments);
@@ -168,7 +168,7 @@ module.exports = function (Bookshelf) {
     };
   });
 
-  function enableVirtualNesting(virtualMethod, protoMethod) {
+  function enableVirtualNesting(virtualMethod) {
     let method;
     return method = function() {
       try {
@@ -193,6 +193,10 @@ module.exports = function (Bookshelf) {
     return virtual && virtual.set && isNestedVirtual(virtual.set);
   }
 
+  function hasVirtualGet(virtual) {
+    return virtual && _.some([virtual, virtual.get], _.isFunction);
+  }
+
   function getVirtual(model, virtualName) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
@@ -206,7 +210,9 @@ module.exports = function (Bookshelf) {
     const attrs = {};
     if (virtuals != null) {
       for (const virtualName in virtuals) {
-        attrs[virtualName] = getVirtual(model, virtualName);
+        if (hasVirtualGet(virtuals[virtualName])) {
+          attrs[virtualName] = getVirtual(model, virtualName);
+        }
       }
     }
     return attrs;
