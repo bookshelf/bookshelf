@@ -416,6 +416,20 @@ module.exports = function(Bookshelf) {
             });
         });
 
+        it('keeps the pivotal helper methods when cloning a collection having `relatedData` with `type` "belongsToMany", #1197', function() {
+          var pivotalProps = ['attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'];
+          var author = new Author({id: 1});
+          posts = author.related('posts');
+          pivotalProps.forEach(function (prop) {
+            expect(posts[prop]).to.be.an.instanceof(Function);
+          });
+
+          clonedAuthor = author.clone()
+          clonedPosts = clonedAuthor.related('posts');
+          pivotalProps.forEach(function (prop) {
+            expect(clonedPosts[prop]).to.equal(posts[prop]);
+          });
+        });
       });
 
       describe('Updating pivot tables with `updatePivot`', function () {

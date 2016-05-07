@@ -66,7 +66,18 @@ inherits(CollectionBase, Events);
 // `relatedData` does not mutate itself after declaration. This is only
 // here because `clone` needs to duplicate this property. It should not
 // be documented as a valid argument for consumer code.
-const collectionProps = ['model', 'comparator', 'relatedData'];
+//
+// RE: 'attach', 'detach', 'updatePivot', 'withPivot'
+// It's okay to whitelist also given method references to be copied when cloning
+// a collection. These methods are present only when `relatedData` is present and
+// its `type` is 'belongsToMany'. So it is safe to put them in the list and use them
+// without any additional type verification.
+// These should not be documented as a valid arguments for consumer code.
+const collectionProps = [
+  'model', 'comparator', 'relatedData',
+  // `belongsToMany` pivotal collection properties
+  'attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'
+];
 
 // Copied over from Backbone.
 const setOptions = {add: true, remove: true, merge: true};
