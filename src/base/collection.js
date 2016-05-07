@@ -67,11 +67,11 @@ inherits(CollectionBase, Events);
 // here because `clone` needs to duplicate this property. It should not
 // be documented as a valid argument for consumer code.
 //
-// RE: 'attach', 'detach', 'updatePivot', 'withPivot'
+// RE: 'attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'
 // It's okay to whitelist also given method references to be copied when cloning
 // a collection. These methods are present only when `relatedData` is present and
 // its `type` is 'belongsToMany'. So it is safe to put them in the list and use them
-// without any additional type verification.
+// without any additional verification.
 // These should not be documented as a valid arguments for consumer code.
 const collectionProps = [
   'model', 'comparator', 'relatedData',
