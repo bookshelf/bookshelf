@@ -37,7 +37,7 @@ import Promise from './base/promise';
  * {@link Model#constructor constructor}, which allows you to replace the
  * actual constructor function for your model.
  *
- *     let Books = bookshelf.Model.extend({
+ *     let Book = bookshelf.Model.extend({
  *       tableName: 'documents',
  *       constructor: function() {
  *         bookshelf.Model.apply(this, arguments);
