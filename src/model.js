@@ -599,7 +599,7 @@ const BookshelfModel = ModelBase.extend({
    *   Reject the returned response with a {@link Model.NotFoundError
    *   NotFoundError} if no results are empty.
    * @param {string|string[]} [options.columns='*']
-   *   Specify columns to be retireved.
+   *   Specify columns to be retrieved.
    * @param {Transaction} [options.transacting]
    *  Optionally run the query in a transaction.
    * @param {string|Object|mixed[]} [options.withRelated]
