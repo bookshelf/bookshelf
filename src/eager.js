@@ -89,7 +89,7 @@ export default class EagerRelation extends EagerBase {
         return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
       }
     }).tap(() => {
-      return Promise.each(relatedModels, (model) => model.triggerThen('fetched', model, model.attributes, options));
+      return Promise.map(relatedModels, (model) => model.triggerThen('fetched', model, model.attributes, options));
     });
   }
 
