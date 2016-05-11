@@ -330,7 +330,7 @@ ModelBase.prototype.has = function(attr) {
  * // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
  * model.parse = function(attrs) {
  *   return _.reduce(attrs, function(memo, val, key) {
- *     memo[_.str.camelize(key)] = val;
+ *     memo[_.camelCase(key)] = val;
  *     return memo;
  *   }, {});
  * };
