@@ -79,7 +79,7 @@ function Bookshelf(knex) {
      *
      * Customer.collection().fetch().then(function(collection) {
      *   // ...
-     * })
+     * });
      *
      * @param {(Model[])=} models
      * @param {Object=} options
@@ -154,7 +154,7 @@ function Bookshelf(knex) {
      * var accounts = Accounts.forge([
      *   {name: 'Person1'},
      *   {name: 'Person2'}
-     * ])
+     * ]);
      *
      * Promise.all(accounts.invoke('save')).then(function() {
      *   // collection models should now be saved...
@@ -203,7 +203,6 @@ function Bookshelf(knex) {
      *             {title: 'Moby Dick'},
      *             {title: 'Hamlet'}
      *           ], function(info) {
-     *
      *             // Some validation could take place here.
      *             return new Book(info).save({'shelf_id': model.id}, {transacting: t});
      *           });
