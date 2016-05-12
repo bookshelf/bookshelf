@@ -92,13 +92,9 @@ var Tag = bookshelf.Model.extend({
 })
 
 User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
-
   console.log(user.related('posts').toJSON());
-
 }).catch(function(err) {
-
   console.error(err);
-
 });
 ```
 
