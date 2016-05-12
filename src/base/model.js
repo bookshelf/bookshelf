@@ -43,7 +43,7 @@ function ModelBase(attributes, options) {
  *
  * customer.on('fetching', function(model, columns) {
  *   // Do something before the data is fetched from the database
- * })
+ * });
  *
  * @see Events#on
  */
@@ -52,8 +52,8 @@ function ModelBase(attributes, options) {
  * @method ModelBase#off
  * @example
  *
- * customer.off('fetched fetching')
- * ship.off() // This will remove all event listeners
+ * customer.off('fetched fetching');
+ * ship.off(); // This will remove all event listeners
  *
  * @see Events#off
  */
@@ -62,7 +62,7 @@ function ModelBase(attributes, options) {
  * @method ModelBase#trigger
  * @example
  *
- * ship.trigger('fetched')
+ * ship.trigger('fetched');
  *
  * @see Events#trigger
  */
@@ -133,7 +133,7 @@ ModelBase.prototype.hasTimestamps = false;
 /**
  * @method
  * @description  Get the current value of an attribute from the model.
- * @example      note.get("title")
+ * @example      note.get("title");
  *
  * @param {string} attribute - The name of the attribute to retrieve.
  * @returns {mixed} Attribute value.
@@ -603,7 +603,6 @@ _.each(modelMethods, function(method) {
  *     var bcrypt   = Promise.promisifyAll(require('bcrypt'));
  *
  *     var Customer = bookshelf.Model.extend({
- *
  *       initialize: function() {
  *         this.on('saving', this.validateSave);
  *       },
@@ -615,19 +614,16 @@ _.each(modelMethods, function(method) {
  *       account: function() {
  *         return this.belongsTo(Account);
  *       },
- *
  *     }, {
- *
  *       login: Promise.method(function(email, password) {
  *         if (!email || !password) throw new Error('Email and password are both required');
  *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
  *           return bcrypt.compareAsync(password, customer.get('password'))
- *            .then(function(res) {
- *              if (!res) throw new Error('Invalid password');
- *            });
+ *             .then(function(res) {
+ *               if (!res) throw new Error('Invalid password');
+ *             });
  *         });
  *       })
- *
  *     });
  *
  *     Customer.login(email, password)
@@ -647,9 +643,9 @@ _.each(modelMethods, function(method) {
  *
  *     var Customer = bookshelf.Model.extend({
  *       set: function() {
- *         ...
+ *         // ...
  *         bookshelf.Model.prototype.set.apply(this, arguments);
- *         ...
+ *         // ...
  *       }
  *     });
  *
