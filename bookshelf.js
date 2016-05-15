@@ -4,7 +4,5 @@
  * For all details and documentation:
  * http://bookshelfjs.org
  *
- * version 0.9.4
- *
  */
 module.exports = require('./lib/bookshelf').default;
