@@ -308,18 +308,22 @@ const BookshelfCollection = CollectionBase.extend({
    * @example
    *
    * let qb = collection.query();
-   *     qb.where({id: 1}).select().then(function(resp) {...
+   *     qb.where({id: 1}).select().then(function(resp) {
+   *       // ...
+   *     });
    *
    * collection.query(function(qb) {
    *   qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
    * }).fetch()
-   *   .then(function(collection) {...
+   *   .then(function(collection) {
+   *     // ...
+   *   });
    *
    * collection
    *   .query('where', 'other_id', '=', '5')
    *   .fetch()
    *   .then(function(collection) {
-   *     ...
+   *     // ...
    *   });
    *
    * @param {function|Object|...string=} arguments The query method.
