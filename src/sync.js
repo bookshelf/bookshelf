@@ -78,6 +78,7 @@ _.extend(Sync.prototype, {
         }
       });
     }).then(function() {
+      options.query = knex;
       return this.syncing.triggerThen('counting', this.syncing, options);
     }).then(function() {
       return knex.count((column || '*') + ' as count');
