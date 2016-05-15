@@ -79,12 +79,12 @@ const BookshelfModel = ModelBase.extend({
    *
    *     // select * from `health_records` where `patient_id` = 1;
    *     new Patient({id: 1}).related('record').fetch().then(function(model) {
-   *       ...
+   *       // ...
    *     });
    *
    *     // alternatively, if you don't need the relation loaded on the patient's relations hash:
    *     new Patient({id: 1}).record().fetch().then(function(model) {
-   *       ...
+   *       // ...
    *     });
    *
    * @method Model#hasOne
@@ -443,7 +443,6 @@ const BookshelfModel = ModelBase.extend({
    *
    *
    *     let Book = bookshelf.Model.extend({
-   *
    *       tableName: 'books',
    *
    *       // Find all paragraphs associated with this book, by
@@ -455,21 +454,17 @@ const BookshelfModel = ModelBase.extend({
    *       chapters: function() {
    *         return this.hasMany(Chapter);
    *       }
-   *
    *     });
    *
    *     let Chapter = bookshelf.Model.extend({
-   *
    *       tableName: 'chapters',
    *
    *       paragraphs: function() {
    *         return this.hasMany(Paragraph);
    *       }
-   *
    *     });
    *
    *     let Paragraph = bookshelf.Model.extend({
-   *
    *       tableName: 'paragraphs',
    *
    *       chapter: function() {
@@ -480,7 +475,6 @@ const BookshelfModel = ModelBase.extend({
    *       book: function() {
    *         return this.belongsTo(Book).through(Chapter);
    *       }
-   *
    *     });
    *
    * The "through" table creates a pivot model, which it assigns to {@link
@@ -1159,10 +1153,14 @@ const BookshelfModel = ModelBase.extend({
    * model.query(function(qb) {
    *   qb.where('other_person', 'LIKE', '%Demo').orWhere('other_id', '>', 10);
    * }).fetch()
-   *   .then(function(model) { // ...
+   *   .then(function(model) {
+   *     // ...
+   *   });
    *
    * let qb = model.query();
-   *     qb.where({id: 1}).select().then(function(resp) { // ...
+   * qb.where({id: 1}).select().then(function(resp) {
+   *   // ...
+   * });
    *
    * @method Model#query
    * @param {function|Object|...string=} arguments The query method.
