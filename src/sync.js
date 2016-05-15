@@ -79,6 +79,18 @@ _.extend(Sync.prototype, {
       });
     }).then(function() {
       options.query = knex;
+      
+      /**
+       * Counting event.
+       *
+       * Fired before a `count` query. A promise may be
+       * returned from the event handler for async behaviour. 
+       *
+       * @event Model#counting
+       * @param {Model}  model    The model firing the event.
+       * @param {Object} options  Options object passed to {@link Model#count count}.
+       * @returns {Promise}
+       */
       return this.syncing.triggerThen('counting', this.syncing, options);
     }).then(function() {
       return knex.count((column || '*') + ' as count');
