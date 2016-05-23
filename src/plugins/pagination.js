@@ -211,7 +211,11 @@ module.exports = function paginationPlugin (bookshelf) {
   }
 
   bookshelf.Collection.prototype.fetchPage = function (...args) {
-    return fetchPage.apply(this.model.forge(), ...args);
+    const model = new this.model();
+    model._knex = this.query().clone();
+    this.resetQuery();
+    if (this.relatedData) model.relatedData = this.relatedData;
+    return model.fetchPage(...args);
   };
 
 }
