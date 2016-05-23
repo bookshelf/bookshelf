@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -10,7 +10,6 @@
     "lint": "eslint bookshelf.js src/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
     "test": "npm run lint && mocha --check-leaks -t 5000 -b test/index.js",
-    "postinstall": "./scripts/build.js lib 'npm run build'",
     "jsdoc": "./scripts/jsdoc.sh"
   },
   "homepage": "http://bookshelfjs.org",
@@ -33,7 +32,7 @@
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
-    "lodash": "^3.7.0"
+    "lodash": "^3.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.0.15",
@@ -47,7 +46,7 @@
     "eslint": "2.2.0",
     "istanbul": "^0.3.19",
     "jsdoc": "^3.4.0",
-    "knex": "^0.10.0",
+    "knex": "^0.11.0",
     "minimist": "^1.1.0",
     "mocha": "^2.0.1",
     "mysql": "^2.5.2",
@@ -59,7 +58,7 @@
     "sqlite3": "^3.0.5"
   },
   "peerDependencies": {
-    "knex": ">=0.6.10 <0.11.0"
+    "knex": ">=0.6.10 <0.12.0"
   },
   "author": {
     "name": "Tim Griesser",

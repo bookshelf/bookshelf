@@ -1,15 +1,13 @@
 One-to-one associations can be created with {@link Model#belongsTo belongsTo}, {@link Model#hasOne hasOne}, and {@link Model#morphOne morphOne} relation types.
 
-    var Book, Summary;
-    
-    Book = bookshelf.Model.extend({
+    var Book = bookshelf.Model.extend({
       tableName: 'books',
       summary: function() {
         return this.hasOne(Summary);
       }
     });
 
-    Summary = bookshelf.Model.extend({
+    var Summary = bookshelf.Model.extend({
       tableName: 'summaries',
       book: function() {
         return this.belongsTo(Book);

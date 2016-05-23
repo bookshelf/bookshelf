@@ -74,19 +74,23 @@ export default class EagerRelation extends EagerBase {
     const relatedModels = this.pushModels(relationName, handled, response);
     const relatedData   = handled.relatedData;
 
-    // If there is a response, fetch additional nested eager relations, if any.
-    if (response.length > 0 && options.withRelated) {
-      const relatedModel = relatedData.createModel();
+    return Promise.try(() => {
+      // If there is a response, fetch additional nested eager relations, if any.
+      if (response.length > 0 && options.withRelated) {
+        const relatedModel = relatedData.createModel();
 
-      // If this is a `morphTo` relation, we need to do additional processing
-      // to ensure we don't try to load any relations that don't look to exist.
-      if (relatedData.type === 'morphTo') {
-        const withRelated = this._filterRelated(relatedModel, options);
-        if (withRelated.length === 0) return;
-        options = _.extend({}, options, {withRelated: withRelated});
+        // If this is a `morphTo` relation, we need to do additional processing
+        // to ensure we don't try to load any relations that don't look to exist.
+        if (relatedData.type === 'morphTo') {
+          const withRelated = this._filterRelated(relatedModel, options);
+          if (withRelated.length === 0) return;
+          options = _.extend({}, options, {withRelated: withRelated});
+        }
+        return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
       }
-      return new EagerRelation(relatedModels, response, relatedModel).fetch(options).return(response);
-    }
+    }).tap(() => {
+      return Promise.map(relatedModels, (model) => model.triggerThen('fetched', model, model.attributes, options));
+    });
   }
 
   // Filters the `withRelated` on a `morphTo` relation, to ensure that only valid

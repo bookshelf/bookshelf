@@ -147,6 +147,53 @@ module.exports = function(Bookshelf) {
           });
         });
 
+        describe('emits \'fetching\' and \'fetched\' events for eagerly loaded relations with', function () {
+
+          afterEach(function () {
+            delete Site.prototype.initialize;
+          });
+
+          it('withRelated option', function () {          
+            var countFetching = 0;
+            var countFetched = 0;
+            Site.prototype.initialize = function () {
+              this.on('fetching', function () {
+                countFetching++;
+              });
+              this.on('fetched', function () {
+                countFetched++;
+              });
+            };
+            return Blog.forge({id: 1}).fetch({withRelated: ['site']})
+            .then(function() {
+              equal(countFetching, 1);
+              equal(countFetched, 1);
+            });
+          });
+
+          it('load() method', function () {
+            var countFetching = 0;
+            var countFetched = 0;
+            Site.prototype.initialize = function () {
+              this.on('fetching', function () {
+                countFetching++;
+              });
+              this.on('fetched', function () {
+                countFetched++;
+              });
+            };
+            return Blog.where({id: 1}).fetch()
+            .then(function (blog) {
+              return blog.load('site')
+              .then(function() {
+                equal(countFetching, 1);
+                equal(countFetched, 1);
+              });
+            })
+          });
+
+        });
+
       });
 
       describe('Eager Loading - Collections', function() {
@@ -416,6 +463,20 @@ module.exports = function(Bookshelf) {
             });
         });
 
+        it('keeps the pivotal helper methods when cloning a collection having `relatedData` with `type` "belongsToMany", #1197', function() {
+          var pivotalProps = ['attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'];
+          var author = new Author({id: 1});
+          var posts = author.related('posts');
+          pivotalProps.forEach(function (prop) {
+            expect(posts[prop]).to.be.an.instanceof(Function);
+          });
+
+          var clonedAuthor = author.clone()
+          var clonedPosts = clonedAuthor.related('posts');
+          pivotalProps.forEach(function (prop) {
+            expect(clonedPosts[prop]).to.equal(posts[prop]);
+          });
+        });
       });
 
       describe('Updating pivot tables with `updatePivot`', function () {

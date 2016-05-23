@@ -308,18 +308,22 @@ const BookshelfCollection = CollectionBase.extend({
    * @example
    *
    * let qb = collection.query();
-   *     qb.where({id: 1}).select().then(function(resp) {...
+   *     qb.where({id: 1}).select().then(function(resp) {
+   *       // ...
+   *     });
    *
    * collection.query(function(qb) {
    *   qb.where('id', '>', 5).andWhere('first_name', '=', 'Test');
    * }).fetch()
-   *   .then(function(collection) {...
+   *   .then(function(collection) {
+   *     // ...
+   *   });
    *
    * collection
    *   .query('where', 'other_id', '=', '5')
    *   .fetch()
    *   .then(function(collection) {
-   *     ...
+   *     // ...
    *   });
    *
    * @param {function|Object|...string=} arguments The query method.
@@ -330,6 +334,34 @@ const BookshelfCollection = CollectionBase.extend({
    */
   query: function() {
     return Helpers.query(this, _.toArray(arguments));
+  },
+
+  /**
+   * @method Collection#orderBy
+   * @since 0.9.3
+   * @description
+   *
+   * Specifies the column to sort on and sort order.
+   *
+   * The order parameter is optional, and defaults to 'ASC'. You may
+   * also specify 'DESC' order by prepending a hyphen to the sort column
+   * name. `orderBy("date", 'DESC')` is the same as `orderBy("-date")`.
+   *
+   * Unless specified using dot notation (i.e., "table.column"), the default
+   * table will be the table name of the model `orderBy` was called on.
+   *
+   * @example
+   *
+   * Cars.forge().orderBy('color', 'ASC').fetch()
+   *    .then(function (rows) { // ...
+   *
+   * @param sort {string}
+   *   Column to sort on
+   * @param order {string}
+   *   Ascending ('ASC') or descending ('DESC') order
+   */
+  orderBy (...args) {
+    return Helpers.orderBy(this, ...args);
   },
 
   /**

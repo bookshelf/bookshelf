@@ -1,5 +1,13 @@
 ## Change Log
 
+**0.9.5** — <small>_May 15, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.4...0.9.5)
+
+* Add pagination plugin. #1183
+* Fire {@link Model#event:fetched} on eagerly loaded relations. #1206
+* Correct cloning of {@link Model#belongsToMany} decorated relations. #1222
+* Update Knex to 0.11.x. #1227
+* Update minimum lodash version. #1230
+
 **0.9.4** — <small>_April 3, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.3...0.9.4)
 
 * Include `babel-runtime` as a dependency. #1188
