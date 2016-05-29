@@ -202,7 +202,9 @@ _.extend(Sync.prototype, {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
     var updating = syncing.format(_.extend(Object.create(null), attrs));
-    delete updating[syncing.idAttribute];
+    if (syncing.id === updating[syncing.idAttribute]) {
+      delete updating[syncing.idAttribute];
+    }
     return query.update(updating);
   }),
 
