@@ -79,12 +79,12 @@ _.extend(Sync.prototype, {
       });
     }).then(function() {
       options.query = knex;
-      
+
       /**
        * Counting event.
        *
        * Fired before a `count` query. A promise may be
-       * returned from the event handler for async behaviour. 
+       * returned from the event handler for async behaviour.
        *
        * @event Model#counting
        * @param {Model}  model    The model firing the event.
