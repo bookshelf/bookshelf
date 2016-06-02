@@ -32,6 +32,11 @@ export default class RelationBase {
     return new this.target(data)._reset();
   }
 
+  // Clones a relation. Required by Pagination plugin.
+  clone() {
+    return new this.constructor(null, null, this)
+  }
+
   // Eager pair the models.
   eagerPair() {}
 }

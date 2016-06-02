@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { remove as _remove, assign as _assign } from 'lodash';
+import { remove as _remove, assign as _assign,  noop as _noop } from 'lodash';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -30,7 +30,7 @@ const DEFAULT_PAGE = 1;
  * See methods below for details.
  */
 module.exports = function paginationPlugin (bookshelf) {
-
+   const Model = bookshelf.Model;
   /**
    * @method Model#fetchPage
    * @belongsTo Model
@@ -133,11 +133,12 @@ module.exports = function paginationPlugin (bookshelf) {
       _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
     }
 
-    const isModel = this instanceof bookshelf.Model;
-    const [fetchMethodName, tableName, idAttribute = 'id'] = isModel
-      ? ['fetchAll', this.constructor.prototype.tableName, this.constructor.prototype.idAttribute]
-      : ['fetch', this.tableName(), this.idAttribute()];
-    const idColumn = `${tableName}.${idAttribute}`;
+    const isModel = this instanceof Model;
+    const [fetchMethodName, targetModel] = isModel
+      ? ['fetchAll', this.constructor]
+      : ['fetch', this.target || this.model];
+    const {tableName, idAttribute = 'id'} = targetModel.prototype;
+    const targetIdColumn = `${tableName}.${idAttribute}`;
 
     const paginate = () => {
       // const pageQuery = clone(this.query());
@@ -150,7 +151,12 @@ module.exports = function paginationPlugin (bookshelf) {
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
           if (!isModel) {
-            qb.groupBy(idColumn);
+            qb.distinct();
+            if (pager.relatedData) {
+              // Remove joining columns that break COUNT operation.
+              // eg. pivotal coulmns for belongsToMany relation.
+              pager.relatedData.joinColumns = _noop;
+            }
           }
           return null;
         })[fetchMethodName](fetchOptions);
@@ -175,10 +181,12 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        if (!isModel) {
-          qb.groupBy(idColumn);
+        if (!isModel && counter.relatedData) {
+          // Remove joining columns that break COUNT operation.
+          // eg. pivotal coulmns for belongsToMany relation.
+          counter.relatedData.joinColumns = _noop;
         }
-        qb.countDistinct.apply(qb, [idColumn]);
+        qb.countDistinct.apply(qb, [targetIdColumn]);
 
       })[fetchMethodName]().then(result => {
 
