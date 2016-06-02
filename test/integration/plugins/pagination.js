@@ -8,6 +8,7 @@ module.exports = function (bookshelf) {
   describe('Pagination Plugin', function () {
 
     bookshelf.plugin('pagination');
+    var knex = bookshelf.knex;
     var Models = require('../helpers/objects')(bookshelf).Models;
 
 
@@ -94,6 +95,24 @@ module.exports = function (bookshelf) {
             expect(results).to.have.property(prop);
           });
         })
+      })
+      it('fetches a page from a relation collection', function () {
+        return Models.User.forge({uid: 1}).roles().fetchPage().then(function (results) {
+          expect(results.length).to.equal(1);
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        });
+      })
+      it('fetches a page from a relation collection with additional condition', function () {
+        return Models.User.forge({uid: 1}).roles().query(function (query) {
+          query.where(knex.raw('`roles`.`rid`'), '!=', 4);
+        }).fetchPage().then(function (results) {
+          expect(results.length).to.equal(0);
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        });
       })
     })
 

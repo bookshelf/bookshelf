@@ -133,13 +133,15 @@ module.exports = function paginationPlugin (bookshelf) {
       _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
     }
 
-    const tableName = this.constructor.prototype.tableName;
-    const idAttribute = this.constructor.prototype.idAttribute ?
-      this.constructor.prototype.idAttribute : 'id';
+    const isModel = this instanceof bookshelf.Model;
+    const [fetchMethodName, tableName, idAttribute = 'id'] = isModel
+      ? ['fetchAll', this.constructor.prototype.tableName, this.constructor.prototype.idAttribute]
+      : ['fetch', this.tableName(), this.idAttribute()];
+    const idColumn = `${tableName}.${idAttribute}`;
 
     const paginate = () => {
       // const pageQuery = clone(this.query());
-      const pager = this.constructor.forge();
+      const pager = this.clone();
 
       return pager
 
@@ -147,10 +149,11 @@ module.exports = function paginationPlugin (bookshelf) {
           _assign(qb, this.query().clone());
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
+          if (!isModel) {
+            qb.groupBy(idColumn);
+          }
           return null;
-        })
-
-      .fetchAll(fetchOptions);
+        })[fetchMethodName](fetchOptions);
     };
 
     const count = () => {
@@ -160,7 +163,7 @@ module.exports = function paginationPlugin (bookshelf) {
         'groupByBasic',
         'groupByRaw'
       ];
-      const counter = this.constructor.forge();
+      const counter = this.clone();
 
       return counter.query(qb => {
         _assign(qb, this.query().clone());
@@ -172,9 +175,12 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
+        if (!isModel) {
+          qb.groupBy(idColumn);
+        }
+        qb.countDistinct.apply(qb, [idColumn]);
 
-      }).fetchAll().then(result => {
+      })[fetchMethodName]().then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
@@ -210,8 +216,6 @@ module.exports = function paginationPlugin (bookshelf) {
     return this.forge().fetchPage(...args);
   }
 
-  bookshelf.Collection.prototype.fetchPage = function (...args) {
-    return fetchPage.apply(this.model.forge(), ...args);
-  };
+  bookshelf.Collection.prototype.fetchPage = fetchPage;
 
 }
