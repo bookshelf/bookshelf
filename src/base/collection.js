@@ -573,9 +573,9 @@ CollectionBase.prototype.parse = function(resp) {
 CollectionBase.prototype.clone = function() {
   // Iterate over the selected list of collection properties and invoke `clone` for
   // each property that has a method for that porpose.
-  var clonedProps = _(this).pick(collectionProps).mapValues((val) => {
+  const clonedProps = _(this).pick(collectionProps).mapValues((val) => {
     return (val && typeof(val.clone) === 'function') ? val.clone() : val;
-  }).value(); 
+  }).value();
   return new this.constructor(this.models, clonedProps);
 };
 
