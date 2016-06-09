@@ -11,8 +11,7 @@ export default class RelationBase {
 
   constructor(type, Target, options) {
     if (Target != null) {
-      this.targetTableName   = _.result(Target.prototype, 'tableName');
-      this.targetIdAttribute = _.result(Target.prototype, 'idAttribute');
+      this.targetTable = _.result(Target.prototype, 'table');
     }
     assign(this, { type, target: Target }, options);
   }

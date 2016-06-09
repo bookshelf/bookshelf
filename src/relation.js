@@ -22,9 +22,8 @@ export default RelationBase.extend({
   // gathering any relevant primitives from the parent object,
   // without keeping any hard references.
   init: function(parent) {
-    this.parentId          = parent.id;
-    this.parentTableName   = _.result(parent, 'tableName');
-    this.parentIdAttribute = _.result(parent, 'idAttribute');
+    this.parentId    = parent.id;
+    this.parentTable = _.result(parent, 'table');
 
     if (this.isInverse()) {
       // use formatted attributes so that morphKey and foreignKey will match
@@ -35,8 +34,7 @@ export default RelationBase.extend({
       // we can't know what the target will be until the models are sorted and matched.
       if (this.type === 'morphTo' && !parent._isEager) {
         this.target = Helpers.morphCandidate(this.candidates, attributes[this.key('morphKey')]);
-        this.targetTableName   = _.result(this.target.prototype, 'tableName');
-        this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
+        this.targetTable   = _.result(this.target.prototype, 'table');
       }
       this.parentFk = attributes[this.key('foreignKey')];
     } else {
@@ -62,8 +60,7 @@ export default RelationBase.extend({
     }
 
     this.throughTarget = Target;
-    this.throughTableName = _.result(Target.prototype, 'tableName');
-    this.throughIdAttribute = _.result(Target.prototype, 'idAttribute');
+    this.throughTable = _.result(Target.prototype, 'table');
 
     // Set the parentFk as appropriate now.
     if (this.type === 'belongsTo') {
@@ -87,10 +84,10 @@ export default RelationBase.extend({
     if (this[keyName]) return this[keyName];
     switch (keyName) {
       case 'otherKey':
-        this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
+        this[keyName] = singularMemo(_.result(this.targetTable, 'name')) + '_' + _.result(this.targetTable, 'idAttribute');
         break;
       case 'throughForeignKey':
-        this[keyName] = singularMemo(this.joinTable()) + '_' + this.throughIdAttribute;
+        this[keyName] = singularMemo(_.result(this.joinTable(), 'name')) + '_' + this.throughTable.idAttribute;
         break;
       case 'foreignKey':
         switch (this.type) {
@@ -102,7 +99,7 @@ export default RelationBase.extend({
             break;
           }
           case 'belongsTo':
-            this[keyName] = singularMemo(this.targetTableName) + '_' + this.targetIdAttribute;
+            this[keyName] = singularMemo(_.result(this.targetTable, 'name')) + '_' + _.result(this.targetTable, 'idAttribute');
             break;
           default:
             if (this.isMorph()) {
@@ -111,7 +108,7 @@ export default RelationBase.extend({
                 : this.morphName + '_id';
               break;
             }
-            this[keyName] = singularMemo(this.parentTableName) + '_' + this.parentIdAttribute;
+            this[keyName] = singularMemo(_.result(this.parentTable, 'name')) + '_' + _.result(this.parentTable, 'idAttribute');
             break;
         }
         break;
@@ -121,7 +118,7 @@ export default RelationBase.extend({
           : this.morphName + '_type';
         break;
       case 'morphValue':
-        this[keyName] = this.parentTableName || this.targetTableName;
+        this[keyName] = _.result(this, 'parentTable.name') || _.result(this, 'targetTable.name');
         break;
     }
     return this[keyName]
@@ -145,7 +142,7 @@ export default RelationBase.extend({
     const currentColumns = _.findWhere(knex._statements, {grouping: 'columns'});
 
     if (!currentColumns || currentColumns.length === 0) {
-      knex.column(this.targetTableName + '.*');
+      knex.column(_.resolve(this.targetTable, 'identifyer') + '.*');
     }
 
     if (this.isJoined()) this.joinColumns(knex);
@@ -180,25 +177,25 @@ export default RelationBase.extend({
       const targetKey = (this.type === 'belongsTo' ? this.key('foreignKey') : this.key('otherKey'));
 
       knex.join(
-        joinTable,
-        joinTable + '.' + targetKey, '=',
-        this.targetTableName + '.' + this.targetIdAttribute
+        _.result(joinTable, 'aliasedName'),
+        _.result(joinTable, 'identifyer') + '.' + targetKey, '=',
+        _.result(this.targetTable, 'identifyer') + '.' + _.result(this.targetTable, 'idAttribute')
       );
 
       // A `belongsTo` -> `through` is currently the only relation with two joins.
       if (this.type === 'belongsTo') {
         knex.join(
-          this.parentTableName,
-          joinTable + '.' + this.throughIdAttribute, '=',
-          this.parentTableName + '.' + this.key('throughForeignKey')
+          _.result(this.parentTable, 'aliasedName'),
+          _.result(joinTable, 'identifyer') + '.' + _.result(this.throughTable, 'idAttribute'), '=',
+          _.result(this.parentTable, 'identifyer') + '.' + this.key('throughForeignKey')
         );
       }
 
     } else {
       knex.join(
-        joinTable,
-        joinTable + '.' + this.throughIdAttribute, '=',
-        this.targetTableName + '.' + this.key('throughForeignKey')
+        _.result(joinTable, 'aliasedName'),
+        _.result(joinTable, 'identifyer') + '.' + _.result(this.throughTable, 'idAttribute'), '=',
+        _.result(this.targetTable, 'identifyer') + '.' + this.key('throughForeignKey')
       );
     }
   },
@@ -210,21 +207,23 @@ export default RelationBase.extend({
 
     if (this.isJoined()) {
       const isBelongsTo = this.type === 'belongsTo';
-      const targetTable = isBelongsTo
-        ? this.parentTableName
-        : this.joinTable();
+      const targetIdentifyer = _.result(isBelongsTo
+        ? this.parentTable
+        : this.joinTable()
+      , 'identifyer');
 
       const column = isBelongsTo
-        ? this.parentIdAttribute
+        ? _.result(this.parentTable, 'idAttribute')
         : this.key('foreignKey');
 
-      key = `${targetTable}.${column}`;
+      key = `${targetIdentifyer}.${column}`;
     } else {
       const column = this.isInverse()
-        ? this.targetIdAttribute
+        ? _.result(this.targetTable, 'idAttribute')
         : this.key('foreignKey');
 
-      key = `${this.targetTableName}.${column}`;
+      const targetTableIdentifyer = _.result(this.targetTable, 'identifyer');
+      key = `${targetTableIdentifyer}.${column}`;
     }
 
     const method = response ? 'whereIn' : 'where';
@@ -232,10 +231,10 @@ export default RelationBase.extend({
     knex[method](key, ids);
 
     if (this.isMorph()) {
-      const table = this.targetTableName;
+      const tableIdentifyer = _.result(this.targetTable, 'identifyer');
       const key = this.key('morphKey');
       const value = this.key('morphValue')
-      knex.where(`${table}.${key}`, value);
+      knex.where(`${tableIdentifyer}.${key}`, value);
     }
   },
 
@@ -249,11 +248,23 @@ export default RelationBase.extend({
 
   // Generates the appropriate standard join table.
   joinTable: function() {
-    if (this.isThrough()) return this.throughTableName;
-    return this.joinTableName || [
-      this.parentTableName,
-      this.targetTableName
-    ].sort().join('_');
+    if (this.isThrough()) return this.throughTable;
+
+    const joinModelProto = _.get(this, 'joinTableName.prototype');
+    if (joinModelProto instanceof ModelBase) return _.result(joinModelProto, 'table');
+
+    const [joinTableName, joinTableAlias] = [].concat(
+      this.joinTableName || [
+        _.result(this.parentTable, 'name'),
+        _.result(this.targetTable, 'name')
+      ].sort().join('_')
+    );
+    return {
+      name: joinTableName,
+      alias: joinTableAlias,
+      identifyer: joinTableAlias || joinTableName,
+      aliasedName: _.resolve(this.parent, 'aliasedName')
+    }
   },
 
   // Creates a new model or collection instance, depending on
@@ -350,10 +361,12 @@ export default RelationBase.extend({
       // attributes.
       if (!isEmpty(grouped.pivot)) {
         const Through = this.throughTarget;
-        const tableName = this.joinTable();
+        const joinTable = this.joinTable();
+        const joinTableName = _.result(joinTable, 'name');
+        const joinTableAlias = _.result(joinTable, 'alias');
         model.pivot = Through != null
           ? new Through(grouped.pivot)
-          : new this.Model(grouped.pivot, { tableName });
+          : new this.Model(grouped.pivot, { tableName: joinTableName, tableAlias: joinTableAlias });
       }
 
       return model;

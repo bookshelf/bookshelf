@@ -39,10 +39,30 @@ function Bookshelf(knex) {
     _relation(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
-          _.result(this, 'tableName') + ' ' + type + ' relation');
+          _.result(this, 'tableIdentifyer') + ' ' + type + ' relation');
       }
       return new Relation(type, Target, options);
-    }
+    },
+
+    /**
+     * @method
+     * @description  Get the current value of an attribute from the model.
+     *
+     * @returns {string} Attribute value.odel({id: 1});
+     * @example
+     * modelB.isNew(); // false
+     */
+    table,
+
+    /**
+     * @method
+     * @description  Get the current value of an attribute from the model.
+     *
+     * @returns {string} Attribute value.odel({id: 1});
+     * @example
+     * modelB.isNew(); // false
+     */
+    aliasedTableName: aliasedTableName()
 
   }, {
 
@@ -127,7 +147,11 @@ function Bookshelf(knex) {
 
   const Collection = bookshelf.Collection = BookshelfCollection.extend({
 
-    _builder: builderFn
+    _builder: builderFn,
+
+    table,
+
+    aliasedTableName: aliasedTableName()
 
   }, {
 
@@ -161,7 +185,6 @@ function Bookshelf(knex) {
      * });
      */
      forge
-
 
   });
 
@@ -279,6 +302,33 @@ function Bookshelf(knex) {
   // and more chainable.
   function forge() {
     return new this(...arguments);
+  }
+
+  function table() {
+    const desc = {
+      name: _.result(this, 'tableName'),
+      alias: _.result(this, 'tableAlias'),
+      identifyer: _.result(this, 'tableIdentifyer'),
+      aliasedName: aliasedTableName('name', 'alias'),
+      idAttribute: _.result(this, 'idAttribute')
+    };
+    if (!desc.alias) delete desc.alias;
+    return desc;
+  }
+
+  function aliasedTableName(tableNameProp = 'tableName', tableAliasProp = 'tableAlias') {
+    return function() {
+      let candidates = [
+        _.return(this, tableNameProp),
+        _.return(this, tableAliasProp)
+      ];
+      // `aliasTable` is nor required and may be missing
+      candidates = _.compact(candidates);
+      const aliasedTableName = candidates.map(function (tableNameOrAlias) {
+        return knex.client.wrapIdentifier(tableNameOrAlias);
+      }).join(' ');
+      return knex.raw(aliasedTableName);
+    };
   }
 
   function builderFn(tableNameOrBuilder) {

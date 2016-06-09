@@ -256,7 +256,7 @@ const BookshelfModel = ModelBase.extend({
    *
    *   Constructor of {@link Model} targeted by join.
    *
-   * @param {string=} table
+   * @param {string|string[]=} tableName|[tableName, tableAlias]
    *
    *   Name of the joining table. Defaults to the two table names, joined by an
    *   underscore, ordered alphabetically.
@@ -264,13 +264,13 @@ const BookshelfModel = ModelBase.extend({
    * @param {string=} foreignKey
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
-   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+   *   be the singular form of this model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @param {string=} otherKey
    *
    *   Foreign key in the `Target` model. By default, the `otherKey` is assumed to
-   *   be the singular form of this model's tableName, followed by `_id` /
+   *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Collection}

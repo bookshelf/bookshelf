@@ -22,10 +22,10 @@ _.extend(Sync.prototype, {
   // Prefix all keys of the passed in object with the
   // current table name
   prefixFields: function(fields) {
-    const tableName = this.syncing.tableName;
+    const tableIdentifyer = _.return(this.syncing, 'tableIdentifyer');
     const prefixed = {};
     for (const key in fields) {
-      prefixed[tableName + '.' + key] = fields[key];
+      prefixed[tableIdentifyer + '.' + key] = fields[key];
     }
     return prefixed;
   },
@@ -159,7 +159,7 @@ _.extend(Sync.prototype, {
 
           // If columns have already been selected via the `query` method
           // we will use them. Otherwise, select all columns in this table.
-          columns = [_.result(this.syncing, 'tableName') + '.*'];
+          columns = [_.result(this.syncing, 'tableIdentifyer') + '.*'];
         }
       }
 
