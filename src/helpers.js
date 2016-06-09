@@ -91,8 +91,8 @@ const helpers = {
       ? obj.model.prototype
       : obj.constructor.prototype;
 
-    const tableIdentifyer = _.return(target, 'tableIdentifyer');
-    const idAttribute = _.return(target, 'idAttribute', 'id');
+    const tableIdentifyer = _.result(target, 'tableIdentifyer');
+    const idAttribute = _.result(target, 'idAttribute', 'id');
 
     let _sort;
 

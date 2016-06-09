@@ -319,8 +319,8 @@ function Bookshelf(knex) {
   function aliasedTableName(tableNameProp = 'tableName', tableAliasProp = 'tableAlias') {
     return function() {
       let candidates = [
-        _.return(this, tableNameProp),
-        _.return(this, tableAliasProp)
+        _.result(this, tableNameProp),
+        _.result(this, tableAliasProp)
       ];
       // `aliasTable` is nor required and may be missing
       candidates = _.compact(candidates);

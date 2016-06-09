@@ -87,7 +87,7 @@ export default RelationBase.extend({
         this[keyName] = singularMemo(_.result(this.targetTable, 'name')) + '_' + _.result(this.targetTable, 'idAttribute');
         break;
       case 'throughForeignKey':
-        this[keyName] = singularMemo(_.result(this.joinTable(), 'name')) + '_' + this.throughTable.idAttribute;
+        this[keyName] = singularMemo(_.result(this.joinTable(), 'name')) + '_' + _.result(this.throughTable, 'idAttribute');
         break;
       case 'foreignKey':
         switch (this.type) {
@@ -142,7 +142,7 @@ export default RelationBase.extend({
     const currentColumns = _.findWhere(knex._statements, {grouping: 'columns'});
 
     if (!currentColumns || currentColumns.length === 0) {
-      knex.column(_.resolve(this.targetTable, 'identifyer') + '.*');
+      knex.column(_.result(this.targetTable, 'identifyer') + '.*');
     }
 
     if (this.isJoined()) this.joinColumns(knex);
@@ -263,7 +263,7 @@ export default RelationBase.extend({
       name: joinTableName,
       alias: joinTableAlias,
       identifyer: joinTableAlias || joinTableName,
-      aliasedName: _.resolve(this.parent, 'aliasedName')
+      aliasedName: _.result(this.parent, 'aliasedName')
     }
   },
 

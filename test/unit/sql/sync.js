@@ -19,7 +19,7 @@ module.exports = function() {
         return this;
       };
       return {
-        tableName: 'testtable',
+        tableIdentifyer: 'testtable',
         isNew: function() {
           return true
         },

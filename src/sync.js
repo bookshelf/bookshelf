@@ -22,7 +22,7 @@ _.extend(Sync.prototype, {
   // Prefix all keys of the passed in object with the
   // current table name
   prefixFields: function(fields) {
-    const tableIdentifyer = _.return(this.syncing, 'tableIdentifyer');
+    const tableIdentifyer = _.result(this.syncing, 'tableIdentifyer');
     const prefixed = {};
     for (const key in fields) {
       prefixed[tableIdentifyer + '.' + key] = fields[key];
@@ -79,12 +79,12 @@ _.extend(Sync.prototype, {
       });
     }).then(function() {
       options.query = knex;
-      
+
       /**
        * Counting event.
        *
        * Fired before a `count` query. A promise may be
-       * returned from the event handler for async behaviour. 
+       * returned from the event handler for async behaviour.
        *
        * @event Model#counting
        * @param {Model}  model    The model firing the event.
