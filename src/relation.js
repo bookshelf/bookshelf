@@ -259,12 +259,17 @@ export default RelationBase.extend({
         _.result(this.targetTable, 'name')
       ].sort().join('_')
     );
-    return {
+    console.log(this.joinTableName);
+    const res = _.omit({
       name: joinTableName,
       alias: joinTableAlias,
       identifyer: joinTableAlias || joinTableName,
-      aliasedName: _.result(this.parent, 'aliasedName')
-    }
+      aliasedName: this.parentTable.aliasedName // FIXME: Can't access initialized `knex` instance from here.
+                                                //        Using parent models `table.aliasName` that has already
+                                                //        initialized `knex` instance.
+    }, _.isUndefined);
+    console.log(res);
+    return res;
   },
 
   // Creates a new model or collection instance, depending on
