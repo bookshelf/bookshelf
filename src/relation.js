@@ -159,12 +159,12 @@ export default RelationBase.extend({
   joinColumns: function(knex) {
     const columns = [];
     const joinTable = this.joinTable();
-    if (this.isThrough()) columns.push(this.throughIdAttribute);
+    if (this.isThrough()) columns.push(_.result(this.throughTable, 'idAttribute'));
     columns.push(this.key('foreignKey'));
     if (this.type === 'belongsToMany') columns.push(this.key('otherKey'));
     push.apply(columns, this.pivotColumns);
     knex.columns(_.map(columns, function(col) {
-      return joinTable + '.' + col + ' as _pivot_' + col;
+      return _.result(joinTable, 'identifyer') + '.' + col + ' as _pivot_' + col;
     }));
   },
 
@@ -591,7 +591,7 @@ const pivotHelpers = {
 
     // Grab the `knex` query builder for the current model, and
     // check if we have any additional constraints for the query.
-    const builder = this._builder(relatedData.joinTable());
+    const builder = this._builder(_.result(relatedData.joinTable(), 'aliasedName'));
     if (options && options.query) {
       Helpers.query.call(null, {_knex: builder}, [options.query]);
     }
