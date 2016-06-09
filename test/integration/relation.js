@@ -94,14 +94,14 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'hasOne');
         equal(relatedData.target, DoctorMeta);
-        equal(relatedData.targetTableName, 'doctormeta');
-        equal(relatedData.targetIdAttribute, 'customId');
+        equal(relatedData.targetTable.name, 'doctormeta');
+        equal(relatedData.targetTable.idAttribute, 'customId');
         equal(relatedData.foreignKey, 'doctoring_id');
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'doctors');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'doctors');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // init the select constraints
@@ -119,20 +119,20 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'hasOne');
         equal(relatedData.target, AccountHistory);
-        equal(relatedData.targetTableName, 'account_histories');
-        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.targetTable.name, 'account_histories');
+        equal(relatedData.targetTable.idAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'suppliers');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'suppliers');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // Through
         equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughTable.name, 'accounts');
+        equal(relatedData.throughTable.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -151,20 +151,20 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'belongsTo');
         equal(relatedData.target, Supplier);
-        equal(relatedData.targetTableName, 'suppliers');
-        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.targetTable.name, 'suppliers');
+        equal(relatedData.targetTable.idAttribute, 'id');
         equal(relatedData.foreignKey, 'supplier_id');
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'account_histories');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'account_histories');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // Through
         equal(relatedData.throughTarget, Account);
-        equal(relatedData.throughTableName, 'accounts');
-        equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughTable.name, 'accounts');
+        equal(relatedData.throughTable.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -183,20 +183,20 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'belongsToMany');
         equal(relatedData.target, Patient);
-        equal(relatedData.targetTableName, 'patients');
-        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.targetTable.name, 'patients');
+        equal(relatedData.targetTable.idAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'doctors');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'doctors');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // Through
         equal(relatedData.throughTarget, Appointment);
-        equal(relatedData.throughTableName, 'appointments');
-        equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughTable.name, 'appointments');
+        equal(relatedData.throughTable.idAttribute, 'id');
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -215,14 +215,14 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'belongsToMany');
         equal(relatedData.target, Patient);
-        equal(relatedData.targetTableName, 'patients');
-        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.targetTable.name, 'patients');
+        equal(relatedData.targetTable.idAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'doctors');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'doctors');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // init the select constraints
@@ -242,14 +242,14 @@ module.exports = function(Bookshelf) {
         // Base
         equal(relatedData.type, 'morphMany');
         equal(relatedData.target, Photo);
-        equal(relatedData.targetTableName, 'photos');
-        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.targetTable.name, 'photos');
+        equal(relatedData.targetTable.idAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
-        equal(relatedData.parentTableName, 'doctors');
-        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentTable.name, 'doctors');
+        equal(relatedData.parentTable.idAttribute, 'id');
         equal(relatedData.parentFk, 1);
 
         // init the select constraints
