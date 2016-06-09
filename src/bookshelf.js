@@ -327,14 +327,14 @@ function Bookshelf(knex) {
       const aliasedTableName = candidates.map(function (tableNameOrAlias) {
         return knex.client.wrapIdentifier(tableNameOrAlias);
       }).join(' ');
-      return knex.raw(aliasedTableName);
+      return knex.client.raw(aliasedTableName);
     };
   }
 
   function builderFn(tableNameOrBuilder) {
     let builder = null;
 
-    if (_.isString(tableNameOrBuilder)) {
+    if (_.isString(tableNameOrBuilder) || tableNameOrBuilder instanceof knex.client.Raw) {
       builder = knex(tableNameOrBuilder);
     } else if (tableNameOrBuilder == null) {
       builder = knex.queryBuilder();
