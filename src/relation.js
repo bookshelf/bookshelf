@@ -242,7 +242,7 @@ export default RelationBase.extend({
   eagerKeys: function(response) {
     const key = this.isInverse() && !this.isThrough()
       ? this.key('foreignKey')
-      : this.parentIdAttribute;
+      : _.result(this.parentTable, 'idAttribute');
     return _(response).pluck(key).uniq().value();
   },
 
@@ -259,8 +259,7 @@ export default RelationBase.extend({
         _.result(this.targetTable, 'name')
       ].sort().join('_')
     );
-    console.log(this.joinTableName);
-    const res = _.omit({
+    return _.omit({
       name: joinTableName,
       alias: joinTableAlias,
       identifyer: joinTableAlias || joinTableName,
@@ -268,8 +267,6 @@ export default RelationBase.extend({
                                                 //        Using parent models `table.aliasName` that has already
                                                 //        initialized `knex` instance.
     }, _.isUndefined);
-    console.log(res);
-    return res;
   },
 
   // Creates a new model or collection instance, depending on
