@@ -1,7 +1,7 @@
 // Base Relation
 // ---------------
 
-import _, { assign } from 'lodash';
+import { assign } from 'lodash';
 import CollectionBase from './collection';
 import extend from '../extend';
 
@@ -11,7 +11,7 @@ export default class RelationBase {
 
   constructor(type, Target, options) {
     if (Target != null) {
-      this.targetTable = _.result(Target.prototype, 'table');
+      this.targetTable = this._tableDesc(Target.prototype);
     }
     assign(this, { type, target: Target }, options);
   }

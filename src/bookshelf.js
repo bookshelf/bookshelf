@@ -52,16 +52,6 @@ function Bookshelf(knex) {
      * @example
      * modelB.isNew(); // false
      */
-    table,
-
-    /**
-     * @method
-     * @description  Get the current value of an attribute from the model.
-     *
-     * @returns {string} Attribute value.odel({id: 1});
-     * @example
-     * modelB.isNew(); // false
-     */
     aliasedTableName: aliasedTableName()
 
   }, {
@@ -149,8 +139,6 @@ function Bookshelf(knex) {
 
     _builder: builderFn,
 
-    table,
-
     aliasedTableName: aliasedTableName()
 
   }, {
@@ -194,7 +182,7 @@ function Bookshelf(knex) {
   Model.prototype.Collection = Collection;
 
   const Relation = BookshelfRelation.extend({
-    Model, Collection
+    Model, Collection, _aliasedTableName: aliasedTableName
   });
 
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes
@@ -302,18 +290,6 @@ function Bookshelf(knex) {
   // and more chainable.
   function forge() {
     return new this(...arguments);
-  }
-
-  function table() {
-    const desc = {
-      name: _.result(this, 'tableName'),
-      alias: _.result(this, 'tableAlias'),
-      identifyer: _.result(this, 'tableIdentifyer'),
-      aliasedName: aliasedTableName('name', 'alias'),
-      idAttribute: _.result(this, 'idAttribute')
-    };
-    if (!desc.alias) delete desc.alias;
-    return desc;
   }
 
   function aliasedTableName(tableNameProp = 'tableName', tableAliasProp = 'tableAlias') {

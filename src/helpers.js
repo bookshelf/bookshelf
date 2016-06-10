@@ -40,16 +40,17 @@ const helpers = {
   // methods, and the values are the arguments for the query.
   query: function(obj, args) {
 
+    const [method] = args;
+
     // Ensure the object has a query builder.
     if (!obj._knex) {
-      const aliasedTableName = _.result(obj, 'aliasedTableName');
+      const useTableName = ['update', 'insert', 'delete'].indexOf(method) >= 0;
+      const aliasedTableName = _.result(obj, useTableName ? 'tableName' : 'aliasedTableName');
       obj._knex = obj._builder(aliasedTableName);
     }
 
     // If there are no arguments, return the query builder.
     if (args.length === 0) return obj._knex;
-
-    const method = args[0];
 
     if (_.isFunction(method)) {
 
