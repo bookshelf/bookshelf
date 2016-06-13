@@ -591,7 +591,7 @@ const BookshelfModel = ModelBase.extend({
    * @param {Object=}  options - Hash of options.
    * @param {boolean=} [options.require=false]
    *   Reject the returned response with a {@link Model.NotFoundError
-   *   NotFoundError} if no results are empty.
+   *   NotFoundError} if results are empty.
    * @param {string|string[]} [options.columns='*']
    *   Specify columns to be retrieved.
    * @param {Transaction} [options.transacting]
