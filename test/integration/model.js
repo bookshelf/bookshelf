@@ -222,14 +222,20 @@ module.exports = function(bookshelf) {
         deepEqual(m.toJSON(), {'_id': 1, 'name': 'Joe'});
       });
 
-      it('includes the relations loaded on the model, unless {shallow: true} is passed.', function() {
+      it('includes the relations loaded on the model, unless {shallow: true} or {omitNew: true} is passed.', function() {
         var m = new bookshelf.Model({id: 1, name: 'Test'});
-        m.relations = {someList: new bookshelf.Collection([{id:1}, {id:2}])};
+        m.relations = {someList: new bookshelf.Collection([{id:1}, {attr:2}]),
+                       someRel:  new bookshelf.Model({attr:3}),
+                       otherRel: new bookshelf.Model({id:4})
+                      };
         var json = m.toJSON();
-        deepEqual(_.keys(json), ['id', 'name', 'someList']);
+        deepEqual(_.keys(json), ['id', 'name', 'someList', 'someRel', 'otherRel']);
         equal(json.someList.length, 2);
         var shallow = m.toJSON({shallow:true});
         deepEqual(_.keys(shallow), ['id', 'name']);
+        var omitNew = m.toJSON({omitNew:true});
+        deepEqual(_.keys(omitNew), ['id', 'name', 'someList', 'otherRel']);
+        equal(omitNew.someList.length, 1);
       });
     });
 
