@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import {isPlainObject, drop, map} from 'lodash';
 
 // Registry Plugin -
 // Create a central registry of model/collection constructors to
@@ -18,7 +18,7 @@ module.exports = function (bookshelf) {
     this._models = this._models || Object.create(null);
     if (ModelCtor) {
       preventOverwrite(this._models, name);
-      if (_.isPlainObject(ModelCtor)) {
+      if (isPlainObject(ModelCtor)) {
         ModelCtor = this.Model.extend(ModelCtor, staticProps);
       }
       this._models[name] = ModelCtor;
@@ -29,7 +29,7 @@ module.exports = function (bookshelf) {
     this._collections = this._collections || Object.create(null);
     if (CollectionCtor) {
       preventOverwrite(this._collections, name);
-      if (_.isPlainObject(CollectionCtor)) {
+      if (isPlainObject(CollectionCtor)) {
         CollectionCtor = this.Collection.extend(CollectionCtor, staticProps);
       }
       this._collections[name] = CollectionCtor;
@@ -60,29 +60,29 @@ module.exports = function (bookshelf) {
   const _relation = Model.prototype._relation;
   Model.prototype._relation = function (method, Target) {
     // The second argument is always a model, so resolve it and call the original method.
-    return _relation.apply(this, [method, resolveModel(Target)].concat(_.drop(arguments, 2)));
+    return _relation.apply(this, [method, resolveModel(Target)].concat(drop(arguments, 2)));
   }
 
   // The `through` method doesn't use `_relation` beneath, so we have to
   // re-implement it specifically
   const through = Model.prototype.through;
   Model.prototype.through = function (Target) {
-    return through.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
+    return through.apply(this, [resolveModel(Target)].concat(drop(arguments)));
   }
 
   // `morphTo` takes the relation name first, and then a variadic set of models so we
   // can't include it with the rest of the relational methods.
   const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
-    return morphTo.apply(this, [relationName].concat(_.map(_.drop(arguments), function(model) {
+    return morphTo.apply(this, [relationName].concat(map(drop(arguments), (model) => {
       return resolveModel(model);
-    }, this)));
+    })));
   };
 
   // The `through` method exists on the Collection as well, for `hasMany` / `belongsToMany` through relations.
   const collectionThrough = Collection.prototype.through;
   Collection.prototype.through = function(Target) {
-    return collectionThrough.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
+    return collectionThrough.apply(this, [resolveModel(Target)].concat(drop(arguments)));
   };
 
 };

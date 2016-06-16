@@ -117,7 +117,7 @@ _.extend(Sync.prototype, {
     // specifications. This could include `distinct()` with no arguments, which
     // does not affect inform the columns returned.
     const queryContainsColumns = _(knex._statements)
-      .where({grouping: 'columns'})
+      .filter({grouping: 'columns'})
       .some('value.length');
 
     return Promise.bind(this).then(function() {
@@ -198,7 +198,7 @@ _.extend(Sync.prototype, {
   update: Promise.method(function(attrs) {
     const syncing = this.syncing, query = this.query;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
+    if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
     return query.update(syncing.format(_.extend(Object.create(null), attrs)));
@@ -208,7 +208,7 @@ _.extend(Sync.prototype, {
   del: Promise.method(function() {
     const query = this.query, syncing = this.syncing;
     if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
-    if (_.where(query._statements, {grouping: 'where'}).length === 0) {
+    if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }
     return this.query.del();

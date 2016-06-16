@@ -199,7 +199,7 @@ module.exports = function (bookshelf) {
 
       deepEqual(m.keys(), ['firstName', 'lastName', 'fullName']);
       deepEqual(m.values(), ['Joe', 'Shmoe', 'Joe Shmoe']);
-      deepEqual(m.pairs(), [['firstName', 'Joe'], ['lastName', 'Shmoe'], ['fullName', 'Joe Shmoe']]);
+      deepEqual(m.toPairs(), [['firstName', 'Joe'], ['lastName', 'Shmoe'], ['fullName', 'Joe Shmoe']]);
       deepEqual(m.invert(), {'Joe': 'firstName', 'Shmoe': 'lastName','Joe Shmoe': 'fullName'});
       deepEqual(m.pick('fullName'), {'fullName': 'Joe Shmoe'});
       deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
@@ -211,7 +211,7 @@ module.exports = function (bookshelf) {
           expect(result.get('first_name')).to.equal('Oderus');
           expect(result.get('last_name')).to.equal('Urungus');
       };
-    
+
       it('by using the `{key: value}` style assignment call', function() {
         var Model = bookshelf.Model.extend({
           tableName: 'authors',
@@ -242,7 +242,7 @@ module.exports = function (bookshelf) {
             return result.destroy();
           });
       });
-      
+
       it('by using the `"key", value` style assignment call', function() {
         var Model = bookshelf.Model.extend({
           tableName: 'authors',

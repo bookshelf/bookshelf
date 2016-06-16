@@ -1,7 +1,6 @@
 var Promise   = testPromise;
 var assert    = require('assert');
 var equal     = assert.equal;
-var _         = require('lodash');
 
 module.exports = function() {
 

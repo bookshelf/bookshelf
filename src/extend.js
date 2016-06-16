@@ -1,5 +1,4 @@
-import { isFunction } from 'lodash/lang';
-import { assign } from 'lodash/object';
+import { isFunction, assign } from 'lodash';
 
 // Uses a hash of prototype properties and class properties to be extended.
 module.exports = function(protoProps, staticProps) {

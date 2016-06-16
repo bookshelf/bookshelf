@@ -1,4 +1,4 @@
-import _, { assign, isArray } from 'lodash';
+import _ from 'lodash';
 import createError from 'create-error';
 
 import Sync from './sync';
@@ -801,7 +801,7 @@ const BookshelfModel = ModelBase.extend({
    */
   load: Promise.method(function(relations, options) {
     const columns = this.format({ ...this.attributes });
-    const withRelated = isArray(relations) ? relations : [relations];
+    const withRelated = _.isArray(relations) ? relations : [relations];
     return this._handleEager(
       [columns], { ...options, shallow: true, withRelated }
     ).return(this);
@@ -980,7 +980,7 @@ const BookshelfModel = ModelBase.extend({
           const updatedCols = {};
           updatedCols[this.idAttribute] = this.id = resp[0];
           const updatedAttrs = this.parse(updatedCols);
-          assign(this.attributes, updatedAttrs);
+          _.assign(this.attributes, updatedAttrs);
         } else if (method === 'update' && resp === 0) {
           if (options.require !== false) {
             throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
@@ -1233,7 +1233,7 @@ const BookshelfModel = ModelBase.extend({
 
   /* Ensure that QueryBuilder is copied on clone. */
   clone() {
-    const cloned = ModelBase.prototype.clone.apply(this, arguments);
+    const cloned = ModelBase.prototype.clone(...arguments);
     if (this._knex != null) {
       cloned._knex = cloned._builder(this._knex.clone());
     }

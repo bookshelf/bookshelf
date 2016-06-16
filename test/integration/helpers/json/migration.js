@@ -1,4 +1,3 @@
-var _ = require('lodash');
 var Promise = global.testPromise;
 
 var drops = [
