@@ -75,7 +75,7 @@ module.exports = function (Bookshelf) {
           _.extend(this.patchAttributes, nonVirtuals);
         }
         // Set the non-virtual attributes as normal.
-        return proto.set.call(this, nonVirtuals, value, options);
+        return proto.set.call(this, nonVirtuals, options);
       }
 
       // Handle `"key", value` style arguments for virtual setter.

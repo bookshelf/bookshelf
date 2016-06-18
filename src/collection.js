@@ -375,7 +375,7 @@ const BookshelfCollection = CollectionBase.extend({
 
   /* Ensure that QueryBuilder is copied on clone. */
   clone() {
-    const cloned = CollectionBase.prototype.clone(this, arguments);
+    const cloned = BookshelfCollection.__super__.clone.apply(this, arguments);
     if (this._knex != null) {
       cloned._knex = cloned._builder(this._knex.clone());
     }

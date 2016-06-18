@@ -1233,7 +1233,10 @@ const BookshelfModel = ModelBase.extend({
 
   /* Ensure that QueryBuilder is copied on clone. */
   clone() {
-    const cloned = ModelBase.prototype.clone(...arguments);
+    // This needs to use the direct apply method because the spread operator
+    // incorrectly converts to `clone.apply(ModelBase.prototype, arguments)`
+    // instead of `apply(this, arguments)`
+    const cloned = BookshelfModel.__super__.clone.apply(this, arguments);
     if (this._knex != null) {
       cloned._knex = cloned._builder(this._knex.clone());
     }

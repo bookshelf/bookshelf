@@ -41,7 +41,7 @@ _.extend(Sync.prototype, {
     // operator.
     //
     // NOTE: `_.omit` returns an empty object, even if attributes are null.
-    const whereAttributes = _.omit(attributes, _.isPlainObject);
+    const whereAttributes = _.omitBy(attributes, _.isPlainObject);
 
     if (!_.isEmpty(whereAttributes)) {
 
