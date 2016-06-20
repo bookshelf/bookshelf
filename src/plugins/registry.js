@@ -55,18 +55,20 @@ module.exports = function (bookshelf) {
 
   const { Collection, Model } = bookshelf;
 
-  // Re-implement the `bookshelf.Model` relation methods to include a check for
+  // Re-implement the `bookshelf.Model` _relation method to include a check for
   // the registered model.
-  _.each([
-    'belongsTo', 'belongsToMany', 'hasMany', 'hasOne', 'morphMany', 'morphOne',
-    'through'
-  ], method => {
-    const original = Model.prototype[method];
-    Model.prototype[method] = function(Target) {
-      // The first argument is always a model, so resolve it and call the original method.
-      return original.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
-    };
-  });
+  const _relation = Model.prototype._relation;
+  Model.prototype._relation = function (method, Target) {
+    // The second argument is always a model, so resolve it and call the original method.
+    return _relation.apply(this, [method, resolveModel(Target)].concat(_.drop(arguments, 2)));
+  }
+
+  // The `through` method doesn't use `_relation` beneath, so we have to
+  // re-implement it specifically
+  const through = Model.prototype.through;
+  Model.prototype.through = function (Target) {
+    return through.apply(this, [resolveModel(Target)].concat(_.drop(arguments)));
+  }
 
   // `morphTo` takes the relation name first, and then a variadic set of models so we
   // can't include it with the rest of the relational methods.
