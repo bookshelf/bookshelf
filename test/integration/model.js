@@ -145,6 +145,19 @@ module.exports = function(bookshelf) {
         equal(test2.id, (2));
       });
 
+      it('should reference parsedIdAttribute as the key for model.id', function() {
+        var TestModel = bookshelf.Model.extend({
+          idAttribute: 'test_id',
+          parse: function(attrs) {
+            return _.mapKeys(attrs, function(val, key) {
+              return _.camelCase(key);
+            });
+          }
+        });
+        var test = new TestModel({test_id: 2}, {parse: true});
+        equal(test.id, (2));
+      });
+
     });
 
     describe('query', function() {

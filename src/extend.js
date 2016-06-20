@@ -12,6 +12,10 @@ module.exports = function(protoProps, staticProps) {
     ? protoProps.constructor
     : function(){ Parent.apply(this, arguments); };
 
+  // tmpParsedObj will be used to store an object whose key is the parsed
+  // version of the idAttribute
+  let tmpParsedObj;
+
   // Set the prototype chain to inherit from `Parent`.
   Child.prototype = Object.create(Parent.prototype)
 
@@ -28,6 +32,14 @@ module.exports = function(protoProps, staticProps) {
   // If there is an "extended" function set on the parent,
   // call it with the extended child object.
   if (isFunction(Parent.extended)) Parent.extended(Child);
+
+  // Create a parsedIdAttribute for use when setting `model.id` in `Model.set`
+  if (isFunction(Child.prototype.parse)) {
+    tmpParsedObj = Child.prototype.parse({[Child.prototype.idAttribute]: null});
+    Child.prototype.parsedIdAttribute = Object.keys(tmpParsedObj)[0];
+  } else {
+    Child.prototype.parsedIdAttribute = Child.prototype.idAttribute;
+  }
 
   return Child;
 };
