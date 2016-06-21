@@ -160,7 +160,7 @@ module.exports = function(Bookshelf) {
 
 			it('allows for *-through relations', function() {
 				var relation = this.model.throughTest();
-				expect(relation.relatedData.throughTableName).to.equal('related');
+				expect(relation.relatedData.throughTable.name).to.equal('related');
 			});
 
 			describe('morphTo', function() {

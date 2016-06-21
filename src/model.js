@@ -256,7 +256,7 @@ const BookshelfModel = ModelBase.extend({
    *
    *   Constructor of {@link Model} targeted by join.
    *
-   * @param {string=} table
+   * @param {string|string[]=} tableName|[tableName, tableAlias]
    *
    *   Name of the joining table. Defaults to the two table names, joined by an
    *   underscore, ordered alphabetically.

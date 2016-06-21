@@ -39,10 +39,20 @@ function Bookshelf(knex) {
     _relation(type, Target, options) {
       if (type !== 'morphTo' && !_.isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
-          _.result(this, 'tableName') + ' ' + type + ' relation');
+          _.result(this, 'tableIdentifyer') + ' ' + type + ' relation');
       }
       return new Relation(type, Target, options);
-    }
+    },
+
+    /**
+     * @method
+     * @description  Get the current value of an attribute from the model.
+     *
+     * @returns {string} Attribute value.odel({id: 1});
+     * @example
+     * modelB.isNew(); // false
+     */
+    aliasedTableName: aliasedTableName()
 
   }, {
 
@@ -127,7 +137,9 @@ function Bookshelf(knex) {
 
   const Collection = bookshelf.Collection = BookshelfCollection.extend({
 
-    _builder: builderFn
+    _builder: builderFn,
+
+    aliasedTableName: aliasedTableName()
 
   }, {
 
@@ -162,7 +174,6 @@ function Bookshelf(knex) {
      */
      forge
 
-
   });
 
   // The collection also references the correct `Model`, specified above, for
@@ -171,7 +182,7 @@ function Bookshelf(knex) {
   Model.prototype.Collection = Collection;
 
   const Relation = BookshelfRelation.extend({
-    Model, Collection
+    Model, Collection, _aliasedTableName: aliasedTableName
   });
 
   // A `Bookshelf` instance may be used as a top-level pub-sub bus, as it mixes
@@ -281,10 +292,25 @@ function Bookshelf(knex) {
     return new this(...arguments);
   }
 
+  function aliasedTableName(tableNameProp = 'tableName', tableAliasProp = 'tableAlias') {
+    return function() {
+      let candidates = [
+        _.result(this, tableNameProp),
+        _.result(this, tableAliasProp)
+      ];
+      // `aliasTable` is nor required and may be missing
+      candidates = _.compact(candidates);
+      const aliasedTableName = candidates.map(function (tableNameOrAlias) {
+        return knex.client.wrapIdentifier(tableNameOrAlias);
+      }).join(' ');
+      return knex.client.raw(aliasedTableName);
+    };
+  }
+
   function builderFn(tableNameOrBuilder) {
     let builder = null;
 
-    if (_.isString(tableNameOrBuilder)) {
+    if (_.isString(tableNameOrBuilder) || tableNameOrBuilder instanceof knex.client.Raw) {
       builder = knex(tableNameOrBuilder);
     } else if (tableNameOrBuilder == null) {
       builder = knex.queryBuilder();

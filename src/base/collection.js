@@ -106,6 +106,28 @@ CollectionBase.prototype.tableName = function() {
  * @method
  * @private
  * @description
+ * The `tableAlias` on the associated Model, used in relation building.
+ * @returns {string} The {@link Model#tableAlias tableAlias} of the associated model.
+ */
+CollectionBase.prototype.tableAlias = function() {
+  return _.result(this.model.prototype, 'tableAlias');
+};
+
+/**
+ * @method
+ * @private
+ * @description
+ * The `tableAlias` on the associated Model, used in relation building.
+ * @returns {string} The {@link Model#tableAlias tableAlias} of the associated model.
+ */
+CollectionBase.prototype.tableIdentifyer = function() {
+  return _.result(this, 'tableAlias') || _.result(this, 'tableName');
+};
+
+/**
+ * @method
+ * @private
+ * @description
  * The `idAttribute` on the associated Model, used in relation building.
  * @returns {string} The {@link Model#idAttribute idAttribute} of the associated model.
  */

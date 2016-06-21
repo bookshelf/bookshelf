@@ -25,7 +25,7 @@ const helpers = {
   // an error if none is matched.
   morphCandidate: function(candidates, foreignTable) {
     const Target = _.find(candidates, function(Candidate) {
-      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
+      return (_.result(Candidate.prototype, 'tableIdentifyer') === foreignTable);
     });
     if (!Target) {
       throw new Error('The target polymorphic model was not found');
@@ -40,16 +40,17 @@ const helpers = {
   // methods, and the values are the arguments for the query.
   query: function(obj, args) {
 
+    const [method] = args;
+
     // Ensure the object has a query builder.
     if (!obj._knex) {
-      const tableName = _.result(obj, 'tableName');
-      obj._knex = obj._builder(tableName);
+      const useTableName = ['update', 'insert', 'delete'].indexOf(method) >= 0;
+      const aliasedTableName = _.result(obj, useTableName ? 'tableName' : 'aliasedTableName');
+      obj._knex = obj._builder(aliasedTableName);
     }
 
     // If there are no arguments, return the query builder.
     if (args.length === 0) return obj._knex;
-
-    const method = args[0];
 
     if (_.isFunction(method)) {
 
@@ -87,18 +88,12 @@ const helpers = {
 
   orderBy (obj, sort, order) {
 
-    let tableName;
-    let idAttribute;
+    const target = obj.model
+      ? obj.model.prototype
+      : obj.constructor.prototype;
 
-    if (obj.model) {
-      tableName = obj.model.prototype.tableName;
-      idAttribute = obj.model.prototype.idAttribute ?
-        obj.model.prototype.idAttribute : 'id';
-    } else {
-      tableName = obj.constructor.prototype.tableName;
-      idAttribute = obj.constructor.prototype.idAttribute ?
-        obj.constructor.prototype.idAttribute : 'id';
-    }
+    const tableIdentifyer = _.result(target, 'tableIdentifyer');
+    const idAttribute = _.result(target, 'idAttribute', 'id');
 
     let _sort;
 
@@ -115,7 +110,7 @@ const helpers = {
     );
 
     if (_sort.indexOf('.') === -1) {
-      _sort = `${tableName}.${_sort}`;
+      _sort = `${tableIdentifyer}.${_sort}`;
     }
 
     return obj.query(qb => {

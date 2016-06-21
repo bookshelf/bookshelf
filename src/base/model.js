@@ -10,7 +10,7 @@ const PIVOT_PREFIX = '_pivot_';
 const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
 
 // List of attributes attached directly from the `options` passed to the constructor.
-const modelProps = ['tableName', 'hasTimestamps'];
+const modelProps = ['tableName', 'tableAlias', 'hasTimestamps'];
 
 /**
  * @class
@@ -99,6 +99,18 @@ ModelBase.prototype.initialize = function() {};
  *   tableName: 'televisions'
  * });
  */
+
+/**
+ * @method
+ * @description  Get the current value of an attribute from the model.
+ *
+ * @returns {string} Attribute value.odel({id: 1});
+ * @example
+ * modelB.isNew(); // false
+ */
+ModelBase.prototype.tableIdentifyer = function () {
+  return _.result(this, 'tableAlias') || _.result(this, 'tableName');
+}
 
 /**
  * @member {string}
