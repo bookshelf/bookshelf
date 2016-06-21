@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { remove as _remove, assign as _assign } from 'lodash';
+import { remove as _remove, assign as _assign,  noop as _noop } from 'lodash';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -30,7 +30,7 @@ const DEFAULT_PAGE = 1;
  * See methods below for details.
  */
 module.exports = function paginationPlugin (bookshelf) {
-
+   const Model = bookshelf.Model;
   /**
    * @method Model#fetchPage
    * @belongsTo Model
@@ -133,13 +133,16 @@ module.exports = function paginationPlugin (bookshelf) {
       _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
     }
 
-    const tableName = this.constructor.prototype.tableName;
-    const idAttribute = this.constructor.prototype.idAttribute ?
-      this.constructor.prototype.idAttribute : 'id';
+    const isModel = this instanceof Model;
+    const [fetchMethodName, targetModel] = isModel
+      ? ['fetchAll', this.constructor]
+      : ['fetch', this.target || this.model];
+    const {tableName, idAttribute = 'id'} = targetModel.prototype;
+    const targetIdColumn = `${tableName}.${idAttribute}`;
 
     const paginate = () => {
       // const pageQuery = clone(this.query());
-      const pager = this.constructor.forge();
+      const pager = this.clone();
 
       return pager
 
@@ -147,10 +150,16 @@ module.exports = function paginationPlugin (bookshelf) {
           _assign(qb, this.query().clone());
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
+          if (!isModel) {
+            qb.distinct();
+            if (pager.relatedData) {
+              // Remove joining columns that break COUNT operation.
+              // eg. pivotal coulmns for belongsToMany relation.
+              pager.relatedData.joinColumns = _noop;
+            }
+          }
           return null;
-        })
-
-      .fetchAll(fetchOptions);
+        })[fetchMethodName](fetchOptions);
     };
 
     const count = () => {
@@ -160,7 +169,7 @@ module.exports = function paginationPlugin (bookshelf) {
         'groupByBasic',
         'groupByRaw'
       ];
-      const counter = this.constructor.forge();
+      const counter = this.clone();
 
       return counter.query(qb => {
         _assign(qb, this.query().clone());
@@ -172,9 +181,14 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
+        if (!isModel && counter.relatedData) {
+          // Remove joining columns that break COUNT operation.
+          // eg. pivotal coulmns for belongsToMany relation.
+          counter.relatedData.joinColumns = _noop;
+        }
+        qb.countDistinct.apply(qb, [targetIdColumn]);
 
-      }).fetchAll().then(result => {
+      })[fetchMethodName]().then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
@@ -210,8 +224,6 @@ module.exports = function paginationPlugin (bookshelf) {
     return this.forge().fetchPage(...args);
   }
 
-  bookshelf.Collection.prototype.fetchPage = function (...args) {
-    return fetchPage.apply(this.model.forge(), ...args);
-  };
+  bookshelf.Collection.prototype.fetchPage = fetchPage;
 
 }
