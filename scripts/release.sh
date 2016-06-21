@@ -13,6 +13,11 @@ delete_property() {
   echo "deleted '${2}' from './${1}'"
 }
 
+set_property() {
+  echo "$(node -p "p=require('./${1}');p.${2}=${3};JSON.stringify(p, null, 2)")" > $1
+  echo "set '${2}' to '${3}' in './${1}'"
+}
+
 update_version() {
   echo "$(set_property ${1} 'version' "'${2}'")"
   echo "Updated ${1} version to ${2}"
