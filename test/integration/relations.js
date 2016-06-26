@@ -1,4 +1,3 @@
-var _         = require('lodash');
 var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
@@ -153,7 +152,7 @@ module.exports = function(Bookshelf) {
             delete Site.prototype.initialize;
           });
 
-          it('withRelated option', function () {          
+          it('withRelated option', function () {
             var countFetching = 0;
             var countFetched = 0;
             Site.prototype.initialize = function () {
@@ -978,7 +977,7 @@ module.exports = function(Bookshelf) {
             return this.belongsToMany(LeftModel).through(JoinModel).withPivot(['parsedName']);
           }
         });
-      };
+      }
 
       // First, initialize the models for the current `lifecycleEvent`, then
       // step through the entire lifecycle of a JoinModel, returning a promise.

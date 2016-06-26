@@ -2,7 +2,7 @@
 // ---------------
 
 // All exernal dependencies required in this scope.
-import _, { invoke, noop } from 'lodash';
+import _, { invokeMap, noop } from 'lodash';
 import inherits from 'inherits';
 
 // All components that need to be referenced in this scope.
@@ -136,7 +136,7 @@ CollectionBase.prototype.toString = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
-  return invoke(this.models, 'toJSON', options);
+  return invokeMap(this.models, 'toJSON', options);
 }
 
 /**
@@ -299,7 +299,7 @@ CollectionBase.prototype.mapThen = function(iterator, context) {
  *   Promise resolving to array of results from invocation.
  */
 CollectionBase.prototype.invokeThen = function() {
-  return Promise.all(this.invoke.apply(this, arguments));
+  return Promise.all(this.invokeMap.apply(this, arguments));
 };
 
 /**
@@ -547,7 +547,7 @@ CollectionBase.prototype.sort = function(options) {
  * @returns {mixed[]} An array of attribute values.
  */
 CollectionBase.prototype.pluck = function(attr) {
-  return this.invoke('get', attr);
+  return this.invokeMap('get', attr);
 };
 
 /**
@@ -599,44 +599,20 @@ CollectionBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#map
  */
 /**
- * @method CollectionBase#collect
- * @see http://lodash.com/docs/#collect
- */
-/**
  * @method CollectionBase#reduce
  * @see http://lodash.com/docs/#reduce
- */
-/**
- * @method CollectionBase#foldl
- * @see http://lodash.com/docs/#foldl
- */
-/**
- * @method CollectionBase#inject
- * @see http://lodash.com/docs/#inject
  */
 /**
  * @method CollectionBase#reduceRight
  * @see http://lodash.com/docs/#reduceRight
  */
 /**
- * @method CollectionBase#foldr
- * @see http://lodash.com/docs/#foldr
- */
-/**
  * @method CollectionBase#find
  * @see http://lodash.com/docs/#find
  */
 /**
- * @method CollectionBase#detect
- * @see http://lodash.com/docs/#detect
- */
-/**
  * @method CollectionBase#filter
  * @see http://lodash.com/docs/#filter
- */
-/**
- * @method CollectionBase#select
- * @see http://lodash.com/docs/#select
  */
 /**
  * @method CollectionBase#reject
@@ -647,36 +623,32 @@ CollectionBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#every
  */
 /**
- * @method CollectionBase#all
- * @see http://lodash.com/docs/#all
- */
-/**
  * @method CollectionBase#some
  * @see http://lodash.com/docs/#some
  */
 /**
- * @method CollectionBase#any
- * @see http://lodash.com/docs/#any
+ * @method CollectionBase#includes
+ * @see http://lodash.com/docs/#includes
  */
 /**
- * @method CollectionBase#include
- * @see http://lodash.com/docs/#include
- */
-/**
- * @method CollectionBase#contains
- * @see http://lodash.com/docs/#contains
- */
-/**
- * @method CollectionBase#invoke
- * @see http://lodash.com/docs/#invoke
+ * @method CollectionBase#invokeMap
+ * @see http://lodash.com/docs/#invokeMap
  */
 /**
  * @method CollectionBase#max
  * @see http://lodash.com/docs/#max
  */
 /**
+ * @method CollectionBase#maxBy
+ * @see http://lodash.com/docs/#maxBy
+ */
+/**
  * @method CollectionBase#min
  * @see http://lodash.com/docs/#min
+ */
+/**
+ * @method CollectionBase#minBy
+ * @see http://lodash.com/docs/#minBy
  */
 /**
  * @method CollectionBase#toArray
@@ -701,10 +673,6 @@ CollectionBase.prototype._reset = function() {
 /**
  * @method CollectionBase#initial
  * @see http://lodash.com/docs/#initial
- */
-/**
- * @method CollectionBase#rest
- * @see http://lodash.com/docs/#rest
  */
 /**
  * @method CollectionBase#tail
@@ -749,19 +717,16 @@ CollectionBase.prototype._reset = function() {
 // Lodash methods that we want to implement on the Collection.
 // 90% of the core usefulness of Backbone Collections is actually implemented
 // right here:
-const methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
-  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
-  'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
-  'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
+const methods = ['forEach', 'each', 'map', 'reduce', 'reduceRight',
+  'find', 'filter', 'every', 'some', 'includes', 'invokeMap',
+  'max', 'min', 'maxBy', 'minBy', 'toArray', 'size', 'first', 'head', 'take', 'initial',
   'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
   'lastIndexOf', 'isEmpty', 'chain'];
 
 // Mix in each Lodash method as a proxy to `Collection#models`.
 _.each(methods, function(method) {
   CollectionBase.prototype[method] = function() {
-    const args = slice.call(arguments);
-    args.unshift(this.models);
-    return _[method].apply(_, args);
+    return _[method](this.models, ...arguments);
   };
 });
 
@@ -788,7 +753,7 @@ _.each(attributeMethods, function(method) {
     const iterator = _.isFunction(value) ? value : function(model) {
       return model.get(value);
     };
-    return _[method](this.models, iterator, context);
+    return _[method](this.models, _.bind(iterator, context));
   };
 });
 

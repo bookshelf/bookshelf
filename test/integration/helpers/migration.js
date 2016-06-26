@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
@@ -146,7 +146,7 @@ module.exports = function(Bookshelf) {
       table.string('parsed_user_id');
       table.string('token');
     })
-    // 
+    //
     .createTable('lefts', function(table) {
       table.increments();
     })

@@ -1,5 +1,26 @@
 ## Change Log
 
+**Next Release**
+
+**BREAKING CHANGE: removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4**
+* Collection Methods
+    * removed `CollectionBase#collect` => use `CollectionBase#map` instead
+    * removed `CollectionBase#foldl` => use `CollectionBase#reduce` instead
+    * removed `CollectionBase#inject` => use `CollectionBase#reduce` instead
+    * removed `CollectionBase#foldr` => use `CollectionBase#reduceRight` instead
+    * removed `CollectionBase#detect` => use `CollectionBase#find` instead
+    * removed `CollectionBase#select` => use `CollectionBase#filter` instead
+    * removed `CollectionBase#all` => use `CollectionBase#every` instead
+    * removed `CollectionBase#any` => use `CollectionBase#some` instead
+    * removed `CollectionBase#include` => use `CollectionBase#includes` instead
+    * removed `CollectionBase#contains` => use `CollectionBase#includes` instead
+    * removed `CollectionBase#rest` => use `CollectionBase#tail instead`
+    * renamed `CollectionBase#invoke` => `CollectionBase#invokeMap`
+    * split `CollectionBase#max` into `CollectionBase#maxBy` - see the [lodash docs](https://lodash.com/docs/#max) for more explanation
+    * split `CollectionBase#min` into `CollectionBase#minBy` - see the [lodash docs](https://lodash.com/docs/#min) for more explanation
+* Model Methods
+    * renamed `ModelBase#pairs` => `ModelBase#toPairs`
+
 **0.9.5** — <small>_May 15, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.4...0.9.5)
 
 * Add pagination plugin. #1183

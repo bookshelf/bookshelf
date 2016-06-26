@@ -1,8 +1,5 @@
 // Models used for PostgreSQL jsonb type.
 module.exports = function(Bookshelf) {
-
-  var _ = require('lodash');
-
   var Unit = Bookshelf.Model.extend({
     tableName: 'units',
     commands: function() {

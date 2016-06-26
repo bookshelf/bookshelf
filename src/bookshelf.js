@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { extend, result, isString, isArray, isFunction, each } from 'lodash';
 import helpers from './helpers';
 
 // We've supplemented `Events` with a `triggerThen` method to allow for
@@ -37,9 +37,9 @@ function Bookshelf(knex) {
     // `relation` method, passing in the correct `Model` & `Collection`
     // constructors for later reference.
     _relation(type, Target, options) {
-      if (type !== 'morphTo' && !_.isFunction(Target)) {
+      if (type !== 'morphTo' && !isFunction(Target)) {
         throw new Error('A valid target model must be defined for the ' +
-          _.result(this, 'tableName') + ' ' + type + ' relation');
+          result(this, 'tableName') + ' ' + type + ' relation');
       }
       return new Relation(type, Target, options);
     }
@@ -86,7 +86,7 @@ function Bookshelf(knex) {
      * @returns {Collection}
      */
     collection(models, options) {
-      return new bookshelf.Collection((models || []), _.extend({}, options, {model: this}));
+      return new bookshelf.Collection((models || []), extend({}, options, {model: this}));
     },
 
     /**
@@ -178,7 +178,7 @@ function Bookshelf(knex) {
   // in the `Events` object. It also contains the version number, and a
   // `Transaction` method referencing the correct version of `knex` passed into
   // the object.
-  _.extend(bookshelf, Events, Errors, {
+  extend(bookshelf, Events, Errors, {
 
     /**
      * @method Bookshelf#transaction
@@ -242,7 +242,7 @@ function Bookshelf(knex) {
     // `Bookshelf` instance, injecting the current instance into the plugin,
     // which should be a module.exports.
     plugin(plugin, options) {
-      if (_.isString(plugin)) {
+      if (isString(plugin)) {
         try {
           require('./plugins/' + plugin)(this, options);
         } catch (e) {
@@ -253,8 +253,8 @@ function Bookshelf(knex) {
             require(plugin)(this, options)
           }
         }
-      } else if (_.isArray(plugin)) {
-        _.each(plugin, (p) => {
+      } else if (isArray(plugin)) {
+        each(plugin, (p) => {
           this.plugin(p, options);
         });
       } else {
@@ -284,7 +284,7 @@ function Bookshelf(knex) {
   function builderFn(tableNameOrBuilder) {
     let builder = null;
 
-    if (_.isString(tableNameOrBuilder)) {
+    if (isString(tableNameOrBuilder)) {
       builder = knex(tableNameOrBuilder);
     } else if (tableNameOrBuilder == null) {
       builder = knex.queryBuilder();
