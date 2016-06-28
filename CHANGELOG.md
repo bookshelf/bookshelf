@@ -1,25 +1,32 @@
 ## Change Log
 
-**Next Release**
+**0.10.0** — <small>_Jun 28, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0)
 
-**BREAKING CHANGE: removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4**
-* Collection Methods
-    * removed `CollectionBase#collect` => use `CollectionBase#map` instead
-    * removed `CollectionBase#foldl` => use `CollectionBase#reduce` instead
-    * removed `CollectionBase#inject` => use `CollectionBase#reduce` instead
-    * removed `CollectionBase#foldr` => use `CollectionBase#reduceRight` instead
-    * removed `CollectionBase#detect` => use `CollectionBase#find` instead
-    * removed `CollectionBase#select` => use `CollectionBase#filter` instead
-    * removed `CollectionBase#all` => use `CollectionBase#every` instead
-    * removed `CollectionBase#any` => use `CollectionBase#some` instead
-    * removed `CollectionBase#include` => use `CollectionBase#includes` instead
-    * removed `CollectionBase#contains` => use `CollectionBase#includes` instead
-    * removed `CollectionBase#rest` => use `CollectionBase#tail instead`
-    * renamed `CollectionBase#invoke` => `CollectionBase#invokeMap`
-    * split `CollectionBase#max` into `CollectionBase#maxBy` - see the [lodash docs](https://lodash.com/docs/#max) for more explanation
-    * split `CollectionBase#min` into `CollectionBase#minBy` - see the [lodash docs](https://lodash.com/docs/#min) for more explanation
-* Model Methods
-    * renamed `ModelBase#pairs` => `ModelBase#toPairs`
+**Breaking Changes:**
+
+* Removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4.
+  * Collection Methods
+      * removed `CollectionBase#collect` => use `CollectionBase#map` instead
+      * removed `CollectionBase#foldl` => use `CollectionBase#reduce` instead
+      * removed `CollectionBase#inject` => use `CollectionBase#reduce` instead
+      * removed `CollectionBase#foldr` => use `CollectionBase#reduceRight` instead
+      * removed `CollectionBase#detect` => use `CollectionBase#find` instead
+      * removed `CollectionBase#select` => use `CollectionBase#filter` instead
+      * removed `CollectionBase#all` => use `CollectionBase#every` instead
+      * removed `CollectionBase#any` => use `CollectionBase#some` instead
+      * removed `CollectionBase#include` => use `CollectionBase#includes` instead
+      * removed `CollectionBase#contains` => use `CollectionBase#includes` instead
+      * removed `CollectionBase#rest` => use `CollectionBase#tail instead`
+      * renamed `CollectionBase#invoke` => `CollectionBase#invokeMap`
+      * split `CollectionBase#max` into `CollectionBase#maxBy` - see the [lodash docs](https://lodash.com/docs/#max) for more explanation
+      * split `CollectionBase#min` into `CollectionBase#minBy` - see the [lodash docs](https://lodash.com/docs/#min) for more explanation
+  * Model Methods
+      * renamed `ModelBase#pairs` => `ModelBase#toPairs`
+
+**Other Changes:**
+
+* Update to Lodash 4. #1287
+* Registry plugin: Better support for custom relations. #1294
 
 **0.9.5** — <small>_May 15, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.4...0.9.5)
 
@@ -85,7 +92,7 @@
 *   Allows for select/column calls in the query builder closure, #633.
 *   Added per-constructor error classes #694 (note: this will not work in CoffeeScript).
 
-**Breaking changes:**
+**Breaking Changes:**
 
 *   Removed the `__super__` internal property on the constructor, this shouldn't have been something you were relying on anyway.
 
@@ -232,7 +239,7 @@
  Fixed incorrect eager loading in `hasOne` relations (#63).
 
 **0.5.0** — <small>_September 20, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.3.1...0.5.0)
- **Major Breaking changes:**
+ **Major Breaking Changes:**
 
 *   Global state is no longer stored in the library, an instance is returned from `Bookshelf.initialize`, so you will need to call this once and then reference this `Bookshelf` client elsewhere in your application.
 *   Lowercasing of `bookshelf.initialize`, `bookshelf.knex`, `bookshelf.transaction`.
