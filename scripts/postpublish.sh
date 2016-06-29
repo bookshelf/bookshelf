@@ -11,3 +11,5 @@ git tag $version
 
 git push origin master
 git push origin master --tags
+
+npm run gh-pages

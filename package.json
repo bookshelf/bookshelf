@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "jsdoc": "./scripts/jsdoc.sh",
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
-    "postpublish": "npm run gh-pages"
+    "postpublish": "./scripts/postpublish.sh"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
