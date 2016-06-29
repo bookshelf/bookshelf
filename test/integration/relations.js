@@ -252,6 +252,12 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('eager loads "belongsTo" -> "belongsTo" (comments -> post.blog)', function() {
+          return Comment.fetchAll({
+            withRelated: ['post.blog']
+          }).then(checkTest(this));
+        });
+
       });
 
       describe('Model & Collection - load', function() {
