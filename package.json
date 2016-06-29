@@ -9,8 +9,9 @@
     "build": "babel -q -L -D ./src/ --out-dir ./lib/",
     "lint": "eslint bookshelf.js src/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
-    "test": "npm run lint && npm run build && mocha --check-leaks -t 5000 -b test/index.js",
-    "jsdoc": "./scripts/jsdoc.sh"
+    "test": "npm run lint && mocha --check-leaks -t 5000 -b test/index.js",
+    "jsdoc": "./scripts/jsdoc.sh",
+    "postinstall": "npm run build"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {

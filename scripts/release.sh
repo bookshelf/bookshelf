@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
+# Update master to the latest
 git checkout master
+git pull
 
 get_property() {
   echo $(node -p "p=require('./${1}').${2};")
@@ -24,7 +26,6 @@ update_version() {
 # Remove the postinstall script, because we're going to build everything here.
 current_version="$(get_property 'package.json' 'version')"
 
-printf "Please ensure that the version number has been updated in bookshelf.js and src/bookshelf.js before continuing.\n"
 printf "Next version (current is $current_version)? "
 read next_version
 
@@ -33,54 +34,55 @@ if ! [[ $next_version =~ ^[0-9]\.[0-9]+\.[0-9](-.+)? ]]; then
   exit 1
 fi
 
-git add -u
+# Update version in package.json before updating `release` branch.
+update_version 'package.json' $next_version
+git commit -am "Update version to $next_version."
+
+# Switch to `release` branch (create it if it doesn't exist) and update it to latest
+git checkout -B release
+git pull
+
+# Get current state from `master` branch
+git merge -Xtheirs master
+
+# Now clean up those force added files, we'll have to add another commit.
+# First remove all files in the repo (including those ignored files that we
+# force added).
+echo "$(git rm -r --cached .)"
+
+# Now add all files, this will exclude ignored files.
+echo "$(git add .)"
+
+# Delete all ignored files and folders
+echo "$(git clean -xdf)"
+
+# Build JS from ES6 and generate JSDoc
 npm run build
 npm run jsdoc
-
-# Remove the postinstall script because we'll be including the built files in
-# this commit.
-original_postinstall="$(get_property 'package.json' 'scripts.postinstall')"
-delete_property 'package.json' 'scripts.postinstall'
 
 # We must force add because these are usually ignored.
 git add --force --all index.html docs lib
 
-# Update version in package.json before running tests (tests will catch if the
-# version number is out of sync).
-update_version 'package.json' $next_version
+# Remove the postinstall script because we'll be including the built files in
+# this commit.
+delete_property 'package.json' 'scripts.postinstall'
 
 npm test
 
 git commit -am "Release $next_version."
 git tag $next_version
 
-git push origin master
-git push origin master --tags
-
 echo "# Publishing docs"
 
 echo "$(git checkout -B gh-pages)"
 echo "$(git pull)"
-echo "$(git merge master)"
-git push origin gh-pages
+echo "$(git merge -Xtheirs release)"
 echo "$(git checkout master)"
 
-npm publish
-
-# Now clean up those force added files, we'll have to add another commit.
-# First remove all files in the repo (including those ignored files that we
-# force added.
-echo "$(git rm -r --cached .)"
-
-# Reset package.json.
-set_property 'package.json' 'scripts.postinstall' "'$original_postinstall'"
-
-# Now add all files, this will exclude ignored files.
-echo "$(git add .)"
-
-# Sleeping here space out commits (graph looked weird in SourceTree).
-sleep 1
-
-echo "$(git commit -m "Remove lib and docs after $next_version release.")"
-
+# All good. Push changes to remote.
 git push origin master
+git push origin release
+git push origin release --tags
+git push origin gh-pages
+
+npm publish
