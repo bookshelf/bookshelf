@@ -847,6 +847,17 @@ module.exports = function(Bookshelf) {
 
     });
 
+    describe('Being suspicious on eager loading', function () {
+      
+      it('eager loads "belongsTo" -> "belongsTo" (comment -> post.blog) by using load', function() {
+        return Comment.forge({id: 1}).fetch()
+        .then(function (comment) {
+          return comment.load('post.blog');
+        }).then(checkTest(this));
+      });
+
+    });
+
     describe('Issue #212 - Skipping unnecessary queries', function () {
       var oldAuthorSync;
       var oldSiteSync;
