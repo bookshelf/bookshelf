@@ -9,8 +9,11 @@
     "build": "babel -q -L -D ./src/ --out-dir ./lib/",
     "lint": "eslint bookshelf.js src/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 5000 -b -R spec test/index.js",
-    "test": "npm run lint && mocha --check-leaks -t 5000 -b test/index.js",
-    "jsdoc": "./scripts/jsdoc.sh"
+    "test": "npm run lint &&  mocha --check-leaks -t 5000 -b test/index.js",
+    "jsdoc": "./scripts/jsdoc.sh",
+    "gh-pages": "./scripts/gh-pages.sh",
+    "prepublish": "npm run build",
+    "postpublish": "npm run gh-pages"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -26,13 +29,13 @@
     "active record"
   ],
   "dependencies": {
-    "bluebird": "^2.9.4",
     "babel-runtime": "^6.6.1",
+    "bluebird": "^2.9.4",
     "chalk": "^1.0.0",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
-    "lodash": "^3.8.0"
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "babel-cli": "^6.0.15",

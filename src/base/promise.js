@@ -1,7 +1,5 @@
-import promiseModule from 'bluebird/js/main/promise';
+import Promise from 'bluebird';
 import { deprecate } from '../helpers';
-
-const Promise = promiseModule();
 
 Promise.prototype.yield = function() {
   deprecate('.yield', '.return')

@@ -70,12 +70,12 @@ module.exports = function (Bookshelf) {
 
       // Handle `{key: value}` style arguments.
       if (_.isObject(key)) {
-        const nonVirtuals = _.omit(key, setVirtual, this);
+        const nonVirtuals = _.omitBy(key, _.bind(setVirtual, this));
         if (isPatching) {
           _.extend(this.patchAttributes, nonVirtuals);
         }
         // Set the non-virtual attributes as normal.
-        return proto.set.call(this, nonVirtuals, value, options);
+        return proto.set.call(this, nonVirtuals, options);
       }
 
       // Handle `"key", value` style arguments for virtual setter.
@@ -147,14 +147,12 @@ module.exports = function (Bookshelf) {
   });
 
   // Underscore methods that we want to implement on the Model.
-  const modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+  const modelMethods = ['keys', 'values', 'toPairs', 'invert', 'pick', 'omit'];
 
-  // Mix in each Underscore method as a proxy to `Model#attributes`.
+  // Mix in each Lodash method as a proxy to `Model#attributes`.
   _.each(modelMethods, function(method) {
     Model.prototype[method] = function() {
-      const args = _.toArray(arguments);
-      args.unshift(_.extend({}, this.attributes, getVirtuals(this)));
-      return _[method].apply(_, args);
+      return _[method](_.extend({}, this.attributes, getVirtuals(this)), ...arguments);
     };
   });
 

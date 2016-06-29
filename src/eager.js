@@ -1,13 +1,13 @@
 // EagerRelation
 // ---------------
-import _, { flatten, groupBy, map, mapValues, uniq } from 'lodash';
+import _ from 'lodash';
 
 import Helpers from './helpers';
 import Promise from './base/promise';
 import EagerBase from './base/eager';
 
 const getAttributeUnique = (models, attribute) =>
-  uniq(map(models, m => m.get(attribute)));
+  _.uniq(_.map(models, m => m.get(attribute)));
 
 // An `EagerRelation` object temporarily stores the models from an eager load,
 // and handles matching eager loaded objects with their parent(s). The
@@ -45,12 +45,12 @@ export default class EagerRelation extends EagerBase {
       typeColumn = `${morphName}_type`, idColumn = `${morphName}_id`
     ] = columnNames;
 
-    const parentsByType = groupBy(this.parent, model => model.get(typeColumn));
-    const TargetByType = mapValues(parentsByType, (parents, type) =>
+    const parentsByType = _.groupBy(this.parent, model => model.get(typeColumn));
+    const TargetByType = _.mapValues(parentsByType, (parents, type) =>
       Helpers.morphCandidate(relatedData.candidates, type)
     );
 
-    return Promise.all(map(parentsByType, (parents, type) => {
+    return Promise.all(_.map(parentsByType, (parents, type) => {
       const Target = TargetByType[type];
       const idAttribute = _.result(Target.prototype, 'idAttribute');
       const ids = getAttributeUnique(parents, idColumn);
@@ -66,7 +66,7 @@ export default class EagerRelation extends EagerBase {
             response, relationName, { relatedData: clone }, options
           );
         });
-    })).then(flatten);
+    })).then(_.flatten);
   }
 
   // Handles the eager load for both the `morphTo` and regular cases.

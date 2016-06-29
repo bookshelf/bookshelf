@@ -1,9 +1,6 @@
 // Relation
 // ---------------
 import _ from 'lodash';
-import { clone, isEmpty } from 'lodash/lang';
-import { groupBy, map, reduce, each } from 'lodash/collection';
-import { startsWith } from 'lodash/string';
 import inflection from 'inflection';
 
 import Helpers from './helpers';
@@ -14,7 +11,7 @@ import { PIVOT_PREFIX } from './constants';
 
 const { push } = Array.prototype;
 const removePivotPrefix = key => key.slice(PIVOT_PREFIX.length);
-const hasPivotPrefix = key => startsWith(key, PIVOT_PREFIX);
+const hasPivotPrefix = key => _.startsWith(key, PIVOT_PREFIX);
 
 export default RelationBase.extend({
 
@@ -142,7 +139,7 @@ export default RelationBase.extend({
       knex.columns(options.columns);
     }
 
-    const currentColumns = _.findWhere(knex._statements, {grouping: 'columns'});
+    const currentColumns = _.find(knex._statements, {grouping: 'columns'});
 
     if (!currentColumns || currentColumns.length === 0) {
       knex.column(this.targetTableName + '.*');
@@ -244,7 +241,7 @@ export default RelationBase.extend({
     const key = this.isInverse() && !this.isThrough()
       ? this.key('foreignKey')
       : this.parentIdAttribute;
-    return _(response).pluck(key).uniq().value();
+    return _(response).map(key).uniq().value();
   },
 
   // Generates the appropriate standard join table.
@@ -294,7 +291,7 @@ export default RelationBase.extend({
     if (this.isJoined()) related = this.parsePivot(related);
 
     // Group all of the related models for easier association with their parent models.
-    const grouped = groupBy(related, (m) => {
+    const grouped = _.groupBy(related, (m) => {
       if (m.pivot) {
         return this.isInverse() && this.isThrough() ? m.pivot.id :
           m.pivot.get(this.key('foreignKey'));
@@ -305,7 +302,7 @@ export default RelationBase.extend({
 
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
-    each(parentModels, (model) => {
+    _.each(parentModels, (model) => {
       let groupedKey;
       if (!this.isInverse()) {
         groupedKey = model.id;
@@ -313,7 +310,7 @@ export default RelationBase.extend({
         const keyColumn = this.key(
           this.isThrough() ? 'throughForeignKey': 'foreignKey'
         );
-        const formatted = model.format(clone(model.attributes));
+        const formatted = model.format(_.clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
@@ -331,10 +328,10 @@ export default RelationBase.extend({
   },
 
   parsePivot: function(models) {
-    return map(models, (model) => {
+    return _.map(models, (model) => {
 
       // Separate pivot attributes.
-      const grouped = reduce(model.attributes, (acc, value, key) => {
+      const grouped = _.reduce(model.attributes, (acc, value, key) => {
         if (hasPivotPrefix(key)) {
           acc.pivot[removePivotPrefix(key)] = value;
         } else {
@@ -348,7 +345,7 @@ export default RelationBase.extend({
 
       // If there are any pivot attributes, create a new pivot model with these
       // attributes.
-      if (!isEmpty(grouped.pivot)) {
+      if (!_.isEmpty(grouped.pivot)) {
         const Through = this.throughTarget;
         const tableName = this.joinTable();
         model.pivot = Through != null
@@ -532,7 +529,7 @@ const pivotHelpers = {
       if (method === 'delete') pending.push(this._processPivot(method, null, options));
     }
     if (!_.isArray(ids)) ids = ids ? [ids] : [];
-    each(ids, (id) => pending.push(this._processPivot(method, id, options)))
+    _.each(ids, (id) => pending.push(this._processPivot(method, id, options)))
     return Promise.all(pending).return(this);
   }),
 

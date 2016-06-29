@@ -1,6 +1,10 @@
 # .travis.yml
 language: node_js
 
+services:
+  - postgresql
+  - mysql
+
 sudo: false
 
 node_js:

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { clone, omit, isString, isArray, extend, toArray } from 'lodash';
 
 import Sync from './sync';
 import Helpers from './helpers';
@@ -80,7 +80,7 @@ const BookshelfCollection = CollectionBase.extend({
    * @returns {Promise<Collection>}
    */
   fetch: Promise.method(function(options) {
-    options = options ? _.clone(options) : {};
+    options = options ? clone(options) : {};
     return this.sync(options)
       .select()
       .bind(this)
@@ -100,7 +100,7 @@ const BookshelfCollection = CollectionBase.extend({
       // level, ensure those are omitted from the options.
       .tap(function(response) {
         if (options.withRelated) {
-          return this._handleEager(response, _.omit(options, 'columns'));
+          return this._handleEager(response, omit(options, 'columns'));
         }
       })
       .tap(function(response) {
@@ -152,11 +152,11 @@ const BookshelfCollection = CollectionBase.extend({
    *   A promise resolving to the number of matching rows.
    */
   count: Promise.method(function(column, options) {
-    if (!_.isString(column)) {
+    if (!isString(column)) {
       options = column;
       column = undefined;
     }
-    if (options) options = _.clone(options);
+    if (options) options = clone(options);
     return this.sync(options).count(column)
   }),
 
@@ -218,8 +218,8 @@ const BookshelfCollection = CollectionBase.extend({
    *  Collection collection}
    */
   load: Promise.method(function(relations, options) {
-    if (!_.isArray(relations)) relations = [relations]
-    options = _.extend({}, options, {shallow: true, withRelated: relations});
+    if (!isArray(relations)) relations = [relations]
+    options = extend({}, options, {shallow: true, withRelated: relations});
     return new EagerRelation(this.models, this.toJSON(options), new this.model())
       .fetch(options)
       .return(this);
@@ -257,7 +257,7 @@ const BookshelfCollection = CollectionBase.extend({
    * model}.
    */
   create: Promise.method(function(model, options) {
-    options = options != null ? _.clone(options) : {};
+    options = options != null ? clone(options) : {};
     const { relatedData } = this;
     model = this._prepareModel(model, options);
 
@@ -273,7 +273,7 @@ const BookshelfCollection = CollectionBase.extend({
       .bind(this)
       .then(function() {
         if (relatedData && relatedData.type === 'belongsToMany') {
-          return this.attach(model, _.omit(options, 'query'));
+          return this.attach(model, omit(options, 'query'));
         }
       })
       .then(function() { this.add(model, options); })
@@ -333,7 +333,7 @@ const BookshelfCollection = CollectionBase.extend({
    * @see {@link http://knexjs.org/#Builder Knex `QueryBuilder`}
    */
   query: function() {
-    return Helpers.query(this, _.toArray(arguments));
+    return Helpers.query(this, toArray(arguments));
   },
 
   /**
@@ -375,7 +375,7 @@ const BookshelfCollection = CollectionBase.extend({
 
   /* Ensure that QueryBuilder is copied on clone. */
   clone() {
-    const cloned = CollectionBase.prototype.clone.apply(this, arguments);
+    const cloned = BookshelfCollection.__super__.clone.apply(this, arguments);
     if (this._knex != null) {
       cloned._knex = cloned._builder(this._knex.clone());
     }
@@ -391,7 +391,7 @@ const BookshelfCollection = CollectionBase.extend({
    */
   _handleResponse: function(response) {
     const { relatedData } = this;
-    this.set(response, {silent: true, parse: true}).invoke('_reset');
+    this.set(response, {silent: true, parse: true}).invokeMap('_reset');
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot(this.models);
     }
