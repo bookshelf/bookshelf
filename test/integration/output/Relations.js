@@ -2120,7 +2120,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors'
+        imageable_type: 'profile_pic'
       }
     },
     postgresql: {
@@ -2129,7 +2129,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors'
+        imageable_type: 'profile_pic'
       }
     },
     sqlite3: {
@@ -2138,7 +2138,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors'
+        imageable_type: 'profile_pic'
       }
     },
     oracle: {
@@ -2147,7 +2147,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors'
+        imageable_type: 'profile_pic'
       }
     }
   },
@@ -2213,7 +2213,7 @@ module.exports = {
       }]
     }
   },
-  'handles morphTo (imageable "authors")': {
+  'handles morphTo with custom morphValue (imageable "authors")': {
     mysql: {
       result: {
         id: 1,
@@ -2285,7 +2285,7 @@ module.exports = {
     mysql: {
       result: {
         imageable_id_parsed: 1,
-        imageable_type_parsed: 'authors',
+        imageable_type_parsed: 'profile_pic',
         id_parsed: 1,
         url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
         caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
@@ -2294,7 +2294,7 @@ module.exports = {
     postgresql: {
       result: {
         imageable_id_parsed: 1,
-        imageable_type_parsed: 'authors',
+        imageable_type_parsed: 'profile_pic',
         id_parsed: 1,
         url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
         caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
@@ -2303,7 +2303,7 @@ module.exports = {
     sqlite3: {
       result: {
         imageable_id_parsed: 1,
-        imageable_type_parsed: 'authors',
+        imageable_type_parsed: 'profile_pic',
         id_parsed: 1,
         url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
         caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
@@ -2312,7 +2312,7 @@ module.exports = {
     oracle: {
       result: {
         imageable_id_parsed: 1,
-        imageable_type_parsed: 'authors',
+        imageable_type_parsed: 'profile_pic',
         id_parsed: 1,
         url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
         caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.'
@@ -2510,7 +2510,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2522,7 +2522,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -2586,7 +2586,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2598,7 +2598,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -2662,7 +2662,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2674,7 +2674,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -2738,7 +2738,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2750,7 +2750,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -2816,7 +2816,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2828,7 +2828,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -2936,7 +2936,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -2948,7 +2948,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -3056,7 +3056,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -3068,7 +3068,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -3176,7 +3176,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 1,
           site_id: 1,
@@ -3188,7 +3188,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageable: {
           id: 2,
           site_id: 1,
@@ -5198,7 +5198,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 1,
           site_id_parsed: 1,
@@ -5210,7 +5210,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 2,
           site_id_parsed: 1,
@@ -5294,7 +5294,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 1,
           site_id_parsed: 1,
@@ -5306,7 +5306,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 2,
           site_id_parsed: 1,
@@ -5390,7 +5390,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 1,
           site_id_parsed: 1,
@@ -5402,7 +5402,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 2,
           site_id_parsed: 1,
@@ -5486,7 +5486,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 1,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 1,
           site_id_parsed: 1,
@@ -5498,7 +5498,7 @@ module.exports = {
         url: 'https://www.google.com/images/srpr/logo4w.png',
         caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
         imageable_id: 2,
-        imageable_type: 'authors',
+        imageable_type: 'profile_pic',
         imageableParsed: {
           id_parsed: 2,
           site_id_parsed: 1,

@@ -92,7 +92,7 @@ module.exports = function(Bookshelf) {
       return this.belongsTo(Site);
     },
     photo: function() {
-      return this.morphOne(Photo, 'imageable');
+      return this.morphOne(Photo, 'imageable', 'profile_pic');
     },
     thumbnail: function() {
       return this.morphOne(Thumbnail, 'imageable', ["ImageableType", "ImageableId"]);
@@ -212,10 +212,10 @@ module.exports = function(Bookshelf) {
   var Photo = Bookshelf.Model.extend({
     tableName: 'photos',
     imageable: function() {
-      return this.morphTo('imageable', Site, Author);
+      return this.morphTo('imageable', null, Site, [Author, 'profile_pic']);
     },
     imageableParsed: function() {
-      return this.morphTo('imageable', SiteParsed, AuthorParsed);
+      return this.morphTo('imageable', null, SiteParsed, [AuthorParsed, 'profile_pic']);
     }
   });
 
