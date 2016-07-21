@@ -23,14 +23,12 @@ const helpers = {
 
   // Finds the specific `morphTo` table we should be working with, or throws
   // an error if none is matched.
-  morphCandidate: function(candidates, foreignTable) {
-    const Target = _.find(candidates, function(Candidate) {
-      return (_.result(Candidate.prototype, 'tableName') === foreignTable);
-    });
-    if (!Target) {
+  morphCandidate: function(candidates, morphValue) {
+    const tuple = _.find(candidates, (tuple) => morphValue === tuple[1]);
+    if (!tuple) {
       throw new Error('The target polymorphic model was not found');
     }
-    return Target;
+    return tuple[0];
   },
 
   // If there are no arguments, return the current object's
