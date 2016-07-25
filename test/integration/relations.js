@@ -698,7 +698,8 @@ module.exports = function(Bookshelf) {
           settings: {
             id : 1,
             Customer_id : 1,
-            data : 'Europe/Paris'
+            data : 'Europe/Paris',
+            isActive: true
           }
         };
 
@@ -718,7 +719,8 @@ module.exports = function(Bookshelf) {
           settings: {
             id : 2,
             Customer_id : 4,
-            data : 'UTC'
+            data : 'UTC',
+            isActive: false
           }
         };
 
