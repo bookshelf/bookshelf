@@ -197,7 +197,7 @@ _.extend(Sync.prototype, {
   // Issues an `update` command on the query - only used by models.
   update: Promise.method(function(attrs) {
     const syncing = this.syncing, query = this.query;
-    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+    if (syncing.id != null) query.where(syncing.idAttribute, syncing.format({id: syncing.id}).id);
     if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
@@ -207,7 +207,7 @@ _.extend(Sync.prototype, {
   // Issues a `delete` command on the query.
   del: Promise.method(function() {
     const query = this.query, syncing = this.syncing;
-    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+    if (syncing.id != null) query.where(syncing.idAttribute, syncing.format({id: syncing.id}).id);
     if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }
