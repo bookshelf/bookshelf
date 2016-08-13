@@ -285,9 +285,9 @@ function Bookshelf(knex) {
     let builder = null;
 
     if (isString(tableNameOrBuilder)) {
-      builder = knex(tableNameOrBuilder);
+      builder = bookshelf.knex(tableNameOrBuilder);
     } else if (tableNameOrBuilder == null) {
-      builder = knex.queryBuilder();
+      builder = bookshelf.knex.queryBuilder();
     } else {
       // Assuming here that `tableNameOrBuilder` is a QueryBuilder instance. Not
       // aware of a way to check that this is the case (ie. using
