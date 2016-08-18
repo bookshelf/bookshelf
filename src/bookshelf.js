@@ -46,11 +46,9 @@ function Bookshelf(knex) {
 
     /**
      * @method
-     * @description  Get the current value of an attribute from the model.
+     * @description Get the aliased table name if possible.
      *
-     * @returns {string} Attribute value.odel({id: 1});
-     * @example
-     * modelB.isNew(); // false
+     * @returns {string} Aliased table name or just a table name.
      */
     aliasedTableName: aliasedTableName()
 
@@ -298,7 +296,7 @@ function Bookshelf(knex) {
         _.result(this, tableNameProp),
         _.result(this, tableAliasProp)
       ];
-      // `aliasTable` is nor required and may be missing
+      // `tableAlias` is not required and may be missing
       candidates = _.compact(candidates);
       const aliasedTableName = candidates.map(function (tableNameOrAlias) {
         return knex.client.wrapIdentifier(tableNameOrAlias);
