@@ -23,13 +23,32 @@ module.exports = function(Bookshelf) {
   var MySQL = require('../bookshelf')(mysql);
   var PostgreSQL = require('../bookshelf')(pg);
   var SQLite3 = require('../bookshelf')(sqlite3);
+  var Swapped = require('../bookshelf')(Knex({}));
+  Swapped.knex = sqlite3;
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
     var bookshelf = new Bookshelf(sqlite3);
     expect(bookshelf.knex).to.equal(sqlite3);
   });
 
-  _.each([MySQL, PostgreSQL, SQLite3], function(bookshelf) {
+  it('should allow swapping in another knex instance', function() {
+    var bookshelf = new Bookshelf(Knex({}));
+    var Models = require('./integration/helpers/objects')(bookshelf).Models;
+    var site = new Models.Site();
+
+    return require('./integration/helpers/migration')(SQLite3).then(function() {
+      return site.save()
+        .then(function() {
+          expect(false).to.equal(true);
+        })
+        .catch(function() {
+          bookshelf.knex = sqlite3;
+          return site.save();
+        });
+    });
+  });
+
+  _.each([MySQL, PostgreSQL, SQLite3, Swapped], function(bookshelf) {
 
     var dialect = bookshelf.knex.client.dialect;
 

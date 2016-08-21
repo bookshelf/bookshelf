@@ -3,14 +3,11 @@
 
 import Promise from './promise';
 import events from 'events'
-import flatten from 'lodash/array/flatten';
-import { each, map } from 'lodash/collection';
-import { flow, once } from 'lodash/function';
+import { flatten, each, map, flow, once as _once, bind } from 'lodash';
 
 const { EventEmitter } = events;
 
 const eventNames = text => text.split(/\s+/);
-const flatMap = flow(map, flatten);
 
 /**
  * @class Events
@@ -36,7 +33,7 @@ export default class Events extends EventEmitter {
   on(nameOrNames, handler) {
     each(eventNames(nameOrNames), (name) => {
       super.on(name, handler)
-    })
+    });
     return this;
   }
 
@@ -75,7 +72,7 @@ export default class Events extends EventEmitter {
   trigger(nameOrNames, ...args) {
     each(eventNames(nameOrNames), (name) => {
       this.emit(name, ...args)
-    })
+    });
     return this;
   }
 
@@ -100,7 +97,8 @@ export default class Events extends EventEmitter {
    */
   triggerThen(nameOrNames, ...args) {
     const names = eventNames(nameOrNames);
-    const listeners = flatMap(names, this.listeners, this);
+    const flatMap = flow(map, flatten);
+    const listeners = flatMap(names, bind(this.listeners, this));
     return Promise.map(listeners, listener =>
       listener.apply(this, args)
     );
@@ -122,7 +120,7 @@ export default class Events extends EventEmitter {
    *   That callback to invoke only once when the event is fired.
    */
   once(name, callback) {
-    const wrapped = once((...args) => {
+    const wrapped = _once((...args) => {
       this.off(name, wrapped);
       return callback.apply(this, args);
     });

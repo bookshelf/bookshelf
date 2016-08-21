@@ -165,35 +165,35 @@ module.exports = function(bookshelf) {
 
       it('passes along additional arguments to the Knex method in the first argument', function() {
         var qb = model.resetQuery().query();
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 0);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
         var q = model.query('where', {id:1});
         equal(q, (model));
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 1);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 1);
       });
 
       it('allows passing an object to query', function() {
         var qb = model.resetQuery().query();
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 0);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
         var q = model.query({where: {id: 1}, orWhere: ['id', '>', '10']});
         equal(q, model);
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 2);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
       });
 
       it('allows passing an function to query', function() {
         var qb = model.resetQuery().query();
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 0);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
         var q = model.query(function(qb) {
           this.where({id: 1}).orWhere('id', '>', '10');
         });
         equal(q, model);
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 2);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
         qb = model.resetQuery().query();
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 0);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
         q = model.query(function(qb) {
           qb.where({id: 1}).orWhere('id', '>', '10');
         });
         equal(q, model);
-        equal(_.where(qb._statements, {grouping: 'where'}).length, 2);
+        equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
       });
 
     });
@@ -552,7 +552,7 @@ module.exports = function(bookshelf) {
         var m = new bookshelf.Model({id: null}).query({where: {uuid: 'testing'}});
         var query = m.query();
         query.update = function() {
-          equal(_.where(this._statements, {grouping: 'where'}).length, 1);
+          equal(_.filter(this._statements, {grouping: 'where'}).length, 1);
           return Promise.resolve(1);
         };
 
@@ -561,7 +561,7 @@ module.exports = function(bookshelf) {
           var m2 = new bookshelf.Model({id: 1}).query({where: {uuid: 'testing'}});
           var query2 = m2.query();
           query2.update = function() {
-            equal(_.where(this._statements, {grouping: 'where'}).length, 2);
+            equal(_.filter(this._statements, {grouping: 'where'}).length, 2);
             return {};
           };
 
@@ -578,7 +578,7 @@ module.exports = function(bookshelf) {
 
         query.then = function(onFulfilled, onRejected) {
           deepEqual(this._single.update, {bio: 'Short user bio'});
-          equal(_.where(this._statements, {grouping: 'where'}).length, 1);
+          equal(_.filter(this._statements, {grouping: 'where'}).length, 1);
           return Promise.resolve(1).then(onFulfilled, onRejected);
         };
 
@@ -797,9 +797,9 @@ module.exports = function(bookshelf) {
 
       it('deletes the `_builder` property, resetting the model query builder', function() {
         var m = new bookshelf.Model().query('where', {id: 1});
-        equal(_.where(m.query()._statements, {grouping: 'where'}).length, 1);
+        equal(_.filter(m.query()._statements, {grouping: 'where'}).length, 1);
         m.resetQuery();
-        equal(_.where(m.query()._statements, {grouping: 'where'}).length, 0);
+        equal(_.filter(m.query()._statements, {grouping: 'where'}).length, 0);
       });
     });
 

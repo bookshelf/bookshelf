@@ -1,5 +1,4 @@
 var Promise = global.testPromise;
-var _       = require('lodash');
 
 module.exports = function(bookshelf) {
 

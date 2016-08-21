@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { clone, pick, omit } from 'lodash';
 
 // Visibility plugin -
 // Useful for hiding/showing particular attributes on `toJSON`.
@@ -21,10 +21,10 @@ module.exports = function(Bookshelf) {
       proto.constructor.apply(this, arguments);
       const options = arguments[1] || {};
       if (options.visible) {
-        this.visible = _.clone(options.visible);
+        this.visible = clone(options.visible);
       }
       if (options.hidden) {
-        this.hidden = _.clone(options.hidden);
+        this.hidden = clone(options.hidden);
       }
     },
 
@@ -33,10 +33,10 @@ module.exports = function(Bookshelf) {
     toJSON: function() {
       let json = toJSON.apply(this, arguments);
       if (this.visible) {
-        json = _.pick.apply(_, [json].concat(this.visible));
+        json = pick(...[json].concat(this.visible));
       }
       if (this.hidden) {
-        json = _.omit.apply(_, [json].concat(this.hidden));
+        json = omit(...[json].concat(this.hidden));
       }
       return json;
     }

@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { remove as _remove, assign as _assign } from 'lodash';
+import { remove, assign } from 'lodash';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -144,7 +144,7 @@ module.exports = function paginationPlugin (bookshelf) {
       return pager
 
         .query(qb => {
-          _assign(qb, this.query().clone());
+          assign(qb, this.query().clone());
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
           return null;
@@ -163,12 +163,12 @@ module.exports = function paginationPlugin (bookshelf) {
       const counter = this.constructor.forge();
 
       return counter.query(qb => {
-        _assign(qb, this.query().clone());
+        assign(qb, this.query().clone());
 
         // Remove grouping and ordering. Ordering is unnecessary
         // for a count, and grouping returns the entire result set
         // What we want instead is to use `DISTINCT`
-        _remove(qb._statements, statement => {
+        remove(qb._statements, statement => {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
@@ -199,8 +199,8 @@ module.exports = function paginationPlugin (bookshelf) {
     return Promise.join(paginate(), count())
       .then(([rows, metadata]) => {
         const pageCount = Math.ceil(metadata.rowCount / _limit);
-        const pageData = _assign(metadata, {pageCount});
-        return _assign(rows, {pagination: pageData});
+        const pageData = assign(metadata, {pageCount});
+        return assign(rows, {pagination: pageData});
       });
   }
 

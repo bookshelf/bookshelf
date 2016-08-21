@@ -6,17 +6,17 @@ module.exports = function(Bookshelf) {
 	describe('Model Registry', function() {
 
 		before(function() {
-			this.hasOne = sinon.spy(Bookshelf.Model.prototype, 'hasOne');
+			this._relation = sinon.spy(Bookshelf.Model.prototype, '_relation');
 			this.morphTo = sinon.spy(Bookshelf.Model.prototype, 'morphTo');
 		});
 
 		after(function() {
-			this.hasOne.restore();
+			this._relation.restore();
 			this.morphTo.restore();
 		});
 
 		beforeEach(function () {
-			this.hasOne.reset();
+			this._relation.reset();
 			this.morphTo.reset();
 		});
 
@@ -155,7 +155,7 @@ module.exports = function(Bookshelf) {
 
 			it('applies the resolved model to the original method', function() {
 				this.model._hasOne();
-				expect(this.hasOne).to.have.been.calledWith(this.relatedModel);
+				expect(this._relation).to.have.been.calledWith('hasOne', this.relatedModel);
 			});
 
 			it('allows for *-through relations', function() {

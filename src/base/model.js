@@ -1,7 +1,6 @@
 // Base Model
 // ---------------
-import _, { assign, identity, mapKeys, mapValues } from 'lodash';
-import { clone } from 'lodash/lang';
+import _, { assign, identity, mapKeys, mapValues, clone } from 'lodash';
 import inherits from 'inherits';
 
 import Events from './events';
@@ -259,7 +258,7 @@ ModelBase.prototype.serialize = function(options = {}) {
     );
 
     // Omit null relations from the omitNew option
-    relations = _.omit(relations, _.isNull);
+    relations = _.omitBy(relations, _.isNull);
 
     const pivot = this.pivot && !omitPivot && this.pivot.attributes;
     const pivotAttributes = mapKeys(pivot, (value, key) =>
@@ -543,7 +542,7 @@ ModelBase.prototype.previous = function(attribute) {
  * @returns {Object} The attributes as they were before the last change.
  */
 ModelBase.prototype.previousAttributes = function() {
-  return _.clone(this._previousAttributes);
+  return clone(this._previousAttributes);
 };
 
 /**
@@ -557,7 +556,7 @@ ModelBase.prototype.previousAttributes = function() {
  * @returns {Model} This model.
  */
 ModelBase.prototype._reset = function() {
-  this._previousAttributes = _.clone(this.attributes);
+  this._previousAttributes = clone(this.attributes);
   this.changed = Object.create(null);
   return this;
 };
@@ -571,8 +570,8 @@ ModelBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#values
  */
 /**
- * @method ModelBase#pairs
- * @see http://lodash.com/docs/#pairs
+ * @method ModelBase#toPairs
+ * @see http://lodash.com/docs/#toPairs
  */
 /**
  * @method ModelBase#invert
@@ -587,12 +586,12 @@ ModelBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#omit
  */
 // "_" methods that we want to implement on the Model.
-const modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+const modelMethods = ['keys', 'values', 'toPairs', 'invert', 'pick', 'omit'];
 
 // Mix in each "_" method as a proxy to `Model#attributes`.
 _.each(modelMethods, function(method) {
-  ModelBase.prototype[method] = function(...args) {
-    return _[method](this.attributes, ...args);
+  ModelBase.prototype[method] = function() {
+    return _[method](this.attributes, ...arguments);
   };
 });
 

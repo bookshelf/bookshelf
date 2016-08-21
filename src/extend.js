@@ -1,8 +1,7 @@
-import { isFunction } from 'lodash/lang';
-import { assign } from 'lodash/object';
+import { isFunction, assign } from 'lodash';
 
 // Uses a hash of prototype properties and class properties to be extended.
-module.exports = function(protoProps, staticProps) {
+module.exports = function extend(protoProps, staticProps) {
   const Parent = this;
 
   // The constructor function for the new subclass is either defined by you
@@ -10,20 +9,26 @@ module.exports = function(protoProps, staticProps) {
   // by us to simply call the parent's constructor.
   const Child = protoProps && protoProps.hasOwnProperty('constructor')
     ? protoProps.constructor
-    : function(){ Parent.apply(this, arguments); };
+    : function(){ return Parent.apply(this, arguments); };
+
+  assign(Child, Parent, staticProps);
 
   // Set the prototype chain to inherit from `Parent`.
-  Child.prototype = Object.create(Parent.prototype)
+  Child.prototype = Object.create(Parent.prototype, {
+    constructor: {
+      value: Child,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
 
-  // Assign methods and static functions.
-  assign(Child.prototype, protoProps);
-  assign(Child, staticProps);
+  if (protoProps) {
+    assign(Child.prototype, protoProps);
+  }
 
-  // Correctly set child's `prototype.constructor`.
-  Child.prototype.constructor = Child;
-
-  // Add static properties to the constructor function, if supplied.
-  Child.__proto__ = Parent;
+  // Give child access to the parent prototype as part of "super"
+  Child.__super__ = Parent.prototype;
 
   // If there is an "extended" function set on the parent,
   // call it with the extended child object.

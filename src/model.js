@@ -1,4 +1,4 @@
-import _, { assign, isArray } from 'lodash';
+import _ from 'lodash';
 import createError from 'create-error';
 
 import Sync from './sync';
@@ -264,13 +264,13 @@ const BookshelfModel = ModelBase.extend({
    * @param {string=} foreignKey
    *
    *   Foreign key in this model. By default, the `foreignKey` is assumed to
-   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+   *   be the singular form of this model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @param {string=} otherKey
    *
    *   Foreign key in the `Target` model. By default, the `otherKey` is assumed to
-   *   be the singular form of this model's tableName, followed by `_id` /
+   *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
    * @returns {Collection}
@@ -801,7 +801,7 @@ const BookshelfModel = ModelBase.extend({
    */
   load: Promise.method(function(relations, options) {
     const columns = this.format({ ...this.attributes });
-    const withRelated = isArray(relations) ? relations : [relations];
+    const withRelated = _.isArray(relations) ? relations : [relations];
     return this._handleEager(
       [columns], { ...options, shallow: true, withRelated }
     ).return(this);
@@ -980,7 +980,7 @@ const BookshelfModel = ModelBase.extend({
           const updatedCols = {};
           updatedCols[this.idAttribute] = this.id = resp[0];
           const updatedAttrs = this.parse(updatedCols);
-          assign(this.attributes, updatedAttrs);
+          _.assign(this.attributes, updatedAttrs);
         } else if (method === 'update' && resp === 0) {
           if (options.require !== false) {
             throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
@@ -1233,7 +1233,10 @@ const BookshelfModel = ModelBase.extend({
 
   /* Ensure that QueryBuilder is copied on clone. */
   clone() {
-    const cloned = ModelBase.prototype.clone.apply(this, arguments);
+    // This needs to use the direct apply method because the spread operator
+    // incorrectly converts to `clone.apply(ModelBase.prototype, arguments)`
+    // instead of `apply(this, arguments)`
+    const cloned = BookshelfModel.__super__.clone.apply(this, arguments);
     if (this._knex != null) {
       cloned._knex = cloned._builder(this._knex.clone());
     }
