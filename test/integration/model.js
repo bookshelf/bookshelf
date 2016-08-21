@@ -222,20 +222,47 @@ module.exports = function(bookshelf) {
         deepEqual(m.toJSON(), {'_id': 1, 'name': 'Joe'});
       });
 
-      it('includes the relations loaded on the model, unless {shallow: true} or {omitNew: true} is passed.', function() {
+      it('includes the relations loaded on the model, unless {shallow: true} is passed.', function() {
         var m = new bookshelf.Model({id: 1, name: 'Test'});
-        m.relations = {someList: new bookshelf.Collection([{id:1}, {attr:2}]),
-                       someRel:  new bookshelf.Model({attr:3}),
-                       otherRel: new bookshelf.Model({id:4})
-                      };
+        m.relations = {someList: new bookshelf.Collection([{id:1}, {id:2}])};
         var json = m.toJSON();
-        deepEqual(_.keys(json), ['id', 'name', 'someList', 'someRel', 'otherRel']);
+        deepEqual(_.keys(json), ['id', 'name', 'someList']);
         equal(json.someList.length, 2);
         var shallow = m.toJSON({shallow:true});
         deepEqual(_.keys(shallow), ['id', 'name']);
-        var omitNew = m.toJSON({omitNew:true});
-        deepEqual(_.keys(omitNew), ['id', 'name', 'someList', 'otherRel']);
-        equal(omitNew.someList.length, 1);
+      });
+
+      it('omits new models from collections and relations when {omitNew: true} is passed.', function() {
+        var model = new bookshelf.Model({id: 1, attr1: 'Test'});
+        model.relations = {
+          someList: new bookshelf.Collection([{id: 2}, {attr2: 'Test'}]),
+          someRel: new bookshelf.Model({id: 3}),
+          otherRel:  new bookshelf.Model({attr3: 'Test'})
+        };
+        var coll = new bookshelf.Collection([
+          model,
+          new bookshelf.Model({attr5: 'Test'}),
+          new bookshelf.Model({id: 4, attr4: 'Test'})
+        ])
+        var json = coll.toJSON();
+        equal(json.length, 3);
+        deepEqual(_.keys(json[0]), ['id', 'attr1', 'someList', 'someRel', 'otherRel']);
+        deepEqual(_.keys(json[1]), ['attr5']);
+        deepEqual(_.keys(json[2]), ['id', 'attr4']);
+        equal(json[0].someList.length, 2);
+        var omitNew = coll.toJSON({omitNew: true});
+        equal(omitNew.length, 2);
+        deepEqual(_.keys(omitNew[0]), ['id', 'attr1', 'someList', 'someRel']);
+        deepEqual(_.keys(omitNew[1]), ['id', 'attr4']);
+        equal(omitNew[0].someList.length, 1);
+      });
+
+      it('returns null for a new model when {omitNew: true} is passed.', function() {
+        var model = new bookshelf.Model({attr1: 'Test'});
+        var json = model.toJSON();
+        deepEqual(_.keys(json), ['attr1']);
+        var omitNew = model.toJSON({omitNew: true});
+        deepEqual(omitNew, null);
       });
     });
 
