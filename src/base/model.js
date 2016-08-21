@@ -258,7 +258,7 @@ ModelBase.prototype.serialize = function(options = {}) {
         : relation
     );
 
-    // Omit keys for null values coming form the omitNew option
+    // Omit null relations from the omitNew option
     relations = _.omit(relations, _.isNull);
 
     const pivot = this.pivot && !omitPivot && this.pivot.attributes;
