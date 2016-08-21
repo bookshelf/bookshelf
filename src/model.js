@@ -439,7 +439,7 @@ const BookshelfModel = ModelBase.extend({
    *     let Photo = bookshelf.Model.extend({
    *       tableName: 'photos',
    *       imageable: function() {
-   *         return this.morphTo('imageable', null, Site, [Post, "header"]);
+   *         return this.morphTo('imageable', null, Site, [Post, "cover"]);
    *       }
    *     });
    *
@@ -457,20 +457,24 @@ const BookshelfModel = ModelBase.extend({
   morphTo(morphName) {
     if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
     let columnNames, candidates;
-    if (_.isArray(arguments[1]) || _.isNil(arguments[1])) {
-      columnNames = arguments[1] || null;
-      candidates = _.drop(arguments, 2);
+    if (_.isArray(arguments[1])) {
+      columnNames = arguments[1];
     } else {
       columnNames = null;
-      candidates = _.drop(arguments);
+    }
+    if (_.isArray(arguments[1]) || _.isNil(arguments[1])) {
+      candidates = _.drop(arguments, 2);
+    } else {
+      candidates = _.drop(arguments, 1);
     }
 
     candidates = _.map(candidates, (target) => {
-      if (!_.isArray(target)) {
-        // Set up the morphValue by default as the tableName
-        target = [ target, _.result(target.prototype, 'tableName') ];
+      if (_.isArray(target)) {
+        return target;
       }
-      return target;
+
+      // Set up the morphValue by default as the tableName
+      return [ target, _.result(target.prototype, 'tableName') ];
     });
 
     return this._relation('morphTo', null, {morphName, columnNames, candidates}).init(this);

@@ -24,11 +24,11 @@ const helpers = {
   // Finds the specific `morphTo` table we should be working with, or throws
   // an error if none is matched.
   morphCandidate: function(candidates, morphValue) {
-    const tuple = _.find(candidates, (tuple) => morphValue === tuple[1]);
-    if (!tuple) {
+    const [Target] = _.find(candidates, ([,tableName]) => tableName === morphValue);
+    if (!Target) {
       throw new Error('The target polymorphic model was not found');
     }
-    return tuple[0];
+    return Target;
   },
 
   // If there are no arguments, return the current object's

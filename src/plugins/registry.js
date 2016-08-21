@@ -1,4 +1,4 @@
-import {isPlainObject, drop, map, isArray, isNull} from 'lodash';
+import {isPlainObject, drop, map, isArray, isNil} from 'lodash';
 
 // Registry Plugin -
 // Create a central registry of model/collection constructors to
@@ -75,23 +75,24 @@ module.exports = function (bookshelf) {
   const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
     let candidates, columnNames;
-
-    if (isArray(arguments[1]) || isNull(arguments[1])) {
+    if (isArray(arguments[1])) {
       columnNames = arguments[1];
-      candidates = drop(arguments, 2);
     } else {
       columnNames = null;
-      candidates = drop(arguments);
+    }
+    if (isArray(arguments[1]) || isNil(arguments[1])) {
+      candidates = drop(arguments, 2);
+    } else {
+      candidates = drop(arguments, 1);
     }
 
     return morphTo.apply(this, [relationName, columnNames].concat(map(candidates, (target) => {
       if (isArray(target)) {
-        // When passing morphValue
-        target[0] = resolveModel(target[0]);
-        return target;
-      } else {
-        return resolveModel(target);
+        const [model, morphValue] = target;
+        return [resolveModel(model), morphValue];
       }
+
+      return resolveModel(target);
     })));
   };
 
