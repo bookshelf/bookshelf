@@ -252,17 +252,11 @@ ModelBase.prototype.serialize = function(options = {}) {
 
   if (!shallow) {
 
-    let relations = mapValues(this.relations, (relation, key) => {
-      if (relation.toJSON != null) {
-        let rel = relation.toJSON(options);
-        if (_.isArray(rel)) {
-          // Filter null values in a collection coming from the omitNew option
-          rel = _.filter(rel, x => ! _.isNull(x));
-        }
-        return rel;
-      }
-        relation
-    });
+    let relations = mapValues(this.relations, (relation, key) =>
+      relation.toJSON != null
+        ? relation.toJSON(options)
+        : relation
+    );
 
     // Omit keys for null values coming form the omitNew option
     relations = _.omit(relations, _.isNull);

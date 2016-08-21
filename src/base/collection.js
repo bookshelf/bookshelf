@@ -2,7 +2,7 @@
 // ---------------
 
 // All exernal dependencies required in this scope.
-import _, { invoke, noop } from 'lodash';
+import _, { invoke, noop, filter, negate, isNull } from 'lodash';
 import inherits from 'inherits';
 
 // All components that need to be referenced in this scope.
@@ -136,7 +136,7 @@ CollectionBase.prototype.toString = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
-  return invoke(this.models, 'toJSON', options);
+  return filter(invoke(this.models, 'toJSON', options), negate(isNull));
 }
 
 /**
