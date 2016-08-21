@@ -133,6 +133,7 @@ CollectionBase.prototype.toString = function() {
  * @param {Object=} options
  * @param {bool}    [options.shallow=false]   Exclude relations.
  * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+ * @param {bool}    [options.omitNew=false]   Exclude models that return true for isNew.
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
