@@ -114,7 +114,7 @@ module.exports = function(Bookshelf) {
     parse: _parsed,
     format: _format,
     photos: function() {
-      return this.morphMany(PhotoParsed, 'imageable');
+      return this.morphMany(PhotoParsed, 'imageable', 'profile_pic');
     }
   });
 
@@ -212,10 +212,10 @@ module.exports = function(Bookshelf) {
   var Photo = Bookshelf.Model.extend({
     tableName: 'photos',
     imageable: function() {
-      return this.morphTo('imageable', null, Site, [Author, 'profile_pic']);
+      return this.morphTo('imageable', Site, [Author, 'profile_pic']);
     },
     imageableParsed: function() {
-      return this.morphTo('imageable', null, SiteParsed, [AuthorParsed, 'profile_pic']);
+      return this.morphTo('imageable', null, [AuthorParsed, 'profile_pic'], SiteParsed);
     }
   });
 
