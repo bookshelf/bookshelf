@@ -2,7 +2,7 @@
 // ---------------
 
 // All exernal dependencies required in this scope.
-import _, { invokeMap, noop } from 'lodash';
+import _, { invokeMap, noop, negate, isNull } from 'lodash';
 import inherits from 'inherits';
 
 // All components that need to be referenced in this scope.
@@ -133,10 +133,11 @@ CollectionBase.prototype.toString = function() {
  * @param {Object=} options
  * @param {bool}    [options.shallow=false]   Exclude relations.
  * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+ * @param {bool}    [options.omitNew=false]   Exclude models that return true for isNew.
  * @returns {Object} Serialized model as a plain object.
  */
 CollectionBase.prototype.serialize = function(options) {
-  return invokeMap(this.models, 'toJSON', options);
+  return invokeMap(this.models, 'toJSON', options).filter(negate(isNull));
 }
 
 /**
