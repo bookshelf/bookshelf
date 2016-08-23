@@ -75,14 +75,11 @@ module.exports = function (bookshelf) {
   const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
     let candidates, columnNames;
-    if (isArray(arguments[1])) {
-      columnNames = arguments[1];
-    } else {
-      columnNames = null;
-    }
     if (isArray(arguments[1]) || isNil(arguments[1])) {
+      columnNames = arguments[1];   // may be `null` or `undefined`
       candidates = drop(arguments, 2);
     } else {
+      columnNames = null;
       candidates = drop(arguments, 1);
     }
 

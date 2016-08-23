@@ -457,14 +457,11 @@ const BookshelfModel = ModelBase.extend({
   morphTo(morphName) {
     if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
     let columnNames, candidates;
-    if (_.isArray(arguments[1])) {
-      columnNames = arguments[1];
-    } else {
-      columnNames = null;
-    }
     if (_.isArray(arguments[1]) || _.isNil(arguments[1])) {
+      columnNames = arguments[1] || null;   // may be `null` or `undefined`
       candidates = _.drop(arguments, 2);
     } else {
+      columnNames = null;
       candidates = _.drop(arguments, 1);
     }
 
