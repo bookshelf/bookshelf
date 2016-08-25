@@ -195,7 +195,7 @@ const BookshelfCollection = CollectionBase.extend({
    *  A promise resolving to the fetched {@link Model model} or `null` if none exists.
    */
   fetchOne: Promise.method(function(options) {
-    const model = new this.model();
+    const model = new this.model(options.withRelatedCondition);
     model._knex = this.query().clone();
     this.resetQuery();
     if (this.relatedData) model.relatedData = this.relatedData;
@@ -220,7 +220,7 @@ const BookshelfCollection = CollectionBase.extend({
   load: Promise.method(function(relations, options) {
     if (!isArray(relations)) relations = [relations]
     options = extend({}, options, {shallow: true, withRelated: relations});
-    return new EagerRelation(this.models, this.toJSON(options), new this.model())
+    return new EagerRelation(this.models, this.toJSON(options), new this.model(options.withRelatedCondition))
       .fetch(options)
       .return(this);
   }),
@@ -404,7 +404,7 @@ const BookshelfCollection = CollectionBase.extend({
    * Handle the related data loading on the collection.
    */
   _handleEager: function(response, options) {
-    return new EagerRelation(this.models, response, new this.model())
+    return new EagerRelation(this.models, response, new this.model(options.withRelatedCondition))
       .fetch(options);
   }
 
