@@ -195,6 +195,7 @@ const BookshelfCollection = CollectionBase.extend({
    *  A promise resolving to the fetched {@link Model model} or `null` if none exists.
    */
   fetchOne: Promise.method(function(options) {
+    options = options ? options : {};
     const model = new this.model(options.withRelatedCondition);
     model._knex = this.query().clone();
     this.resetQuery();
@@ -404,6 +405,7 @@ const BookshelfCollection = CollectionBase.extend({
    * Handle the related data loading on the collection.
    */
   _handleEager: function(response, options) {
+    options = options ? options : {};
     return new EagerRelation(this.models, response, new this.model(options.withRelatedCondition))
       .fetch(options);
   }
