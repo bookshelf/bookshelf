@@ -128,5 +128,3 @@ export default class Events extends EventEmitter {
     return this.on(name, wrapped);
   }
 }
-
-export default Events;
