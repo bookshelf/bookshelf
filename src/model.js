@@ -567,7 +567,7 @@ const BookshelfModel = ModelBase.extend({
    *       editions: function() {
    *         return this.hasMany(Edition);
    *       },
-   *       chapters: function{
+   *       chapters: function() {
    *         return this.hasMany(Chapter);
    *       },
    *       genre: function() {
