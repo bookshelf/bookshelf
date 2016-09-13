@@ -30,13 +30,15 @@ module.exports = function(Bookshelf) {
 
     // Checks the `visible` and then `hidden` properties to see if there are
     // any keys we don't want to show when the object is json-ified.
-    toJSON: function() {
+    toJSON: function(options) {
       let json = toJSON.apply(this, arguments);
-      if (this.visible) {
-        json = pick(...[json].concat(this.visible));
+      let visible = options.visible || this.visible;
+      if (visible) {
+        json = pick(json, visible);
       }
-      if (this.hidden) {
-        json = omit(...[json].concat(this.hidden));
+      let hidden = options.hidden || this.hidden;
+      if (hidden) {
+        json = omit(json, hidden);
       }
       return json;
     }
