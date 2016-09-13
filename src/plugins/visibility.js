@@ -32,11 +32,11 @@ module.exports = function(Bookshelf) {
     // any keys we don't want to show when the object is json-ified.
     toJSON: function(options) {
       let json = toJSON.apply(this, arguments);
-      const visible = options.visible || this.visible;
+      const visible = (options && options.visible) || this.visible;
       if (visible) {
         json = pick(...[json].concat(visible));
       }
-      const hidden = options.hidden || this.hidden;
+      const hidden = (options && options.hidden) || this.hidden;
       if (hidden) {
         json = omit(...[json].concat(hidden));
       }
