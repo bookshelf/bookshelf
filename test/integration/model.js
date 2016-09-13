@@ -6,6 +6,7 @@ var Promise   = global.testPromise;
 var assert    = require('assert')
 var equal     = require('assert').strictEqual;
 var deepEqual = require('assert').deepEqual;
+var QueryBuilder = require('knex/lib/query/builder')
 
 module.exports = function(bookshelf) {
 
@@ -155,7 +156,7 @@ module.exports = function(bookshelf) {
       });
 
       it('returns the Knex builder when no arguments are passed', function() {
-        equal((model.query() instanceof bookshelf.knex.client.QueryBuilder), true);
+        equal((model.query() instanceof QueryBuilder), true);
       });
 
       it('calls Knex builder method with the first argument, returning the model', function() {
