@@ -61,6 +61,7 @@
 <li><h3><a href="#installation">Installation</a></h3></li>
 <li><h3><a href="#examples">Examples</a></h3></li>
 <li><h3><a href="#plugins">Plugins</a></h3></li>
+<li><h3><a href="#community-plugins">Community plugins</a></h3></li>
 <li><h3><a href="#support">Support</a></h3></li>
 <li><h3><a href="#faq">F.A.Q.</a></h3></li></ul><ul class="changelog"><li><h3><a href="#changelog">Change log</a></h3></li></ul><ul class="main"><li><h3><a href="#associations">Associations</a></h3><ul class="sections"><li><a href="#one-to-one">One-to-one</a></li><li><a href="#one-to-many">One-to-many</a></li><li><a href="#many-to-many">Many-to-many</a></li><li><a href="#polymorphic">Polymorphic</a></li></ul></li><li><h3><a href="#section-Bookshelf">Bookshelf</a></h3><h4><a href="#Bookshelf-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Bookshelf">Bookshelf</a></li></ul><h4><a href="#Bookshelf-subsection-members">Members</a></h4><ul class="members"><li><a href="#Bookshelf-instance-knex">knex</a></li></ul><h4><a href="#Bookshelf-subsection-methods">Methods</a></h4><ul class="methods"><li><a href="#Bookshelf-instance-transaction">transaction</a></li></ul></li><li><h3><a href="#section-Model">Model</a></h3><h4><a href="#Model-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Model">Model</a></li><li><a href="#Model-instance-initialize">initialize</a></li></ul><h4><a href="#Model-subsection-static">Static</a></h4><ul class="static"><li><a href="#Model-static-collection">collection</a></li><li><a href="#Model-static-count">count</a></li><li><a href="#Model-static-extend">extend</a></li><li><a href="#Model-static-fetchAll">fetchAll</a></li><li><a href="#Model-static-forge">forge</a></li></ul><h4><a href="#Model-subsection-members">Members</a></h4><ul class="members"><li><a href="#Model-instance-hasTimestamps">hasTimestamps</a></li><li><a href="#Model-instance-idAttribute">idAttribute</a></li><li><a href="#Model-instance-tableName">tableName</a></li></ul><h4><a href="#Model-subsection-methods">Methods</a></h4><ul class="methods"><li><a href="#Model-instance-belongsTo">belongsTo</a></li><li><a href="#Model-instance-belongsToMany">belongsToMany</a></li><li><a href="#Model-instance-clear">clear</a></li><li><a href="#Model-instance-clone">clone</a></li><li><a href="#Model-instance-count">count</a></li><li><a href="#Model-instance-destroy">destroy</a></li><li><a href="#Model-instance-escape">escape</a></li><li><a href="#Model-instance-fetch">fetch</a></li><li><a href="#Model-instance-fetchAll">fetchAll</a></li><li><a href="#Model-instance-fetchPage">fetchPage</a></li><li><a href="#Model-instance-format">format</a></li><li><a href="#Model-instance-get">get</a></li><li><a href="#Model-instance-has">has</a></li><li><a href="#Model-instance-hasChanged">hasChanged</a></li><li><a href="#Model-instance-hasMany">hasMany</a></li><li><a href="#Model-instance-hasOne">hasOne</a></li><li><a href="#Model-instance-isNew">isNew</a></li><li><a href="#Model-instance-load">load</a></li><li><a href="#Model-instance-morphMany">morphMany</a></li><li><a href="#Model-instance-morphOne">morphOne</a></li><li><a href="#Model-instance-morphTo">morphTo</a></li><li><a href="#Model-instance-off">off</a></li><li><a href="#Model-instance-on">on</a></li><li><a href="#Model-instance-once">once</a></li><li><a href="#Model-instance-orderBy">orderBy</a></li><li><a href="#Model-instance-parse">parse</a></li><li><a href="#Model-instance-previous">previous</a></li><li><a href="#Model-instance-previousAttributes">previousAttributes</a></li><li><a href="#Model-instance-query">query</a></li><li><a href="#Model-instance-refresh">refresh</a></li><li><a href="#Model-instance-related">related</a></li><li><a href="#Model-instance-resetQuery">resetQuery</a></li><li><a href="#Model-instance-save">save</a></li><li><a href="#Model-instance-serialize">serialize</a></li><li><a href="#Model-instance-set">set</a></li><li><a href="#Model-instance-through">through</a></li><li><a href="#Model-instance-timestamp">timestamp</a></li><li><a href="#Model-instance-toJSON">toJSON</a></li><li><a href="#Model-instance-trigger">trigger</a></li><li><a href="#Model-instance-triggerThen">triggerThen</a></li><li><a href="#Model-instance-unset">unset</a></li><li><a href="#Model-instance-where">where</a></li></ul><h4><a href="#Model-subsection-lodash-methods">Lodash Methods</a></h4><ul class="lodash-methods"><li><a href="#Model-instance-invert">invert</a></li><li><a href="#Model-instance-keys">keys</a></li><li><a href="#Model-instance-omit">omit</a></li><li><a href="#Model-instance-pick">pick</a></li><li><a href="#Model-instance-toPairs">toPairs</a></li><li><a href="#Model-instance-values">values</a></li></ul><h4><a href="#Model-subsection-events">Events</a></h4><ul class="events"><li><a href="#Model-event-counting">counting</a></li><li><a href="#Model-event-created">created</a></li><li><a href="#Model-event-creating">creating</a></li><li><a href="#Model-event-destroyed">destroyed</a></li><li><a href="#Model-event-destroying">destroying</a></li><li><a href="#Model-event-fetched">fetched</a></li><li><a href="#Model-event-fetching">fetching</a></li><li><a href="#Model-event-saved">saved</a></li><li><a href="#Model-event-saving">saving</a></li><li><a href="#Model-event-updated">updated</a></li><li><a href="#Model-event-updating">updating</a></li></ul></li><li><h3><a href="#section-Model-static-NoRowsDeletedError">NoRowsDeletedError</a></h3><h4><a href="#Model-static-NoRowsDeletedError-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></li></ul></li><li><h3><a href="#section-Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></h3><h4><a href="#Model-static-NoRowsUpdatedError-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></li></ul></li><li><h3><a href="#section-Model-static-NotFoundError">NotFoundError</a></h3><h4><a href="#Model-static-NotFoundError-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Model-static-NotFoundError">NotFoundError</a></li></ul></li><li><h3><a href="#section-Collection">Collection</a></h3><h4><a href="#Collection-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Collection">Collection</a></li><li><a href="#Collection-instance-initialize">initialize</a></li></ul><h4><a href="#Collection-subsection-static">Static</a></h4><ul class="static"><li><a href="#Collection-static-extend">extend</a></li><li><a href="#Collection-static-forge">forge</a></li></ul><h4><a href="#Collection-subsection-methods">Methods</a></h4><ul class="methods"><li><a href="#Collection-instance-add">add</a></li><li><a href="#Collection-instance-at">at</a></li><li><a href="#Collection-instance-attach">attach</a></li><li><a href="#Collection-instance-clone">clone</a></li><li><a href="#Collection-instance-count">count</a></li><li><a href="#Collection-instance-create">create</a></li><li><a href="#Collection-instance-detach">detach</a></li><li><a href="#Collection-instance-fetch">fetch</a></li><li><a href="#Collection-instance-fetchOne">fetchOne</a></li><li><a href="#Collection-instance-findWhere">findWhere</a></li><li><a href="#Collection-instance-get">get</a></li><li><a href="#Collection-instance-invokeThen">invokeThen</a></li><li><a href="#Collection-instance-load">load</a></li><li><a href="#Collection-instance-off">off</a></li><li><a href="#Collection-instance-on">on</a></li><li><a href="#Collection-instance-once">once</a></li><li><a href="#Collection-instance-orderBy">orderBy</a></li><li><a href="#Collection-instance-parse">parse</a></li><li><a href="#Collection-instance-pluck">pluck</a></li><li><a href="#Collection-instance-pop">pop</a></li><li><a href="#Collection-instance-push">push</a></li><li><a href="#Collection-instance-query">query</a></li><li><a href="#Collection-instance-reduceThen">reduceThen</a></li><li><a href="#Collection-instance-remove">remove</a></li><li><a href="#Collection-instance-reset">reset</a></li><li><a href="#Collection-instance-resetQuery">resetQuery</a></li><li><a href="#Collection-instance-serialize">serialize</a></li><li><a href="#Collection-instance-set">set</a></li><li><a href="#Collection-instance-shift">shift</a></li><li><a href="#Collection-instance-slice">slice</a></li><li><a href="#Collection-instance-through">through</a></li><li><a href="#Collection-instance-toJSON">toJSON</a></li><li><a href="#Collection-instance-trigger">trigger</a></li><li><a href="#Collection-instance-triggerThen">triggerThen</a></li><li><a href="#Collection-instance-unshift">unshift</a></li><li><a href="#Collection-instance-updatePivot">updatePivot</a></li><li><a href="#Collection-instance-where">where</a></li><li><a href="#Collection-instance-withPivot">withPivot</a></li></ul><h4><a href="#Collection-subsection-lodash-methods">Lodash Methods</a></h4><ul class="lodash-methods"><li><a href="#Collection-instance-chain">chain</a></li><li><a href="#Collection-instance-countBy">countBy</a></li><li><a href="#Collection-instance-difference">difference</a></li><li><a href="#Collection-instance-drop">drop</a></li><li><a href="#Collection-instance-each">each</a></li><li><a href="#Collection-instance-every">every</a></li><li><a href="#Collection-instance-filter">filter</a></li><li><a href="#Collection-instance-find">find</a></li><li><a href="#Collection-instance-first">first</a></li><li><a href="#Collection-instance-forEach">forEach</a></li><li><a href="#Collection-instance-groupBy">groupBy</a></li><li><a href="#Collection-instance-head">head</a></li><li><a href="#Collection-instance-includes">includes</a></li><li><a href="#Collection-instance-indexOf">indexOf</a></li><li><a href="#Collection-instance-initial">initial</a></li><li><a href="#Collection-instance-invokeMap">invokeMap</a></li><li><a href="#Collection-instance-isEmpty">isEmpty</a></li><li><a href="#Collection-instance-last">last</a></li><li><a href="#Collection-instance-lastIndexOf">lastIndexOf</a></li><li><a href="#Collection-instance-map">map</a></li><li><a href="#Collection-instance-max">max</a></li><li><a href="#Collection-instance-maxBy">maxBy</a></li><li><a href="#Collection-instance-min">min</a></li><li><a href="#Collection-instance-minBy">minBy</a></li><li><a href="#Collection-instance-reduce">reduce</a></li><li><a href="#Collection-instance-reduceRight">reduceRight</a></li><li><a href="#Collection-instance-reject">reject</a></li><li><a href="#Collection-instance-shuffle">shuffle</a></li><li><a href="#Collection-instance-size">size</a></li><li><a href="#Collection-instance-some">some</a></li><li><a href="#Collection-instance-sortBy">sortBy</a></li><li><a href="#Collection-instance-tail">tail</a></li><li><a href="#Collection-instance-take">take</a></li><li><a href="#Collection-instance-toArray">toArray</a></li><li><a href="#Collection-instance-without">without</a></li></ul><h4><a href="#Collection-subsection-events">Events</a></h4><ul class="events"><li><a href="#Collection-event-fetched">fetched</a></li></ul></li><li><h3><a href="#section-Collection-static-EmptyError">EmptyError</a></h3><h4><a href="#Collection-static-EmptyError-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Collection-static-EmptyError">EmptyError</a></li></ul></li><li><h3><a href="#section-Events">Events</a></h3><h4><a href="#Events-subsection-construction">Construction</a></h4><ul class="construction"><li><a href="#Events">Events</a></li></ul><h4><a href="#Events-subsection-methods">Methods</a></h4><ul class="methods"><li><a href="#Events-instance-off">off</a></li><li><a href="#Events-instance-on">on</a></li><li><a href="#Events-instance-once">once</a></li><li><a href="#Events-instance-trigger">trigger</a></li><li><a href="#Events-instance-triggerThen">triggerThen</a></li></ul></li></ul>
       
@@ -162,7 +163,17 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Model-Registry">Registry</a>: Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.</li>
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Virtuals">Virtuals</a>: Define virtual properties on your model to compute new values.</li>
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a>: Specify a whitelist/blacklist of model attributes when serialized toJSON.</li>
-<li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Pagination">Pagination</a>: Adds <code>fetchPage</code> methods to use for pagination in place of <code>fetch</code> and <code>fetchAll</code></li>
+<li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Pagination">Pagination</a>: Adds <code>fetchPage</code> methods to use for pagination in place of <code>fetch</code> and <code>fetchAll</code>.</li>
+</ul>
+<h2 id="community-plugins">Community plugins</h2><ul>
+<li><a href="https://github.com/seegno/bookshelf-cascade-delete">bookshelf-cascade-delete</a> - Cascade delete related models on destroy.</li>
+<li><a href="https://github.com/seegno/bookshelf-json-columns">bookshelf-json-columns</a> - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).</li>
+<li><a href="https://github.com/seegno/bookshelf-mask">bookshelf-mask</a> - Similar to <a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a> but supporting multiple scopes, masking models and collections using the <a href="https://github.com/nemtsov/json-mask">json-mask</a> API.</li>
+<li><a href="https://github.com/bogus34/bookshelf-schema">bookshelf-schema</a> - A plugin for handling fields, relations, scopes and more.</li>
+<li><a href="https://github.com/bogus34/bookshelf-signals">bookshelf-signals</a> - A plugin that translates Bookshelf events to a central hub.</li>
+<li><a href="https://github.com/estate/bookshelf-paranoia">bookshelf-paranoia</a> - Protect your database from data loss by soft deleting your rows.</li>
+<li><a href="https://github.com/estate/bookshelf-uuid">bookshelf-uuid</a> - Automatically generates UUIDs for your models.</li>
+<li><a href="https://github.com/bsiddiqui/bookshelf-modelbase">bookshelf-modelbase</a> - An alternative to extend <code>Model</code>, adding timestamps, attribute validation and some native CRUD methods.</li>
 </ul>
 <h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a> or in the GitHub <a href="https://github.com/tgriesser/bookshelf/issues">issue tracker</a>.</p>
 <h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes - you can call <code>.asCallback(function(err, resp) {</code> on any &quot;sync&quot; method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
@@ -1593,7 +1604,7 @@ records with a null value in that column will be excluded from the count.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
           </span
-          ><a href="docs/src_base_model.js.html#line591" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line598" class="source-link">source</a></h4>
 
         
     
@@ -2789,7 +2800,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clear">clear</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line361" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line368" class="source-link">source</a></h4>
 
         
     
@@ -2893,7 +2904,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clone">clone</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line418" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line425" class="source-link">source</a></h4>
 
         
     
@@ -3345,11 +3356,11 @@ previous calls to <a href="#Model-instance-query"><code>Model#query</code></a>.<
   
     <div class="item-description">
         <p><code>destroy</code> performs a <code>delete</code> on the model, using the model's <a href="#Model-instance-idAttribute"><code>idAttribute</code></a> to constrain the query.</p>
-<p>A <code>&quot;destroying&quot;</code> event is triggered on the model before being
+<p>A <code>"destroying"</code> event is triggered on the model before being
 destroyed. To prevent destroying the model (with validation, etc.), throwing an error
 inside one of these event listeners will stop destroying the model and
 reject the promise.</p>
-<p>A <code>&quot;destroyed&quot;</code> event is fired after the model's
+<p>A <code>"destroyed"</code> event is fired after the model's
 removal is completed.</p>
     </div>
   
@@ -3369,7 +3380,7 @@ removal is completed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-escape">escape</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  string</span>
           </span
-          ><a href="docs/src_base_model.js.html#line297" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line304" class="source-link">source</a></h4>
 
         
     
@@ -3720,7 +3731,7 @@ removal is completed.</p>
     <div class="item-description">
         <p>Fetches a <a href="#Model"><code>model</code></a> from the database, using any <code>attributes</code> currently set on the model to form a <code>select</code>
 query.</p>
-<p>A <a href="#Model-event-fetching"><code>&quot;fetching&quot;</code></a> event will be fired just before the
+<p>A <a href="#Model-event-fetching"><code>"fetching"</code></a> event will be fired just before the
 record is fetched; a good place to hook into for validation. <a href="#Model-event-fetched"><code>&quot;fetched&quot;</code></a> event will be fired when a record is
 successfully retrieved.</p>
 <p>If you need to constrain the query
@@ -3747,7 +3758,7 @@ unless <code>{shallow: true}</code> is passed.</p>
   editions: function() {
     return this.hasMany(Edition);
   },
-  chapters: function{
+  chapters: function() {
     return this.hasMany(Chapter);
   },
   genre: function() {
@@ -4152,7 +4163,7 @@ the options to the <code>fetchAll</code> call.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-format">format</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line378" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line385" class="source-link">source</a></h4>
 
         
     
@@ -4422,7 +4433,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-has">has</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  bool</span>
           </span
-          ><a href="docs/src_base_model.js.html#line308" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line315" class="source-link">source</a></h4>
 
         
     
@@ -4552,7 +4563,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  bool</span>
           </span
-          ><a href="docs/src_base_model.js.html#line507" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line514" class="source-link">source</a></h4>
 
         
     
@@ -6373,7 +6384,7 @@ table will be the table name of the model <code>orderBy</code> was called on.</p
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-parse">parse</a></span><span class="parenthesis">(</span><span class="item-name">response</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line340" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line347" class="source-link">source</a></h4>
 
         
     
@@ -6522,7 +6533,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line522" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line529" class="source-link">source</a></h4>
 
         
     
@@ -6652,7 +6663,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line537" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line544" class="source-link">source</a></h4>
 
         
     
@@ -7073,7 +7084,7 @@ all available fields.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-related">related</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|<a href="#Collection">Collection</a>|undefined</span>
           </span
-          ><a href="docs/src_base_model.js.html#line405" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line412" class="source-link">source</a></h4>
 
         
     
@@ -7638,11 +7649,11 @@ new Author({id: 1, first_name: 'User'})
   .save({bio: 'Short user bio'}, {patch: true})
   .then(function(model) {
     // ...
-  });</code></pre><p>Several events fired on the model when saving: a <code>&quot;creating&quot;</code>, or <code>&quot;updating&quot;</code> event if the model is
+  });</code></pre><p>Several events fired on the model when saving: a <code>&quot;creating&quot;</code>, or <code>"updating"</code> event if the model is
 being inserted or updated, and a &quot;saving&quot; event in either case. To
 prevent saving the model (with validation, etc.), throwing an error inside
 one of these event listeners will stop saving the model and reject the
-promise. A <code>&quot;created&quot;</code>, or <code>Model#&quot;updated&quot;</code>
+promise. A <code>"created"</code>, or <code>Model#"updated"</code>
 event is fired after the model is saved, as well as a <code>&quot;saved&quot;</code> event either way. If you wish to modify the query when the <code>&quot;saving&quot;</code> event is fired, the knex query object should is
 available in <code>options.query</code>.</p>
 <pre class="prettyprint source"><code>// Save with no arguments
@@ -8268,7 +8279,7 @@ let Paragraph = bookshelf.Model.extend({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line468" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line475" class="source-link">source</a></h4>
 
         
     
@@ -8428,7 +8439,7 @@ timestamps.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-toJSON">toJSON</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_model.js.html#line278" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line285" class="source-link">source</a></h4>
 
         
     
@@ -8765,8 +8776,8 @@ timestamps.</p>
         <p>A promise version of <a href="#Events-instance-trigger"><code>Events#trigger</code></a>, returning a promise which
 resolves with all return values from triggered event handlers. If any of the
 event handlers throw an <code>Error</code> or return a rejected promise, the promise
-will be rejected. Used internally on the <code>&quot;creating&quot;</code>,
-<code>&quot;updating&quot;</code>, <code>&quot;saving&quot;</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
+will be rejected. Used internally on the <code>"creating"</code>,
+<code>"updating"</code>, <code>"saving"</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
 event handlers (for validations, etc).</p>
     </div>
   
@@ -8786,7 +8797,7 @@ event handlers (for validations, etc).</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-unset">unset</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line352" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line359" class="source-link">source</a></h4>
 
         
     
@@ -11648,7 +11659,7 @@ option will prevent sorting. If you define an <a href="#Collection-instance-init
                   >Collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line760" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line761" class="source-link">source</a></h4>
 
         
     
@@ -11964,7 +11975,7 @@ new.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-add">add</a></span><span class="parenthesis">(</span><span class="item-name">models</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line354" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line355" class="source-link">source</a></h4>
 
         
     
@@ -12139,7 +12150,7 @@ more than once is a no-op.</em></p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-at">at</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line491" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line492" class="source-link">source</a></h4>
 
         
     
@@ -12415,7 +12426,7 @@ returned by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-clone">clone</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line573" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line574" class="source-link">source</a></h4>
 
         
     
@@ -13463,7 +13474,7 @@ like to return a single model from the associated collection.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-findWhere">findWhere</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line518" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line519" class="source-link">source</a></h4>
 
         
     
@@ -13568,7 +13579,7 @@ like to return a single model from the associated collection.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-get">get</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line479" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line480" class="source-link">source</a></h4>
 
         
     
@@ -13679,7 +13690,7 @@ like to return a single model from the associated collection.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-invokeThen">invokeThen</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="comma">, </span><span class="variable-ellipsis">&hellip;</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<mixed[]></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line301" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line302" class="source-link">source</a></h4>
 
         
     
@@ -14491,7 +14502,7 @@ table will be the table name of the model <code>orderBy</code> was called on.</p
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-parse">parse</a></span><span class="parenthesis">(</span><span class="item-name">resp</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line564" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line565" class="source-link">source</a></h4>
 
         
     
@@ -14607,7 +14618,7 @@ the JSON response.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-pluck">pluck</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed[]</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line549" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line550" class="source-link">source</a></h4>
 
         
     
@@ -14711,7 +14722,7 @@ the JSON response.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-pop">pop</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line431" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line432" class="source-link">source</a></h4>
 
         
     
@@ -14797,7 +14808,7 @@ the JSON response.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-push">push</a></span><span class="parenthesis">(</span><span class="item-name">model</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line422" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line423" class="source-link">source</a></h4>
 
         
     
@@ -15106,7 +15117,7 @@ called with the Knex query builder as the context and the first argument.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-reduceThen">reduceThen</a></span><span class="parenthesis">(</span><span class="item-name">iterator</span><span class="comma">, </span><span class="item-name">initialValue</span><span class="comma">, </span><span class="item-name">context</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<mixed[]></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line317" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line318" class="source-link">source</a></h4>
 
         
     
@@ -15279,7 +15290,7 @@ called with the Knex query builder as the context and the first argument.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-remove">remove</a></span><span class="parenthesis">(</span><span class="item-name">models</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|<a href="#Model">Model</a>[]</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line370" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line371" class="source-link">source</a></h4>
 
         
     
@@ -15432,7 +15443,7 @@ but does not remove the model from the database, use the model's <a href="#Model
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-reset">reset</a></span><span class="parenthesis">(</span><span class="item-name">models</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>[]</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line405" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line406" class="source-link">source</a></h4>
 
         
     
@@ -15697,7 +15708,7 @@ by <code>Sync</code>.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-serialize">serialize</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line138" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line139" class="source-link">source</a></h4>
 
         
     
@@ -15767,6 +15778,24 @@ by <code>Sync</code>.</p>
 
       <div class="description">
         <p>Exclude pivot values.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">omitNew</span><span class="default-value"><span class="default-equals">=</span><span class="default-value">false</span></span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >bool</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Exclude models that return true for isNew.</p>
         
       </div>
 
@@ -15875,7 +15904,7 @@ Override this function if you want to customize its output.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-set">set</a></span><span class="parenthesis">(</span><span class="item-name">models</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line179" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line180" class="source-link">source</a></h4>
 
         
     
@@ -16044,7 +16073,7 @@ customize the behavior, you can disable it with options: <code>{add: false}</cod
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-shift">shift</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line451" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line452" class="source-link">source</a></h4>
 
         
     
@@ -16130,7 +16159,7 @@ customize the behavior, you can disable it with options: <code>{add: false}</cod
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-slice">slice</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line462" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line463" class="source-link">source</a></h4>
 
         
     
@@ -16303,7 +16332,7 @@ or <code>belongsToMany</code>, &quot;through&quot; an <code>Interim</code> model
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-toJSON">toJSON</a></span><span class="parenthesis">(</span><span class="item-name">Options</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line153" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line154" class="source-link">source</a></h4>
 
         
     
@@ -16640,8 +16669,8 @@ or <code>belongsToMany</code>, &quot;through&quot; an <code>Interim</code> model
         <p>A promise version of <a href="#Events-instance-trigger"><code>Events#trigger</code></a>, returning a promise which
 resolves with all return values from triggered event handlers. If any of the
 event handlers throw an <code>Error</code> or return a rejected promise, the promise
-will be rejected. Used internally on the <code>&quot;creating&quot;</code>,
-<code>&quot;updating&quot;</code>, <code>&quot;saving&quot;</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
+will be rejected. Used internally on the <code>"creating"</code>,
+<code>"updating"</code>, <code>"saving"</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
 event handlers (for validations, etc).</p>
     </div>
   
@@ -16661,7 +16690,7 @@ event handlers (for validations, etc).</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-unshift">unshift</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_collection.js.html#line442" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line443" class="source-link">source</a></h4>
 
         
     
@@ -16961,7 +16990,7 @@ by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code></a> rela
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-where">where</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>[]</span>
           </span
-          ><a href="docs/src_base_collection.js.html#line501" class="source-link">source</a></h4>
+          ><a href="docs/src_base_collection.js.html#line502" class="source-link">source</a></h4>
 
         
     
@@ -18520,8 +18549,8 @@ callback.</p>
         <p>A promise version of <a href="#Events-instance-trigger"><code>Events#trigger</code></a>, returning a promise which
 resolves with all return values from triggered event handlers. If any of the
 event handlers throw an <code>Error</code> or return a rejected promise, the promise
-will be rejected. Used internally on the <code>&quot;creating&quot;</code>,
-<code>&quot;updating&quot;</code>, <code>&quot;saving&quot;</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
+will be rejected. Used internally on the <code>"creating"</code>,
+<code>"updating"</code>, <code>"saving"</code>, and <code>&quot;destroying&quot;</code> events, and can be helpful when needing async
 event handlers (for validations, etc).</p>
     </div>
   
@@ -18559,7 +18588,12 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.10.0</strong> — <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.10.1</strong> - <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.10.0...0.10.1">Diff</a></p>
+<ul>
+<li>Allows using knex 0.12 as a peerDependency</li>
+<li>knex instance used by bookshelf may be swapped out</li>
+</ul>
+<h2>Change Log</h2><p><strong>0.10.0</strong> — <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0">Diff</a></p>
 <p><strong>Breaking Changes:</strong></p>
 <ul>
 <li>Removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4.<ul>
@@ -18858,10 +18892,10 @@ event handlers (for validations, etc).</p>
       <footer>
         <div>
           Documentation generated by
-          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
           
             on
-          June 29th 2016
+          September 13th 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
