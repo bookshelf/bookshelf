@@ -242,16 +242,23 @@ ModelBase.prototype.isNew = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options = {}) {
-  const { shallow = false, omitPivot = false, ...rest } = options;
+  const { shallow = false, omitPivot = false, omitNew = false, ...rest } = options;
   const { attributes } = this;
+
+  if (omitNew && this.isNew()) {
+    return null;
+  }
 
   if (!shallow) {
 
-    const relations = mapValues(this.relations, (relation, key) =>
+    let relations = mapValues(this.relations, (relation, key) =>
       relation.toJSON != null
-        ? relation.toJSON({ shallow, omitPivot, ...rest })
+        ? relation.toJSON(options)
         : relation
     );
+
+    // Omit null relations from the omitNew option
+    relations = _.omitBy(relations, _.isNull);
 
     const pivot = this.pivot && !omitPivot && this.pivot.attributes;
     const pivotAttributes = mapKeys(pivot, (value, key) =>
