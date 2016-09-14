@@ -6,8 +6,14 @@ import Helpers from './helpers';
 import Promise from './base/promise';
 import EagerBase from './base/eager';
 
-const getAttributeUnique = (models, attribute) =>
-  _.uniq(_.map(models, m => m.get(attribute)));
+const getAttributeUnique = (models, attribute) => {
+  return _.uniq(_.map(models, m => {
+    // use formatted attributes so that morphKey and foreignKey will match
+    // attribute keys
+    const formatted = m.format(_.clone(m.attributes));
+    return formatted[attribute];
+  }));
+};
 
 // An `EagerRelation` object temporarily stores the models from an eager load,
 // and handles matching eager loaded objects with their parent(s). The
@@ -45,7 +51,12 @@ export default class EagerRelation extends EagerBase {
       typeColumn = `${morphName}_type`, idColumn = `${morphName}_id`
     ] = columnNames;
 
-    const parentsByType = _.groupBy(this.parent, model => model.get(typeColumn));
+    const parentsByType = _.groupBy(this.parent, model => {
+      // use formatted attributes so that morphKey and foreignKey will match
+      // attribute keys
+      const attributes = model.format(_.clone(model.attributes));
+      return attributes[typeColumn];
+    });
     const TargetByType = _.mapValues(parentsByType, (parents, type) =>
       Helpers.morphCandidate(relatedData.candidates, type)
     );

@@ -22,6 +22,7 @@ module.exports = function(Bookshelf) {
 
     // Models
     var Site         = Models.Site;
+    var SiteParsed   = Models.SiteParsed;
     var SiteMeta     = Models.SiteMeta;
     var Admin        = Models.Admin;
     var Author       = Models.Author;
@@ -643,6 +644,18 @@ module.exports = function(Bookshelf) {
 
         it('eager loads beyond the morphTo, where possible', function() {
           return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
+        });
+
+        //it('eager loads morphMany on parsed model (sites -> photos)', function() {
+        //  return new SiteParsed().fetchAll({withRelated: ['photos']}).tap(checkTest(this));
+        //});
+
+        it('eager loads morphTo on parsed model (photos -> imageable)', function() {
+          return PhotoParsed.fetchAll({withRelated: ['imageable']}).tap(checkTest(this));
+        });
+
+        it('eager loads beyond the morphTo on parsed model, where possible', function() {
+          return PhotoParsed.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
 

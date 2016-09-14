@@ -370,7 +370,10 @@ export default RelationBase.extend({
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
       parentModels = _.filter(parentModels, (m) => {
-        return m.get(this.key('morphKey')) === this.key('morphValue');
+        // use formatted attributes so that morphKey will match
+        // attribute keys
+        const formatted = m.format(_.clone(m.attributes));
+        return formatted[this.key('morphKey')] === this.key('morphValue');
       });
     }
 
