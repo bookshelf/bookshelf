@@ -3,7 +3,7 @@
 
 import Promise from './promise';
 import events from 'events'
-import { flatten, each, map, flow, once as _once, bind } from 'lodash';
+import { each, flatMap, once as _once } from 'lodash';
 
 const { EventEmitter } = events;
 
@@ -97,11 +97,8 @@ export default class Events extends EventEmitter {
    */
   triggerThen(nameOrNames, ...args) {
     const names = eventNames(nameOrNames);
-    const flatMap = flow(map, flatten);
-    const listeners = flatMap(names, bind(this.listeners, this));
-    return Promise.map(listeners, listener =>
-      listener.apply(this, args)
-    );
+    const listeners = flatMap(names, name => this.listeners(name));
+    return Promise.map(listeners, listener => listener.apply(this, args));
   }
 
   /**
