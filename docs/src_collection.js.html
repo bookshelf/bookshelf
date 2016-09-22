@@ -160,8 +160,7 @@ const BookshelfCollection = CollectionBase.extend({
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new this.constructor.EmptyError('EmptyResponse');
-          return Promise.reject(null);
+          throw new this.constructor.EmptyError('EmptyResponse');
         }
       })
 
@@ -193,8 +192,10 @@ const BookshelfCollection = CollectionBase.extend({
          */
         return this.triggerThen('fetched', this, response, options);
       })
-      .catch(function(err) {
-        if (err !== null) throw err;
+      .catch(this.constructor.EmptyError, function(err) {
+        if (options.require) {
+          throw err;
+        }
         this.reset([], {silent: true});
       })
       .return(this);
@@ -516,7 +517,7 @@ export default BookshelfCollection;
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
           
             on
-          September 13th 2016
+          September 22nd 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
