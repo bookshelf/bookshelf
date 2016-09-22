@@ -1,4 +1,4 @@
-# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
+# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf) [![Dependency Status](https://david-dm.org/tgriesser/bookshelf/status.svg)](https://david-dm.org/tgriesser/bookshelf) [![devDependency Status](https://david-dm.org/tgriesser/bookshelf/dev-status.svg)](https://david-dm.org/tgriesser/bookshelf?type=dev)
 
 Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
