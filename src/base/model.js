@@ -242,7 +242,7 @@ ModelBase.prototype.isNew = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options = {}) {
-  const { shallow = false, omitPivot = false, omitNew = false, ...rest } = options;
+  const { shallow = false, omitPivot = false, omitNew = false } = options;
   const { attributes } = this;
 
   if (omitNew && this.isNew()) {
