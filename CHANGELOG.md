@@ -10,8 +10,6 @@
 * Allows using knex 0.12 as a peerDependency
 * knex instance used by bookshelf may be swapped out
 
-## Change Log
-
 **0.10.0** — <small>_Jun 29, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0)
 
 **Breaking Changes:**

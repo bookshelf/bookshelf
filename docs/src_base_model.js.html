@@ -316,7 +316,7 @@ ModelBase.prototype.isNew = function() {
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options = {}) {
-  const { shallow = false, omitPivot = false, omitNew = false, ...rest } = options;
+  const { shallow = false, omitPivot = false, omitNew = false } = options;
   const { attributes } = this;
 
   if (omitNew &amp;&amp; this.isNew()) {
@@ -756,7 +756,7 @@ module.exports = ModelBase;
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
           
             on
-          September 22nd 2016
+          September 23rd 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">

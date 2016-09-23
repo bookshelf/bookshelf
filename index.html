@@ -93,7 +93,10 @@
 
 
     <section class="readme">
-        <article><h1 id="a-hrefhttpbookshelfjsorgbookshelfjsa-a-hrefhttpstravisciorgtgriesserbookshelfimg-srchttpstravisciorgtgriesserbookshelfsvgbranchmaster-altbuild-statusa-a-hrefhttpsdaviddmorgtgriesserbookshelfimg-srchttpsdaviddmorgtgriesserbookshelfstatussvg-altdependency-statusa-a-hrefhttpsdaviddmorgtgriesserbookshelftypedevimg-srchttpsdaviddmorgtgriesserbookshelfdevstatussvg-altdevdependency-statusa"><a href="http://bookshelfjs.org">bookshelf.js</a> <a href="https://travis-ci.org/tgriesser/bookshelf"><img src="https://travis-ci.org/tgriesser/bookshelf.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/tgriesser/bookshelf"><img src="https://david-dm.org/tgriesser/bookshelf/status.svg" alt="Dependency Status"></a> <a href="https://david-dm.org/tgriesser/bookshelf?type=dev"><img src="https://david-dm.org/tgriesser/bookshelf/dev-status.svg" alt="devDependency Status"></a></h1><p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
+        <article><h1 id="a-hrefhttpbookshelfjsorgbookshelfjsa"><a href="http://bookshelfjs.org">bookshelf.js</a></h1><p><a href="https://travis-ci.org/tgriesser/bookshelf"><img src="https://travis-ci.org/tgriesser/bookshelf.svg?branch=master" alt="Build Status"></a> 
+<a href="https://david-dm.org/tgriesser/bookshelf"><img src="https://david-dm.org/tgriesser/bookshelf/status.svg" alt="Dependency Status"></a> 
+<a href="https://david-dm.org/tgriesser/bookshelf?type=dev"><img src="https://david-dm.org/tgriesser/bookshelf/dev-status.svg" alt="devDependency Status"></a></p>
+<p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
 <p>It is designed to work well with PostgreSQL, MySQL, and SQLite3.</p>
 <p><a href="http://bookshelfjs.org">Website and documentation</a>. The project is <a href="http://github.com/tgriesser/bookshelf/">hosted on GitHub</a>, and has a comprehensive <a href="https://travis-ci.org/tgriesser/bookshelf">test suite</a>.</p>
 <h2 id="introduction">Introduction</h2><p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
@@ -174,6 +177,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <li><a href="https://github.com/estate/bookshelf-paranoia">bookshelf-paranoia</a> - Protect your database from data loss by soft deleting your rows.</li>
 <li><a href="https://github.com/estate/bookshelf-uuid">bookshelf-uuid</a> - Automatically generates UUIDs for your models.</li>
 <li><a href="https://github.com/bsiddiqui/bookshelf-modelbase">bookshelf-modelbase</a> - An alternative to extend <code>Model</code>, adding timestamps, attribute validation and some native CRUD methods.</li>
+<li><a href="https://github.com/sequiturs/bookshelf-advanced-serialization">bookshelf-advanced-serialization</a> - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.</li>
 </ul>
 <h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a> or in the GitHub <a href="https://github.com/tgriesser/bookshelf/issues">issue tracker</a>.</p>
 <h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes - you can call <code>.asCallback(function(err, resp) {</code> on any &quot;sync&quot; method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
@@ -18598,7 +18602,7 @@ event handlers (for validations, etc).</p>
 <li>Allows using knex 0.12 as a peerDependency</li>
 <li>knex instance used by bookshelf may be swapped out</li>
 </ul>
-<h2>Change Log</h2><p><strong>0.10.0</strong> — <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0">Diff</a></p>
+<p><strong>0.10.0</strong> — <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0">Diff</a></p>
 <p><strong>Breaking Changes:</strong></p>
 <ul>
 <li>Removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4.<ul>
@@ -18900,7 +18904,7 @@ event handlers (for validations, etc).</p>
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
           
             on
-          September 22nd 2016
+          September 23rd 2016
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
