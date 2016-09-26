@@ -1,4 +1,8 @@
-# [bookshelf.js](http://bookshelfjs.org) [![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf)
+# [bookshelf.js](http://bookshelfjs.org) 
+
+[![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf) 
+[![Dependency Status](https://david-dm.org/tgriesser/bookshelf/status.svg)](https://david-dm.org/tgriesser/bookshelf) 
+[![devDependency Status](https://david-dm.org/tgriesser/bookshelf/dev-status.svg)](https://david-dm.org/tgriesser/bookshelf?type=dev)
 
 Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
@@ -115,6 +119,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [bookshelf-paranoia](https://github.com/estate/bookshelf-paranoia) - Protect your database from data loss by soft deleting your rows.
 * [bookshelf-uuid](https://github.com/estate/bookshelf-uuid) - Automatically generates UUIDs for your models.
 * [bookshelf-modelbase](https://github.com/bsiddiqui/bookshelf-modelbase) - An alternative to extend `Model`, adding timestamps, attribute validation and some native CRUD methods.
+* [bookshelf-advanced-serialization](https://github.com/sequiturs/bookshelf-advanced-serialization) - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.
 
 ## Support
 

@@ -86,8 +86,7 @@ const BookshelfCollection = CollectionBase.extend({
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new this.constructor.EmptyError('EmptyResponse');
-          return Promise.reject(null);
+          throw new this.constructor.EmptyError('EmptyResponse');
         }
       })
 
@@ -119,8 +118,10 @@ const BookshelfCollection = CollectionBase.extend({
          */
         return this.triggerThen('fetched', this, response, options);
       })
-      .catch(function(err) {
-        if (err !== null) throw err;
+      .catch(this.constructor.EmptyError, function(err) {
+        if (options.require) {
+          throw err;
+        }
         this.reset([], {silent: true});
       })
       .return(this);

@@ -627,8 +627,7 @@ const BookshelfModel = ModelBase.extend({
       // Jump the rest of the chain if the response doesn't exist...
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new this.constructor.NotFoundError('EmptyResponse');
-          return Promise.reject(null);
+          throw new this.constructor.NotFoundError('EmptyResponse');
         }
       })
 
@@ -665,9 +664,11 @@ const BookshelfModel = ModelBase.extend({
         return this.triggerThen('fetched', this, response, options);
       })
       .return(this)
-      .catch(function(err) {
-        if (err === null) return err;
-        throw err;
+      .catch(this.constructor.NotFoundError, function(err) {
+        if (options.require) {
+          throw err;
+        }
+        return null
       });
   }),
 

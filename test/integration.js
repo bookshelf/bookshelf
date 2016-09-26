@@ -13,7 +13,7 @@ module.exports = function(Bookshelf) {
     connection: config.mysql,
     pool: {
       afterCreate: function(connection, callback) {
-        return Promise.promisify(connection.query, connection)("SET sql_mode='TRADITIONAL';", []).then(function() {
+        return Promise.promisify(connection.query, {context: connection})("SET sql_mode='TRADITIONAL';", []).then(function() {
           callback(null, connection);
         });
       }
