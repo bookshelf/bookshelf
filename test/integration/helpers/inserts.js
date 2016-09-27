@@ -244,7 +244,18 @@ module.exports = function(bookshelf) {
 
     knex('parsed_users').insert({id: 10, name: 'test'}),
 
-    knex('tokens').insert({parsed_user_id: 10, token: 'testing'})
+    knex('tokens').insert({parsed_user_id: 10, token: 'testing'}),
+
+    knex('locales').insert([
+      { isoCode: 'en' },
+      { isoCode: 'pt' }
+    ]),
+
+    knex('translations').insert([
+      { code: 'en', customer: 'Customer1' },
+      { code: 'en', customer: 'Customer2' },
+      { code: 'pt', customer: 'Customer1' }
+    ])
 
   ]).then(null, function(e) {
     console.log(e.stack);
