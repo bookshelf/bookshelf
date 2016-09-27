@@ -28,6 +28,9 @@
     "datamapper",
     "active record"
   ],
+  "engines": {
+    "node": ">=4"
+  },
   "dependencies": {
     "babel-runtime": "^6.6.1",
     "bluebird": "^3.4.3",
