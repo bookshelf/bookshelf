@@ -930,11 +930,11 @@ module.exports = function(bookshelf) {
     describe('defaults', function() {
 
       it('assigns defaults on save, rather than initialize', function() {
-        var Item = bookshelf.Model.extend({defaults: {item: 'test'}});
-        var item = new Item({newItem: 'test2'});
-        deepEqual(item.toJSON(), {newItem: 'test2'});
+        var Item = bookshelf.Model.extend({defaults: {item: 'test', json: {key1: 'defaultValue1', key2: 'defaultValue2'}}});
+        var item = new Item({newItem: 'test2', json: {key1: 'value1'}});
+        deepEqual(item.toJSON(), {newItem: 'test2', json: {key1: 'value1'}});
         item.sync = function() {
-          deepEqual(this.toJSON(), {id: 1, item: 'test', newItem: 'test2'});
+          deepEqual(this.toJSON(), {id: 1, item: 'test', newItem: 'test2', json: {key1: 'value1', key2: 'defaultValue2'}});
           return stubSync;
         };
         return item.save({id: 1});
