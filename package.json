@@ -13,6 +13,7 @@
     "jsdoc": "./scripts/jsdoc.sh",
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
+    "postinstall": "node ./scripts/build.js lib \"npm run build\"",
     "postpublish": "./scripts/postpublish.sh"
   },
   "homepage": "http://bookshelfjs.org",
@@ -63,6 +64,14 @@
   "peerDependencies": {
     "knex": ">=0.6.10 <0.13.0"
   },
+  "buildDependencies": [
+    "babel-cli",
+    "babel-runtime",
+    "babel-plugin-syntax-object-rest-spread",
+    "babel-plugin-transform-object-rest-spread",
+    "babel-plugin-transform-runtime",
+    "babel-preset-es2015"
+  ],
   "author": {
     "name": "Tim Griesser",
     "web": "https://github.com/tgriesser"
