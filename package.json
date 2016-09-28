@@ -14,7 +14,7 @@
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
     "postpublish": "./scripts/postpublish.sh",
-    "postinstall": "install-engine-dependencies"
+    "postinstall": "node --eval \"if (process.env.NODE_ENV === 'production') process.exit(1);\" && install-engine-dependencies"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -34,7 +34,6 @@
     "bluebird": "^3.4.3",
     "chalk": "^1.0.0",
     "create-error": "~0.3.1",
-    "engine-dependencies": "^0.2.11",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
     "lodash": "^4.13.1"
@@ -49,6 +48,7 @@
     "bookshelf-jsdoc-theme": "^0.1.2",
     "chai": "^3.5.0",
     "eslint": "^3.5.0",
+    "engine-dependencies": "^0.2.11",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.12.0",
