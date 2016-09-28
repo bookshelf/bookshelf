@@ -14,7 +14,7 @@
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
     "postpublish": "./scripts/postpublish.sh",
-    "postinstall": "node --eval \"if (process.env.NODE_ENV === 'production') process.exit(1);\" && install-engine-dependencies"
+    "postinstall": "node --eval \"if (process.env.NODE_ENV === 'production') process.exit(1);\" && install-engine-dependencies && node ./scripts/build.js lib \"npm run build\""
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -74,6 +74,14 @@
   "peerDependencies": {
     "knex": ">=0.6.10 <0.13.0"
   },
+  "buildDependencies": [
+    "babel-cli",
+    "babel-runtime",
+    "babel-plugin-syntax-object-rest-spread",
+    "babel-plugin-transform-object-rest-spread",
+    "babel-plugin-transform-runtime",
+    "babel-preset-es2015"
+  ],
   "author": {
     "name": "Tim Griesser",
     "web": "https://github.com/tgriesser"
