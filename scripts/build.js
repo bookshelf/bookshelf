@@ -1,9 +1,26 @@
 #!/usr/bin/env node
 var fs = require("fs");
 var path = require('path');
+var child_process = require('child_process');
 var Promise = require("bluebird");
 var _ = require('lodash');
-var exec = Promise.promisify(require("child_process").exec);
+
+var exec = function (cmd, args) {
+  return new Promise(function(resolve, reject) {
+    // Execute command
+    var child = child_process.exec(cmd, {cwd: process.cwd(), env: process.env});
+
+    // Pass stdout and stderr
+    child.stdout.on('data', function(data) { process.stdout.write(data.toString()); });
+    child.stderr.on('data', function(data) { process.stderr.write(data.toString()); });
+    // Handle result
+    child.on('exit', function (code) {
+      if (code) reject(code);
+      else resolve();
+    });
+    child.on('error', reject);
+  });
+} 
 
 var CWD = process.cwd();
 var POSTINSTALL_BUILD_CWD = process.env.POSTINSTALL_BUILD_CWD;
@@ -46,32 +63,40 @@ if (POSTINSTALL_BUILD_CWD !== CWD) {
         // Map all key (dependency) value (semver) pairs to
         // "dependency@semver dependency@semver ..." string that can be used
         // for `npm install` command
-        var installArgs = _.map(buildDependencies, function (semver, dep) {
+        var installArgs = _(buildDependencies).pickBy(function (semver, dep) {
+          // Check if the dependency is already installed
+          try { require(dep); return false; }
+          catch (err) { return true; }
+        }).map(function (semver, dep) {
+          // Format installable dependencies
           return dep + '@' + semver;
-        }).join(' ');
+        }).value().join(' ');
 
-        console.log('Installing dependencies')
-        exec("npm install " + installArgs, opts)
-          .then(function(stdout, stderr) {
+        Promise.try(function() {
+            if (!_.isEmpty(installArgs)) {
+              console.log('Installing dependencies');
+              return exec("npm install " + installArgs, opts);
+            }
+          }).then(function(stdout, stderr) {
             console.log('✓')
             // Don't need the flag anymore as `postinstall` was already run.
             // Change it back so the environment is minimally changed for the
             // remaining commands.
             process.env.POSTINSTALL_BUILD_CWD = POSTINSTALL_BUILD_CWD;
-            console.log('Building compiled files (' + BUILD_COMMAND + ')')
-            return exec(BUILD_COMMAND, opts)
+            console.log('Building compiled files (' + BUILD_COMMAND + ')');
+            return exec(BUILD_COMMAND, opts);
           })
           .catch(function(err) {
-            console.log('✓')
             console.error(err);
             process.exit(1);
           })
           .then(function(stdout, stderr) {
             if (process.env.NODE_ENV === 'production') {
-              console.log('Pruning dev dependencies for production build')
-              return exec("npm prune --production", opts)
+              console.log('✓');
+              console.log('Pruning dev dependencies for production build');
+              return exec("npm prune --production", opts);
             } else {
-              console.log('Skipping npm prune')
+              console.log('Skipping npm prune');
             }
           })
           .then(function() {
@@ -79,6 +104,7 @@ if (POSTINSTALL_BUILD_CWD !== CWD) {
           })
           .catch(function(err) {
             console.error(err)
+            process.exit(1);
           })
       }
     }
