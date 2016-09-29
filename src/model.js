@@ -904,7 +904,7 @@ const BookshelfModel = ModelBase.extend({
       if (method === 'insert' || options.defaults) {
         const defaults = _.result(this, 'defaults');
         if (defaults) {
-          attrs = _.extend({}, defaults, this.attributes, attrs);
+          attrs = _.defaultsDeep({}, attrs, this.attributes, defaults);
         }
       }
 
