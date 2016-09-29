@@ -23,6 +23,7 @@ module.exports = function(Bookshelf) {
     // Models
     var Site         = Models.Site;
     var SiteMeta     = Models.SiteMeta;
+    var SiteExtra    = Models.SiteExtra;
     var Admin        = Models.Admin;
     var Author       = Models.Author;
     var Blog         = Models.Blog;
@@ -552,6 +553,23 @@ module.exports = function(Bookshelf) {
         it('works with eager loaded many-to-many (user -> roles)', function() {
           return new User({uid: 1})
             .fetch({withRelated: ['roles']})
+            .tap(checkTest(this));
+        });
+
+        it('works with belongsTo otherKey (extra -> site)', function() {
+          return new SiteExtra({id: 1})
+            .fetch()
+            .then(function(extra) {
+              return extra.site().fetch();
+            }).tap(checkTest(this));
+        });
+
+        it('works with eager loaded belongsTo otherKey (extra -> site)', function() {
+          return new SiteExtra({id: 1})
+            .fetch()
+            .then(function(extra) {
+              return extra.load('site');
+            })
             .tap(checkTest(this));
         });
 

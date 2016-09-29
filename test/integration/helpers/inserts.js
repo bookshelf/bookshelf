@@ -22,6 +22,14 @@ module.exports = function(bookshelf) {
       description: 'This is a description for the Bookshelfjs Site'
     }]),
 
+    knex('sites_extra').insert([{
+      website_name: 'bookshelfjs.org',
+      extra_description: 'This is the extra description for the Bookshelfjs Site'
+    }, {
+      website_name: 'knexjs.org',
+      extra_description: 'This is the extra description for the Knexjs Site'
+    }]),
+
     knex('info').insert([{
       meta_id: 1,
       other_description: 'This is an info block for hasOne -> through test'

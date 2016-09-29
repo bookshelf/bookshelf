@@ -34,6 +34,16 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var SiteExtra = Bookshelf.Model.extend({
+    tableName: 'sites_extra',
+    site: function() {
+      return this.belongsTo(Site, 'website_name', 'name');
+    },
+    info: function() {
+      return this.hasOne(Info);
+    }
+  });
+
   var Uuid = Bookshelf.Model.extend({
     idAttribute: 'uuid',
     tableName: 'uuid_test'
@@ -64,6 +74,9 @@ module.exports = function(Bookshelf) {
     },
     info: function() {
       return this.hasOne(Info).through(SiteMeta, 'meta_id');
+    },
+    extra: function() {
+      return this.hasMany(SiteExtra, 'website_name', 'name')
     },
     admins: function() {
       return this.belongsToMany(Admin).withPivot('item');
@@ -354,6 +367,7 @@ module.exports = function(Bookshelf) {
       Site: Site,
       SiteParsed: SiteParsed,
       SiteMeta: SiteMeta,
+      SiteExtra: SiteExtra,
       Admin: Admin,
       Author: Author,
       AuthorParsed: AuthorParsed,

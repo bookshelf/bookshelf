@@ -2,7 +2,7 @@ var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
-  'sites', 'sitesmeta', 'admins',
+  'sites', 'sitesmeta', 'sites_extra', 'admins',
   'admins_sites', 'authors', 'authors_posts',
   'blogs', 'posts', 'tags', 'posts_tags', 'comments',
   'users', 'roles', 'photos', 'users_roles', 'info',
@@ -33,6 +33,11 @@ module.exports = function(Bookshelf) {
       table.increments('id');
       table.integer('meta_id').notNullable();
       table.text('other_description');
+    })
+    .createTable('sites_extra', function(table) {
+      table.increments('id');
+      table.string('website_name').notNullable();
+      table.text('extra_description');
     })
     .createTable('admins', function(table) {
       table.increments('id');

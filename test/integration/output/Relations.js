@@ -1561,6 +1561,61 @@ module.exports = {
       }
     }
   },
+  'works with belongsTo otherKey (extra -> site)': {
+    mysql: {
+      result: {
+        id: 2,
+        name: 'bookshelfjs.org'
+      }
+    },
+    postgresql: {
+      result: {
+        id: 2,
+        name: 'bookshelfjs.org'
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 2,
+        name: 'bookshelfjs.org'
+      }
+    }
+  },
+  'works with eager loaded belongsTo otherKey (extra -> site)': {
+    mysql: {
+      result: {
+        id: 1,
+        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        website_name: 'bookshelfjs.org',
+        site: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        website_name: 'bookshelfjs.org',
+        site: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        website_name: 'bookshelfjs.org',
+        site: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      }
+    }
+  },
   'handles morphOne (photo)': {
     mysql: {
       result: {
