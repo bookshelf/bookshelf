@@ -12,9 +12,10 @@
     "test": "npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
     "gh-pages": "./scripts/gh-pages.sh",
+    "install-engine-dependencies": "install-engine-dependencies",
     "prepublish": "npm run build",
     "postpublish": "./scripts/postpublish.sh",
-    "postinstall": "node --eval \"if (process.env.NODE_ENV === 'production') process.exit(1);\" && install-engine-dependencies && node ./scripts/build.js lib \"npm run build\""
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
