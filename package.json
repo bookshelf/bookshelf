@@ -14,7 +14,7 @@
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
     "postpublish": "./scripts/postpublish.sh",
-    "postinstall": "node -e \"if (process.env.NODE_ENV === 'production') process.exit(1);\" && install-engine-dependencies"
+    "postinstall": "node ./scripts/build.js lib \"npm run build\""
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -48,7 +48,6 @@
     "bookshelf-jsdoc-theme": "^0.1.2",
     "chai": "^3.5.0",
     "eslint": "^3.5.0",
-    "engine-dependencies": "^0.2.11",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.12.0",
@@ -61,15 +60,6 @@
     "sinon": "^1.11.1",
     "sinon-chai": "^2.6.0",
     "sqlite3": "^3.0.5"
-  },
-  "engineDependencies": {
-    "node": {
-      "< 4": {
-        "devDependencies": {
-          "eslint": "^2.13.0"
-        }
-      }
-    }
   },
   "peerDependencies": {
     "knex": ">=0.6.10 <0.13.0"
