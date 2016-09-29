@@ -177,10 +177,15 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} targetKey
+   *
+   *   ForeignKey in the `Target` model. default, the targetKey is assumed to
+   *   be the `idAttribute` of the `Target` model.
+   *
    * @returns {Model}
    */
-  belongsTo(Target, foreignKey) {
-    return this._relation('belongsTo', Target, {foreignKey}).init(this);
+  belongsTo(Target, foreignKey, targetKey) {
+    return this._relation('belongsTo', Target, {foreignKey, targetIdAttribute: targetKey}).init(this);
   },
 
   /**

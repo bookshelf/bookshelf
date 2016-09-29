@@ -296,7 +296,8 @@ export default RelationBase.extend({
         return this.isInverse() && this.isThrough() ? m.pivot.id :
           m.pivot.get(this.key('foreignKey'));
       } else {
-        return this.isInverse() ? m.id : m.get(this.key('foreignKey'));
+        return this.isInverse() ? m.get(this.targetIdAttribute) :
+          m.get(this.key('foreignKey'));
       }
     });
 

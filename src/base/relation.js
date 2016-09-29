@@ -1,7 +1,7 @@
 // Base Relation
 // ---------------
 
-import { assign, result } from 'lodash';
+import { assign, result, omitBy, isNil } from 'lodash';
 import CollectionBase from './collection';
 import extend from '../extend';
 
@@ -14,7 +14,7 @@ export default class RelationBase {
       this.targetTableName   = result(Target.prototype, 'tableName');
       this.targetIdAttribute = result(Target.prototype, 'idAttribute');
     }
-    assign(this, { type, target: Target }, options);
+    assign(this, { type, target: Target }, omitBy(options, isNil));
   }
 
   // Creates a new relation instance, used by the `Eager` relation in
