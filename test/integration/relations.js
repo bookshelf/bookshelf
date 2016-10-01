@@ -646,9 +646,9 @@ module.exports = function(Bookshelf) {
           return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
-        //it('eager loads morphMany on parsed model (sites -> photos)', function() {
-        //  return new SiteParsed().fetchAll({withRelated: ['photos']}).tap(checkTest(this));
-        //});
+        it('eager loads morphMany on parsed model (sites -> photos)', function() {
+          return new SiteParsed().fetchAll({withRelated: ['photos']}).tap(checkTest(this));
+        });
 
         it('eager loads morphTo on parsed model (photos -> imageable)', function() {
           return PhotoParsed.fetchAll({withRelated: ['imageable']}).tap(checkTest(this));

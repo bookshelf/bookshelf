@@ -397,15 +397,13 @@ export default RelationBase.extend({
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     _.each(parentModels, (model) => {
-      let groupedKey;
-      if (!this.isInverse()) {
-        groupedKey = model.get(this.parentIdAttribute);
+      let keyColumn;
+      if (this.isInverse()) {
+        keyColumn = this.key(this.isThrough() ? 'throughForeignKey': 'foreignKey');
       } else {
-        const keyColumn = this.key(
-          this.isThrough() ? 'throughForeignKey': 'foreignKey'
-        );
-        groupedKey = model.get(Helpers.parseAttribute(model, keyColumn));
+        keyColumn = this.parentIdAttribute;
       }
+      const groupedKey = model.get(Helpers.parseAttribute(model, keyColumn));
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);
