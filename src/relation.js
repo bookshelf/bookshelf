@@ -369,12 +369,9 @@ export default RelationBase.extend({
   eagerPair(relationName, related, parentModels) {
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
-      parentModels = _.filter(parentModels, (m) => {
-        // use formatted attributes so that morphKey will match
-        // attribute keys
-        const formatted = m.format(_.clone(m.attributes));
-        return formatted[this.key('morphKey')] === this.key('morphValue');
-      });
+      parentModels = _.filter(parentModels, (m) =>
+        m.get(Helpers.parseAttribute(m, this.key('morphKey'))) === this.key('morphValue')
+      );
     }
 
     // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
@@ -407,8 +404,7 @@ export default RelationBase.extend({
         const keyColumn = this.key(
           this.isThrough() ? 'throughForeignKey': 'foreignKey'
         );
-        const formatted = model.format(_.clone(model.attributes));
-        groupedKey = formatted[keyColumn];
+        groupedKey = model.get(Helpers.parseAttribute(model, keyColumn));
       }
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
