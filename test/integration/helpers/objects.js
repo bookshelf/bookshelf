@@ -78,8 +78,12 @@ module.exports = function(Bookshelf) {
     country: function() {
       return this.belongsTo(Country, 'country_code', 'country_iso_code');
     },
-    locales: function() {
-      return this.belongsTo(Locale).through(Country);
+    locale: function() {
+      return this.belongsTo(Locale, 'language_iso_code', 'iso_code').through(Country,
+        'country_code',         // cities.country_code
+        'language_iso_code',    // countries.language_iso_code
+        'country_iso_code',     // countries.country_iso_code
+        'iso_code');            // locales.iso_code
     }
   });
 

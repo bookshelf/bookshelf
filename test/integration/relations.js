@@ -619,6 +619,24 @@ module.exports = function(Bookshelf) {
             .tap(checkTest(this));
         });
 
+        describe('through', function() {
+
+          it('works with belongsTo (city -> locales)', function() {
+            return new City({name: 'Caracas'})
+              .fetch()
+              .then(function(city) {
+                return city.locale().fetch();
+              }).tap(checkTest(this));
+          });
+
+          it('works with eager loaded belongsTo (city -> locales)', function() {
+            return new City({name: 'Caracas'})
+              .fetch({withRelated: ['locale']})
+              .tap(checkTest(this));
+          });
+
+        });
+
       });
 
       describe('Polymorphic associations', function() {

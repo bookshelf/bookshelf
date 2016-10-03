@@ -1871,6 +1871,203 @@ module.exports = {
       }
     }
   },
+  'works with belongsTo (city -> locales)': {
+    mysql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        _pivot_country_iso_code: 've',
+        _pivot_language_iso_code: 'es'
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        _pivot_country_iso_code: 've',
+        _pivot_language_iso_code: 'es'
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        _pivot_country_iso_code: 've',
+        _pivot_language_iso_code: 'es'
+      }
+    }
+  },
+  'works with eager loaded belongsTo (city -> locales)': {
+    mysql: {
+      result: {
+        id: 1,
+        country_code: 've',
+        name: 'Caracas',
+        locale: {
+          id: 1,
+          iso_code: 'es',
+          _pivot_country_iso_code: 've',
+          _pivot_language_iso_code: 'es'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        country_code: 've',
+        name: 'Caracas',
+        locale: {
+          id: 1,
+          iso_code: 'es',
+          _pivot_country_iso_code: 've',
+          _pivot_language_iso_code: 'es'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        country_code: 've',
+        name: 'Caracas',
+        locale: {
+          id: 1,
+          iso_code: 'es',
+          _pivot_country_iso_code: 've',
+          _pivot_language_iso_code: 'es'
+        }
+      }
+    }
+  },
+  'works with hasMany (locale -> cities)': {
+    mysql: {
+      result: [
+        {
+          id: 1,
+          name: 'Caracas',
+          country_code: 've'
+        },
+        {
+          id: 2,
+          name: 'Bogotá',
+          country_code: 'co'
+        },
+        {
+          id: 3,
+          name: 'Medellín',
+          country_code: 'co'
+        }
+      ]
+    },
+    postgresql: {
+      result: [
+        {
+          id: 1,
+          name: 'Caracas',
+          country_code: 've'
+        },
+        {
+          id: 2,
+          name: 'Bogotá',
+          country_code: 'co'
+        },
+        {
+          id: 3,
+          name: 'Medellín',
+          country_code: 'co'
+        }
+      ]
+    },
+    sqlite3: {
+      result: [
+        {
+          id: 1,
+          name: 'Caracas',
+          country_code: 've'
+        },
+        {
+          id: 2,
+          name: 'Bogotá',
+          country_code: 'co'
+        },
+        {
+          id: 3,
+          name: 'Medellín',
+          country_code: 'co'
+        }
+      ]
+    }
+  },
+  'works with eager loaded hasMany (locale -> cities)': {
+    mysql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        cities: [
+          {
+            id: 1,
+            name: 'Caracas',
+            country_code: 've'
+          },
+          {
+            id: 2,
+            name: 'Bogotá',
+            country_code: 'co'
+          },
+          {
+            id: 3,
+            name: 'Medellín',
+            country_code: 'co'
+          }
+        ]
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        cities: [
+          {
+            id: 1,
+            name: 'Caracas',
+            country_code: 've'
+          },
+          {
+            id: 2,
+            name: 'Bogotá',
+            country_code: 'co'
+          },
+          {
+            id: 3,
+            name: 'Medellín',
+            country_code: 'co'
+          }
+        ]
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        cities: [
+          {
+            id: 1,
+            name: 'Caracas',
+            country_code: 've'
+          },
+          {
+            id: 2,
+            name: 'Bogotá',
+            country_code: 'co'
+          },
+          {
+            id: 3,
+            name: 'Medellín',
+            country_code: 'co'
+          }
+        ]
+      }
+    }
+  },
   'handles morphOne (photo)': {
     mysql: {
       result: {
