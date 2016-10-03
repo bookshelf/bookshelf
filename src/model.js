@@ -101,8 +101,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Model}
    */
-  hasOne(Target, foreignKey) {
-    return this._relation('hasOne', Target, {foreignKey}).init(this);
+  hasOne(Target, foreignKey, targetKey) {
+    return this._relation('hasOne', Target, {foreignKey, targetKey}).init(this);
   },
 
   /**
@@ -136,8 +136,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  hasMany(Target, foreignKey) {
-    return this._relation('hasMany', Target, {foreignKey}).init(this);
+  hasMany(Target, foreignKey, targetKey) {
+    return this._relation('hasMany', Target, {foreignKey, targetKey}).init(this);
   },
 
   /**
@@ -280,9 +280,9 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  belongsToMany(Target, joinTableName, foreignKey, otherKey) {
+  belongsToMany(Target, joinTableName, foreignKey, otherKey, targetKey, otherTargetKey) {
     return this._relation('belongsToMany', Target, {
-      joinTableName, foreignKey, otherKey
+      joinTableName, foreignKey, otherKey, targetKey, targetIdAttribute: otherTargetKey
     }).init(this);
   },
 

@@ -37,7 +37,10 @@ export default RelationBase.extend({
       }
       this.parentFk = attributes[this.key('foreignKey')];
     } else {
-      this.parentFk = parent.id;
+      if (this.targetKey) {
+        this.parentIdAttribute = this.targetKey;
+      }
+      this.parentFk = parent.get(this.parentIdAttribute);
     }
 
     const target = this.target ? this.relatedInstance() : {};
@@ -306,7 +309,7 @@ export default RelationBase.extend({
     _.each(parentModels, (model) => {
       let groupedKey;
       if (!this.isInverse()) {
-        groupedKey = model.id;
+        groupedKey = model.get(this.parentIdAttribute);
       } else {
         const keyColumn = this.key(
           this.isThrough() ? 'throughForeignKey': 'foreignKey'
