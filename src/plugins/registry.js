@@ -83,6 +83,18 @@ module.exports = function (bookshelf) {
       candidates = drop(arguments, 1);
     }
 
+    // try to use the columnNames as target instead
+    if (isArray(columnNames)) {
+      try {
+        columnNames[0] = resolveModel(columnNames[0]);
+      } catch (err) {
+        // if it did not work, they were real columnNames
+        if (err.message !== `The model ${columnNames[0]} could not be resolved from the registry plugin.`) {
+          throw err;
+        }
+      }
+    }
+
     return morphTo.apply(this, [relationName, columnNames].concat(map(candidates, (target) => {
       if (isArray(target)) {
         const [model, morphValue] = target;

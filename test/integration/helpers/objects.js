@@ -215,7 +215,7 @@ module.exports = function(Bookshelf) {
       return this.morphTo('imageable', Site, [Author, 'profile_pic']);
     },
     imageableParsed: function() {
-      return this.morphTo('imageable', null, [AuthorParsed, 'profile_pic'], SiteParsed);
+      return this.morphTo('imageable', [AuthorParsed, 'profile_pic'], SiteParsed);
     }
   });
 
