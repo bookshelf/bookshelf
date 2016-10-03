@@ -45,7 +45,7 @@ _.extend(EagerBase.prototype, {
       // Only allow one of a certain nested type per-level.
       if (handled[relationName]) continue;
 
-      if (!_.isFunction(target[relationName])){
+      if (!_.isFunction(target[relationName])) {
         throw new Error(relationName + ' is not defined on the model.');
       }
 

@@ -37,7 +37,10 @@ export default RelationBase.extend({
       }
       this.parentFk = attributes[this.key('foreignKey')];
     } else {
-      this.parentFk = parent.id;
+      if (this.targetKey) {
+        this.parentIdAttribute = this.targetKey;
+      }
+      this.parentFk = parent.get(this.parentIdAttribute);
     }
 
     const target = this.target ? this.relatedInstance() : {};
@@ -67,7 +70,7 @@ export default RelationBase.extend({
       this.parentFk = this.parentId;
     }
 
-    _.extend(this, options);
+    _.extend(this, _.omitBy(options, _.isNil));
     _.extend(source, pivotHelpers);
 
     // Set the appropriate foreign key if we're doing a belongsToMany, for convenience.
@@ -293,10 +296,13 @@ export default RelationBase.extend({
     // Group all of the related models for easier association with their parent models.
     const grouped = _.groupBy(related, (m) => {
       if (m.pivot) {
-        return this.isInverse() && this.isThrough() ? m.pivot.id :
-          m.pivot.get(this.key('foreignKey'));
+        return this.isInverse() && this.isThrough()
+          ? m.pivot.get(this.throughIdAttribute)
+          : m.pivot.get(this.key('foreignKey'));
       } else {
-        return this.isInverse() ? m.id : m.get(this.key('foreignKey'));
+        return this.isInverse()
+          ? m.get(this.targetIdAttribute)
+          : m.get(this.key('foreignKey'));
       }
     });
 
@@ -305,7 +311,7 @@ export default RelationBase.extend({
     _.each(parentModels, (model) => {
       let groupedKey;
       if (!this.isInverse()) {
-        groupedKey = model.id;
+        groupedKey = model.get(this.parentIdAttribute);
       } else {
         const keyColumn = this.key(
           this.isThrough() ? 'throughForeignKey': 'foreignKey'

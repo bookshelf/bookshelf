@@ -101,8 +101,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Model}
    */
-  hasOne(Target, foreignKey) {
-    return this._relation('hasOne', Target, {foreignKey}).init(this);
+  hasOne(Target, foreignKey, targetKey) {
+    return this._relation('hasOne', Target, {foreignKey, targetKey}).init(this);
   },
 
   /**
@@ -136,8 +136,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  hasMany(Target, foreignKey) {
-    return this._relation('hasMany', Target, {foreignKey}).init(this);
+  hasMany(Target, foreignKey, targetKey) {
+    return this._relation('hasMany', Target, {foreignKey, targetKey}).init(this);
   },
 
   /**
@@ -177,10 +177,15 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} targetKey
+   *
+   *   ForeignKey in the `Target` model. default, the targetKey is assumed to
+   *   be the `idAttribute` of the `Target` model.
+   *
    * @returns {Model}
    */
-  belongsTo(Target, foreignKey) {
-    return this._relation('belongsTo', Target, {foreignKey}).init(this);
+  belongsTo(Target, foreignKey, targetKey) {
+    return this._relation('belongsTo', Target, {foreignKey, targetIdAttribute: targetKey}).init(this);
   },
 
   /**
@@ -275,9 +280,9 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  belongsToMany(Target, joinTableName, foreignKey, otherKey) {
+  belongsToMany(Target, joinTableName, foreignKey, otherKey, targetKey, otherTargetKey) {
     return this._relation('belongsToMany', Target, {
-      joinTableName, foreignKey, otherKey
+      joinTableName, foreignKey, otherKey, targetKey, targetIdAttribute: otherTargetKey
     }).init(this);
   },
 
@@ -498,8 +503,13 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  through(Interim, throughForeignKey, otherKey) {
-    return this.relatedData.through(this, Interim, {throughForeignKey: throughForeignKey, otherKey: otherKey});
+  through(Interim, throughForeignKey, otherKey, throughTargetKey, otherTargetKey) {
+    return this.relatedData.through(this, Interim, {
+      throughForeignKey,
+      otherKey,
+      throughIdAttribute: throughTargetKey,
+      targetIdAttribute: otherTargetKey
+    });
   },
 
   /**

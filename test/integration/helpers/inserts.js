@@ -22,6 +22,54 @@ module.exports = function(bookshelf) {
       description: 'This is a description for the Bookshelfjs Site'
     }]),
 
+    knex('sites_translations').insert([{
+      website_name: 'bookshelfjs.org',
+      translated_content: 'Este es el contenido traducido del sitio web de Bookshelfjs',
+      locale_iso: 'es'
+    }, {
+      website_name: 'knexjs.org',
+      translated_content: 'Este es el contenido traducido del sitio web de Knexjs',
+      locale_iso: 'es'
+    }, {
+      website_name: 'bookshelfjs.org',
+      translated_content: 'Questo è il contenuto tradotto del sito di Bookshelfjs',
+      locale_iso: 'it'
+    }]),
+
+    knex('locales').insert([{
+      iso_code: 'es'
+    }, {
+      iso_code: 'it'
+    }]),
+
+    knex('countries').insert([{
+      language_iso_code: 'es',
+      name: 'Venezuela',
+      country_iso_code: 've'
+    }, {
+      language_iso_code: 'es',
+      name: 'Colombia',
+      country_iso_code: 'co'
+    }, {
+      language_iso_code: 'it',
+      name: 'Italia',
+      country_iso_code: 'it'
+    }]),
+
+    knex('cities').insert([{
+      country_code: 've',
+      name: 'Caracas'
+    }, {
+      country_code: 'co',
+      name: 'Bogotá'
+    }, {
+      country_code: 'co',
+      name: 'Medellín'
+    }, {
+      country_code: 'it',
+      name: 'Genova'
+    }]),
+
     knex('info').insert([{
       meta_id: 1,
       other_description: 'This is an info block for hasOne -> through test'

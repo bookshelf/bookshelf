@@ -34,6 +34,59 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var SiteTranslation = Bookshelf.Model.extend({
+    tableName: 'sites_translations',
+    site: function() {
+      return this.belongsTo(Site, 'website_name', 'name');
+    },
+    locale: function() {
+      return this.belongsTo(Locale, 'locale_iso', 'iso_code');
+    }
+  });
+
+  var Locale = Bookshelf.Model.extend({
+    tableName: 'locales',
+    sites: function() {
+      return this.belongsToMany(Site, 'sites_translations', 'locale_iso', 'website_name', 'iso_code', 'name');
+    },
+    countries: function() {
+      return this.hasMany(Country, 'language_iso_code', 'iso_code');
+    },
+    cities: function() {
+      return this.hasMany(City).through(Country);
+    },
+    country: function() {
+      return this.hasOne(Country, 'language_iso_code', 'iso_code');
+    },
+    city: function() {
+      return this.hasOne(City).through(Country);
+    },
+  });
+
+  var Country = Bookshelf.Model.extend({
+    tableName: 'countries',
+    locale: function() {
+      return this.belongsTo(Locale, 'language_iso_code', 'iso_code');
+    },
+    cities: function() {
+      return this.hasMany(City, 'country_code', 'country_iso_code');
+    }
+  });
+
+  var City = Bookshelf.Model.extend({
+    tableName: 'cities',
+    country: function() {
+      return this.belongsTo(Country, 'country_code', 'country_iso_code');
+    },
+    locale: function() {
+      return this.belongsTo(Locale, 'language_iso_code', 'iso_code').through(Country,
+        'country_code',         // cities.country_code
+        'language_iso_code',    // countries.language_iso_code
+        'country_iso_code',     // countries.country_iso_code
+        'iso_code');            // locales.iso_code
+    }
+  });
+
   var Uuid = Bookshelf.Model.extend({
     idAttribute: 'uuid',
     tableName: 'uuid_test'
@@ -64,6 +117,9 @@ module.exports = function(Bookshelf) {
     },
     info: function() {
       return this.hasOne(Info).through(SiteMeta, 'meta_id');
+    },
+    translation: function() {
+      return this.hasMany(SiteTranslation, 'website_name', 'name')
     },
     admins: function() {
       return this.belongsToMany(Admin).withPivot('item');
@@ -354,6 +410,10 @@ module.exports = function(Bookshelf) {
       Site: Site,
       SiteParsed: SiteParsed,
       SiteMeta: SiteMeta,
+      SiteTranslation: SiteTranslation,
+      Locale: Locale,
+      Country: Country,
+      City: City,
       Admin: Admin,
       Author: Author,
       AuthorParsed: AuthorParsed,
