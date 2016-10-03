@@ -503,8 +503,13 @@ const BookshelfModel = ModelBase.extend({
    *
    * @returns {Collection}
    */
-  through(Interim, throughForeignKey, otherKey) {
-    return this.relatedData.through(this, Interim, {throughForeignKey: throughForeignKey, otherKey: otherKey});
+  through(Interim, throughForeignKey, otherKey, throughTargetKey, otherTargetKey) {
+    return this.relatedData.through(this, Interim, {
+      throughForeignKey,
+      otherKey,
+      throughIdAttribute: throughTargetKey,
+      targetIdAttribute: otherTargetKey
+    });
   },
 
   /**
