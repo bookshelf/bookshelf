@@ -21,23 +21,26 @@ module.exports = function(Bookshelf) {
     var Models      = objs.Models;
 
     // Models
-    var Site         = Models.Site;
-    var SiteMeta     = Models.SiteMeta;
-    var SiteExtra    = Models.SiteExtra;
-    var Admin        = Models.Admin;
-    var Author       = Models.Author;
-    var Blog         = Models.Blog;
-    var Post         = Models.Post;
-    var Comment      = Models.Comment;
-    var Tag          = Models.Tag;
-    var User         = Models.User;
-    var Role         = Models.Role;
-    var Thumbnail    = Models.Thumbnail;
-    var Photo        = Models.Photo;
-    var PhotoParsed  = Models.PhotoParsed;
-    var Customer     = Models.Customer;
-    var Instance     = Models.Instance;
-    var Hostname     = Models.Hostname;
+    var Site            = Models.Site;
+    var SiteMeta        = Models.SiteMeta;
+    var SiteTranslation = Models.SiteTranslation;
+    var Locale          = Models.Locale;
+    var Country         = Models.Country;
+    var City            = Models.City;
+    var Admin           = Models.Admin;
+    var Author          = Models.Author;
+    var Blog            = Models.Blog;
+    var Post            = Models.Post;
+    var Comment         = Models.Comment;
+    var Tag             = Models.Tag;
+    var User            = Models.User;
+    var Role            = Models.Role;
+    var Thumbnail       = Models.Thumbnail;
+    var Photo           = Models.Photo;
+    var PhotoParsed     = Models.PhotoParsed;
+    var Customer        = Models.Customer;
+    var Instance        = Models.Instance;
+    var Hostname        = Models.Hostname;
 
     var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
@@ -556,20 +559,63 @@ module.exports = function(Bookshelf) {
             .tap(checkTest(this));
         });
 
-        it('works with belongsTo otherKey (extra -> site)', function() {
-          return new SiteExtra({id: 1})
+      });
+
+      describe('Custom targetKey', function() {
+
+        it('works with belongsTo (extra -> site)', function() {
+          return new SiteTranslation({id: 1})
             .fetch()
             .then(function(extra) {
               return extra.site().fetch();
             }).tap(checkTest(this));
         });
 
-        it('works with eager loaded belongsTo otherKey (extra -> site)', function() {
-          return new SiteExtra({id: 1})
+        it('works with eager loaded belongsTo (extra -> site)', function() {
+          return new SiteTranslation({id: 1})
+            .fetch({withRelated: ['site']})
+            .tap(checkTest(this));
+        });
+
+        it('works with hasMany (locale -> countries)', function() {
+          return new Locale({iso_code: 'es'})
             .fetch()
-            .then(function(extra) {
-              return extra.load('site');
-            })
+            .then(function(locale) {
+              return locale.countries().fetch();
+            }).tap(checkTest(this));
+        });
+
+        it('works with eager loaded hasMany (locale -> countries)', function() {
+          return new Locale({iso_code: 'es'})
+            .fetch({withRelated: ['countries']})
+            .tap(checkTest(this));
+        });
+
+        it('works with hasOne (locale -> country)', function() {
+          return new Locale({iso_code: 'it'})
+            .fetch()
+            .then(function(locale) {
+              return locale.country().fetch();
+            }).tap(checkTest(this));
+        });
+
+        it('works with eager loaded hasOne (locale -> country)', function() {
+          return new Locale({iso_code: 'it'})
+            .fetch({withRelated: ['country']})
+            .tap(checkTest(this));
+        });
+
+        it('works with belongsToMany (locale -> sites)', function() {
+          return new Locale({iso_code: 'it'})
+            .fetch()
+            .then(function(locale) {
+              return locale.sites().fetch();
+            }).tap(checkTest(this));
+        });
+
+        it('works with eager loaded belongsToMany (locale -> sites)', function() {
+          return new Locale({iso_code: 'it'})
+            .fetch({withRelated: ['sites']})
             .tap(checkTest(this));
         });
 

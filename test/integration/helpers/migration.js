@@ -2,12 +2,12 @@ var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
-  'sites', 'sitesmeta', 'sites_extra', 'admins',
-  'admins_sites', 'authors', 'authors_posts',
-  'blogs', 'posts', 'tags', 'posts_tags', 'comments',
-  'users', 'roles', 'photos', 'users_roles', 'info',
-  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
-  'parsed_users', 'tokens', 'thumbnails',
+  'sites', 'sitesmeta', 'sites_translations', 'locales',
+  'countries', 'cities', 'admins', 'admins_sites', 'authors',
+  'authors_posts', 'blogs', 'posts', 'tags', 'posts_tags',
+  'comments', 'users', 'roles', 'photos', 'users_roles',
+  'info', 'Customer', 'Settings', 'hostnames', 'instances',
+  'uuid_test', 'parsed_users', 'tokens', 'thumbnails',
   'lefts', 'rights', 'lefts_rights', 'organization'
 ];
 
@@ -34,10 +34,26 @@ module.exports = function(Bookshelf) {
       table.integer('meta_id').notNullable();
       table.text('other_description');
     })
-    .createTable('sites_extra', function(table) {
+    .createTable('sites_translations', function(table) {
       table.increments('id');
       table.string('website_name').notNullable();
-      table.text('extra_description');
+      table.text('translated_content');
+      table.string('locale_iso').notNullable();
+    })
+    .createTable('locales', function(table) {
+      table.increments('id');
+      table.string('iso_code');
+    })
+    .createTable('countries', function(table) {
+      table.increments('id');
+      table.string('language_iso_code');
+      table.string('name');
+      table.string('iso_code');
+    })
+    .createTable('cities', function(table) {
+      table.increments('id');
+      table.string('country_iso_code');
+      table.string('name');
     })
     .createTable('admins', function(table) {
       table.increments('id');

@@ -1561,7 +1561,7 @@ module.exports = {
       }
     }
   },
-  'works with belongsTo otherKey (extra -> site)': {
+  'works with belongsTo (extra -> site)': {
     mysql: {
       result: {
         id: 2,
@@ -1581,11 +1581,12 @@ module.exports = {
       }
     }
   },
-  'works with eager loaded belongsTo otherKey (extra -> site)': {
+  'works with eager loaded belongsTo (extra -> site)': {
     mysql: {
       result: {
         id: 1,
-        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        translated_content: 'Este es el contenido traducido del sitio web de Bookshelfjs',
+        locale_iso: 'es',
         website_name: 'bookshelfjs.org',
         site: {
           id: 2,
@@ -1596,7 +1597,8 @@ module.exports = {
     postgresql: {
       result: {
         id: 1,
-        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        translated_content: 'Este es el contenido traducido del sitio web de Bookshelfjs',
+        locale_iso: 'es',
         website_name: 'bookshelfjs.org',
         site: {
           id: 2,
@@ -1607,12 +1609,265 @@ module.exports = {
     sqlite3: {
       result: {
         id: 1,
-        extra_description: 'This is the extra description for the Bookshelfjs Site',
+        translated_content: 'Este es el contenido traducido del sitio web de Bookshelfjs',
+        locale_iso: 'es',
         website_name: 'bookshelfjs.org',
         site: {
           id: 2,
           name: 'bookshelfjs.org'
         }
+      }
+    }
+  },
+  'works with hasMany (locale -> countries)': {
+    mysql: {
+      result: [
+        {
+          id: 1,
+          language_iso_code: 'es',
+          name: 'Venezuela',
+          iso_code: 've'
+        },
+        {
+          id: 2,
+          language_iso_code: 'es',
+          name: 'Colombia',
+          iso_code: 'co'
+        }
+      ]
+    },
+    postgresql: {
+      result: [
+        {
+          id: 1,
+          language_iso_code: 'es',
+          name: 'Venezuela',
+          iso_code: 've'
+        },
+        {
+          id: 2,
+          language_iso_code: 'es',
+          name: 'Colombia',
+          iso_code: 'co'
+        }
+      ]
+    },
+    sqlite3: {
+      result: [
+        {
+          id: 1,
+          language_iso_code: 'es',
+          name: 'Venezuela',
+          iso_code: 've'
+        },
+        {
+          id: 2,
+          language_iso_code: 'es',
+          name: 'Colombia',
+          iso_code: 'co'
+        }
+      ]
+    }
+  },
+  'works with eager loaded hasMany (locale -> countries)': {
+    mysql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        countries: [
+          {
+            id: 1,
+            language_iso_code: 'es',
+            name: 'Venezuela',
+            iso_code: 've'
+          },
+          {
+            id: 2,
+            language_iso_code: 'es',
+            name: 'Colombia',
+            iso_code: 'co'
+          }
+        ]
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        countries: [
+          {
+            id: 1,
+            language_iso_code: 'es',
+            name: 'Venezuela',
+            iso_code: 've'
+          },
+          {
+            id: 2,
+            language_iso_code: 'es',
+            name: 'Colombia',
+            iso_code: 'co'
+          }
+        ]
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        iso_code: 'es',
+        countries: [
+          {
+            id: 1,
+            language_iso_code: 'es',
+            name: 'Venezuela',
+            iso_code: 've'
+          },
+          {
+            id: 2,
+            language_iso_code: 'es',
+            name: 'Colombia',
+            iso_code: 'co'
+          }
+        ]
+      }
+    }
+  },
+  'works with hasOne (locale -> country)': {
+    mysql: {
+      result: {
+        id: 3,
+        language_iso_code: 'it',
+        name: 'Italia',
+        iso_code: 'it'
+      }
+    },
+    postgresql: {
+      result: {
+        id: 3,
+        language_iso_code: 'it',
+        name: 'Italia',
+        iso_code: 'it'
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 3,
+        language_iso_code: 'it',
+        name: 'Italia',
+        iso_code: 'it'
+      }
+    }
+  },
+  'works with eager loaded hasOne (locale -> country)': {
+    mysql: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        country: {
+          id: 3,
+          language_iso_code: 'it',
+          name: 'Italia',
+          iso_code: 'it'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        country: {
+          id: 3,
+          language_iso_code: 'it',
+          name: 'Italia',
+          iso_code: 'it'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        country: {
+          id: 3,
+          language_iso_code: 'it',
+          name: 'Italia',
+          iso_code: 'it'
+        }
+      }
+    }
+  },
+  'works with belongsToMany (locale -> sites)': {
+    mysql: {
+      result: [
+        {
+          id: 2,
+          name: 'bookshelfjs.org',
+          _pivot_locale_iso: 'it',
+          _pivot_website_name: 'bookshelfjs.org'
+        }
+      ]
+    },
+    postgresql: {
+      result: [
+        {
+          id: 2,
+          name: 'bookshelfjs.org',
+          _pivot_locale_iso: 'it',
+          _pivot_website_name: 'bookshelfjs.org'
+        }
+      ]
+    },
+    sqlite3: {
+      result: [
+        {
+          id: 2,
+          name: 'bookshelfjs.org',
+          _pivot_locale_iso: 'it',
+          _pivot_website_name: 'bookshelfjs.org'
+        }
+      ]
+    }
+  },
+  'works with eager loaded belongsToMany (locale -> sites)': {
+    mysql: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        sites: [
+          {
+            id: 2,
+            name: 'bookshelfjs.org',
+            _pivot_locale_iso: 'it',
+            _pivot_website_name: 'bookshelfjs.org'
+          }
+        ]
+      }
+    },
+    postgresql: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        sites: [
+          {
+            id: 2,
+            name: 'bookshelfjs.org',
+            _pivot_locale_iso: 'it',
+            _pivot_website_name: 'bookshelfjs.org'
+          }
+        ]
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 2,
+        iso_code: 'it',
+        sites: [
+          {
+            id: 2,
+            name: 'bookshelfjs.org',
+            _pivot_locale_iso: 'it',
+            _pivot_website_name: 'bookshelfjs.org'
+          }
+        ]
       }
     }
   },
