@@ -48,11 +48,11 @@ module.exports = function(Bookshelf) {
       table.increments('id');
       table.string('language_iso_code');
       table.string('name');
-      table.string('iso_code');
+      table.string('country_iso_code');
     })
     .createTable('cities', function(table) {
       table.increments('id');
-      table.string('country_iso_code');
+      table.string('country_code');
       table.string('name');
     })
     .createTable('admins', function(table) {

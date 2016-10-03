@@ -1626,13 +1626,13 @@ module.exports = {
           id: 1,
           language_iso_code: 'es',
           name: 'Venezuela',
-          iso_code: 've'
+          country_iso_code: 've'
         },
         {
           id: 2,
           language_iso_code: 'es',
           name: 'Colombia',
-          iso_code: 'co'
+          country_iso_code: 'co'
         }
       ]
     },
@@ -1642,13 +1642,13 @@ module.exports = {
           id: 1,
           language_iso_code: 'es',
           name: 'Venezuela',
-          iso_code: 've'
+          country_iso_code: 've'
         },
         {
           id: 2,
           language_iso_code: 'es',
           name: 'Colombia',
-          iso_code: 'co'
+          country_iso_code: 'co'
         }
       ]
     },
@@ -1658,13 +1658,13 @@ module.exports = {
           id: 1,
           language_iso_code: 'es',
           name: 'Venezuela',
-          iso_code: 've'
+          country_iso_code: 've'
         },
         {
           id: 2,
           language_iso_code: 'es',
           name: 'Colombia',
-          iso_code: 'co'
+          country_iso_code: 'co'
         }
       ]
     }
@@ -1679,13 +1679,13 @@ module.exports = {
             id: 1,
             language_iso_code: 'es',
             name: 'Venezuela',
-            iso_code: 've'
+            country_iso_code: 've'
           },
           {
             id: 2,
             language_iso_code: 'es',
             name: 'Colombia',
-            iso_code: 'co'
+            country_iso_code: 'co'
           }
         ]
       }
@@ -1699,13 +1699,13 @@ module.exports = {
             id: 1,
             language_iso_code: 'es',
             name: 'Venezuela',
-            iso_code: 've'
+            country_iso_code: 've'
           },
           {
             id: 2,
             language_iso_code: 'es',
             name: 'Colombia',
-            iso_code: 'co'
+            country_iso_code: 'co'
           }
         ]
       }
@@ -1719,13 +1719,13 @@ module.exports = {
             id: 1,
             language_iso_code: 'es',
             name: 'Venezuela',
-            iso_code: 've'
+            country_iso_code: 've'
           },
           {
             id: 2,
             language_iso_code: 'es',
             name: 'Colombia',
-            iso_code: 'co'
+            country_iso_code: 'co'
           }
         ]
       }
@@ -1737,7 +1737,7 @@ module.exports = {
         id: 3,
         language_iso_code: 'it',
         name: 'Italia',
-        iso_code: 'it'
+        country_iso_code: 'it'
       }
     },
     postgresql: {
@@ -1745,7 +1745,7 @@ module.exports = {
         id: 3,
         language_iso_code: 'it',
         name: 'Italia',
-        iso_code: 'it'
+        country_iso_code: 'it'
       }
     },
     sqlite3: {
@@ -1753,7 +1753,7 @@ module.exports = {
         id: 3,
         language_iso_code: 'it',
         name: 'Italia',
-        iso_code: 'it'
+        country_iso_code: 'it'
       }
     }
   },
@@ -1766,7 +1766,7 @@ module.exports = {
           id: 3,
           language_iso_code: 'it',
           name: 'Italia',
-          iso_code: 'it'
+          country_iso_code: 'it'
         }
       }
     },
@@ -1778,7 +1778,7 @@ module.exports = {
           id: 3,
           language_iso_code: 'it',
           name: 'Italia',
-          iso_code: 'it'
+          country_iso_code: 'it'
         }
       }
     },
@@ -1790,7 +1790,7 @@ module.exports = {
           id: 3,
           language_iso_code: 'it',
           name: 'Italia',
-          iso_code: 'it'
+          country_iso_code: 'it'
         }
       }
     }

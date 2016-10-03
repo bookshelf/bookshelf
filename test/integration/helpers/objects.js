@@ -65,18 +65,18 @@ module.exports = function(Bookshelf) {
 
   var Country = Bookshelf.Model.extend({
     tableName: 'countries',
-    locales: function() {
+    locale: function() {
       return this.belongsTo(Locale, 'language_iso_code', 'iso_code');
     },
     cities: function() {
-      return this.hasMany(City, 'country_iso_code', 'iso_code');
+      return this.hasMany(City, 'country_code', 'country_iso_code');
     }
   });
 
   var City = Bookshelf.Model.extend({
     tableName: 'cities',
     country: function() {
-      return this.belongsTo(Country, 'country_iso_code', 'iso_code');
+      return this.belongsTo(Country, 'country_code', 'country_iso_code');
     },
     locales: function() {
       return this.belongsTo(Locale).through(Country);

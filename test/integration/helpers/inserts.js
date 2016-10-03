@@ -45,28 +45,28 @@ module.exports = function(bookshelf) {
     knex('countries').insert([{
       language_iso_code: 'es',
       name: 'Venezuela',
-      iso_code: 've'
+      country_iso_code: 've'
     }, {
       language_iso_code: 'es',
       name: 'Colombia',
-      iso_code: 'co'
+      country_iso_code: 'co'
     }, {
       language_iso_code: 'it',
       name: 'Italia',
-      iso_code: 'it'
+      country_iso_code: 'it'
     }]),
 
     knex('cities').insert([{
-      country_iso_code: 've',
+      country_code: 've',
       name: 'Caracas'
     }, {
-      country_iso_code: 'co',
+      country_code: 'co',
       name: 'Bogotá'
     }, {
-      country_iso_code: 'co',
+      country_code: 'co',
       name: 'Medellín'
     }, {
-      country_iso_code: 'it',
+      country_code: 'it',
       name: 'Genova'
     }]),
 
