@@ -45,6 +45,9 @@ module.exports = function(Bookshelf) {
     var RightModel  = Models.RightModel;
     var JoinModel   = Models.JoinModel;
 
+    var Locale = Models.Locale;
+    var Translation = Models.Translation;
+
     describe('Bookshelf Relations', function() {
 
       describe('Standard Relations - Models', function() {
@@ -1025,6 +1028,114 @@ module.exports = function(Bookshelf) {
           });
         });
       });
+    });
+
+    describe('Issue #1388 - Custom foreignKeyTarget & otherKeyTarget', function() {
+
+      it('works with hasOne relation (locale -> translation)', function() {
+        return new Locale({ isoCode: 'pt' })
+          .translation()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded hasOne relation (locale -> translation)', function() {
+        return new Locale({ isoCode: 'pt' })
+          .fetch({ withRelated: 'translation' })
+          .then(checkTest(this));
+      });
+
+      it('works with hasOne `through` relation (customer -> locale)', function() {
+        return new Customer({ name: 'Customer2' })
+          .locale()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded hasOne `through` relation (customer -> locale)', function() {
+        return new Customer({ name: 'Customer2' })
+          .fetch({ withRelated: 'locale' })
+          .then(checkTest(this));
+      });
+
+      it('works with hasMany relation (locale -> translations)', function() {
+        return new Locale({ isoCode: 'en' })
+          .translations()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded hasMany relation (locale -> translations)', function() {
+        return new Locale({ isoCode: 'en' })
+          .fetch({ withRelated: 'translations' })
+          .then(checkTest(this));
+      });
+
+      it('works with hasMany `through` relation (customer -> locales)', function() {
+        return new Customer({ name: 'Customer1' })
+          .locales()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded hasMany `through` relation (customer -> locales)', function() {
+        return new Customer({ name: 'Customer1' })
+          .fetch({ withRelated: 'locales' })
+          .then(checkTest(this));
+      });
+
+      it('works with belongsTo relation (translation -> locale)', function() {
+        return new Translation({ code: 'pt' })
+          .locale()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded belongsTo relation (translation -> locale)', function() {
+        return new Translation({ code: 'pt' })
+          .fetch({ withRelated: 'locale' })
+          .then(checkTest(this));
+      });
+
+      it('works with belongsTo `through` relation (locale -> customer)', function() {
+        return new Locale({ isoCode: 'pt' })
+          .customer()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded belongsTo `through` relation (locale -> customer)', function() {
+        return new Locale({ isoCode: 'pt' })
+          .fetch({ withRelated: 'customer' })
+          .then(checkTest(this));
+      });
+
+      it('works with belongsToMany relation (locale -> customers)', function() {
+        return new Locale({ isoCode: 'en' })
+          .customers()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager loaded belongsToMany relation (locale -> customers)', function() {
+        return new Locale({ isoCode: 'en' })
+          .fetch({ withRelated: 'customers' })
+          .then(checkTest(this));
+      });
+
+      it('works with belongsToMany `through` relation (locale -> customers)', function() {
+        return new Locale({ isoCode: 'en' })
+          .customersThrough()
+          .fetch()
+          .then(checkTest(this));
+      });
+
+      it('works with eager belongsToMany `through` relation (locale -> customers)', function() {
+        return new Locale({ isoCode: 'en' })
+          .fetch({ withRelated: 'customersThrough' })
+          .then(checkTest(this));
+      });
+
     });
 
   });
