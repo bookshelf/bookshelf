@@ -186,6 +186,10 @@ export default RelationBase.extend({
         return _.result(parent.prototype, 'idAttribute');
 
       case 'parentFk':
+        if (!this.hasParentAttributes()) {
+          return;
+        }
+
         if (this.isThrough()) {
           if (this.type === 'belongsToMany' && this.isThroughForeignKeyTargeted()) {
             return this.parentAttributes[this.throughForeignKeyTarget];
@@ -472,6 +476,9 @@ export default RelationBase.extend({
   },
   isOtherKeyTargeted() {
     return this.otherKeyTarget != null;
+  },
+  hasParentAttributes() {
+    return this.parentAttributes != null;
   },
 
   // Sets the `pivotColumns` to be retrieved along with the current model.

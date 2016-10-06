@@ -120,6 +120,25 @@ module.exports = function(Bookshelf) {
 
       });
 
+      it('should not error when accessing a relation through an uninstantiated model', function() {
+        var relation = Doctor.prototype.meta();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasOne');
+        equal(relatedData.target, DoctorMeta);
+        equal(relatedData.targetTableName, 'doctormeta');
+        equal(relatedData.targetIdAttribute, 'customId');
+        equal(relatedData.foreignKey, 'doctoring_id');
+        equal(relatedData.foreignKeyTarget, undefined);
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'doctors');
+        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentFk, undefined);
+      });
+
       it('should handle a hasOne relation', function() {
 
         var base        = new Doctor({id: 1});
