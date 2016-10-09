@@ -591,7 +591,7 @@ const BookshelfModel = ModelBase.extend({
    * {@link Model#query query}, tapping into the {@link Knex} {@link
    * Knex#column column} method to specify which columns will be fetched._
    *
-   * single property, or an array of properties can be specified as a value for
+   * A single property, or an array of properties can be specified as a value for
    * the `withRelated` property. You can also execute callbacks on relations
    * queries (eg. for sorting a relation). The results of these relation queries
    * will be loaded into a {@link Model#relations relations} property on the
