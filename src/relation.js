@@ -144,7 +144,11 @@ export default RelationBase.extend({
           return this.parentIdAttribute;
         }
 
-        if (this.isForeignKeyTargeted()) {
+        if (this.type === 'belongsTo' && this.foreignKey) {
+          return this.foreignKey;
+        }
+
+        if (this.type !== 'belongsTo' && this.isForeignKeyTargeted()) {
           return this.foreignKeyTarget;
         }
 
