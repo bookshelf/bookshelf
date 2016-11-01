@@ -1,5 +1,15 @@
 ## Change Log
 
+**0.10.2** - <small>Sept 22, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2)
+
+* Fixes memory leak introduced in 0.10.0 caused by binding `this.listeners` in `triggerThen`
+* Fixes Bluebird warning when a Promise was internally rejected with a non-error
+
+**0.10.1** - <small>_Sept 14, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.0...0.10.1)
+
+* Allows using knex 0.12 as a peerDependency
+* knex instance used by bookshelf may be swapped out
+
 **0.10.0** — <small>_Jun 29, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0)
 
 **Breaking Changes:**
