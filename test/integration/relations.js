@@ -281,6 +281,38 @@ module.exports = function(Bookshelf) {
           ]);
         });
 
+        it('attaching event get\'s triggered', function(done){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          admin1.save().then(function() {
+            site1.related('admins').on('attaching', function(collection, modelToAttach) {
+              expect(collection).to.exist;
+              expect(modelToAttach.get('username')).to.eql(admin1.get('username'));
+              done();
+            });
+
+            return site1.related('admins').attach(admin1);
+          }).catch(done);
+        });
+
+        it('creating event get\'s triggered', function(done){
+          var site1  = new Site({id: 1});
+          var admin1 = new Admin({username: 'syncable', password: 'test'});
+
+          admin1.save().then(function() {
+            site1.related('admins').on('creating', function(collection, data, options) {
+              expect(collection).to.exist;
+              expect(data.site_id).to.exist;
+              expect(data.admin_id).to.exist;
+              expect(options).to.not.exist;
+              done();
+            });
+
+            return site1.related('admins').attach(admin1);
+          }).catch(done);
+        });
+
         it('has an attaching event, which will fail if an error is thrown', function(){
           var site1  = new Site({id: 1});
           var admin1 = new Admin({username: 'syncable', password: 'test'});

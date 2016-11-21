@@ -710,8 +710,10 @@ const pivotHelpers = {
       });
     }
 
-    return builder.insert(data).then(function() {
-      collection.add(item);
+    return this.triggerThen('creating', this, data, options).then(function () {
+      return builder.insert(data).then(function () {
+        collection.add(item);
+      });
     });
   }),
 
