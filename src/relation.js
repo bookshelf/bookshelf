@@ -416,6 +416,7 @@ export default RelationBase.extend({
     // its parsed attributes
     related.map(model => {
       model.attributes = model.parse(model.attributes)
+      model._reset();
     });
 
     return related;

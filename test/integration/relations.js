@@ -845,6 +845,16 @@ module.exports = function(Bookshelf) {
           });
       });
 
+      it('parses eager-loaded models previous attributes after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var prev = blog.related('parsedPosts').at(0)._previousAttributes;
+            Object.keys(prev).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
       it('parses eager-loaded morphTo relations (model)', function () {
         return Photo.fetchAll({ withRelated: 'imageableParsed.meta', log: true })
           .then(function (photos) {
