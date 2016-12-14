@@ -21,11 +21,12 @@ module.exports = function(Bookshelf) {
   });
 
   var MySQL = require('../bookshelf')(mysql);
-  var PostgreSQL = require('../bookshelf')(pg);
-  var SQLite3 = require('../bookshelf')(sqlite3);
-  var Swapped = require('../bookshelf')(Knex({}));
-  Swapped.knex = sqlite3;
+  //var PostgreSQL = require('../bookshelf')(pg);
+  //var SQLite3 = require('../bookshelf')(sqlite3);
+  //var Swapped = require('../bookshelf')(Knex({}));
+  //Swapped.knex = sqlite3;
 
+  /*
   it('should allow creating a new Bookshelf instance with "new"', function() {
     var bookshelf = new Bookshelf(sqlite3);
     expect(bookshelf.knex).to.equal(sqlite3);
@@ -47,8 +48,9 @@ module.exports = function(Bookshelf) {
         });
     });
   });
+  */
 
-  _.each([MySQL, PostgreSQL, SQLite3, Swapped], function(bookshelf) {
+  _.each([MySQL /*, PostgreSQL, SQLite3, Swapped*/], function(bookshelf) {
 
     var dialect = bookshelf.knex.client.dialect;
 
