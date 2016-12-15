@@ -22,6 +22,8 @@ module.exports = function (bookshelf) {
         ModelCtor = this.Model.extend(ModelCtor, staticProps);
       }
       this._models[name] = ModelCtor;
+
+      ModelCtor.prototype.modelName = name;
     }
     return (this._models[name] = this._models[name] || bookshelf.resolve(name));
   };
@@ -33,6 +35,8 @@ module.exports = function (bookshelf) {
         CollectionCtor = this.Collection.extend(CollectionCtor, staticProps);
       }
       this._collections[name] = CollectionCtor;
+
+      CollectionCtor.prototype.name = name;
     }
     return (this._collections[name] = this._collections[name] || bookshelf.resolve(name));
   };
