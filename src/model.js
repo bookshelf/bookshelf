@@ -99,10 +99,15 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of this model's {@link Model#tableName tableName},
    *   followed by `_id` / `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} foreignKeyTarget
+   *
+   *   Column in the `Target` model's table which `foreignKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
    * @returns {Model}
    */
-  hasOne(Target, foreignKey) {
-    return this._relation('hasOne', Target, {foreignKey}).init(this);
+  hasOne(Target, foreignKey, foreignKeyTarget) {
+    return this._relation('hasOne', Target, { foreignKey, foreignKeyTarget }).init(this);
   },
 
   /**
@@ -134,10 +139,15 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of this model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} foreignKeyTarget
+   *
+   *   Column in the `Target` model's table which `foreignKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
    * @returns {Collection}
    */
-  hasMany(Target, foreignKey) {
-    return this._relation('hasMany', Target, {foreignKey}).init(this);
+  hasMany(Target, foreignKey, foreignKeyTarget) {
+    return this._relation('hasMany', Target, { foreignKey, foreignKeyTarget }).init(this);
   },
 
   /**
@@ -177,10 +187,15 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} foreignKeyTarget
+   *
+   *   Column in the `Target` model's table which `foreignKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
    * @returns {Model}
    */
-  belongsTo(Target, foreignKey) {
-    return this._relation('belongsTo', Target, {foreignKey}).init(this);
+  belongsTo(Target, foreignKey, foreignKeyTarget) {
+    return this._relation('belongsTo', Target, { foreignKey, foreignKeyTarget }).init(this);
   },
 
   /**
@@ -273,11 +288,21 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of the `Target` model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} foreignKeyTarget
+   *
+   *   Column in this model's table which `foreignKey` references, if other
+   *   than `id` / `{@link Model#idAttribute idAttribute}`.
+   *
+   * @param {string=} otherKeyTarget
+   *
+   *   Column in the `Target` model's table which `otherKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
    * @returns {Collection}
    */
-  belongsToMany(Target, joinTableName, foreignKey, otherKey) {
+  belongsToMany(Target, joinTableName, foreignKey, otherKey, foreignKeyTarget, otherKeyTarget) {
     return this._relation('belongsToMany', Target, {
-      joinTableName, foreignKey, otherKey
+      joinTableName, foreignKey, otherKey, foreignKeyTarget, otherKeyTarget
     }).init(this);
   },
 
@@ -496,10 +521,22 @@ const BookshelfModel = ModelBase.extend({
    *   be the singular form of this model's tableName, followed by `_id` /
    *   `_{{{@link Model#idAttribute idAttribute}}}`.
    *
+   * @param {string=} throughForeignKeyTarget
+   *
+   *   Column in the `Target` model which `throughForeignKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
+   * @param {string=} otherKeyTarget
+   *
+   *   Column in this model which `otherKey` references, if other
+   *   than `id` / `{@link Model#idAttribute idAttribute}`.
+   *
    * @returns {Collection}
    */
-  through(Interim, throughForeignKey, otherKey) {
-    return this.relatedData.through(this, Interim, {throughForeignKey: throughForeignKey, otherKey: otherKey});
+  through(Interim, throughForeignKey, otherKey, throughForeignKeyTarget, otherKeyTarget) {
+    return this.relatedData.through(this, Interim, {
+      throughForeignKey, otherKey, throughForeignKeyTarget, otherKeyTarget
+    });
   },
 
   /**
@@ -554,7 +591,7 @@ const BookshelfModel = ModelBase.extend({
    * {@link Model#query query}, tapping into the {@link Knex} {@link
    * Knex#column column} method to specify which columns will be fetched._
    *
-   * single property, or an array of properties can be specified as a value for
+   * A single property, or an array of properties can be specified as a value for
    * the `withRelated` property. You can also execute callbacks on relations
    * queries (eg. for sorting a relation). The results of these relation queries
    * will be loaded into a {@link Model#relations relations} property on the
@@ -627,8 +664,7 @@ const BookshelfModel = ModelBase.extend({
       // Jump the rest of the chain if the response doesn't exist...
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new this.constructor.NotFoundError('EmptyResponse');
-          return Promise.reject(null);
+          throw new this.constructor.NotFoundError('EmptyResponse');
         }
       })
 
@@ -665,9 +701,11 @@ const BookshelfModel = ModelBase.extend({
         return this.triggerThen('fetched', this, response, options);
       })
       .return(this)
-      .catch(function(err) {
-        if (err === null) return err;
-        throw err;
+      .catch(this.constructor.NotFoundError, function(err) {
+        if (options.require) {
+          throw err;
+        }
+        return null
       });
   }),
 
@@ -903,7 +941,7 @@ const BookshelfModel = ModelBase.extend({
       if (method === 'insert' || options.defaults) {
         const defaults = _.result(this, 'defaults');
         if (defaults) {
-          attrs = _.extend({}, defaults, this.attributes, attrs);
+          attrs = _.defaultsDeep({}, attrs, this.attributes, defaults);
         }
       }
 

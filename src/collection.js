@@ -43,9 +43,37 @@ const BookshelfCollection = CollectionBase.extend({
    * @description
    * Used to define passthrough relationships - `hasOne`, `hasMany`, `belongsTo`
    * or `belongsToMany`, "through" an `Interim` model or collection.
+   *
+   * @param {Model} Interim Pivot model.
+   *
+   * @param {string=} throughForeignKey
+   *
+   *   Foreign key in this collection model. By default, the `foreignKey` is assumed to
+   *   be the singular form of the `Target` model's tableName, followed by `_id` /
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
+   *
+   * @param {string=} otherKey
+   *
+   *   Foreign key in the `Interim` model. By default, the `otherKey` is assumed to
+   *   be the singular form of this model's tableName, followed by `_id` /
+   *   `_{{{@link Model#idAttribute idAttribute}}}`.
+   *
+   * @param {string=} throughForeignKeyTarget
+   *
+   *   Column in the `Target` model which `throughForeignKey` references, if other
+   *   than `Target` model's `id` / `{@link Model#idAttribute idAttribute}`.
+   *
+   * @param {string=} otherKeyTarget
+   *
+   *   Column in this collection model which `otherKey` references, if other
+   *   than `id` / `{@link Model#idAttribute idAttribute}`.
+   *
+   * @returns {Collection}
    */
-  through: function(Interim, foreignKey, otherKey) {
-    return this.relatedData.through(this, Interim, {throughForeignKey: foreignKey, otherKey: otherKey});
+  through: function(Interim, throughForeignKey, otherKey, throughForeignKeyTarget, otherKeyTarget) {
+    return this.relatedData.through(this, Interim, {
+      throughForeignKey, otherKey, throughForeignKeyTarget, otherKeyTarget
+    });
   },
 
   /**
@@ -86,8 +114,7 @@ const BookshelfCollection = CollectionBase.extend({
       .bind(this)
       .tap(function(response) {
         if (!response || response.length === 0) {
-          if (options.require) throw new this.constructor.EmptyError('EmptyResponse');
-          return Promise.reject(null);
+          throw new this.constructor.EmptyError('EmptyResponse');
         }
       })
 
@@ -119,8 +146,10 @@ const BookshelfCollection = CollectionBase.extend({
          */
         return this.triggerThen('fetched', this, response, options);
       })
-      .catch(function(err) {
-        if (err !== null) throw err;
+      .catch(this.constructor.EmptyError, function(err) {
+        if (options.require) {
+          throw err;
+        }
         this.reset([], {silent: true});
       })
       .return(this);
