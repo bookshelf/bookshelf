@@ -1608,7 +1608,7 @@ records with a null value in that column will be excluded from the count.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
           </span
-          ><a href="docs/src_base_model.js.html#line598" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line603" class="source-link">source</a></h4>
 
         
     
@@ -2399,9 +2399,9 @@ table name the model will query against.</p>
           <span class="member-of"
                 ><span class="class-name"
                   >model</span
-                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsTo">belongsTo</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsTo">belongsTo</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line143" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line153" class="source-link">source</a></h4>
 
         
     
@@ -2455,6 +2455,25 @@ table name the model will query against.</p>
         <p>ForeignKey in this model. By default, the foreignKey is assumed to
   be the singular form of the <code>Target</code> model's tableName, followed by <code>_id</code> /
   <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model's table which <code>foreignKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -2563,9 +2582,9 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
           <span class="member-of"
                 ><span class="class-name"
                   >model</span
-                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsToMany">belongsToMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">table</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsToMany">belongsToMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">table</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line186" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line201" class="source-link">source</a></h4>
 
         
     
@@ -2658,6 +2677,44 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
         <p>Foreign key in the <code>Target</code> model. By default, the <code>otherKey</code> is assumed to
   be the singular form of the <code>Target</code> model's tableName, followed by <code>_id</code> /
   <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in this model's table which <code>foreignKey</code> references, if other
+  than <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model's table which <code>otherKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -2804,7 +2861,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clear">clear</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line368" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line373" class="source-link">source</a></h4>
 
         
     
@@ -2908,7 +2965,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clone">clone</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line425" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line430" class="source-link">source</a></h4>
 
         
     
@@ -3013,7 +3070,7 @@ model.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_model.js.html#line684" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line721" class="source-link">source</a></h4>
 
         
     
@@ -3173,7 +3230,7 @@ previous calls to <a href="#Model-instance-query"><code>Model#query</code></a>.<
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line1039" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1076" class="source-link">source</a></h4>
 
         
     
@@ -3514,7 +3571,7 @@ removal is completed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-fetch">fetch</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>|null></span>
           </span
-          ><a href="docs/src_model.js.html#line530" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line567" class="source-link">source</a></h4>
 
         
     
@@ -3750,7 +3807,7 @@ new Book({'ISBN-13': '9780440180296'})
   });</code></pre><p><em>If you'd like to only fetch specific columns, you may specify a <code>columns</code>
 property in the <code>options</code> for the <a href="#Model-instance-fetch"><code>fetch</code></a> call, or use
 <a href="#Model-instance-query"><code>query</code></a>, tapping into the <code>Knex</code> <code>column</code> method to specify which columns will be fetched.</em></p>
-<p>single property, or an array of properties can be specified as a value for
+<p>A single property, or an array of properties can be specified as a value for
 the <code>withRelated</code> property. You can also execute callbacks on relations
 queries (eg. for sorting a relation). The results of these relation queries
 will be loaded into a <code>relations</code> property on the
@@ -3798,7 +3855,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-fetchAll">fetchAll</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line708" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line745" class="source-link">source</a></h4>
 
         
     
@@ -4167,7 +4224,7 @@ the options to the <code>fetchAll</code> call.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-format">format</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line385" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line390" class="source-link">source</a></h4>
 
         
     
@@ -4567,7 +4624,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  bool</span>
           </span
-          ><a href="docs/src_base_model.js.html#line514" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line519" class="source-link">source</a></h4>
 
         
     
@@ -4698,9 +4755,9 @@ specific attribute has changed.</p>
           <span class="member-of"
                 ><span class="class-name"
                   >model</span
-                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasMany">hasMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasMany">hasMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line108" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line113" class="source-link">source</a></h4>
 
         
     
@@ -4754,6 +4811,25 @@ specific attribute has changed.</p>
         <p>ForeignKey in the <code>Target</code> model. By default, the foreignKey is assumed to
   be the singular form of this model's tableName, followed by <code>_id</code> /
   <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model's table which <code>foreignKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -4857,7 +4933,7 @@ Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
           <span class="member-of"
                 ><span class="class-name"
                   >model</span
-                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasOne">hasOne</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasOne">hasOne</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
           ><a href="docs/src_model.js.html#line65" class="source-link">source</a></h4>
 
@@ -4913,6 +4989,25 @@ Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
         <p>ForeignKey in the <code>Target</code> model. By default, the <code>foreignKey</code> is assumed to
   be the singular form of this model's <a href="#Model-instance-tableName"><code>tableName</code></a>,
   followed by <code>_id</code> / <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model's table which <code>foreignKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -5124,7 +5219,7 @@ considered &quot;new&quot;.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-load">load</a></span><span class="parenthesis">(</span><span class="item-name">relations</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line771" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line808" class="source-link">source</a></h4>
 
         
     
@@ -5324,7 +5419,7 @@ eager loading.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphMany">morphMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">name</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">morphValue</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line336" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line361" class="source-link">source</a></h4>
 
         
     
@@ -5529,7 +5624,7 @@ store/retrieve a different value in the <code>_type</code> column than the <code
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphOne">morphOne</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">name</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">morphValue</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line284" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line309" class="source-link">source</a></h4>
 
         
     
@@ -5736,7 +5831,7 @@ If your argument is an array, it will be assumed to contain custom
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphTo">morphTo</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="variable-ellipsis">&hellip;</span><span class="item-name">Target</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line388" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line413" class="source-link">source</a></h4>
 
         
     
@@ -6242,7 +6337,7 @@ for a combination of all events.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1207" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1244" class="source-link">source</a></h4>
 
         
     
@@ -6537,7 +6632,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line529" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line534" class="source-link">source</a></h4>
 
         
     
@@ -6667,7 +6762,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line544" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line549" class="source-link">source</a></h4>
 
         
     
@@ -6773,7 +6868,7 @@ model, or getting back to a valid state after an error occurs.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|QueryBuilder</span>
           </span
-          ><a href="docs/src_model.js.html#line1129" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1166" class="source-link">source</a></h4>
 
         
     
@@ -6953,7 +7048,7 @@ returning the current model.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-refresh">refresh</a></span><span class="parenthesis">(</span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line505" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line542" class="source-link">source</a></h4>
 
         
     
@@ -7088,7 +7183,7 @@ all available fields.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-related">related</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|<a href="#Collection">Collection</a>|undefined</span>
           </span
-          ><a href="docs/src_base_model.js.html#line412" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line417" class="source-link">source</a></h4>
 
         
     
@@ -7241,7 +7336,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1116" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1153" class="source-link">source</a></h4>
 
         
     
@@ -7347,7 +7442,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-save">save</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">key</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">val</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">attrs</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line811" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line848" class="source-link">source</a></h4>
 
         
     
@@ -7977,7 +8072,7 @@ customer.set("telephone", "555-555-1212");</code></pre>
       
 
       <div class="description">
-        <p>Remove attributes instead of setting them.</p>
+        <p>Remove attributes from the model instead of setting them.</p>
         
       </div>
 
@@ -8079,9 +8174,9 @@ customer.set("telephone", "555-555-1212");</code></pre>
           <span class="member-of"
                 ><span class="class-name"
                   >model</span
-                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-through">through</a></span><span class="parenthesis">(</span><span class="item-name">Interim</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Model-instance-through">through</a></span><span class="parenthesis">(</span><span class="item-name">Interim</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKeyTarget</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line435" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line460" class="source-link">source</a></h4>
 
         
     
@@ -8155,6 +8250,44 @@ customer.set("telephone", "555-555-1212");</code></pre>
         <p>Foreign key in the <code>Interim</code> model. By default, the <code>otherKey</code> is assumed to
   be the singular form of this model's tableName, followed by <code>_id</code> /
   <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">throughForeignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model which <code>throughForeignKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in this model which <code>otherKey</code> references, if other
+  than <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -8283,7 +8416,7 @@ let Paragraph = bookshelf.Model.extend({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line475" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line480" class="source-link">source</a></h4>
 
         
     
@@ -8801,7 +8934,7 @@ event handlers (for validations, etc).</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-unset">unset</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line359" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line364" class="source-link">source</a></h4>
 
         
     
@@ -8908,6 +9041,10 @@ event handlers (for validations, etc).</p>
     <div class="item-description">
         <p>Remove an attribute from the model. <code>unset</code> is a noop if the attribute
 doesn't exist.</p>
+<p>Note that unsetting an attribute from the model will not affect the related
+record's column value when saving the model. In order to clear the value of a
+column in the database record, set the attribute value to <code>null</code> instead:
+<code>model.set(&quot;column_name&quot;, null)</code>.</p>
     </div>
   
 </div>
@@ -8926,7 +9063,7 @@ doesn't exist.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1177" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1214" class="source-link">source</a></h4>
 
         
     
@@ -9284,7 +9421,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1009" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1046" class="source-link">source</a></h4>
 
         
     
@@ -9447,7 +9584,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line945" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line982" class="source-link">source</a></h4>
 
         
     
@@ -9612,7 +9749,7 @@ exception from the handler will cancel the save operation.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1100" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1137" class="source-link">source</a></h4>
 
         
     
@@ -9776,7 +9913,7 @@ handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1079" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1116" class="source-link">source</a></h4>
 
         
     
@@ -9923,7 +10060,7 @@ will reject the promise and cancel the deletion.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetched">"fetched"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">reponse</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line649" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line686" class="source-link">source</a></h4>
 
         
     
@@ -10280,7 +10417,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">resp</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line997" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1034" class="source-link">source</a></h4>
 
         
     
@@ -10443,7 +10580,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line931" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line968" class="source-link">source</a></h4>
 
         
     
@@ -10608,7 +10745,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1021" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1058" class="source-link">source</a></h4>
 
         
     
@@ -10771,7 +10908,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line959" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line996" class="source-link">source</a></h4>
 
         
     
@@ -10963,7 +11100,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1329" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1366" class="source-link">source</a></h4>
 
         
     
@@ -11103,7 +11240,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1320" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1357" class="source-link">source</a></h4>
 
         
     
@@ -11243,7 +11380,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1310" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1347" class="source-link">source</a></h4>
 
         
     
@@ -12242,7 +12379,7 @@ models in insertion order.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-attach">attach</a></span><span class="parenthesis">(</span><span class="item-name">ids</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_relation.js.html#line403" class="source-link">source</a></h4>
+          ><a href="docs/src_relation.js.html#line509" class="source-link">source</a></h4>
 
         
     
@@ -12516,7 +12653,7 @@ returned by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_collection.js.html#line130" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line158" class="source-link">source</a></h4>
 
         
     
@@ -12681,7 +12818,7 @@ Company.forge({id:1})
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-create">create</a></span><span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_collection.js.html#line229" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line257" class="source-link">source</a></h4>
 
         
     
@@ -12867,7 +13004,7 @@ Student.forge(attributes).save().tap(student =>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-detach">detach</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">ids</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<undefined></span>
           </span
-          ><a href="docs/src_relation.js.html#line443" class="source-link">source</a></h4>
+          ><a href="docs/src_relation.js.html#line549" class="source-link">source</a></h4>
 
         
     
@@ -13047,7 +13184,7 @@ by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code></a> rela
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-fetch">fetch</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_collection.js.html#line51" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line79" class="source-link">source</a></h4>
 
         
     
@@ -13253,7 +13390,7 @@ may be retrieved with the <a href="#Model-instance-related"><code>related</code>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-fetchOne">fetchOne</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>|null></span>
           </span
-          ><a href="docs/src_collection.js.html#line164" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line192" class="source-link">source</a></h4>
 
         
     
@@ -13852,7 +13989,7 @@ collection.invokeThen('destroy', options).then(function() {
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-load">load</a></span><span class="parenthesis">(</span><span class="item-name">relations</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_collection.js.html#line206" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line234" class="source-link">source</a></h4>
 
         
     
@@ -14360,7 +14497,7 @@ for a combination of all events.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_collection.js.html#line340" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line368" class="source-link">source</a></h4>
 
         
     
@@ -14949,7 +15086,7 @@ attribute objects.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a>|QueryBuilder</span>
           </span
-          ><a href="docs/src_collection.js.html#line298" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line326" class="source-link">source</a></h4>
 
         
     
@@ -15606,7 +15743,7 @@ any models as arguments will empty the entire collection.</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_collection.js.html#line284" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line312" class="source-link">source</a></h4>
 
         
     
@@ -16247,7 +16384,7 @@ customize the behavior, you can disable it with options: <code>{add: false}</cod
           <span class="member-of"
                 ><span class="class-name"
                   >collection</span
-                >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-through">through</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
+                >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-through">through</a></span><span class="parenthesis">(</span><span class="item-name">Interim</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKeyTarget</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
           ><a href="docs/src_collection.js.html#line41" class="source-link">source</a></h4>
 
@@ -16263,6 +16400,110 @@ customize the behavior, you can disable it with options: <code>{add: false}</cod
     
 
     
+
+    
+        <h5>Parameters</h5>
+        
+
+<ul class="params">
+  
+    <li>
+      <code class="param"><span class="item-name">Interim</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  ><a href="#Model">Model</a></code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Pivot model.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">throughForeignKey</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Foreign key in this collection model. By default, the <code>foreignKey</code> is assumed to
+  be the singular form of the <code>Target</code> model's tableName, followed by <code>_id</code> /
+  <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Foreign key in the <code>Interim</code> model. By default, the <code>otherKey</code> is assumed to
+  be the singular form of this model's tableName, followed by <code>_id</code> /
+  <code>_{{<a href="#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">throughForeignKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in the <code>Target</code> model which <code>throughForeignKey</code> references, if other
+  than <code>Target</code> model's <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >string</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Column in this collection model which <code>otherKey</code> references, if other
+  than <code>id</code> / <code><a href="#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+        
+      </div>
+
+    </li>
+  
+</ul>
 
     
 
@@ -16312,6 +16553,20 @@ customize the behavior, you can disable it with options: <code>{add: false}</cod
     
 
     
+    <h5>Returns</h5>
+    
+            
+
+
+<code class="param-type"
+  ><a href="#Collection">Collection</a></code
+>
+
+
+
+
+
+        
   </div>
 
   
@@ -16780,7 +17035,7 @@ event handlers (for validations, etc).</p>
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-updatePivot">updatePivot</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_relation.js.html#line473" class="source-link">source</a></h4>
+          ><a href="docs/src_relation.js.html#line579" class="source-link">source</a></h4>
 
         
     
@@ -17098,7 +17353,7 @@ by a <a href="#Model-instance-belongsToMany"><code>belongsToMany</code></a> rela
                   >collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-instance-withPivot">withPivot</a></span><span class="parenthesis">(</span><span class="item-name">columns</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_relation.js.html#line501" class="source-link">source</a></h4>
+          ><a href="docs/src_relation.js.html#line607" class="source-link">source</a></h4>
 
         
     
@@ -17466,7 +17721,7 @@ from the joining table.</p>
                   >collection</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Collection-event-fetched">"fetched"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">collection</span><span class="comma">, </span><span class="item-name">reponse</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_collection.js.html#line107" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line135" class="source-link">source</a></h4>
 
         
     
@@ -17656,7 +17911,7 @@ event handler for async behaviour.</p>
                   >Collection</span
                 >.</span><span class="parameters"><span class="name"><a href="#Collection-static-EmptyError">EmptyError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_collection.js.html#line415" class="source-link">source</a></h4>
+          ><a href="docs/src_collection.js.html#line443" class="source-link">source</a></h4>
 
         
     
@@ -18592,7 +18847,14 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.10.2</strong> - <small>Sept 22, 2016_</small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.10.3</strong> - <small><em>Jan 21, 2017</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.10.2...0.10.3">Diff</a></p>
+<ul>
+<li>Drop Node support for 0.10 and 0.12</li>
+<li>Trigger creating event for attached models</li>
+<li>Add support for uninstantiated models relations</li>
+<li>Add foreignKeyTarget to relation methods</li>
+</ul>
+<p><strong>0.10.2</strong> - <small><em>Sept 22, 2016</em></small> — <a href="https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2">Diff</a></p>
 <ul>
 <li>Fixes memory leak introduced in 0.10.0 caused by binding <code>this.listeners</code> in <code>triggerThen</code></li>
 <li>Fixes Bluebird warning when a Promise was internally rejected with a non-error</li>
@@ -18901,10 +19163,10 @@ event handlers (for validations, etc).</p>
       <footer>
         <div>
           Documentation generated by
-          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a>
           
             on
-          September 23rd 2016
+          January 21st 2017
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
