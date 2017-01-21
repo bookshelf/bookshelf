@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
