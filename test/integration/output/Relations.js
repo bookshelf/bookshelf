@@ -3558,7 +3558,6 @@ module.exports = {
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 1,
           _pivot_owner_id: 1,
           _pivot_blog_id: 1
         }]
@@ -3571,14 +3570,12 @@ module.exports = {
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 3,
           _pivot_owner_id: 2,
           _pivot_blog_id: 1
         },{
           id: 2,
           site_id: 1,
           name: 'Alternate Site Blog',
-          _pivot_id: 2,
           _pivot_owner_id: 2,
           _pivot_blog_id: 2
         }]
@@ -3591,7 +3588,6 @@ module.exports = {
           id: 3,
           site_id: 2,
           name: 'Main Site Blog',
-          _pivot_id: 4,
           _pivot_owner_id: 3,
           _pivot_blog_id: 3
         }]
@@ -3604,7 +3600,6 @@ module.exports = {
           id: 4,
           site_id: 2,
           name: 'Alternate Site Blog',
-          _pivot_id: 5,
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
@@ -3626,7 +3621,6 @@ module.exports = {
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 1,
           _pivot_owner_id: 1,
           _pivot_blog_id: 1
         }]
@@ -3639,14 +3633,12 @@ module.exports = {
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 3,
           _pivot_owner_id: 2,
           _pivot_blog_id: 1
         },{
           id: 2,
           site_id: 1,
           name: 'Alternate Site Blog',
-          _pivot_id: 2,
           _pivot_owner_id: 2,
           _pivot_blog_id: 2
         }]
@@ -3659,7 +3651,6 @@ module.exports = {
           id: 3,
           site_id: 2,
           name: 'Main Site Blog',
-          _pivot_id: 4,
           _pivot_owner_id: 3,
           _pivot_blog_id: 3
         }]
@@ -3672,7 +3663,6 @@ module.exports = {
           id: 4,
           site_id: 2,
           name: 'Alternate Site Blog',
-          _pivot_id: 5,
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
@@ -3694,7 +3684,6 @@ module.exports = {
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 1,
           _pivot_owner_id: 1,
           _pivot_blog_id: 1
         }]
@@ -3707,14 +3696,12 @@ module.exports = {
           id: 2,
           site_id: 1,
           name: 'Alternate Site Blog',
-          _pivot_id: 2,
           _pivot_owner_id: 2,
           _pivot_blog_id: 2
         },{
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
-          _pivot_id: 3,
           _pivot_owner_id: 2,
           _pivot_blog_id: 1
         }]
@@ -3727,7 +3714,6 @@ module.exports = {
           id: 3,
           site_id: 2,
           name: 'Main Site Blog',
-          _pivot_id: 4,
           _pivot_owner_id: 3,
           _pivot_blog_id: 3
         }]
@@ -3740,7 +3726,6 @@ module.exports = {
           id: 4,
           site_id: 2,
           name: 'Alternate Site Blog',
-          _pivot_id: 5,
           _pivot_owner_id: 4,
           _pivot_blog_id: 4
         }]
@@ -4185,6 +4170,551 @@ module.exports = {
 
         }
       }]
+    }
+  },
+  "works with hasOne relation (locale -> translation)": {
+    mysql: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1'
+      }
+    },
+    postgresql: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1'
+      }
+    },
+    sqlite3: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1'
+      }
+    }
+  },
+  "works with eager loaded hasOne relation (locale -> translation)": {
+    mysql: {
+      result: {
+        isoCode: 'pt',
+        translation: {
+          code: 'pt',
+          customer: 'Customer1'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'pt',
+        translation: {
+          code: 'pt',
+          customer: 'Customer1'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'pt',
+        translation: {
+          code: 'pt',
+          customer: 'Customer1'
+        }
+      }
+    }
+  },
+  "works with hasMany relation (locale -> translations)": {
+    mysql: {
+      result: [{
+        code: 'en',
+        customer: 'Customer1'
+      }, {
+        code: 'en',
+        customer: 'Customer2'
+      }]
+    },
+    postgresql: {
+      result: [{
+        code: 'en',
+        customer: 'Customer1'
+      }, {
+        code: 'en',
+        customer: 'Customer2'
+      }]
+    },
+    sqlite3: {
+      result: [{
+        code: 'en',
+        customer: 'Customer1'
+      }, {
+        code: 'en',
+        customer: 'Customer2'
+      }]
+    }
+  },
+  "works with eager loaded hasMany relation (locale -> translations)": {
+    mysql: {
+      result: {
+        isoCode: 'en',
+        translations: [{
+          code: 'en',
+          customer: 'Customer1'
+        }, {
+          code: 'en',
+          customer: 'Customer2'
+        }]
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'en',
+        translations: [{
+          code: 'en',
+          customer: 'Customer1'
+        }, {
+          code: 'en',
+          customer: 'Customer2'
+        }]
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'en',
+        translations: [{
+          code: 'en',
+          customer: 'Customer1'
+        }, {
+          code: 'en',
+          customer: 'Customer2'
+        }]
+      }
+    }
+  },
+  "works with belongsTo relation (translation -> locale)": {
+    mysql: {
+      result: {
+        isoCode: 'pt'
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'pt'
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'pt'
+      }
+    }
+  },
+  "works with eager loaded belongsTo relation (translation -> locale)": {
+    mysql: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1',
+        locale: {
+          isoCode: 'pt'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1',
+        locale: {
+          isoCode: 'pt'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        code: 'pt',
+        customer: 'Customer1',
+        locale: {
+          isoCode: 'pt'
+        }
+      }
+    }
+  },
+  "works with belongsToMany relation (locale -> customers)": {
+    mysql: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    }
+  },
+  "works with eager loaded belongsToMany relation (locale -> customers)": {
+    mysql: {
+      result: {
+        isoCode: 'en',
+        customers: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'en',
+        customers: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'en',
+        customers: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
+    }
+  },
+  "works with hasOne `through` relation (customer -> locale)": {
+    mysql: {
+      result: {
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }
+    }
+  },
+  "works with eager loaded hasOne `through` relation (customer -> locale)": {
+    mysql: {
+      result: {
+        id: 2,
+        name: 'Customer2',
+        locale: {
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        id: 2,
+        name: 'Customer2',
+        locale: {
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 2,
+        name: 'Customer2',
+        locale: {
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }
+      }
+    }
+  },
+  "works with hasMany `through` relation (customer -> locales)": {
+    mysql: {
+      result: [{
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        isoCode: 'pt',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }]
+    },
+    postgresql: {
+      result: [{
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        isoCode: 'pt',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }]
+    },
+    sqlite3: {
+      result: [{
+        isoCode: 'en',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        isoCode: 'pt',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }]
+    }
+  },
+  "works with eager loaded hasMany `through` relation (customer -> locales)": {
+    mysql: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        locales: [{
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          isoCode: 'pt',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }]
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        locales: [{
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          isoCode: 'pt',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }]
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        locales: [{
+          isoCode: 'en',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          isoCode: 'pt',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }]
+      }
+    }
+  },
+  "works with belongsTo `through` relation (locale -> customer)": {
+    mysql: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }
+    },
+    postgresql: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'pt',
+        _pivot_customer: 'Customer1'
+      }
+    }
+  },
+  "works with eager loaded belongsTo `through` relation (locale -> customer)": {
+    mysql: {
+      result: {
+        isoCode: 'pt',
+        customer: {
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'pt',
+        customer: {
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'pt',
+        customer: {
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'pt',
+          _pivot_customer: 'Customer1'
+        }
+      }
+    }
+  },
+  "works with belongsToMany `through` relation (locale -> customers)": {
+    mysql: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    },
+    postgresql: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id: 1,
+        name: 'Customer1',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer1'
+      }, {
+        id: 2,
+        name: 'Customer2',
+        _pivot_code: 'en',
+        _pivot_customer: 'Customer2'
+      }]
+    }
+  },
+  "works with eager belongsToMany `through` relation (locale -> customers)": {
+    mysql: {
+      result: {
+        isoCode: 'en',
+        customersThrough: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
+    },
+    postgresql: {
+      result: {
+        isoCode: 'en',
+        customersThrough: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
+    },
+    sqlite3: {
+      result: {
+        isoCode: 'en',
+        customersThrough: [{
+          id: 1,
+          name: 'Customer1',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer1'
+        }, {
+          id: 2,
+          name: 'Customer2',
+          _pivot_code: 'en',
+          _pivot_customer: 'Customer2'
+        }]
+      }
     }
   }
 };

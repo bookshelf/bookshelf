@@ -1,2 +1,9 @@
 docs/
+tutorials/
+test/
 index.html
+.eslintrc
+.istanbul.yml
+.travis.yml
+CNAME
+CONTRIBUTING.md

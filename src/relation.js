@@ -21,24 +21,21 @@ export default RelationBase.extend({
   init: function(parent) {
     this.parentId          = parent.id;
     this.parentTableName   = _.result(parent, 'tableName');
-    this.parentIdAttribute = _.result(parent, 'idAttribute');
+    this.parentIdAttribute = this.attribute('parentIdAttribute', parent);
 
-    if (this.isInverse()) {
-      // use formatted attributes so that morphKey and foreignKey will match
-      // attribute keys
-      const attributes = parent.format(_.clone(parent.attributes));
+    // Use formatted attributes so that morphKey and foreignKey will match
+    // attribute keys.
+    this.parentAttributes = parent.format(_.clone(parent.attributes));
 
+    if (this.type === 'morphTo' && !parent._isEager) {
       // If the parent object is eager loading, and it's a polymorphic `morphTo` relation,
       // we can't know what the target will be until the models are sorted and matched.
-      if (this.type === 'morphTo' && !parent._isEager) {
-        this.target = Helpers.morphCandidate(this.candidates, attributes[this.key('morphKey')]);
-        this.targetTableName   = _.result(this.target.prototype, 'tableName');
-        this.targetIdAttribute = _.result(this.target.prototype, 'idAttribute');
-      }
-      this.parentFk = attributes[this.key('foreignKey')];
-    } else {
-      this.parentFk = parent.id;
+      this.target = Helpers.morphCandidate(this.candidates, this.parentAttributes[this.key('morphKey')]);
+      this.targetTableName   = _.result(this.target.prototype, 'tableName');
     }
+
+    this.targetIdAttribute = this.attribute('targetIdAttribute', parent);
+    this.parentFk = this.attribute('parentFk');
 
     const target = this.target ? this.relatedInstance() : {};
         target.relatedData = this;
@@ -60,19 +57,20 @@ export default RelationBase.extend({
 
     this.throughTarget = Target;
     this.throughTableName = _.result(Target.prototype, 'tableName');
-    this.throughIdAttribute = _.result(Target.prototype, 'idAttribute');
-
-    // Set the parentFk as appropriate now.
-    if (this.type === 'belongsTo') {
-      this.parentFk = this.parentId;
-    }
 
     _.extend(this, options);
     _.extend(source, pivotHelpers);
 
+    this.parentIdAttribute = this.attribute('parentIdAttribute');
+    this.targetIdAttribute = this.attribute('targetIdAttribute');
+    this.throughIdAttribute = this.attribute('throughIdAttribute', Target);
+    this.parentFk = this.attribute('parentFk');
+
     // Set the appropriate foreign key if we're doing a belongsToMany, for convenience.
     if (this.type === 'belongsToMany') {
       this.foreignKey = this.throughForeignKey;
+    } else if (this.otherKey) {
+      this.foreignKey = this.otherKey;
     }
 
     return source;
@@ -122,6 +120,95 @@ export default RelationBase.extend({
         break;
     }
     return this[keyName]
+  },
+
+  // Get the correct value for the following attributes:
+  // parentIdAttribute, targetIdAttribute, throughIdAttribute and parentFk.
+  attribute(attribute, parent) {
+    switch (attribute) {
+      case 'parentIdAttribute':
+        if (this.isThrough()) {
+          if (this.type === 'belongsTo' && this.throughForeignKey) {
+            return this.throughForeignKey;
+          }
+
+          if (this.type === 'belongsToMany' && this.isThroughForeignKeyTargeted()) {
+            return this.throughForeignKeyTarget;
+          }
+
+          if (this.isOtherKeyTargeted()) {
+            return this.otherKeyTarget;
+          }
+
+          // Return attribute calculated on `init` by default.
+          return this.parentIdAttribute;
+        }
+
+        if (this.isForeignKeyTargeted()) {
+          return this.foreignKeyTarget;
+        }
+
+        return _.result(parent, 'idAttribute');
+
+      case 'targetIdAttribute':
+        if (this.isThrough()) {
+          if ((this.type === 'belongsToMany' || this.type === 'belongsTo') && this.isOtherKeyTargeted()) {
+            return this.otherKeyTarget;
+          }
+
+          // Return attribute calculated on `init` by default.
+          return this.targetIdAttribute;
+        }
+
+        if (this.type === 'morphTo' && !parent._isEager) {
+          return _.result(this.target.prototype, 'idAttribute');
+        }
+
+        if (this.type === 'belongsTo' && this.isForeignKeyTargeted()) {
+          return this.foreignKeyTarget;
+        }
+
+        if (this.type === 'belongsToMany' && this.isOtherKeyTargeted()) {
+          return this.otherKeyTarget;
+        }
+
+        return this.targetIdAttribute;
+
+      case 'throughIdAttribute':
+        if (this.type !== 'belongsToMany' && this.isThroughForeignKeyTargeted()) {
+          return this.throughForeignKeyTarget;
+        }
+
+        if (this.type === 'belongsToMany' && this.throughForeignKey) {
+          return this.throughForeignKey;
+        }
+
+        return _.result(parent.prototype, 'idAttribute');
+
+      case 'parentFk':
+        if (!this.hasParentAttributes()) {
+          return;
+        }
+
+        if (this.isThrough()) {
+          if (this.type === 'belongsToMany' && this.isThroughForeignKeyTargeted()) {
+            return this.parentAttributes[this.throughForeignKeyTarget];
+          }
+
+          if (this.type === 'belongsTo') {
+            return this.throughForeignKey ? this.parentAttributes[this.parentIdAttribute] : this.parentId;
+          }
+
+          if (this.isOtherKeyTargeted()) {
+            return this.parentAttributes[this.otherKeyTarget];
+          }
+
+          // Return attribute calculated on `init` by default.
+          return this.parentFk;
+        }
+
+        return this.parentAttributes[this.isInverse() ? this.key('foreignKey') : this.parentIdAttribute];
+    }
   },
 
   // Injects the necessary `select` constraints into a `knex` query builder.
@@ -293,11 +380,18 @@ export default RelationBase.extend({
     // Group all of the related models for easier association with their parent models.
     const grouped = _.groupBy(related, (m) => {
       if (m.pivot) {
-        return this.isInverse() && this.isThrough() ? m.pivot.id :
-          m.pivot.get(this.key('foreignKey'));
-      } else {
-        return this.isInverse() ? m.id : m.get(this.key('foreignKey'));
+        if (this.isInverse() && this.isThrough()) {
+          return this.isThroughForeignKeyTargeted() ? m.pivot.get(this.throughForeignKeyTarget) : m.pivot.id;
+        }
+
+        return m.pivot.get(this.key('foreignKey'));
       }
+
+      if (this.isInverse()) {
+        return this.isForeignKeyTargeted() ? m.get(this.foreignKeyTarget) : m.id;
+      }
+
+      return m.get(this.key('foreignKey'));
     });
 
     // Loop over the `parentModels` and attach the grouped sub-models,
@@ -305,7 +399,7 @@ export default RelationBase.extend({
     _.each(parentModels, (model) => {
       let groupedKey;
       if (!this.isInverse()) {
-        groupedKey = model.id;
+        groupedKey = model.get(this.parentIdAttribute);
       } else {
         const keyColumn = this.key(
           this.isThrough() ? 'throughForeignKey': 'foreignKey'
@@ -373,6 +467,18 @@ export default RelationBase.extend({
   },
   isInverse: function() {
     return (this.type === 'belongsTo' || this.type === 'morphTo');
+  },
+  isForeignKeyTargeted() {
+    return this.foreignKeyTarget != null;
+  },
+  isThroughForeignKeyTargeted() {
+    return this.throughForeignKeyTarget != null;
+  },
+  isOtherKeyTargeted() {
+    return this.otherKeyTarget != null;
+  },
+  hasParentAttributes() {
+    return this.parentAttributes != null;
   },
 
   // Sets the `pivotColumns` to be retrieved along with the current model.
@@ -604,8 +710,10 @@ const pivotHelpers = {
       });
     }
 
-    return builder.insert(data).then(function() {
-      collection.add(item);
+    return this.triggerThen('creating', this, data, options).then(function () {
+      return builder.insert(data).then(function () {
+        collection.add(item);
+      });
     });
   }),
 

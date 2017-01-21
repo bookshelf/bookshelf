@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "jsdoc": "./scripts/jsdoc.sh",
     "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "npm run build",
-    "postpublish": "./scripts/postpublish.sh"
+    "postpublish": "./scripts/postpublish.sh",
+    "postinstall": "node ./scripts/build.js lib \"npm run build\""
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -46,7 +47,7 @@
     "babel-preset-es2015": "^6.0.14",
     "bookshelf-jsdoc-theme": "^0.1.2",
     "chai": "^3.5.0",
-    "eslint": "^3.5.0",
+    "eslint": "2.13.1",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.12.0",
@@ -63,6 +64,14 @@
   "peerDependencies": {
     "knex": ">=0.6.10 <0.13.0"
   },
+  "buildDependencies": [
+    "babel-cli",
+    "babel-runtime",
+    "babel-plugin-syntax-object-rest-spread",
+    "babel-plugin-transform-object-rest-spread",
+    "babel-plugin-transform-runtime",
+    "babel-preset-es2015"
+  ],
   "author": {
     "name": "Tim Griesser",
     "web": "https://github.com/tgriesser"

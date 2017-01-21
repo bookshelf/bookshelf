@@ -75,6 +75,42 @@ module.exports = function(Bookshelf) {
       }
     });
 
+    var Customer = Bookshelf.Model.extend({
+      tableName: 'customers',
+      locale: function() {
+        return this.hasOne(Locale).through(Translation, 'isoCode', 'customer', 'code', 'name');
+      },
+      locales: function() {
+        return this.hasMany(Locale).through(Translation, 'isoCode', 'customer', 'code', 'name');
+      }
+    });
+
+    var Translation = Bookshelf.Model.extend({
+      tableName: 'translations',
+      locale: function() {
+        return this.belongsTo(Locale, 'code', 'isoCode');
+      }
+    });
+
+    var Locale = Bookshelf.Model.extend({
+      tableName: 'locales',
+      customer: function() {
+        return this.belongsTo(Customer).through(Translation, 'isoCode', 'customer', 'code', 'name');
+      },
+      customers: function() {
+        return this.belongsToMany(Customer, 'translations', 'code', 'customer', 'isoCode', 'name');
+      },
+      customersThrough: function() {
+        return this.belongsToMany(Customer).through(Translation, 'code', 'customer', 'isoCode', 'name');
+      },
+      translation: function() {
+        return this.hasOne(Translation, 'code', 'isoCode');
+      },
+      translations: function() {
+        return this.hasMany(Translation, 'code', 'isoCode');
+      }
+    });
+
     describe('Bookshelf.Relation', function() {
 
       it('should not error if the type / target are not specified', function() {
@@ -82,6 +118,25 @@ module.exports = function(Bookshelf) {
         var relation = new Relation();
         equal(relation.type, undefined);
 
+      });
+
+      it('should not error when accessing a relation through an uninstantiated model', function() {
+        var relation = Doctor.prototype.meta();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasOne');
+        equal(relatedData.target, DoctorMeta);
+        equal(relatedData.targetTableName, 'doctormeta');
+        equal(relatedData.targetIdAttribute, 'customId');
+        equal(relatedData.foreignKey, 'doctoring_id');
+        equal(relatedData.foreignKeyTarget, undefined);
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'doctors');
+        equal(relatedData.parentIdAttribute, 'id');
+        equal(relatedData.parentFk, undefined);
       });
 
       it('should handle a hasOne relation', function() {
@@ -97,6 +152,7 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'doctormeta');
         equal(relatedData.targetIdAttribute, 'customId');
         equal(relatedData.foreignKey, 'doctoring_id');
+        equal(relatedData.foreignKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -122,6 +178,9 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'account_histories');
         equal(relatedData.targetIdAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, undefined);
+        equal(relatedData.otherKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -133,6 +192,8 @@ module.exports = function(Bookshelf) {
         equal(relatedData.throughTarget, Account);
         equal(relatedData.throughTableName, 'accounts');
         equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughForeignKey, undefined);
+        equal(relatedData.throughForeignKeyTarget, undefined);
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -154,6 +215,9 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'suppliers');
         equal(relatedData.targetIdAttribute, 'id');
         equal(relatedData.foreignKey, 'supplier_id');
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, undefined);
+        equal(relatedData.otherKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -165,6 +229,8 @@ module.exports = function(Bookshelf) {
         equal(relatedData.throughTarget, Account);
         equal(relatedData.throughTableName, 'accounts');
         equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughForeignKey, undefined);
+        equal(relatedData.throughForeignKeyTarget, undefined);
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -186,6 +252,9 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'patients');
         equal(relatedData.targetIdAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, undefined);
+        equal(relatedData.otherKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -197,6 +266,8 @@ module.exports = function(Bookshelf) {
         equal(relatedData.throughTarget, Appointment);
         equal(relatedData.throughTableName, 'appointments');
         equal(relatedData.throughIdAttribute, 'id');
+        equal(relatedData.throughForeignKey, undefined);
+        equal(relatedData.throughForeignKeyTarget, undefined);
 
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
@@ -218,6 +289,9 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'patients');
         equal(relatedData.targetIdAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, undefined);
+        equal(relatedData.otherKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -245,6 +319,7 @@ module.exports = function(Bookshelf) {
         equal(relatedData.targetTableName, 'photos');
         equal(relatedData.targetIdAttribute, 'id');
         equal(relatedData.foreignKey, undefined);
+        equal(relatedData.foreignKeyTarget, undefined);
 
         // Init
         equal(relatedData.parentId, 1);
@@ -256,6 +331,262 @@ module.exports = function(Bookshelf) {
         relatedData.selectConstraints(_knex, {});
 
         var sql = "select `photos`.* from `photos` where `photos`.`imageable_id` = 1 and `photos`.`imageable_type` = 'doctors'";
+
+        equal(_knex.toString(), sql);
+      });
+
+      it('should handle a hasOne relation with explicit foreignKeyTarget', function() {
+        var base = new Locale({ isoCode: 'en' });
+        var relation = base.translation();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasOne');
+        equal(relatedData.target, Translation);
+        equal(relatedData.targetTableName, 'translations');
+        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.foreignKey, 'code');
+        equal(relatedData.foreignKeyTarget, 'isoCode');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'locales');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        equal(_knex.toString(), 'select `translations`.* from `translations` where `translations`.`code` = \'en\' limit 1');
+      });
+
+      it('should handle a hasOne -> through relation with explicit foreignKeyTarget', function() {
+        var base = new Customer({ name: 'foobar' });
+        var relation = base.locale();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasOne');
+        equal(relatedData.target, Locale);
+        equal(relatedData.targetTableName, 'locales');
+        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.foreignKey, 'customer');
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, 'customer');
+        equal(relatedData.otherKeyTarget, 'name');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'customers');
+        equal(relatedData.parentIdAttribute, 'name');
+        equal(relatedData.parentFk, 'foobar');
+
+        // Through
+        equal(relatedData.throughTarget, Translation);
+        equal(relatedData.throughTableName, 'translations');
+        equal(relatedData.throughIdAttribute, 'code');
+        equal(relatedData.throughForeignKey, 'isoCode');
+        equal(relatedData.throughForeignKeyTarget, 'code');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        equal(_knex.toString(), 'select `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\' limit 1');
+      });
+
+      it('should handle a hasMany relation with explicit foreignKeyTarget', function() {
+        var base = new Locale({ isoCode: 'en' });
+        var relation = base.translations();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasMany');
+        equal(relatedData.target, Translation);
+        equal(relatedData.targetTableName, 'translations');
+        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.foreignKey, 'code');
+        equal(relatedData.foreignKeyTarget, 'isoCode');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'locales');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        equal(_knex.toString(), 'select `translations`.* from `translations` where `translations`.`code` = \'en\'');
+      });
+
+      it('should handle a hasMany -> through relation with explicit foreignKeyTarget', function() {
+        var base = new Customer({ name: 'foobar' });
+        var relation = base.locales();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'hasMany');
+        equal(relatedData.target, Locale);
+        equal(relatedData.targetTableName, 'locales');
+        equal(relatedData.targetIdAttribute, 'id');
+        equal(relatedData.foreignKey, 'customer');
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, 'customer');
+        equal(relatedData.otherKeyTarget, 'name');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'customers');
+        equal(relatedData.parentIdAttribute, 'name');
+        equal(relatedData.parentFk, 'foobar');
+
+        // Through
+        equal(relatedData.throughTarget, Translation);
+        equal(relatedData.throughTableName, 'translations');
+        equal(relatedData.throughIdAttribute, 'code');
+        equal(relatedData.throughForeignKey, 'isoCode');
+        equal(relatedData.throughForeignKeyTarget, 'code');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        equal(_knex.toString(), 'select `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\'');
+      });
+
+      it('should handle a belongsTo relation with explicit foreignKeyTarget', function() {
+        var base = new Translation({ code: 'en' });
+        var relation = base.locale();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'belongsTo');
+        equal(relatedData.target, Locale);
+        equal(relatedData.targetTableName, 'locales');
+        equal(relatedData.targetIdAttribute, 'isoCode');
+        equal(relatedData.foreignKey, 'code');
+        equal(relatedData.foreignKeyTarget, 'isoCode');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'translations');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        var sql = 'select `locales`.* from `locales` where `locales`.`isoCode` = \'en\' limit 1';
+
+        equal(_knex.toString(), sql);
+      });
+
+      it('should handle a belongsTo -> through relation with explicit foreignKeyTarget', function() {
+        var base = new Locale({ isoCode: 'en' });
+        var relation = base.customer();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'belongsTo');
+        equal(relatedData.target, Customer);
+        equal(relatedData.targetTableName, 'customers');
+        equal(relatedData.targetIdAttribute, 'name');
+        equal(relatedData.foreignKey, 'customer');
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, 'customer');
+        equal(relatedData.otherKeyTarget, 'name');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'locales');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // Through
+        equal(relatedData.throughTarget, Translation);
+        equal(relatedData.throughTableName, 'translations');
+        equal(relatedData.throughIdAttribute, 'code');
+        equal(relatedData.throughForeignKey, 'isoCode');
+        equal(relatedData.throughForeignKeyTarget, 'code');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` inner join `locales` on `translations`.`code` = `locales`.`isoCode` where `locales`.`isoCode` = \'en\' limit 1';
+
+        equal(_knex.toString(), sql);
+      });
+
+      it('should handle a belongsToMany relation with explicit foreignKeyTarget and otherKeyTarget', function() {
+        var base = new Locale({ isoCode: 'en' });
+        var relation = base.customers();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'belongsToMany');
+        equal(relatedData.target, Customer);
+        equal(relatedData.targetTableName, 'customers');
+        equal(relatedData.targetIdAttribute, 'name');
+        equal(relatedData.joinTableName, 'translations');
+        equal(relatedData.foreignKey, 'code');
+        equal(relatedData.foreignKeyTarget, 'isoCode');
+        equal(relatedData.otherKey, 'customer');
+        equal(relatedData.otherKeyTarget, 'name');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'locales');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
+
+        equal(_knex.toString(), sql);
+      });
+
+      it('should handle a belongsToMany -> through relation with explicit foreignKeyTarget and otherKeyTarget', function() {
+        var base = new Locale({ isoCode: 'en' });
+        var relation = base.customersThrough();
+        var _knex = relation.query();
+        var relatedData = relation.relatedData;
+
+        // Base
+        equal(relatedData.type, 'belongsToMany');
+        equal(relatedData.target, Customer);
+        equal(relatedData.targetTableName, 'customers');
+        equal(relatedData.targetIdAttribute, 'name');
+        equal(relatedData.joinTableName, undefined);
+        equal(relatedData.foreignKey, 'code');
+        equal(relatedData.foreignKeyTarget, undefined);
+        equal(relatedData.otherKey, 'customer');
+        equal(relatedData.otherKeyTarget, 'name');
+
+        // Init
+        equal(relatedData.parentId, undefined);
+        equal(relatedData.parentTableName, 'locales');
+        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentFk, 'en');
+
+        // Through
+        equal(relatedData.throughTarget, Translation);
+        equal(relatedData.throughTableName, 'translations');
+        equal(relatedData.throughIdAttribute, 'code');
+        equal(relatedData.throughForeignKey, 'code');
+        equal(relatedData.throughForeignKeyTarget, 'isoCode');
+
+        // init the select constraints
+        relatedData.selectConstraints(_knex, {});
+
+        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
 
         equal(_knex.toString(), sql);
       });
