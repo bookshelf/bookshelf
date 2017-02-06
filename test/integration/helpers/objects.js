@@ -243,6 +243,12 @@ module.exports = function(Bookshelf) {
     tableName: 'Customer',
     settings: function () {
       return this.hasOne(Settings);
+    },
+    locale: function() {
+      return this.hasOne(Locale).through(Translation, 'isoCode', 'customer', 'code', 'name');
+    },
+    locales: function() {
+      return this.hasMany(Locale).through(Translation, 'isoCode', 'customer', 'code', 'name');
     }
   });
 
@@ -349,6 +355,32 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var Translation = Bookshelf.Model.extend({
+    tableName: 'translations',
+    locale: function() {
+      return this.belongsTo(Locale, 'code', 'isoCode');
+    }
+  });
+
+  var Locale = Bookshelf.Model.extend({
+    tableName: 'locales',
+    customer: function() {
+      return this.belongsTo(Customer).through(Translation, 'isoCode', 'customer', 'code', 'name');
+    },
+    customers: function() {
+      return this.belongsToMany(Customer, 'translations', 'code', 'customer', 'isoCode', 'name');
+    },
+    customersThrough: function() {
+      return this.belongsToMany(Customer).through(Translation, 'code', 'customer', 'isoCode', 'name');
+    },
+    translation: function() {
+      return this.hasOne(Translation, 'code', 'isoCode');
+    },
+    translations: function() {
+      return this.hasMany(Translation, 'code', 'isoCode');
+    }
+  });
+
   return {
     Models: {
       Site: Site,
@@ -378,7 +410,9 @@ module.exports = function(Bookshelf) {
       LeftModel: LeftModel,
       RightModel: RightModel,
       JoinModel: JoinModel,
-      OrgModel: OrgModel
+      OrgModel: OrgModel,
+      Locale: Locale,
+      Translation: Translation
     }
   };
 

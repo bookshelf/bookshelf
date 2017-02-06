@@ -152,7 +152,7 @@ ModelBase.prototype.get = function(attr) {
  * @param {string|Object} attribute Attribute name, or hash of attribute names and values.
  * @param {mixed=} value If a string was provided for `attribute`, the value to be set.
  * @param {Object=} options
- * @param {Object} [options.unset=false] Remove attributes instead of setting them.
+ * @param {Object} [options.unset=false] Remove attributes from the model instead of setting them.
  * @returns {Model} This model.
  */
 ModelBase.prototype.set = function(key, val, options) {
@@ -352,6 +352,11 @@ ModelBase.prototype.parse = identity;
  *
  * Remove an attribute from the model. `unset` is a noop if the attribute
  * doesn't exist.
+ *
+ * Note that unsetting an attribute from the model will not affect the related
+ * record's column value when saving the model. In order to clear the value of a
+ * column in the database record, set the attribute value to `null` instead:
+ * `model.set("column_name", null)`.
  *
  * @param attribute Attribute to unset.
  * @returns {Model} This model.
