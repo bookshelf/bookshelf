@@ -94,6 +94,14 @@ module.exports = function (bookshelf) {
           });
         })
       })
+
+      it('fetches a page from a collection with specified page size', function () {
+        return Models.Customer.collection().fetchPage({ page: 2, pageSize: 2 }).then(function (results) {
+          var m = results.models
+          expect(parseInt(m[0].get('id'))).to.equal(3);
+          expect(parseInt(m[1].get('id'))).to.equal(4);
+        });
+      })
     })
 
   });
