@@ -16,6 +16,7 @@ module.exports = function(bookshelf) {
     var formatNumber = {
       mysql:      _.identity,
       sqlite3:    _.identity,
+      oracle:     _.identity,
       postgresql: function(count) { return count.toString() }
     }[dialect];
     var checkCount = function(actual, expected) {
