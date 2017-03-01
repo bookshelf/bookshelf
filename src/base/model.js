@@ -73,6 +73,12 @@ inherits(ModelBase, Events);
  *
  * Called by the {@link Model Model constructor} when creating a new instance.
  * Override this function to add custom initialization, such as event listeners.
+ * Because plugins may override this method in subclasses, make sure to call
+ * your super (extended) class.  e.g.
+ *     initialize: function() {
+ *         this.constructor.__super__.initialize.apply(this, arguments);
+ *         // Your initialization code ...
+ *     }
  *
  * @see Model
  *
@@ -615,6 +621,7 @@ _.each(modelMethods, function(method) {
  *
  *     var Customer = bookshelf.Model.extend({
  *       initialize: function() {
+ *         this.constructor.__super__.initialize.apply(this, arguments);
  *         this.on('saving', this.validateSave);
  *       },
  *
