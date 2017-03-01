@@ -430,6 +430,26 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('fetches within transaction block', function() {
+          var transactionBlock = Bookshelf.transaction(function(t){
+            var model = new Site();
+            return model.fetch({transacting: t})
+                .then(t.commit)
+                .catch(t.rollback);
+          });
+          return expect(transactionBlock).to.be.fulfilled;
+      });
+
+      it('fails when attempting to fetch within transaction block without specifying transaction', function() {
+          var transactionBlock = Bookshelf.transaction(function(t){
+            var model = new Site();
+            return model.fetch()
+                .then(t.commit)
+                .catch(t.rollback);
+          });
+          return expect(transactionBlock).to.be.rejected;
+      });
+
     });
 
     describe('fetchAll', function() {
