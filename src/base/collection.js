@@ -90,6 +90,7 @@ const addOptions = {add: true, remove: false};
  * Override this function to add custom initialization, such as event listeners.
  * Because plugins may override this method in subclasses, make sure to call
  * your super (extended) class.  e.g.
+ *
  *     initialize: function() {
  *         this.constructor.__super__.initialize.apply(this, arguments);
  *         // Your initialization code ...
