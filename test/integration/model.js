@@ -1,5 +1,6 @@
 var _    = require('lodash');
 var uuid = require('uuid');
+var tk   = require('timekeeper');
 
 var Promise   = global.testPromise;
 
@@ -924,6 +925,89 @@ module.exports = function(bookshelf) {
 
         expect(model.get('created_at')).to.not.exist;
         expect(model.get('updated_at')).to.not.exist;
+      });
+
+      context('Issue #1068', function(){
+        var testDate = new Date('2017-03-28T12:00:00.000Z');
+        var newAdmin;
+        var Admin = Models.Admin;
+        var Site = Models.Site;
+
+        before(function(){
+          tk.freeze(testDate);
+
+          return Admin.forge({username: 'test3', password: 'password'})
+            .save()
+            .then(function(_newAdmin){
+              newAdmin = _newAdmin;
+              return Site.forge({id : 1})
+                .fetch()
+                .then(function(site){
+                  return site.admins().attach(_newAdmin);
+                });
+            });
+        });
+
+        after(function(){
+          tk.reset();
+        });
+
+        it('will return the expected date format on save', function(){
+          expect(newAdmin.get('created_at').getTime()).to.equal(testDate.getTime());
+          expect(newAdmin.get('updated_at').getTime()).to.equal(testDate.getTime());
+        });
+
+        it('will return the expected date format on fetch', function(){
+          return Admin.forge({username: 'test3'}).fetch().then(function(oldAdmin){
+            expect(oldAdmin.get('created_at').getTime()).to.equal(testDate.getTime());
+            expect(oldAdmin.get('updated_at').getTime()).to.equal(testDate.getTime());
+          });
+        });
+
+        it('will return expected date on fetchAll', function(){
+          return Admin
+            .where('username', '=', 'test3')
+            .fetchAll()
+            .then(function(admins){
+              let admin = admins.shift();
+              expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
+              expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
+            });
+        });
+
+        it('will return expected date on related fetch', function(){
+          return Site.forge({id: 1})
+            .admins()
+            .fetch()
+            .then(function(admins){
+              let admin = admins.shift();
+              expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
+              expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
+            });
+        });
+
+        it('will return expected date format for related items', function(){
+          Site.forge({id: 1})
+            .fetch({ withRelated: 'admins' })
+            .then(function(site){
+              let admin = site.related('admins').shift();
+              expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
+              expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
+            });
+        });
+
+        it('will return expected date format on update', function(){
+          var updateTime = new Date('2017-03-29T12:00:00.000Z');
+          tk.freeze(updateTime);
+          return newAdmin
+            .save({
+              'username': 'testing3'
+            }, { patch : true })
+            .then(function(updatedAdmin){
+              expect(updatedAdmin.get('created_at').getTime()).to.equal(testDate.getTime());
+              expect(updatedAdmin.get('updated_at').getTime()).to.equal(updateTime.getTime());
+            })
+        });
       });
     });
 

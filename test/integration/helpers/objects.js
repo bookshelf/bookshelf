@@ -82,7 +82,10 @@ module.exports = function(Bookshelf) {
 
   var Admin = Bookshelf.Model.extend({
     tableName: 'admins',
-    hasTimestamps: true
+    hasTimestamps: true,
+    parse: function(res){
+      return res;
+    }
   });
 
   // Author of a blog post.

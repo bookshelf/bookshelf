@@ -18,7 +18,7 @@ const helpers = {
       data[relatedData.key('foreignKey')] = relatedData.parentFk || model.get(relatedData.key('foreignKey'));
       if (relatedData.isMorph()) data[relatedData.key('morphKey')] = relatedData.key('morphValue');
     }
-    return model.set(model.parse(data));
+    return model.set(model._parseWrapper(data));
   },
 
   // Finds the specific `morphTo` table we should be working with, or throws

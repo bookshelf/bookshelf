@@ -1017,7 +1017,7 @@ const BookshelfModel = ModelBase.extend({
         if (method === 'insert' && this.id == null) {
           const updatedCols = {};
           updatedCols[this.idAttribute] = this.id = resp[0];
-          const updatedAttrs = this.parse(updatedCols);
+          const updatedAttrs = this._parseWrapper(updatedCols);
           _.assign(this.attributes, updatedAttrs);
         } else if (method === 'update' && resp === 0) {
           if (options.require !== false) {
@@ -1322,7 +1322,7 @@ const BookshelfModel = ModelBase.extend({
    */
   _handleResponse(response) {
     const relatedData = this.relatedData;
-    this.set(this.parse(response[0]), {silent: true})._reset();
+    this.set(this._parseWrapper(response[0]), {silent: true})._reset();
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot([this]);
     }
