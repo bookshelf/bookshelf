@@ -969,7 +969,7 @@ module.exports = function(bookshelf) {
             .where('username', '=', 'test3')
             .fetchAll()
             .then(function(admins){
-              let admin = admins.shift();
+              var admin = admins.shift();
               expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
               expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
             });
@@ -980,7 +980,7 @@ module.exports = function(bookshelf) {
             .admins()
             .fetch()
             .then(function(admins){
-              let admin = admins.shift();
+              var admin = admins.shift();
               expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
               expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
             });
@@ -990,7 +990,7 @@ module.exports = function(bookshelf) {
           Site.forge({id: 1})
             .fetch({ withRelated: 'admins' })
             .then(function(site){
-              let admin = site.related('admins').shift();
+              var admin = site.related('admins').shift();
               expect(admin.get('created_at').getTime()).to.equal(testDate.getTime());
               expect(admin.get('updated_at').getTime()).to.equal(testDate.getTime());
             });
