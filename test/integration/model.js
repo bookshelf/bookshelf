@@ -935,7 +935,6 @@ module.exports = function(bookshelf) {
 
         before(function(){
           tk.freeze(testDate);
-
           return Admin.forge({username: 'test3', password: 'password'})
             .save()
             .then(function(_newAdmin){
@@ -987,7 +986,7 @@ module.exports = function(bookshelf) {
         });
 
         it('will return expected date format for related items', function(){
-          Site.forge({id: 1})
+          return Site.forge({id: 1})
             .fetch({ withRelated: 'admins' })
             .then(function(site){
               var admin = site.related('admins').shift();
