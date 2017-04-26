@@ -23,7 +23,7 @@ module.exports = function(Bookshelf) {
   var MySQL = require('../bookshelf')(mysql);
   var PostgreSQL = require('../bookshelf')(pg);
   var SQLite3 = require('../bookshelf')(sqlite3);
-  var Swapped = require('../bookshelf')(Knex({}));
+  var Swapped = require('../bookshelf')(Knex({client: 'sqlite3'}));
   Swapped.knex = sqlite3;
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
@@ -32,7 +32,7 @@ module.exports = function(Bookshelf) {
   });
 
   it('should allow swapping in another knex instance', function() {
-    var bookshelf = new Bookshelf(Knex({}));
+    var bookshelf = new Bookshelf(Knex({client: 'sqlite3'}));
     var Models = require('./integration/helpers/objects')(bookshelf).Models;
     var site = new Models.Site();
 
