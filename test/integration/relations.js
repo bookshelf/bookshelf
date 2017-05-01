@@ -235,13 +235,20 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.posts']
+            withRelated: {
+              'authors.posts': function (qb) {
+                return qb.orderBy('id', 'ASC')
+              }
+            }
           }).then(checkTest(this));
         });
 
         it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
+            withRelated: ['authors.ownPosts', 'authors.site',
+            {'blogs.posts': function (qb) {
+              return qb.orderBy('id', 'ASC')
+            }}]
           }).then(checkTest(this));
         });
 
@@ -712,7 +719,11 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads belongsToMany `through`', function() {
-          return Author.fetchAll({withRelated: 'blogs'}).tap(checkTest(this));
+          return Author.fetchAll({withRelated:
+            { blogs: function (qb) {
+              return qb.orderBy('id', 'ASC')
+            }}
+          }).tap(checkTest(this));
         });
 
         it('eager loads belongsTo `through`', function() {
