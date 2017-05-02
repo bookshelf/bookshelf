@@ -274,6 +274,29 @@ module.exports = {
       }
     }
   },
+  'does not load "belongsTo" relationship when foreignKey is null (blog -> site) #1299': {
+    mysql: {
+      result: {
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
+      }
+    },
+    postgresql: {
+      result: {
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
+      }
+    },
+    sqlite3: {
+      result: {
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
+      }
+    }
+  },
   'eager loads "belongsToMany" models correctly (post -> tags)': {
     mysql: {
       result: {
@@ -510,7 +533,7 @@ module.exports = {
       }]
     }
   },
-  'eager loads "belongsTo" models correctly (blogs -> site)': {
+  'eager loads "belongsTo" models correctly (blogs -> site) including #1299': {
     mysql: {
       result: [{
         id: 1,
@@ -544,6 +567,10 @@ module.exports = {
           id: 2,
           name: 'bookshelfjs.org'
         }
+      },{
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
       }]
     },
     postgresql: {
@@ -579,6 +606,10 @@ module.exports = {
           id: 2,
           name: 'bookshelfjs.org'
         }
+      },{
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
       }]
     },
     sqlite3: {
@@ -614,6 +645,10 @@ module.exports = {
           id: 2,
           name: 'bookshelfjs.org'
         }
+      },{
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
       }]
     }
   },

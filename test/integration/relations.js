@@ -105,6 +105,12 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('does not load "belongsTo" relationship when foreignKey is null (blog -> site) #1299', function() {
+          return new Blog({id: 5}).fetch({
+            withRelated: ['site']
+          }).then(checkTest(this));
+        });
+
         // it('Throws an error if you try to fetch a related object without the necessary key', function() {
         //   return new Blog({id: 1}).site().fetch().should.be.rejected;
         // });
@@ -206,7 +212,7 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        it('eager loads "belongsTo" models correctly (blogs -> site)', function() {
+        it('eager loads "belongsTo" models correctly (blogs -> site) including #1299', function() {
           return Blog.fetchAll({
             withRelated: ['site']
           }).then(checkTest(this));
