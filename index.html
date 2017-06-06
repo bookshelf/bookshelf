@@ -166,7 +166,6 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Model-Registry">Registry</a>: Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.</li>
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Virtuals">Virtuals</a>: Define virtual properties on your model to compute new values.</li>
 <li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a>: Specify a whitelist/blacklist of model attributes when serialized toJSON.</li>
-<li><a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Pagination">Pagination</a>: Adds <code>fetchPage</code> methods to use for pagination in place of <code>fetch</code> and <code>fetchAll</code>.</li>
 </ul>
 <h2 id="community-plugins">Community plugins</h2><ul>
 <li><a href="https://github.com/seegno/bookshelf-cascade-delete">bookshelf-cascade-delete</a> - Cascade delete related models on destroy.</li>
