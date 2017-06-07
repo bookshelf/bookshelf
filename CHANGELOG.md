@@ -1,6 +1,13 @@
 ## Change Log
 
-**0.10.2** - <small>Sept 22, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2)
+**0.10.3** - <small>_Jan 21, 2017_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.2...0.10.3)
+
+* Drop Node support for 0.10 and 0.12
+* Trigger creating event for attached models
+* Add support for uninstantiated models relations
+* Add foreignKeyTarget to relation methods
+
+**0.10.2** - <small>_Sept 22, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2)
 
 * Fixes memory leak introduced in 0.10.0 caused by binding `this.listeners` in `triggerThen`
 * Fixes Bluebird warning when a Promise was internally rejected with a non-error
