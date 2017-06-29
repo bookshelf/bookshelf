@@ -328,7 +328,7 @@ export default RelationBase.extend({
     const key = this.isInverse() && !this.isThrough()
       ? this.key('foreignKey')
       : this.parentIdAttribute;
-    return _(response).map(key).uniq().value();
+    return _.reject(_(response).map(key).uniq().value(), _.isNil);
   },
 
   // Generates the appropriate standard join table.
@@ -407,9 +407,11 @@ export default RelationBase.extend({
         const formatted = model.format(_.clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
-      const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
-      relation.relatedData = this;
-      if (this.isJoined()) _.extend(relation, pivotHelpers);
+      if (groupedKey) {
+        const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        relation.relatedData = this;
+        if (this.isJoined()) _.extend(relation, pivotHelpers);
+      }
     })
 
     // Now that related models have been successfully paired, update each with
