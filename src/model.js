@@ -690,7 +690,7 @@ const BookshelfModel = ModelBase.extend({
          * @event Model#fetched
          * @param {Model} model
          *   The model firing the event.
-         * @param {Object} reponse
+         * @param {Object} response
          *   Knex query response.
          * @param {Object} options
          *   Options object passed to {@link Model#fetch fetch}.
