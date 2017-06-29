@@ -22,6 +22,21 @@ module.exports = function (bookshelf) {
       equal(m.fullName, 'Joe Shmoe');
     });
 
+    it('allows for normal access to parameterized virtual properties on the model', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: function(middleName) {
+              if (middleName === undefined)
+                return this.get('firstName') + ' ' + this.get('lastName');
+              else
+                return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.fullName, 'Joe Shmoe');
+    });
+
     it('allows to create virtual properties with getter and setter', function () {
       var m = new (bookshelf.Model.extend({
         virtuals: {
@@ -46,6 +61,55 @@ module.exports = function (bookshelf) {
       equal(m.get('lastName'), 'Shmoe');
     });
 
+    it('allows for normal access to parameterized virtual properties with getter and setter', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            get: function (middleName) {
+              if (middleName === undefined)
+                return this.get('firstName') + ' ' + this.get('lastName');
+              else
+                return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+            },
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.fullName, 'Joe Shmoe');
+      m.fullName = 'Jack Shmoe';
+
+      equal(m.fullName, 'Jack Shmoe');
+      equal(m.get('firstName'), 'Jack');
+      equal(m.get('lastName'), 'Shmoe');
+    });
+
+    it('allows for access to parameterized virtual properties with getter and setter', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            get: function (middleName) {
+              if (middleName === undefined)
+                return this.get('firstName') + ' ' + this.get('lastName');
+              else
+                return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+            },
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.get('fullName', 'Trouble'), 'Joe Trouble Shmoe');
+    });
+
     it('defaults virtual properties with no setter to a noop', function () {
        var m = new (bookshelf.Model.extend({
         virtuals: {
@@ -68,6 +132,43 @@ module.exports = function (bookshelf) {
           fullName: {
             get: function () {
               return this.get('firstName') + ' ' + this.get('lastName');
+            },
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.get('fullName'), 'Joe Shmoe');
+
+      m.set('fullName', 'Jack Shmoe');
+      equal(m.get('firstName'), 'Jack');
+      equal(m.get('lastName'), 'Shmoe');
+
+      // setting virtual should not set attribute
+      equal(m.attributes['fullName'], undefined);
+
+      m.set({fullName: 'Peter Griffin', dogName:'Brian'});
+      equal(m.get('firstName'), 'Peter');
+      equal(m.get('lastName'), 'Griffin');
+      equal(m.get('dogName'), 'Brian');
+
+      // setting virtual should not set attribute
+      equal(m.attributes['fullName'], undefined);
+    });
+
+    it('allows parameterized virtual properties to be set and get like normal properties', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            get: function (middleName) {
+              if (middleName === undefined)
+                return this.get('firstName') + ' ' + this.get('lastName');
+              else
+                return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
             },
             set: function(value) {
               value = value.split(' ');
@@ -181,6 +282,100 @@ module.exports = function (bookshelf) {
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
 
+    it('parameterized virtuals are included in the `toJSON` result', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          fullName: function(middleName) {
+            if (middleName === undefined)
+              return this.get('firstName') + ' ' + this.get('lastName');
+            else
+              return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+      var json = m.toJSON({virtuals: true});
+      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+    });
+
+    it('parameterized virtuals in `toJSON` result are correct when params passed', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          fullName: function(middleName) {
+            if (middleName === undefined)
+              return this.get('firstName') + ' ' + this.get('lastName');
+            else
+              return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+      var json = m.toJSON({virtuals: true, param: 'Trouble'});
+      equal(json.fullName, 'Joe Trouble Shmoe');
+    });
+
+    it('parameterized virtuals in `toJSON` result are correct when no params passed', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          fullName: function(middleName) {
+            if (middleName === undefined)
+              return this.get('firstName') + ' ' + this.get('lastName');
+            else
+              return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+      var json = m.toJSON({virtuals: true});
+      equal(json.fullName, 'Joe Shmoe');
+    });
+
+    it('parameterized virtuals in `toJSON` result are correct when params are an object', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          fullName: function(nameExtras) {
+            if (nameExtras === undefined)
+              return this.get('firstName') + ' ' + this.get('lastName');
+            else
+              return nameExtras.title + " " + this.get('firstName') + ' ' + nameExtras.middle + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+      var json = m.toJSON({virtuals: true, param: {title:'Sir', middle:'Danger'}});
+      equal(json.fullName, 'Sir Joe Danger Shmoe');
+    });
+
+    it('non-parameterized virtuals in `toJSON` result are correct when params passed', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          fullName: function() {
+            return this.get('firstName') + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+      var json = m.toJSON({virtuals: true, param: 'Trouble'});
+      equal(json.fullName, 'Joe Shmoe');
+    });
+
+    it('multiple parameterized virtuals in `toJSON` receive the same parameters', function () {
+      var m = new (bookshelf.Model.extend({
+        outputVirtuals: false,
+        virtuals: {
+          brothersFullName: function(lastName) {
+            return this.get('brothersName') + ' ' + lastName;
+          },
+          sistersFullName: function(lastName) {
+            return this.get('sistersName') + ' ' + lastName;
+          }
+        }
+      }))({brothersName: 'Joe', sistersName: 'Flo'});
+      var json = m.toJSON({virtuals: true, param: 'Shmoe' });
+      equal(json.brothersFullName, 'Joe Shmoe');
+      equal(json.sistersFullName, 'Flo Shmoe');
+    });
+
     it('does not crash when no virtuals are set - #168', function () {
       var m = new bookshelf.Model();
       m.set('firstName', 'Joe');
@@ -193,6 +388,27 @@ module.exports = function (bookshelf) {
         virtuals: {
           fullName: function() {
               return this.get('firstName') + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      deepEqual(m.keys(), ['firstName', 'lastName', 'fullName']);
+      deepEqual(m.values(), ['Joe', 'Shmoe', 'Joe Shmoe']);
+      deepEqual(m.toPairs(), [['firstName', 'Joe'], ['lastName', 'Shmoe'], ['fullName', 'Joe Shmoe']]);
+      deepEqual(m.invert(), {'Joe': 'firstName', 'Shmoe': 'lastName','Joe Shmoe': 'fullName'});
+      deepEqual(m.pick('fullName'), {'fullName': 'Joe Shmoe'});
+      deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
+    });
+
+    it('normal access to parameterized virtuals with `underscore` methods - #170', function () {
+       var m = new (bookshelf.Model.extend({
+        outputVirtuals: true,
+        virtuals: {
+          fullName: function(middleName) {
+            if (middleName === undefined)
+              return this.get('firstName') + ' ' + this.get('lastName');
+            else
+              return this.get('firstName') + ' ' + middleName + ' ' + this.get('lastName');
           }
         }
       }))({firstName: 'Joe', lastName: 'Shmoe'});

@@ -42,17 +42,17 @@ module.exports = function (Bookshelf) {
       let attrs = proto.toJSON.call(this, options);
       if (!options || options.virtuals !== false) {
         if ((options && options.virtuals === true) || this.outputVirtuals) {
-          attrs = _.extend(attrs, getVirtuals(this));
+          attrs = _.extend(attrs, getVirtuals(this, options ? options.param : undefined));
         }
       }
       return attrs;
     },
 
     // Allow virtuals to be fetched like normal properties
-    get: function (attr) {
+    get: function (attr, param) {
       const { virtuals } = this;
       if (_.isObject(virtuals) && virtuals[attr]) {
-        return getVirtual(this, attr);
+        return getVirtual(this, attr, param);
       }
       return proto.get.apply(this, arguments);
     },
@@ -156,20 +156,20 @@ module.exports = function (Bookshelf) {
     };
   });
 
-  function getVirtual(model, virtualName) {
+  function getVirtual(model, virtualName, param) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
-      return virtuals[virtualName].get ? virtuals[virtualName].get.call(model)
-        : virtuals[virtualName].call(model);
+      return virtuals[virtualName].get ? virtuals[virtualName].get.call(model, param)
+        : virtuals[virtualName].call(model, param);
     }
   }
 
-  function getVirtuals(model) {
+  function getVirtuals(model, param) {
     const { virtuals } = model;
     const attrs = {};
     if (virtuals != null) {
       for (const virtualName in virtuals) {
-        attrs[virtualName] = getVirtual(model, virtualName);
+        attrs[virtualName] = getVirtual(model, virtualName, param);
       }
     }
     return attrs;
