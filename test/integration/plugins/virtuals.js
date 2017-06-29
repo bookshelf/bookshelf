@@ -181,6 +181,21 @@ module.exports = function (bookshelf) {
       deepEqual(_.keys(json), ['firstName', 'lastName']);
     });
 
+    it('virtuals are not included in the `toJSON` result, if `omitNew` is set to `true`, `isNew()` is true, even if `outputVirtuals` is `true`', function() {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: function() {
+            return this.get('firstName') + ' ' + this.get('lastName');
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Schmoe'});
+
+      var json = m.toJSON();
+      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+      json = m.toJSON({omitNew: true});
+      deepEqual(json, null);
+    });
+
     it('does not crash when no virtuals are set - #168', function () {
       var m = new bookshelf.Model();
       m.set('firstName', 'Joe');
