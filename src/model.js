@@ -690,7 +690,7 @@ const BookshelfModel = ModelBase.extend({
          * @event Model#fetched
          * @param {Model} model
          *   The model firing the event.
-         * @param {Object} reponse
+         * @param {Object} response
          *   Knex query response.
          * @param {Object} options
          *   Options object passed to {@link Model#fetch fetch}.
@@ -1137,13 +1137,13 @@ const BookshelfModel = ModelBase.extend({
       /**
        * Destroyed event.
        *
-       * Fired before a `delete` query. A promise may be returned from the event
+       * Fired after a `delete` query. A promise may be returned from the event
        * handler for async behaviour.
        *
        * @event Model#destroyed
        * @param {Model}  model    The model firing the event.
        * @param {Object} attrs    Model firing the event.
-       * @param {Object} options  Options object passed to {@link Model#save save}.
+       * @param {Object} options  Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
       return this.triggerThen('destroyed', this, resp, options);
