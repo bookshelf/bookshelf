@@ -71,7 +71,7 @@ _.extend(Sync.prototype, {
         if (relatedData.isThrough()) {
           fks[relatedData.key('foreignKey')] = relatedData.parentFk;
           const through = new relatedData.throughTarget(fks);
-          relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+          relatedData.pivotColumns = through._parseWrapper(relatedData.pivotColumns);
         } else if(relatedData.type === 'hasMany') {
           const fk = relatedData.key('foreignKey');
           knex.where(fk, relatedData.parentFk);
@@ -134,7 +134,7 @@ _.extend(Sync.prototype, {
 
           return through.triggerThen('fetching', through, relatedData.pivotColumns, options)
             .then(function () {
-              relatedData.pivotColumns = through.parse(relatedData.pivotColumns);
+              relatedData.pivotColumns = through._parseWrapper(relatedData.pivotColumns);
             });
         }
       });

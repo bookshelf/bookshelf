@@ -415,7 +415,7 @@ export default RelationBase.extend({
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
     related.map(model => {
-      model.attributes = model.parse(model.attributes)
+      model.attributes = model._parseWrapper(model.attributes)
     });
 
     return related;
@@ -725,8 +725,8 @@ const pivotHelpers = {
         JoinModel   = relatedData.throughTarget,
         joinModel   = new JoinModel();
 
-    fks  = joinModel.parse(fks);
-    data = joinModel.parse(data);
+    fks  = joinModel._parseWrapper(fks);
+    data = joinModel._parseWrapper(data);
 
     if (method === 'insert') {
       return joinModel.set(data).save(null, options);

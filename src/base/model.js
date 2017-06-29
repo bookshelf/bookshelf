@@ -5,8 +5,8 @@ import inherits from 'inherits';
 
 import Events from './events';
 
-const PIVOT_PREFIX = '_pivot_';
-const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
+
+import {PIVOT_PREFIX, DEFAULT_TIMESTAMP_KEYS} from '../constants';
 
 // List of attributes attached directly from the `options` passed to the constructor.
 const modelProps = ['tableName', 'hasTimestamps'];
@@ -30,7 +30,7 @@ function ModelBase(attributes, options) {
   this.cid  = _.uniqueId('c');
   if (options) {
     _.extend(this, _.pick(options, modelProps));
-    if (options.parse) attrs = this.parse(attrs, options) || {};
+    if (options.parse) attrs = this._parseWrapper(attrs, options) || {};
   }
   this.set(attrs, options);
   this.initialize.apply(this, arguments);
@@ -345,6 +345,40 @@ ModelBase.prototype.has = function(attr) {
  * @returns {Object} Parsed attributes.
  */
 ModelBase.prototype.parse = identity;
+
+/**
+ * @method
+ * @private
+ * @description
+ *
+ * A wrapper method around the publically available method of "parse".
+ * It handles any of the hooks that need to be called before we call the client's
+ * customized parse method.
+ *
+ * @param {Object} resp Hash of attributes to parse
+ * @returns {Object} Parsed attributes.
+ */
+ModelBase.prototype._parseWrapper = function(resp){
+  if(this.hasTimestamps){
+    const keys = _.isArray(this.hasTimestamps)
+      ? this.hasTimestamps
+      : DEFAULT_TIMESTAMP_KEYS;
+
+    const [ createdAtKey, updatedAtKey ] = keys;
+    const createdAt = resp[createdAtKey];
+    const updatedAt = resp[updatedAtKey];
+
+    if (createdAt) {
+      resp[createdAtKey] = new Date(createdAt);
+    }
+
+    if(updatedAt){
+      resp[updatedAtKey] = new Date(updatedAt);
+    }
+  }
+
+  return this.parse(resp);
+};
 
 /**
  * @method

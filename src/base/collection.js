@@ -209,7 +209,7 @@ CollectionBase.prototype.set = function(models, options) {
       }
       if (merge) {
         attrs = attrs === model ? model.attributes : attrs;
-        if (options.parse) attrs = existing.parse(attrs, options);
+        if (options.parse) attrs = existing._parseWrapper(attrs, options);
         existing.set(attrs, options);
       }
 
