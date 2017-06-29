@@ -172,7 +172,7 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
+	qb.count.apply(qb, ['*']);
 
       }).fetchAll().then(result => {
 
