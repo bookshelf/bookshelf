@@ -2449,6 +2449,717 @@ module.exports = {
       }]
     }
   },
+  'eager loads morphMany on parsed model (sites -> photos)': {
+    mysql: {
+      result: [{
+        id_parsed: 1,
+        name_parsed: 'knexjs.org',
+        photos: [{
+          id_parsed: 3,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 4,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 2,
+        name_parsed: 'bookshelfjs.org',
+        photos: [{
+          id_parsed: 5,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 6,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 3,
+        name_parsed: 'backbonejs.org',
+        photos: []
+      }]
+    },
+    postgresql: {
+      result: [{
+        id_parsed: 1,
+        name_parsed: 'knexjs.org',
+        photos: [{
+          id_parsed: 3,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 4,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 2,
+        name_parsed: 'bookshelfjs.org',
+        photos: [{
+          id_parsed: 5,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 6,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 3,
+        name_parsed: 'backbonejs.org',
+        photos: []
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id_parsed: 1,
+        name_parsed: 'knexjs.org',
+        photos: [{
+          id_parsed: 3,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 4,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 1,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 2,
+        name_parsed: 'bookshelfjs.org',
+        photos: [{
+          id_parsed: 5,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        },{
+          id_parsed: 6,
+          url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+          caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+          imageable_id_parsed: 2,
+          imageable_type_parsed: 'sites'
+        }]
+      },{
+        id_parsed: 3,
+        name_parsed: 'backbonejs.org',
+        photos: []
+      }]
+    }
+  },
+  'eager loads morphTo on parsed model (photos -> imageable)': {
+    mysql: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org'
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org'
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    }
+  },
+  'eager loads beyond the morphTo on parsed model, where possible': {
+    mysql: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    },
+    postgresql: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    },
+    sqlite3: {
+      result: [{
+        id_parsed: 1,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 1,
+          site_id: 1,
+          first_name: 'Tim',
+          last_name: 'Griesser'
+        }
+      },{
+        id_parsed: 2,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'authors',
+        imageable: {
+          id: 2,
+          site_id: 1,
+          first_name: 'Bazooka',
+          last_name: 'Joe'
+        }
+      },{
+        id_parsed: 3,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 4,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 1,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 1,
+          name: 'knexjs.org',
+          authors: [{
+            id: 1,
+            site_id: 1,
+            first_name: 'Tim',
+            last_name: 'Griesser'
+          },{
+            id: 2,
+            site_id: 1,
+            first_name: 'Bazooka',
+            last_name: 'Joe'
+          }]
+        }
+      },{
+        id_parsed: 5,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 6,
+        url_parsed: 'https://www.google.com/images/srpr/logo4w.png',
+        caption_parsed: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
+        imageable_id_parsed: 2,
+        imageable_type_parsed: 'sites',
+        imageable: {
+          id: 2,
+          name: 'bookshelfjs.org',
+          authors: [{
+            id: 3,
+            site_id: 2,
+            first_name: 'Charlie',
+            last_name: 'Brown'
+          },{
+            id: 4,
+            site_id: 2,
+            first_name: 'Ron',
+            last_name: 'Burgundy'
+          }]
+        }
+      },{
+        id_parsed: 7,
+        url_parsed: 'http://image.dev',
+        caption_parsed: 'this is a test image',
+        imageable_id_parsed: 10,
+        imageable_type_parsed: 'sites',
+        imageable: {
+
+        }
+      }]
+    }
+  },
   'handles morphOne with custom columnNames (thumbnail)': {
     mysql: {
       result: {

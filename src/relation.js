@@ -369,9 +369,9 @@ export default RelationBase.extend({
   eagerPair(relationName, related, parentModels) {
     // If this is a morphTo, we only want to pair on the morphValue for the current relation.
     if (this.type === 'morphTo') {
-      parentModels = _.filter(parentModels, (m) => {
-        return m.get(this.key('morphKey')) === this.key('morphValue');
-      });
+      parentModels = _.filter(parentModels, (m) =>
+        m.get(Helpers.parseAttribute(m, this.key('morphKey'))) === this.key('morphValue')
+      );
     }
 
     // If this is a `through` or `belongsToMany` relation, we need to cleanup & setup the `interim` model.
@@ -397,16 +397,13 @@ export default RelationBase.extend({
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     _.each(parentModels, (model) => {
-      let groupedKey;
-      if (!this.isInverse()) {
-        groupedKey = model.get(this.parentIdAttribute);
+      let keyColumn;
+      if (this.isInverse()) {
+        keyColumn = this.key(this.isThrough() ? 'throughForeignKey': 'foreignKey');
       } else {
-        const keyColumn = this.key(
-          this.isThrough() ? 'throughForeignKey': 'foreignKey'
-        );
-        const formatted = model.format(_.clone(model.attributes));
-        groupedKey = formatted[keyColumn];
+        keyColumn = this.parentIdAttribute;
       }
+      const groupedKey = model.get(Helpers.parseAttribute(model, keyColumn));
       const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
       relation.relatedData = this;
       if (this.isJoined()) _.extend(relation, pivotHelpers);

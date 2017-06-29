@@ -121,6 +121,12 @@ const helpers = {
     return obj.query(qb => {
       qb.orderBy(_sort, _order);
     });
+  },
+
+  // Needed when the `parse` and `format` method are override
+  // so that `morphKey` and `foreignKey` match attribute keys
+  parseAttribute (model, attribute) {
+    return _.head(_.keys(model.parse({ [attribute]: null })));
   }
 
 };

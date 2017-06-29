@@ -7,7 +7,7 @@ import Promise from './base/promise';
 import EagerBase from './base/eager';
 
 const getAttributeUnique = (models, attribute) =>
-  _.uniq(_.map(models, m => m.get(attribute)));
+  _.uniq(_.map(models, m => m.get(Helpers.parseAttribute(m, attribute))));
 
 // An `EagerRelation` object temporarily stores the models from an eager load,
 // and handles matching eager loaded objects with their parent(s). The
@@ -45,7 +45,9 @@ export default class EagerRelation extends EagerBase {
       typeColumn = `${morphName}_type`, idColumn = `${morphName}_id`
     ] = columnNames;
 
-    const parentsByType = _.groupBy(this.parent, model => model.get(typeColumn));
+    const parentsByType = _.groupBy(this.parent, model =>
+      model.get(Helpers.parseAttribute(model, typeColumn))
+    );
     const TargetByType = _.mapValues(parentsByType, (parents, type) =>
       Helpers.morphCandidate(relatedData.candidates, type)
     );
