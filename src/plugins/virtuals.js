@@ -40,6 +40,9 @@ module.exports = function (Bookshelf) {
     // model-level setting
     toJSON: function(options) {
       let attrs = proto.toJSON.call(this, options);
+      if (options && options.omitNew && this.isNew()) {
+        return attrs;
+      }
       if (!options || options.virtuals !== false) {
         if ((options && options.virtuals === true) || this.outputVirtuals) {
           attrs = _.extend(attrs, getVirtuals(this));
