@@ -382,6 +382,13 @@ module.exports = {
         site_id: null,
         name: 'Orphan Blog Without a Site'
       }
+    },
+    oracle: {
+      result: {
+        id: 5,
+        site_id: null,
+        name: 'Orphan Blog Without a Site'
+      }
     }
   },
   'eager loads "belongsToMany" models correctly (post -> tags)': {
