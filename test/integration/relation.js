@@ -474,7 +474,7 @@ module.exports = function(Bookshelf) {
         // Init
         equal(relatedData.parentId, undefined);
         equal(relatedData.parentTableName, 'translations');
-        equal(relatedData.parentIdAttribute, 'isoCode');
+        equal(relatedData.parentIdAttribute, 'code');
         equal(relatedData.parentFk, 'en');
 
         // init the select constraints
