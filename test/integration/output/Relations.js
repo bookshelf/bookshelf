@@ -4956,17 +4956,17 @@ module.exports = {
         first_name: 'Bazooka',
         last_name: 'Joe',
         blogs: [{
-          id: 2,
-          site_id: 1,
-          name: 'Alternate Site Blog',
-          _pivot_owner_id: 2,
-          _pivot_blog_id: 2
-        },{
           id: 1,
           site_id: 1,
           name: 'Main Site Blog',
           _pivot_owner_id: 2,
           _pivot_blog_id: 1
+        },{
+          id: 2,
+          site_id: 1,
+          name: 'Alternate Site Blog',
+          _pivot_owner_id: 2,
+          _pivot_blog_id: 2
         }]
       },{
         id: 3,
