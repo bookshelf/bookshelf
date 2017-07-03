@@ -243,7 +243,7 @@ module.exports = function(Bookshelf) {
           return new Site({id: 1}).fetch({
             withRelated: {
               'authors.posts': function (qb) {
-                return qb.orderBy('id', 'ASC')
+                return qb.orderBy('posts.id', 'ASC')
               }
             }
           }).then(checkTest(this));
@@ -253,7 +253,7 @@ module.exports = function(Bookshelf) {
           return new Site({id: 1}).fetch({
             withRelated: ['authors.ownPosts', 'authors.site',
             {'blogs.posts': function (qb) {
-              return qb.orderBy('id', 'ASC')
+              return qb.orderBy('posts.id', 'ASC')
             }}]
           }).then(checkTest(this));
         });
@@ -727,7 +727,7 @@ module.exports = function(Bookshelf) {
         it('eager loads belongsToMany `through`', function() {
           return Author.fetchAll({withRelated:
             { blogs: function (qb) {
-              return qb.orderBy('id', 'ASC')
+              return qb.orderBy('blogs.id', 'ASC');
             }}
           }).tap(checkTest(this));
         });

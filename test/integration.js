@@ -19,10 +19,12 @@ module.exports = function(Bookshelf) {
       }
     }
   });
+  var oracledb = require('knex')({client: 'oracledb', connection: config.oracledb});
 
   var MySQL = require('../bookshelf')(mysql);
   var PostgreSQL = require('../bookshelf')(pg);
   var SQLite3 = require('../bookshelf')(sqlite3);
+  var OracleDB = require('../bookshelf')(oracledb);
   var Swapped = require('../bookshelf')(Knex({client: 'sqlite3'}));
   Swapped.knex = sqlite3;
 
@@ -48,7 +50,7 @@ module.exports = function(Bookshelf) {
     });
   });
 
-  _.each([MySQL, PostgreSQL, SQLite3, Swapped], function(bookshelf) {
+  _.each([MySQL, PostgreSQL, SQLite3, OracleDB, Swapped], function(bookshelf) {
 
     var dialect = bookshelf.knex.client.dialect;
 
@@ -57,6 +59,7 @@ module.exports = function(Bookshelf) {
       this.dialect = dialect;
 
       before(function() {
+        this.timeout(300000);
         return require('./integration/helpers/migration')(bookshelf).then(function() {
            return require('./integration/helpers/inserts')(bookshelf);
         });

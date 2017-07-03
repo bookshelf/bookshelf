@@ -26,6 +26,7 @@ module.exports = function(bookshelf) {
     var formatNumber = {
       mysql:      _.identity,
       sqlite3:    _.identity,
+      oracle:     _.identity,
       postgresql: function(count) { return count.toString() }
     }[dialect];
     var checkCount = function(actual, expected) {
@@ -496,7 +497,7 @@ module.exports = function(bookshelf) {
       it('saves a new object', function() {
 
         return new Site({name: 'Fourth Site'}).save().then(function(m) {
-          equal(m.get('id'), 4);
+          equal(Number(m.get('id')), 4);
           return new bookshelf.Collection(null, {model: Site}).fetch();
         })
         .then(function(c) {
@@ -672,7 +673,7 @@ module.exports = function(bookshelf) {
           acmeOrg1 = new Models.OrgModel ({id: 1})
           return acmeOrg1.fetch();
         }).then (function () {
-          equal (acmeOrg1.attributes.id, 1);
+          equal (Number(acmeOrg1.attributes.id), 1);
           equal (acmeOrg1.attributes.name, "ACME, Inc");
           equal (acmeOrg1.attributes.organization_id, undefined);
           equal (acmeOrg1.attributes.organization_name, undefined);
@@ -680,7 +681,7 @@ module.exports = function(bookshelf) {
           expect (acmeOrg.attributes.name).to.equal ("ACME, Inc");
           // field name needs to be processed through model.parse
           equal (acmeOrg.attributes.organization_id, undefined);
-          expect (acmeOrg.attributes.id).to.equal (1);
+          expect (Number(acmeOrg.attributes.id)).to.equal (1);
         });
       });
 
