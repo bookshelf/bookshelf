@@ -68,7 +68,7 @@ module.exports = function (Bookshelf) {
       }
 
       // Determine whether we're in the middle of a patch operation based on the
-      // existance of the `patchAttributes` object.
+      // existence of the `patchAttributes` object.
       const isPatching = this.patchAttributes != null;
 
       // Handle `{key: value}` style arguments.
@@ -117,12 +117,12 @@ module.exports = function (Bookshelf) {
          // Extend the model state to collect side effects from the virtual setter
          // callback. If `set` is called, this object will be updated in addition
          // to the normal `attributes` object.
-         this.patchAttributes = {}
+         this.patchAttributes = {};
 
          // Any setter could throw. We need to reject `save` if they do.
          try {
 
-           // Check if any of the patch attribues are virtuals. If so call their
+           // Check if any of the patch attributes are virtuals. If so call their
            // setter. Any setter that calls `this.set` will be modifying
            // `this.patchAttributes` instead of `this.attributes`.
            _.each(attrs, (function (value, key) {
