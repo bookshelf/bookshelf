@@ -1,14 +1,14 @@
-# [bookshelf.js](http://bookshelfjs.org) 
+# [bookshelf.js](http://bookshelfjs.org)
 
-[![Build Status](https://travis-ci.org/tgriesser/bookshelf.svg?branch=master)](https://travis-ci.org/tgriesser/bookshelf) 
-[![Dependency Status](https://david-dm.org/tgriesser/bookshelf/status.svg)](https://david-dm.org/tgriesser/bookshelf) 
-[![devDependency Status](https://david-dm.org/tgriesser/bookshelf/dev-status.svg)](https://david-dm.org/tgriesser/bookshelf?type=dev)
+[![Build Status](https://travis-ci.org/bookshelf/bookshelf.svg?branch=master)](https://travis-ci.org/bookshelf/bookshelf)
+[![Dependency Status](https://david-dm.org/bookshelf/bookshelf/status.svg)](https://david-dm.org/bookshelf/bookshelf)
+[![devDependency Status](https://david-dm.org/bookshelf/bookshelf/dev-status.svg)](https://david-dm.org/bookshelf/bookshelf?type=dev)
 
 Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
 It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
-[Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/tgriesser/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/tgriesser/bookshelf).
+[Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
 ## Introduction
 
@@ -104,16 +104,16 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 ## Plugins
 
-* [Registry](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Model-Registry): Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.
-* [Virtuals](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
-* [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility): Specify a whitelist/blacklist of model attributes when serialized toJSON.
-* [Pagination](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Pagination): Adds `fetchPage` methods to use for pagination in place of `fetch` and `fetchAll`.
+* [Registry](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Model-Registry): Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.
+* [Virtuals](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
+* [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility): Specify a whitelist/blacklist of model attributes when serialized toJSON.
+* [Pagination](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Pagination): Adds `fetchPage` methods to use for pagination in place of `fetch` and `fetchAll`.
 
 ## Community plugins
 
 * [bookshelf-cascade-delete](https://github.com/seegno/bookshelf-cascade-delete) - Cascade delete related models on destroy.
 * [bookshelf-json-columns](https://github.com/seegno/bookshelf-json-columns) - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).
-* [bookshelf-mask](https://github.com/seegno/bookshelf-mask) - Similar to [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility) but supporting multiple scopes, masking models and collections using the [json-mask](https://github.com/nemtsov/json-mask) API.
+* [bookshelf-mask](https://github.com/seegno/bookshelf-mask) - Similar to [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility) but supporting multiple scopes, masking models and collections using the [json-mask](https://github.com/nemtsov/json-mask) API.
 * [bookshelf-schema](https://github.com/bogus34/bookshelf-schema) - A plugin for handling fields, relations, scopes and more.
 * [bookshelf-signals](https://github.com/bogus34/bookshelf-signals) - A plugin that translates Bookshelf events to a central hub.
 * [bookshelf-paranoia](https://github.com/estate/bookshelf-paranoia) - Protect your database from data loss by soft deleting your rows.
@@ -124,7 +124,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 ## Support
 
-Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js) or in the GitHub [issue tracker](https://github.com/tgriesser/bookshelf/issues).
+Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js) or in the GitHub [issue tracker](https://github.com/bookshelf/bookshelf/issues).
 
 ## F.A.Q.
 

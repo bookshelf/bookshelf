@@ -1,12 +1,12 @@
 ## How to contribute to Bookshelf.js
 
 * Before sending a pull request for a feature or bug fix, be sure to have
-[tests](https://github.com/tgriesser/bookshelf/tree/master/test).
+[tests](https://github.com/bookshelf/bookshelf/tree/master/test).
 
 * Use the same coding style as the rest of the
-[codebase](https://github.com/tgriesser/bookshelf/blob/master/src/bookshelf.js).
+[codebase](https://github.com/bookshelf/bookshelf/blob/master/src/bookshelf.js).
 
-* Make changes in the /src directory, running "npm run dev" which will kick off 
+* Make changes in the /src directory, running "npm run dev" which will kick off
 transpilation from ES6 in the background.
 
 * All pull requests should be made to the `master` branch.
@@ -14,7 +14,7 @@ transpilation from ES6 in the background.
 ### Development Environment Setup
 
 You'll need to have `git` installed obviously. Begin by forking the [main
- repository](https://github.com/tgriesser/bookshelf) and then getting the code from your forked copy:
+ repository](https://github.com/bookshelf/bookshelf) and then getting the code from your forked copy:
 
 ```sh
 $ git clone git@github.com:yourusername/bookshelf.git

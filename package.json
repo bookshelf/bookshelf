@@ -19,7 +19,7 @@
   "homepage": "http://bookshelfjs.org",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tgriesser/bookshelf.git"
+    "url": "git://github.com/bookshelf/bookshelf.git"
   },
   "keywords": [
     "orm",
