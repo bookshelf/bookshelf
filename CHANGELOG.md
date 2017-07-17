@@ -1,5 +1,20 @@
 ## Change Log
 
+**0.10.4** - <small>_Jul 17, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4)
+
+* Allow knex 0.13.x
+* Use uuid instead of node-uuid
+* Test Bookshelf with Node v7
+* Updated Author info in package.json
+* Remove lodash from build script
+* Add OracleDB integration tests
+* Add opportunity to override `visible` and `hidden` behaviour for toJSON function
+* Do not load belongsTo if foreignKey is null
+* Optimise `timestamp` function: respect updated_at/created_at being part of the query
+* Fix `fetchPage` on Collection (pagination plugin)
+* Fixing virtuals when `omitNew=true`
+* Lot's of typo fixes and documentation updates
+
 **0.10.3** - <small>_Jan 21, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.2...0.10.3)
 
 * Drop Node support for 0.10 and 0.12
