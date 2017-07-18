@@ -818,6 +818,19 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
+      it('will set the created_at and updated_at columns to provided time', function() {
+        var dateInThePast = new Date(1999, 1, 1);
+        var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
+          equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
+          return stubSync;
+        };
+        return m.save({item: 'test'}, { date: dateInThePast });
+      });
+
+
       it('only sets the updated_at for existing models', function() {
         var m1 = new (bookshelf.Model.extend({hasTimestamps: true}))();
         m1.sync = function() {
