@@ -5,7 +5,7 @@
 
 ## Introduction
 
-A short description of what the feature is. Try to keep it to a
+A short description of what the feature or the bug-fix is. Try to keep it to a
 single-paragraph "elevator pitch" so the reader understands what
 problem this proposal is addressing.
 
@@ -25,9 +25,8 @@ workarounds: is it cleaner, safer, or more efficient?
 
 ## Current PR Issues
 
-If present describe some issues in the Pull Request, in order to help others in the full completition of the PR
+If present describe some issues in the Pull Request, in order to help others in the full development of the PR.
 
 ## Alternatives considered
 
-Describe alternative approaches to addressing the same problem, and
-why you chose this approach instead.
+Describe alternative approaches to addressing the same problem, and why you chose this approach instead.

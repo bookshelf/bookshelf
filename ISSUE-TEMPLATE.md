@@ -9,10 +9,18 @@ single-paragraph.
 
 ## Issue Description
 
-Describe the bug found or the feature that you are proposing
+Describe the bug found or the feature that you are proposing.
 
-If they are part of some common pattern hard to express, show
-how one can currently get a similar effect and describe its
-drawbacks. 
+If it's completely new feature explain why this new functionality is necessary, and propose some advice for the development (or just open a Pull Request if you have already started to work on the feature on your own).
 
-If it's completely new feature motivate why this new functionality is necessary, and propose some advice for the development (or open a Pull Request if you have already started to work on the feature on your own)
+## Steps to reproduce issue
+
+If they bug is complex to describe, show how developers can get a similar effect (using code snippet, database data, etc...) and describe its drawbacks.
+
+## Expected behaviour
+
+Explain what is the expected behaviour of a program while using the code related to this issue
+
+## Actual behaviour
+
+Explain what is the actual behaviour of a program and what are the actual errors in the running of this piece of code
