@@ -474,13 +474,16 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
  * @param {string} [options.method]
  *   Either `'insert'` or `'update'`. Specify what kind of save the attribute
  *   update is for.
+ * @param {string} [options.date]
+ *   Either a Date object or ms since the epoch. Specify what date is used for
+ *   the timestamps updated.
  *
  * @returns {Object} A hash of timestamp attributes that were set.
  */
 ModelBase.prototype.timestamp = function(options) {
   if (!this.hasTimestamps) return {};
 
-  const now          = new Date();
+  const now          = (options || {}).date ? new Date(options.date) : new Date();
   const attributes   = {};
   const method       = this.saveMethod(options);
   const keys = _.isArray(this.hasTimestamps)
@@ -489,18 +492,18 @@ ModelBase.prototype.timestamp = function(options) {
 
   const [ createdAtKey, updatedAtKey ] = keys;
 
-if (updatedAtKey) {
-  attributes[updatedAtKey] = this.attributes[updatedAtKey]
-    ? new Date(this.attributes[updatedAtKey])
-    : now;
-}
+  if (updatedAtKey) {
+    attributes[updatedAtKey] = this.attributes[updatedAtKey]
+      ? new Date(this.attributes[updatedAtKey])
+      : now;
+  }
 
-if (createdAtKey && method === 'insert') {
-  attributes[createdAtKey] = this.attributes[createdAtKey]
-    ? new Date(this.attributes[createdAtKey])
-    : now;
-}
-  
+  if (createdAtKey && method === 'insert') {
+    attributes[createdAtKey] = this.attributes[createdAtKey]
+      ? new Date(this.attributes[createdAtKey])
+      : now;
+  }
+
   this.set(attributes, options);
 
   return attributes;
