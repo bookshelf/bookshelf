@@ -10,6 +10,8 @@ It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
+## [Read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600)
+
 ## Introduction
 
 Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the [Data Mapper Pattern](http://en.wikipedia.org/wiki/Data_mapper_pattern).
