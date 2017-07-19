@@ -15,12 +15,12 @@ If it's completely new feature explain why this new functionality is necessary, 
 
 ## Steps to reproduce issue
 
-If they bug is complex to describe, show how developers can get a similar effect (using code snippet, database data, etc...) and describe its drawbacks.
+If the bug is complex to describe, show how developers can reproduce it (using code snippet, database data, etc...) and describe its drawbacks.
 
 ## Expected behaviour
 
-Explain what is the expected behaviour of a program while using the code related to this issue
+Explain what is the expected behaviour of a program while using the code related to this issue.
 
 ## Actual behaviour
 
-Explain what is the actual behaviour of a program and what are the actual errors in the running of this piece of code
+Explain what is the actual behaviour of a program and what are the actual errors while running the affected code.
