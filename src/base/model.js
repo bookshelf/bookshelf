@@ -490,24 +490,24 @@ ModelBase.prototype.timestamp = function(options) {
     ? this.hasTimestamps
     : DEFAULT_TIMESTAMP_KEYS;
 
+  const canEditUpdatedAtKey = (options || {}).editUpdatedAt ? options.editUpdatedAt : true;
+  const canEditCreatedAtKey = (options || {}).editCreatedAt ? options.editCreatedAt : true;
+
   const [ createdAtKey, updatedAtKey ] = keys;
 
-  if (updatedAtKey) {
-    attributes[updatedAtKey] = this.attributes[updatedAtKey]
-      ? new Date(this.attributes[updatedAtKey])
-      : now;
+  if (updatedAtKey && canEditUpdatedAtKey) {
+    attributes[updatedAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert') {
-    attributes[createdAtKey] = this.attributes[createdAtKey]
-      ? new Date(this.attributes[createdAtKey])
-      : now;
+  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
+    attributes[createdAtKey] = now;
   }
 
   this.set(attributes, options);
 
   return attributes;
 };
+
 
 /**
  * @method
