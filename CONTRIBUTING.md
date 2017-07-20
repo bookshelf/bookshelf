@@ -94,6 +94,9 @@ The above example should work with versions 5.7 and newer.
 If you have forgotten the root password you'll need to take some extra steps to reset it. Take a look at
 [this Stack Overflow answer](http://stackoverflow.com/a/7825212/504930) for further details.
 
+If you still can't access the MySQL server without a root password after all this trouble then
+[this answer on Ask Ubuntu](https://askubuntu.com/a/784347/18193) has another alternative approach to the problem.
+
 #### PostgreSQL
 
 You can install [PostgreSQL](http://www.postgresql.org/) easily on most linux distros by using their package manager.
