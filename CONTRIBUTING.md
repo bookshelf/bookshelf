@@ -76,13 +76,20 @@ and enter the password when asked. Then just set an empty password for root like
 
 ```SQL
 USE mysql;
-UPDATE user SET password = "" WHERE User = "root";
+UPDATE user SET authentication_string = "" WHERE User = "root";
 FLUSH PRIVILEGES;
 QUIT;
 ```
+If you see an error like:
+
+```sh
+ERROR 1054 (42S22): Unknown column 'authentication_string' in 'field list'
+```
+It's because you are using an MySQL version older than 5.7. The `authentication_string` column has replaced the `password` column
+in this newer version. If you are using an older version just use `password` instead of `authentication_string` in the example above.
 
 Note that you'll probably need to set the password to `NULL` instead of an empty string in MySQL versions 5.5 and older.
-The above example should work with versions 5.6 and newer.
+The above example should work with versions 5.7 and newer.
 
 If you have forgotten the root password you'll need to take some extra steps to reset it. Take a look at
 [this Stack Overflow answer](http://stackoverflow.com/a/7825212/504930) for further details.
