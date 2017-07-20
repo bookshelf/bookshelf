@@ -434,12 +434,16 @@ const BookshelfModel = ModelBase.extend({
    *     });
    *
    * And with custom morphValues, the inverse of morphValue of
-   * {@link Model#morphOne morphOne} and {@link Model#morphMany morphMany}:
+   * {@link Model#morphOne morphOne} and {@link Model#morphMany morphMany},
+   * where the `morphValues` may be optionally set to check against a
+   * different value in the `_type` column than the {@link Model#tableName};
+   * for example, a more descriptive name, or a name that betters adheres to
+   * whatever standard you are using for models.
    *
    *     let Photo = bookshelf.Model.extend({
    *       tableName: 'photos',
    *       imageable: function() {
-   *         return this.morphTo('imageable', null, Site, [Post, "cover"]);
+   *         return this.morphTo('imageable', [Site, "favicon"], [Post, "cover_photo"]);
    *       }
    *     });
    *
