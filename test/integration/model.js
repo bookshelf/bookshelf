@@ -908,6 +908,33 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
+      it('will save a new updated_at timestamp if passed as parameter', function() {
+        var model = new Models.Admin();
+        var oldUpdatedAt = null;
+        var newUpdatedAt = new Date();
+        newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+        return model.save().then(function(m) {
+          oldUpdatedAt = m.get('updated_at');
+          return model.save('updated_at',newUpdatedAt);
+        })
+        .then(function(m) {
+          expect(m.get('updated_at')).to.be.eql(newUpdatedAt);
+          expect(m.get('updated_at')).to.be.not.eql(oldUpdatedAt);
+        });
+      });
+
+      it('will save the updated_at timestamp with current time, if updated_at column is not passed as attributed', function() {
+        var model = new Models.Admin();
+        var updatedAt = null
+        return model.save().then(function(m) {
+          updatedAt = m.get('updated_at');
+          return m.save('username','pablo');
+        })
+        .then(function(fin) {
+          expect(fin.get('updated_at')).to.be.not.eql(updatedAt);
+        });
+      });
+
     });
 
     describe('timestamp', function() {
@@ -939,6 +966,7 @@ module.exports = function(bookshelf) {
         expect(model.get('created_at')).to.not.exist;
         expect(model.get('updated_at')).to.not.exist;
       });
+
     });
 
     describe('defaults', function() {

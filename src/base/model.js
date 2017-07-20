@@ -490,8 +490,8 @@ ModelBase.prototype.timestamp = function(options) {
     ? this.hasTimestamps
     : DEFAULT_TIMESTAMP_KEYS;
 
-  const canEditUpdatedAtKey = (options || {}).editUpdatedAt ? options.editUpdatedAt : true;
-  const canEditCreatedAtKey = (options || {}).editCreatedAt ? options.editCreatedAt : true;
+  const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
+  const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
 
   const [ createdAtKey, updatedAtKey ] = keys;
 
