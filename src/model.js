@@ -435,6 +435,20 @@ const BookshelfModel = ModelBase.extend({
    *       }
    *     });
    *
+   * And with custom morphValues, the inverse of morphValue of
+   * {@link Model#morphOne morphOne} and {@link Model#morphMany morphMany},
+   * where the `morphValues` may be optionally set to check against a
+   * different value in the `_type` column than the {@link Model#tableName};
+   * for example, a more descriptive name, or a name that betters adheres to
+   * whatever standard you are using for models.
+   *
+   *     let Photo = bookshelf.Model.extend({
+   *       tableName: 'photos',
+   *       imageable: function() {
+   *         return this.morphTo('imageable', [Site, "favicon"], [Post, "cover_photo"]);
+   *       }
+   *     });
+   *
    * @method Model#morphTo
    *
    * @param {string}      name        Prefix for `_id` and `_type` columns.
@@ -449,13 +463,23 @@ const BookshelfModel = ModelBase.extend({
   morphTo(morphName) {
     if (!_.isString(morphName)) throw new Error('The `morphTo` name must be specified.');
     let columnNames, candidates;
-    if (_.isArray(arguments[1])) {
-      columnNames = arguments[1];
+    if (_.isNil(arguments[1]) || _.isArray(arguments[1]) && _.isString(arguments[1][0])) {
+      columnNames = arguments[1] || null;   // may be `null` or `undefined`
       candidates = _.drop(arguments, 2);
     } else {
       columnNames = null;
-      candidates = _.drop(arguments);
+      candidates = _.drop(arguments, 1);
     }
+
+    candidates = _.map(candidates, (target) => {
+      if (_.isArray(target)) {
+        return target;
+      }
+
+      // Set up the morphValue by default as the tableName
+      return [ target, _.result(target.prototype, 'tableName') ];
+    });
+
     return this._relation('morphTo', null, {morphName, columnNames, candidates}).init(this);
   },
 

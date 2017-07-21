@@ -116,7 +116,7 @@ export default RelationBase.extend({
           : this.morphName + '_type';
         break;
       case 'morphValue':
-        this[keyName] = this.parentTableName || this.targetTableName;
+        this[keyName] = this.morphValue || this.parentTableName || this.targetTableName;
         break;
     }
     return this[keyName]
