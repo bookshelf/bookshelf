@@ -9,6 +9,8 @@ import Errors from './errors';
 import ModelBase from './base/model';
 import Promise from './base/promise';
 
+const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
+
 /**
  * @class Model
  * @extends ModelBase
@@ -973,10 +975,26 @@ const BookshelfModel = ModelBase.extend({
       // timestamps, as `timestamp` calls `set` internally.
       this.set(attrs, {silent: true});
 
+
+      // Obtain the keys for the timestamp columns
+      const keys = _.isArray(this.hasTimestamps)
+        ? this.hasTimestamps
+        : DEFAULT_TIMESTAMP_KEYS;
+
+      const [ createdAtKey, updatedAtKey ] = keys;
+
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
       if (this.hasTimestamps) {
-        _.extend(attrs, this.timestamp(_.extend(options, {silent: true})));
+        //If some of the new attributes are value for update_at or created_at columns disable the possibility for the timestamp function to update the columns
+        const editUpdatedAt = attrs[updatedAtKey] ? false : true;
+        const editCreatedAt = attrs[createdAtKey] ? false : true;
+        const additionalOptions = {
+          silent: true,
+          editUpdatedAt : editUpdatedAt ,
+          editCreatedAt : editCreatedAt
+        }
+        _.extend(attrs, this.timestamp(_.extend(options, additionalOptions)));
       }
 
       // If there are any save constraints, set them on the model.
