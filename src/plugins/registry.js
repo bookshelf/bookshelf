@@ -1,4 +1,4 @@
-import {isPlainObject, drop, map} from 'lodash';
+import {isPlainObject, drop, map, isArray, isNil} from 'lodash';
 
 // Registry Plugin -
 // Create a central registry of model/collection constructors to
@@ -74,8 +74,34 @@ module.exports = function (bookshelf) {
   // can't include it with the rest of the relational methods.
   const morphTo = Model.prototype.morphTo;
   Model.prototype.morphTo = function(relationName) {
-    return morphTo.apply(this, [relationName].concat(map(drop(arguments), (model) => {
-      return resolveModel(model);
+    let candidates, columnNames;
+    if (isArray(arguments[1]) || isNil(arguments[1])) {
+      columnNames = arguments[1];   // may be `null` or `undefined`
+      candidates = drop(arguments, 2);
+    } else {
+      columnNames = null;
+      candidates = drop(arguments, 1);
+    }
+
+    // try to use the columnNames as target instead
+    if (isArray(columnNames)) {
+      try {
+        columnNames[0] = resolveModel(columnNames[0]);
+      } catch (err) {
+        // if it did not work, they were real columnNames
+        if (err.message !== `The model ${columnNames[0]} could not be resolved from the registry plugin.`) {
+          throw err;
+        }
+      }
+    }
+
+    return morphTo.apply(this, [relationName, columnNames].concat(map(candidates, (target) => {
+      if (isArray(target)) {
+        const [model, morphValue] = target;
+        return [resolveModel(model), morphValue];
+      }
+
+      return resolveModel(target);
     })));
   };
 
