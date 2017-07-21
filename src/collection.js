@@ -140,7 +140,7 @@ const BookshelfCollection = CollectionBase.extend({
          * event handler for async behaviour.
          *
          * @param {Collection} collection The collection performing the {@link Collection#fetch}.
-         * @param {Object} reponse Knex query response.
+         * @param {Object} response Knex query response.
          * @param {Object} options Options object passed to {@link Collection#fetch fetch}.
          * @returns {Promise}
          */

@@ -54,6 +54,9 @@ module.exports = function(bookshelf) {
     },{
       site_id: 2,
       name: 'Alternate Site Blog'
+    },{
+      site_id: null,
+      name: 'Orphan Blog Without a Site'
     }]),
 
     knex('authors').insert([{

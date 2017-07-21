@@ -1,23 +1,38 @@
 ## Change Log
 
-**0.10.3** - <small>_Jan 21, 2017_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.2...0.10.3)
+**0.10.4** - <small>_Jul 17, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4)
+
+* Allow knex 0.13.x
+* Use uuid instead of node-uuid
+* Test Bookshelf with Node v7
+* Updated Author info in package.json
+* Remove lodash from build script
+* Add OracleDB integration tests
+* Add opportunity to override `visible` and `hidden` behaviour for toJSON function
+* Do not load belongsTo if foreignKey is null
+* Optimise `timestamp` function: respect updated_at/created_at being part of the query
+* Fix `fetchPage` on Collection (pagination plugin)
+* Fixing virtuals when `omitNew=true`
+* Lot's of typo fixes and documentation updates
+
+**0.10.3** - <small>_Jan 21, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.2...0.10.3)
 
 * Drop Node support for 0.10 and 0.12
 * Trigger creating event for attached models
 * Add support for uninstantiated models relations
 * Add foreignKeyTarget to relation methods
 
-**0.10.2** - <small>_Sept 22, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.1...0.10.2)
+**0.10.2** - <small>_Sept 22, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.1...0.10.2)
 
 * Fixes memory leak introduced in 0.10.0 caused by binding `this.listeners` in `triggerThen`
 * Fixes Bluebird warning when a Promise was internally rejected with a non-error
 
-**0.10.1** - <small>_Sept 14, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.10.0...0.10.1)
+**0.10.1** - <small>_Sept 14, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.0...0.10.1)
 
 * Allows using knex 0.12 as a peerDependency
 * knex instance used by bookshelf may be swapped out
 
-**0.10.0** — <small>_Jun 29, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.5...0.10.0)
+**0.10.0** — <small>_Jun 29, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.5...0.10.0)
 
 **Breaking Changes:**
 
@@ -45,7 +60,7 @@
 * Update to Lodash 4. #1287
 * Registry plugin: Better support for custom relations. #1294
 
-**0.9.5** — <small>_May 15, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.4...0.9.5)
+**0.9.5** — <small>_May 15, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.4...0.9.5)
 
 * Add pagination plugin. #1183
 * Fire {@link Model#event:fetched} on eagerly loaded relations. #1206
@@ -53,26 +68,26 @@
 * Update Knex to 0.11.x. #1227
 * Update minimum lodash version. #1230
 
-**0.9.4** — <small>_April 3, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.3...0.9.4)
+**0.9.4** — <small>_April 3, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.3...0.9.4)
 
 * Include `babel-runtime` as a dependency. #1188
 
-**0.9.3** — <small>_April 3, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.2...0.9.3)
+**0.9.3** — <small>_April 3, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.2...0.9.3)
 
 * Bugfix: Restore support for `camelCase` and `color:separated` event names. #1184
 
-**0.9.2** — <small>_February 17, 2016_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.1...0.9.2)
+**0.9.2** — <small>_February 17, 2016_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.1...0.9.2)
 
 * Permit up to Knex 0.11.0 via `peerDependencies`.
 * `Model.forge` works for ES6 classes. #924
 * Fix `Collection#count` for `hasMany` relations. #1115
 
-**0.9.1** — <small>_November 4, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.9.0...0.9.1)
+**0.9.1** — <small>_November 4, 2015_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.9.0...0.9.1)
 
 * {@link Events#off} can now deregister multiple methods at once. #983
 * Permit Knex 0.10.0 via `peerDependencies`. #998
 
-**0.9.0** — <small>_November 1, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.2...0.9.0)
+**0.9.0** — <small>_November 1, 2015_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.8.2...0.9.0)
 
 * Repo no longer includes built source or generated documentation. Release script updated to include these only in the tagged release commit. #950.
 * {@link Model#previous} returned `undefined` instead of `null` for non-existant attributes.
@@ -81,7 +96,7 @@
 * Correct error updating parsed/formatted {@link Model#idAttribute} after successful `insert` operation. #955
 * Many documentation fixes.
 
-**0.8.2** — <small>_August 20, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.1...0.8.2)
+**0.8.2** — <small>_August 20, 2015_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.8.1...0.8.2)
 
 *   ES6/7: Move code base to `/src` — code is now compiled into `/lib` via [Babel](https://babeljs.io/).
 *   Add `collection.count`, `model.count` and `Model.count`.
@@ -94,13 +109,13 @@
 *   Calling `create` on a `through` relationship no longer tries to make a pivot object. Previously this would attempt to create an object with invalid foreign keys. #768
 *   Parse foreign keys set during `create` in a relation. #770
 
-**0.8.1** — <small>_May 12, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.8.0...0.8.1)
+**0.8.1** — <small>_May 12, 2015_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.8.0...0.8.1)
 
 *   Fix for regression in `initialize` not being called in Collection constructor, #737.
 *   Fix for regression, removing `omitPivot` in 0.8 #721
 *   Added `serialize`, a method which contains toJSON logic for easier customization.
 
-**0.8.0** — <small>_May 1, 2015_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.9...0.8.0)
+**0.8.0** — <small>_May 1, 2015_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.9...0.8.0)
 
 *   Dropped Backbone dependency
 *   More specific errors throughout, #522
@@ -113,11 +128,11 @@
 
 *   Removed the `__super__` internal property on the constructor, this shouldn't have been something you were relying on anyway.
 
-**0.7.9** — <small>_Oct 28, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.8...0.7.9)
+**0.7.9** — <small>_Oct 28, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.8...0.7.9)
 
 *   Fix for regression in columns / eager fetch query constraints, (#510).
 
-**0.7.8** — <small>_Oct 28, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.7...0.7.8)
+**0.7.8** — <small>_Oct 28, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.7...0.7.8)
 
 *   Timestamp `created_at` is now saved with any insert.
 *   Fix for regression created by #429.
@@ -126,27 +141,27 @@
 *   Fix for stack overflow with model list as arguments, #482
 *   Modified location of eager fetch query constraints internally.
 
-**0.7.7** — <small>_July 23, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.6...0.7.7)
+**0.7.7** — <small>_July 23, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.6...0.7.7)
 
 *   Fix for formatting on polymorphic keys, (#429).
 *   Added a resolve method for specifying a custom resolver function for the registry plugin.
 
-**0.7.6** — <small>_June 29, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.5...0.7.6)
+**0.7.6** — <small>_June 29, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.5...0.7.6)
  Add `omitPivot` flag on toJSON options for omitting the `_pivot_` keys in `through` and `belongsToMany` relations (#404).
 
-**0.7.5** — <small>_June 23, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.4...0.7.5)
+**0.7.5** — <small>_June 23, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.4...0.7.5)
  Fix missing NotFoundError & EmptyError on Model & Collection, respectively (#389, 399).
 
-**0.7.4** — <small>_June 18, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.3...0.7.4)
+**0.7.4** — <small>_June 18, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.3...0.7.4)
  Added `bookshelf.model(name, protoProps, [staticProps])` syntax for registry plugin.
 
-**0.7.3** — <small>_June 17, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.2...0.7.3)
+**0.7.3** — <small>_June 17, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.2...0.7.3)
  Fix for collection dropping models early in set, #376.
 
-**0.7.2** — <small>_June 12, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.1...0.7.2)
+**0.7.2** — <small>_June 12, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.1...0.7.2)
  Pass a cloned copy of the model's attributes to `format` rather than the original, related to #315.
 
-**0.7.1** — <small>_June 10, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.7.0...0.7.1)
+**0.7.1** — <small>_June 10, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.7.0...0.7.1)
  Ensure the knex version >= 0.6.10, where a major regression affecting column names was fixed.
 
 **0.7.0** — <small>_June 9, 2014_</small>
@@ -157,41 +172,41 @@
 *   Adding typed errors (#221).
 *   Upgrade to support knex 0.6.x
 
-**0.6.12** — <small>_June 5, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.11...0.6.12)
+**0.6.12** — <small>_June 5, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.11...0.6.12)
  Fix for eager loaded belongsTo relation bug with custom parse/format (#377).
 
-**0.6.11** — <small>_June 4, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.10...0.6.11)
+**0.6.11** — <small>_June 4, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.10...0.6.11)
  Temporarily add knex to `peerDependencies` until 0.7 is released to support knex 0.6 and there exists a better internal method of doing a semver check. Fix for belongsTo relation bug (#353).
 
-**0.6.10** — <small>_April 3, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.9...0.6.10)
+**0.6.10** — <small>_April 3, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.9...0.6.10)
 
 *   Bumping dependencies, including upgrading to Bluebird 1.2, trigger-then 0.3, fixing an erroneous "unhandledRejection" (#310).
 *   `fetchOne` properly resets the query on the collection, (#300).
 
-**0.6.9** — <small>_April 3, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.8...0.6.9)
+**0.6.9** — <small>_April 3, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.8...0.6.9)
  Only prefix model fields with the "tableName" after format has been called, (#308).
 
-**0.6.8** — <small>_March 6, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.7...0.6.8)
+**0.6.8** — <small>_March 6, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.7...0.6.8)
 
 *   Virtuals plugin may now accept a hash of attributes to set.
 *   Properly fix issue addressed in 0.6.7.
 
-**0.6.7** — <small>_March 2, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.6...0.6.7)
+**0.6.7** — <small>_March 2, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.6...0.6.7)
  Bugfix for edge case for eager loaded relations and `relatedData` settings.
 
-**0.6.6** — <small>_March 1, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.5...0.6.6)
+**0.6.6** — <small>_March 1, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.5...0.6.6)
  Bugfix for registry plugin, resolving correct models for "through" relations. (#260)
 
-**0.6.5** — <small>_February 28, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.4...0.6.5)
+**0.6.5** — <small>_February 28, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.4...0.6.5)
 
 *   Added {@link Collection#reduceThen} as a passthrough to Bluebird's "reduce" method with models.
 *   Options are now passed to "plugin" method. (#254)
 *   Bugfix for registry plugin. (#259)
 
-**0.6.4** — <small>_February 11, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.3...0.6.4)
+**0.6.4** — <small>_February 11, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.3...0.6.4)
  Adds static method {@link Model.collection Model.collection()} as a shortcut for creating a collection with the current model.
 
-**0.6.3** — <small>_February 9, 2014_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.2...0.6.3)
+**0.6.3** — <small>_February 9, 2014_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.2...0.6.3)
 
 *   Added an` Relation#updatePivot` method for updating tables on a "belongsToMany" relation. (#134, #230)
 *   Allow mutating the options for passing constraints to eager loaded relations. (#151)
@@ -209,53 +224,53 @@
 *   Added the `virtuals` plugin for getting/setting virtual (computed) properties on the model.
 *   Added the `visibility` plugin for specifying a whitelist/blacklist of keys when a model is serialized with toJSON.
 
-**0.6.2** — <small>_December 18, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.1...0.6.2)
+**0.6.2** — <small>_December 18, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.1...0.6.2)
 
 *   Debug may now be passed as an option in any sync method, to log queries, including relations.
 *   Save now triggers an error in updates with no affected rows. (#119)
 *   The `model.id` attribute is only set on insert if it's empty. (#130)
 *   Ensure eager loaded relations can use attach/detach. (#120)
 
-**0.6.1** — <small>_November 26, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.6.0...0.6.1)
+**0.6.1** — <small>_November 26, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.6.0...0.6.1)
  Fixes bug with promise code and saving event firing, where promises are not properly resolved with ".all" during saving events.
 
-**0.6.0** — <small>_November 25, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.8...0.6.0)
+**0.6.0** — <small>_November 25, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.8...0.6.0)
 
 *   Updating dependency to knex.js 0.5.x
 *   Switched from when.js to [bluebird](https://github.com/petkaantonov/bluebird) for promise implementation, with shim for backward compatibility.
 *   Switched from underscore to lodash, for semver reliability.
 
-**0.5.8** — <small>_November 24, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.7...0.5.8)
+**0.5.8** — <small>_November 24, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.7...0.5.8)
 
 *   Parse models after all relations have been eager loaded, for appropriate column name matching (thanks [@benesch](https://github.com/benesch)) (#97)
 *   Specify table for `withRelated` fetches to prevent column naming conflicts (#96).
 *   Fix for polymorphic relation loading (#95).
 *   Other documentation tweaks and other internal code cleanup.
 
-**0.5.7** — <small>_October 11, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.6...0.5.7)
+**0.5.7** — <small>_October 11, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.6...0.5.7)
  The "fetching" event is now fired on eager loaded relation fetches.
 
-**0.5.6** — <small>_October 10, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.5...0.5.6)
+**0.5.6** — <small>_October 10, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.5...0.5.6)
  The `options.query` now contains the appropriate `knex` instance during the "fetching" event handler.
 
-**0.5.5** — <small>_October 1, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.4...0.5.5)
+**0.5.5** — <small>_October 1, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.4...0.5.5)
  An eager loaded [morphTo](#Model-morphTo) relation may now have child relations nested beneath it that are properly eager loaded, depending on the parent.
 
-**0.5.4** — <small>_October 1, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.3...0.5.4)
+**0.5.4** — <small>_October 1, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.3...0.5.4)
 
 *   Fix issue where the `relatedData` context was not appropriately maintained for subsequent {@link Collection#create} calls after an eager load (#77).
 *   Documentation improvements, encouraging the use of {@link Model#related} rather than calling a relation method directly, to keep association with the parent model's {@link Model#relations relations} hash.
 
-**0.5.3** — <small>_September 26, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.2...0.5.3)
+**0.5.3** — <small>_September 26, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.2...0.5.3)
  The `columns` explicitly specified in a fetch are no-longer passed along when eager loading relations, fixes (#70).
 
-**0.5.2** — <small>_September 22, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.1...0.5.2)
+**0.5.2** — <small>_September 22, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.1...0.5.2)
  Fixed incorrect eager loading in `belongsTo` relations (#65).
 
-**0.5.1** — <small>_September 21, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.5.0...0.5.1)
+**0.5.1** — <small>_September 21, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.5.0...0.5.1)
  Fixed incorrect eager loading in `hasOne` relations (#63).
 
-**0.5.0** — <small>_September 20, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.3.1...0.5.0)
+**0.5.0** — <small>_September 20, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.3.1...0.5.0)
  **Major Breaking Changes:**
 
 *   Global state is no longer stored in the library, an instance is returned from `Bookshelf.initialize`, so you will need to call this once and then reference this `Bookshelf` client elsewhere in your application.
@@ -271,7 +286,7 @@
 *   Added a `Bookshelf.plugin` method, for a standard way to extend Bookshelf instances.
 *   A re-written modular architecture, to move the library toward becoming a database agnostic "data mapper" foundation, with the ablitiy to form relations between different data stores and types, not just SQL (although SQL is the primary focus for now). Also, support for AMD, for eventual use outside of Node.js runtime (with webSQL and likewise).
 
-**0.3.1** — <small>_August 29, 2013_</small> — [Diff](https://github.com/tgriesser/bookshelf/compare/0.3.0...0.3.1) — [Docs](http://htmlpreview.github.com/?https://raw.github.com/tgriesser/bookshelf/0.3.0/index.html)
+**0.3.1** — <small>_August 29, 2013_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.3.0...0.3.1) — [Docs](http://htmlpreview.github.com/?https://raw.github.com/bookshelf/bookshelf/0.3.0/index.html)
  Fixed regression in `belongsToMany` custom column name order.
 
 **0.3.0** — <small>_August 28, 2013_</small>

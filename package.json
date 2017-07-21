@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "homepage": "http://bookshelfjs.org",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tgriesser/bookshelf.git"
+    "url": "git://github.com/bookshelf/bookshelf.git"
   },
   "keywords": [
     "orm",
@@ -54,15 +54,15 @@
     "minimist": "^1.1.0",
     "mocha": "^3.0.2",
     "mysql": "^2.5.2",
-    "node-uuid": "~1.4.1",
     "pg": "^6.1.0",
     "semver": "^5.0.3",
     "sinon": "^1.11.1",
     "sinon-chai": "^2.6.0",
-    "sqlite3": "^3.0.5"
+    "sqlite3": "^3.0.5",
+    "uuid": "~3.0.0"
   },
   "peerDependencies": {
-    "knex": ">=0.6.10 <0.13.0"
+    "knex": ">=0.6.10 <=0.13.0"
   },
   "buildDependencies": [
     "babel-cli",
@@ -73,8 +73,8 @@
     "babel-preset-es2015"
   ],
   "author": {
-    "name": "Tim Griesser",
-    "web": "https://github.com/tgriesser"
+    "name": "Bookshelf",
+    "web": "https://github.com/bookshelf"
   },
   "license": "MIT",
   "readmeFilename": "README.md"
