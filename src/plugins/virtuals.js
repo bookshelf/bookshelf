@@ -91,6 +91,9 @@ module.exports = function (Bookshelf) {
     },
 
     // Allow virtuals to be fetched like normal properties
+    // the firts parameter is the attribute (or virtual) name.
+    // the other parameters are passed to the virtual function if the attribute is a virtual, their order
+    // must respect the order of the parameters in the virtual function
     get: function (attr, ...params) {
       const { virtuals } = this;
       if (_.isObject(virtuals) && virtuals[attr]) {
