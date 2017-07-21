@@ -127,7 +127,8 @@ ModelBase.prototype.idAttribute = 'id';
  * column name.
  * You can pass values for the timestamps columns as parameter in the
  * {@link Model#save save} method. This will prevent the automatic
- * updated of the timestamps columns values.
+ * update of the timestamps columns values during the {@link Model#save save} method,
+ * while the final columns values will be the values you have specified.
  *
  */
 ModelBase.prototype.hasTimestamps = false;

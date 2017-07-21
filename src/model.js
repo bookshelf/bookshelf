@@ -986,10 +986,10 @@ const BookshelfModel = ModelBase.extend({
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
       if (this.hasTimestamps) {
-        //If some of the new attributes are value for update_at or created_at columns disable the possibility for the timestamp function to update the columns 
-        var editUpdatedAt = attrs[updatedAtKey] ? false : true;
-        var editCreatedAt = attrs[createdAtKey] ? false : true;
-        var additionalOptions = {
+        //If some of the new attributes are value for update_at or created_at columns disable the possibility for the timestamp function to update the columns
+        const editUpdatedAt = attrs[updatedAtKey] ? false : true;
+        const editCreatedAt = attrs[createdAtKey] ? false : true;
+        const additionalOptions = {
           silent: true,
           editUpdatedAt : editUpdatedAt ,
           editCreatedAt : editCreatedAt
