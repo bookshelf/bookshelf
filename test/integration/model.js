@@ -26,6 +26,7 @@ module.exports = function(bookshelf) {
     var formatNumber = {
       mysql:      _.identity,
       sqlite3:    _.identity,
+      oracle:     _.identity,
       postgresql: function(count) { return count.toString() }
     }[dialect];
     var checkCount = function(actual, expected) {
@@ -496,7 +497,7 @@ module.exports = function(bookshelf) {
       it('saves a new object', function() {
 
         return new Site({name: 'Fourth Site'}).save().then(function(m) {
-          equal(m.get('id'), 4);
+          equal(Number(m.get('id')), 4);
           return new bookshelf.Collection(null, {model: Site}).fetch();
         })
         .then(function(c) {
@@ -672,7 +673,7 @@ module.exports = function(bookshelf) {
           acmeOrg1 = new Models.OrgModel ({id: 1})
           return acmeOrg1.fetch();
         }).then (function () {
-          equal (acmeOrg1.attributes.id, 1);
+          equal (Number(acmeOrg1.attributes.id), 1);
           equal (acmeOrg1.attributes.name, "ACME, Inc");
           equal (acmeOrg1.attributes.organization_id, undefined);
           equal (acmeOrg1.attributes.organization_name, undefined);
@@ -680,7 +681,7 @@ module.exports = function(bookshelf) {
           expect (acmeOrg.attributes.name).to.equal ("ACME, Inc");
           // field name needs to be processed through model.parse
           equal (acmeOrg.attributes.organization_id, undefined);
-          expect (acmeOrg.attributes.id).to.equal (1);
+          expect (Number(acmeOrg.attributes.id)).to.equal (1);
         });
       });
 
@@ -817,6 +818,19 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
+      it('will set the created_at and updated_at columns to provided time', function() {
+        var dateInThePast = new Date(1999, 1, 1);
+        var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
+        m.sync = function() {
+          equal(this.get('item'), 'test');
+          equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
+          equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
+          return stubSync;
+        };
+        return m.save({item: 'test'}, { date: dateInThePast });
+      });
+
+
       it('only sets the updated_at for existing models', function() {
         var m1 = new (bookshelf.Model.extend({hasTimestamps: true}))();
         m1.sync = function() {
@@ -894,6 +908,60 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
+      it('will save a new updated_at timestamp if passed as parameter', function() {
+        var model = new Models.Admin();
+        var oldUpdatedAt = null;
+        var newUpdatedAt = new Date();
+        newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+        return model.save().then(function(m) {
+          oldUpdatedAt = m.get('updated_at');
+          return model.save('updated_at',newUpdatedAt);
+        })
+        .then(function(m) {
+          expect(m.get('updated_at')).to.be.eql(newUpdatedAt);
+          expect(m.get('updated_at')).to.be.not.eql(oldUpdatedAt);
+        });
+      });
+
+      it('will save the updated_at timestamp with current time, if updated_at column is not passed as attributed', function() {
+        var model = new Models.Admin();
+        var updatedAt = null
+        return model.save().then(function(m) {
+          updatedAt = m.get('updated_at');
+          return m.save('username','pablo');
+        })
+        .then(function(fin) {
+          expect(fin.get('updated_at')).to.be.not.eql(updatedAt);
+        });
+      });
+
+      it('will save a new created_at timestamp if passed as parameter', function() {
+        var model = new Models.Admin();
+        var oldCreatedAt = null;
+        var newCreatedAt = new Date();
+        newCreatedAt.setMinutes(newCreatedAt.getMinutes() + 1);
+        return model.save().then(function(m) {
+          oldCreatedAt = m.get('created_at');
+          return model.save('created_at',newCreatedAt);
+        })
+        .then(function(m) {
+          expect(m.get('created_at')).to.be.eql(newCreatedAt);
+          expect(m.get('created_at')).to.be.not.eql(oldCreatedAt);
+        });
+      });
+
+      it('will save the created_at timestamp with current time, if created_at column is not passed as attributed', function() {
+        var model = new Models.Admin();
+        var createdAt = null
+        return model.save().then(function(m) {
+          createdAt = m.get('created_at');
+          return m.save('username','pablo');
+        })
+        .then(function(fin) {
+          expect(fin.get('created_at')).to.be.eql(createdAt);
+        });
+      });
+
     });
 
     describe('timestamp', function() {
@@ -925,6 +993,7 @@ module.exports = function(bookshelf) {
         expect(model.get('created_at')).to.not.exist;
         expect(model.get('updated_at')).to.not.exist;
       });
+
     });
 
     describe('defaults', function() {

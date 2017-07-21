@@ -125,6 +125,10 @@ ModelBase.prototype.idAttribute = 'id';
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
  * column name.
+ * You can pass values for the timestamps columns as parameter in the
+ * {@link Model#save save} method. This will prevent the automatic
+ * update of the timestamps columns values during the {@link Model#save save} method,
+ * while the final columns values will be the values you have specified.
  *
  */
 ModelBase.prototype.hasTimestamps = false;
@@ -474,26 +478,32 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
  * @param {string} [options.method]
  *   Either `'insert'` or `'update'`. Specify what kind of save the attribute
  *   update is for.
+ * @param {string} [options.date]
+ *   Either a Date object or ms since the epoch. Specify what date is used for
+ *   the timestamps updated.
  *
  * @returns {Object} A hash of timestamp attributes that were set.
  */
 ModelBase.prototype.timestamp = function(options) {
   if (!this.hasTimestamps) return {};
 
-  const now          = new Date();
+  const now          = (options || {}).date ? new Date(options.date) : new Date();
   const attributes   = {};
   const method       = this.saveMethod(options);
   const keys = _.isArray(this.hasTimestamps)
     ? this.hasTimestamps
     : DEFAULT_TIMESTAMP_KEYS;
 
+  const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
+  const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
+
   const [ createdAtKey, updatedAtKey ] = keys;
 
-  if (updatedAtKey) {
+  if (updatedAtKey && canEditUpdatedAtKey) {
     attributes[updatedAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert') {
+  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
     attributes[createdAtKey] = now;
   }
 
@@ -501,6 +511,7 @@ ModelBase.prototype.timestamp = function(options) {
 
   return attributes;
 };
+
 
 /**
  * @method

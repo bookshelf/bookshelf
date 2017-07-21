@@ -54,6 +54,9 @@ module.exports = function(bookshelf) {
     },{
       site_id: 2,
       name: 'Alternate Site Blog'
+    },{
+      site_id: null,
+      name: 'Orphan Blog Without a Site'
     }]),
 
     knex('authors').insert([{
@@ -154,12 +157,12 @@ module.exports = function(bookshelf) {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
       imageable_id: 1,
-      imageable_type: 'authors'
+      imageable_type: 'profile_pic'
     }, {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
       imageable_id: 2,
-      imageable_type: 'authors'
+      imageable_type: 'profile_pic'
     }, {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',

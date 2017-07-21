@@ -127,7 +127,7 @@ module.exports = function(Bookshelf) {
 						return this.hasMany('CRelated');
 					},
 					_morphTo: function() {
-						return this.morphTo('morphable', 'Related', 'Related');
+						return this.morphTo('morphable', ['rel_type', 'rel_id'], 'Related', ['Related', 'relValue']);
 					},
 					throughTest: function() {
 						return this.hasMany('CRelated').through('Related');
@@ -173,7 +173,7 @@ module.exports = function(Bookshelf) {
 					try {
 						this.model._morphTo();
 					} catch (e) {
-						expect(this.morphTo).to.have.been.calledWith('morphable', this.relatedModel, this.relatedModel);
+						expect(this.morphTo).to.have.been.calledWith('morphable', ['rel_type', 'rel_id'], this.relatedModel, [this.relatedModel, 'relValue']);
 					}
 				});
 

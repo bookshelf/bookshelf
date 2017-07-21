@@ -23,8 +23,18 @@ module.exports = function(Bookshelf) {
   var MySQL = require('../bookshelf')(mysql);
   var PostgreSQL = require('../bookshelf')(pg);
   var SQLite3 = require('../bookshelf')(sqlite3);
-  var Swapped = require('../bookshelf')(Knex({}));
+  var Swapped = require('../bookshelf')(Knex({client: 'sqlite3'}));
   Swapped.knex = sqlite3;
+  var databasesArray = [MySQL, PostgreSQL, SQLite3, Swapped];
+  // Load OracleDB tests only if the module is present in the system
+  try{
+    var oracleDbModuleName = require.resolve('oracledb');
+    var oracledb = require('knex')({client: 'oracledb', connection: config.oracledb});
+    var OracleDB = require('../bookshelf')(oracledb);
+    databasesArray.push(OracleDB);
+  }catch(e){
+    // empty
+  }
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
     var bookshelf = new Bookshelf(sqlite3);
@@ -32,7 +42,7 @@ module.exports = function(Bookshelf) {
   });
 
   it('should allow swapping in another knex instance', function() {
-    var bookshelf = new Bookshelf(Knex({}));
+    var bookshelf = new Bookshelf(Knex({client: 'sqlite3'}));
     var Models = require('./integration/helpers/objects')(bookshelf).Models;
     var site = new Models.Site();
 
@@ -48,7 +58,7 @@ module.exports = function(Bookshelf) {
     });
   });
 
-  _.each([MySQL, PostgreSQL, SQLite3, Swapped], function(bookshelf) {
+  _.each(databasesArray, function(bookshelf) {
 
     var dialect = bookshelf.knex.client.dialect;
 
@@ -57,6 +67,7 @@ module.exports = function(Bookshelf) {
       this.dialect = dialect;
 
       before(function() {
+        this.timeout(300000);
         return require('./integration/helpers/migration')(bookshelf).then(function() {
            return require('./integration/helpers/inserts')(bookshelf);
         });

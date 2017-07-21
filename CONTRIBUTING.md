@@ -1,12 +1,14 @@
 ## How to contribute to Bookshelf.js
 
 * Before sending a pull request for a feature or bug fix, be sure to have
-[tests](https://github.com/tgriesser/bookshelf/tree/master/test).
+[tests](https://github.com/bookshelf/bookshelf/tree/master/test).
 
 * Use the same coding style as the rest of the
-[codebase](https://github.com/tgriesser/bookshelf/blob/master/src/bookshelf.js).
+[codebase](https://github.com/bookshelf/bookshelf/blob/master/src/bookshelf.js).
 
-* Make changes in the /src directory, running "npm run dev" which will kick off 
+* Use the [issue](https://github.com/bookshelf/bookshelf/blob/master/ISSUE-TEMPLATE.js) or [pull request](https://github.com/bookshelf/bookshelf/blob/master/PR-TEMPLATE.js) templates when creating your entry, this will help clarify the scope of your proposal or the subject of your issue.
+
+* Make changes in the /src directory, running "npm run dev" which will kick off
 transpilation from ES6 in the background.
 
 * All pull requests should be made to the `master` branch.
@@ -14,7 +16,7 @@ transpilation from ES6 in the background.
 ### Development Environment Setup
 
 You'll need to have `git` installed obviously. Begin by forking the [main
- repository](https://github.com/tgriesser/bookshelf) and then getting the code from your forked copy:
+ repository](https://github.com/bookshelf/bookshelf) and then getting the code from your forked copy:
 
 ```sh
 $ git clone git@github.com:yourusername/bookshelf.git
@@ -74,16 +76,26 @@ and enter the password when asked. Then just set an empty password for root like
 
 ```SQL
 USE mysql;
-UPDATE user SET password = "" WHERE User = "root";
+UPDATE user SET authentication_string = "" WHERE User = "root";
 FLUSH PRIVILEGES;
 QUIT;
 ```
+If you see an error like:
+
+```sh
+ERROR 1054 (42S22): Unknown column 'authentication_string' in 'field list'
+```
+It's because you are using an MySQL version older than 5.7. The `authentication_string` column has replaced the `password` column
+in this newer version. If you are using an older version just use `password` instead of `authentication_string` in the example above.
 
 Note that you'll probably need to set the password to `NULL` instead of an empty string in MySQL versions 5.5 and older.
-The above example should work with versions 5.6 and newer.
+The above example should work with versions 5.7 and newer.
 
 If you have forgotten the root password you'll need to take some extra steps to reset it. Take a look at
 [this Stack Overflow answer](http://stackoverflow.com/a/7825212/504930) for further details.
+
+If you still can't access the MySQL server without a root password after all this trouble then
+[this answer on Ask Ubuntu](https://askubuntu.com/a/784347/18193) has another alternative approach to the problem.
 
 #### PostgreSQL
 
