@@ -958,7 +958,7 @@ module.exports = function(bookshelf) {
           return m.save('username','pablo');
         })
         .then(function(fin) {
-          expect(fin.get('created_at')).to.be.not.eql(createdAt);
+          expect(fin.get('created_at')).to.be.eql(createdAt);
         });
       });
 
