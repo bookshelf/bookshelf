@@ -935,6 +935,33 @@ module.exports = function(bookshelf) {
         });
       });
 
+      it('will save a new created_at timestamp if passed as parameter', function() {
+        var model = new Models.Admin();
+        var oldCreatedAt = null;
+        var newCreatedAt = new Date();
+        newCreatedAt.setMinutes(newCreatedAt.getMinutes() + 1);
+        return model.save().then(function(m) {
+          oldCreatedAt = m.get('created_at');
+          return model.save('created_at',newCreatedAt);
+        })
+        .then(function(m) {
+          expect(m.get('created_at')).to.be.eql(newCreatedAt);
+          expect(m.get('created_at')).to.be.not.eql(oldCreatedAt);
+        });
+      });
+
+      it('will save the created_at timestamp with current time, if created_at column is not passed as attributed', function() {
+        var model = new Models.Admin();
+        var createdAt = null
+        return model.save().then(function(m) {
+          createdAt = m.get('created_at');
+          return m.save('username','pablo');
+        })
+        .then(function(fin) {
+          expect(fin.get('created_at')).to.be.not.eql(createdAt);
+        });
+      });
+
     });
 
     describe('timestamp', function() {

@@ -125,6 +125,9 @@ ModelBase.prototype.idAttribute = 'id';
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
  * column name.
+ * You can pass values for the timestamps columns as parameter in the
+ * {@link Model#save save} method. This will prevent the automatic
+ * updated of the timestamps columns values.
  *
  */
 ModelBase.prototype.hasTimestamps = false;
