@@ -99,6 +99,7 @@ module.exports = function paginationPlugin (bookshelf) {
    */
   function fetchPage (options = {}) {
     const {page, pageSize, limit, offset, ...fetchOptions} = options;
+    const {transacting} = fetchOptions;
 
     let usingPageSize = false; // usingPageSize = false means offset/limit, true means page/pageSize
     let _page;
@@ -174,7 +175,7 @@ module.exports = function paginationPlugin (bookshelf) {
         });
         qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
 
-      }).fetchAll(fetchOptions).then(result => {
+      }).fetchAll({transacting}).then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
