@@ -174,7 +174,7 @@ module.exports = function paginationPlugin (bookshelf) {
         });
         qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
 
-      }).fetchAll().then(result => {
+      }).fetchAll(fetchOptions).then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
