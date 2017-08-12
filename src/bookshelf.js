@@ -65,7 +65,9 @@ function Bookshelf(knex) {
      *   Convert attributes by {@linkcode Model#parse parse} before being
      *   {@linkcode Model#set set} on the `model`.
      */
-    forge,
+    forge: function(attributes, options) {
+      return new this(attributes, options)
+    },
 
     /**
      * @method Model.collection
@@ -160,7 +162,9 @@ function Bookshelf(knex) {
      *   // collection models should now be saved...
      * });
      */
-     forge
+     forge: function(models, options) {
+         return new this(models, options)
+     }
 
 
   });
@@ -273,13 +277,6 @@ function Bookshelf(knex) {
    * A reference to the {@link http://knexjs.org Knex.js} instance being used by Bookshelf.
    */
   bookshelf.knex = knex;
-
-  // The `forge` function properly instantiates a new Model or Collection
-  // without needing the `new` operator... to make object creation cleaner
-  // and more chainable.
-  function forge() {
-    return new this(...arguments);
-  }
 
   function builderFn(tableNameOrBuilder) {
     let builder = null;
