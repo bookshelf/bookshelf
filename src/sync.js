@@ -15,6 +15,7 @@ const Sync = function(syncing, options) {
   this.options = options;
   if (options.debug) this.query.debug();
   if (options.transacting) this.query.transacting(options.transacting);
+  if (options.withSchema) this.query.withSchema(options.withSchema);
 };
 
 _.extend(Sync.prototype, {
