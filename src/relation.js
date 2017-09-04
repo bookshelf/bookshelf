@@ -401,7 +401,7 @@ export default RelationBase.extend({
     // Loop over the `parentModels` and attach the grouped sub-models,
     // keeping the `relatedData` on the new related instance.
     _.each(parentModels, (model) => {
-      let groupedKey;
+      let groupedKey = null;
       if (!this.isInverse()) {
         groupedKey = model.get(this.parentIdAttribute);
       } else {
@@ -411,7 +411,7 @@ export default RelationBase.extend({
         const formatted = model.format(_.clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
-      if (groupedKey) {
+      if (groupedKey !== null) {
         const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
         relation.relatedData = this;
         if (this.isJoined()) _.extend(relation, pivotHelpers);
