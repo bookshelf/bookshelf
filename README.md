@@ -150,11 +150,11 @@ The issue here is that Knex, the database abstraction layer used by Bookshelf, u
 If you pass `{debug: true}` as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
 
 Bookshelf uses its own copy of the "bluebird" promise library, you can read up here for more on debugging these promises... but in short, adding:
-
-    process.stderr.on('data', function(data) {
-      console.log(data);
-    });
-
+```js
+process.stderr.on('data', function(data) {
+  console.log(data);
+});
+```
 At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
 
 ### How do I run the test suite?
