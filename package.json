@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.0.15",
-    "babel-eslint": "^6.1.2",
+    "babel-eslint": "^8.0.1",
     "babel-plugin-syntax-object-rest-spread": "^6.0.14",
     "babel-plugin-transform-object-rest-spread": "^6.0.14",
     "babel-plugin-transform-runtime": "^6.6.0",
