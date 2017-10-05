@@ -1080,7 +1080,7 @@ const BookshelfModel = ModelBase.extend({
          *
          * @event Model#saved
          * @param {Model}  model    The model firing the event.
-         * @param {Object} resp     The database response.
+         * @param {Object} attrs    Model firing the event.
          * @param {Object} options  Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
