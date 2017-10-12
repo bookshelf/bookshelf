@@ -40,7 +40,7 @@ export default RelationBase.extend({
     const target = this.target ? this.relatedInstance() : {};
         target.relatedData = this;
 
-    target.parent = parent;
+    if (target.relatedData) { target.relatedData.parent = parent };
 
     if (this.type === 'belongsToMany') {
       _.extend(target, pivotHelpers);
