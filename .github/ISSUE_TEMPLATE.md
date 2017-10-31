@@ -1,6 +1,6 @@
 # Issue name
 
-* Related Issues : _#IssueNumber if necessary_
+* Related Issues: _#IssueNumber if necessary_
 
 ## Introduction
 

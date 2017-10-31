@@ -1,6 +1,6 @@
 # PR name
 
-* Related Issues : _#IssueNumber if necessary_
+* Related Issues: _#IssueNumber if necessary_
 * Previous PRs: _#PRNumber if this PR is a follow-up_
 
 ## Introduction
