@@ -925,12 +925,13 @@ module.exports = function(bookshelf) {
 
       it('will save the updated_at timestamp with current time, if updated_at column is not passed as attributed', function() {
         var model = new Models.Admin();
-        var updatedAt = null
+        var updatedAt = null;
         return model.save().then(function(m) {
           updatedAt = m.get('updated_at');
-          return m.save('username','pablo');
-        })
-        .then(function(fin) {
+          return Promise.delay(100).then(function () {
+              return m.save('username','pablo');
+          });
+        }).then(function(fin) {
           expect(fin.get('updated_at')).to.be.not.eql(updatedAt);
         });
       });
