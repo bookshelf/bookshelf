@@ -49,7 +49,7 @@ module.exports = function(Bookshelf) {
     })
     .createTable('blogs', function(table) {
       table.increments('id');
-      table.integer('site_id').notNullable();
+      table.integer('site_id');
       table.string('name');
     })
     .createTable('authors', function(table) {

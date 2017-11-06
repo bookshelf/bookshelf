@@ -5,5 +5,9 @@ index.html
 .eslintrc
 .istanbul.yml
 .travis.yml
+.npmignore
+.babelrc
 CNAME
 CONTRIBUTING.md
+src
+scripts

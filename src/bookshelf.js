@@ -156,7 +156,7 @@ function Bookshelf(knex) {
      *   {name: 'Person2'}
      * ]);
      *
-     * Promise.all(accounts.invoke('save')).then(function() {
+     * Promise.all(accounts.invokeMap('save')).then(function() {
      *   // collection models should now be saved...
      * });
      */
