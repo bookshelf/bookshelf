@@ -300,7 +300,54 @@ function Bookshelf(knex) {
     );
   }
 
-  // Attach `where`, `query`, and `fetchAll` as static methods.
+  /**
+   * @method Model.where
+   * @belongsTo Model
+   * @description
+   *
+   * Static helper that allows you to specify query parameters for a
+   * {@linkcode Model#fetch fetch} or {@linkcode Model#fetchAll fetchAll}
+   * without first needing to create an instance of the Model.
+   *
+   * @see {@linkcode Model#where Model#where}
+   */
+
+  /**
+   * @method Model.query
+   * @belongsTo Model
+   * @description
+   *
+   * Static helper that allows you to specify query parameters for a
+   * {@linkcode Model#fetch fetch} or {@linkcode Model#fetchAll fetchAll}
+   * without first needing to create an instance of the Model.
+   *
+   * @see {@linkcode Model#query Model#query}
+   */
+
+  /**
+   * @method Collection.where
+   * @belongsTo Collection
+   * @description
+   *
+   * Static helper that allows you to specify query parameters for a
+   * {@linkcode Collection#fetch fetch} without first needing to create
+   * an instance of the Collection.
+   *
+   * @see {@linkcode Collection#where Collection#where}
+   */
+
+  /**
+   * @method Collection.query
+   * @belongsTo Collection
+   * @description
+   *
+   * Static helper that allows you to specify query parameters for a
+   * {@linkcode Collection#fetch fetch} without first needing to create
+   * an instance of the Collection.
+   *
+   * @see {@linkcode Collection#query Collection#query}
+   */
+  // Attach `where` and `query` as static methods.
   ['where', 'query'].forEach((method) => {
     Model[method] = Collection[method] = function() {
       const model = this.forge();
