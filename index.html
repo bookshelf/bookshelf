@@ -103,7 +103,7 @@
 <p>With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, provides flexible and efficient relation/nested-relation loading, and first class transaction support.</p>
 <p>It's a lean Object Relational Mapper, allowing you to drop down to the raw knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.</p>
 <h2 id="installation">Installation</h2><p>You'll need to install a copy of <a href="http://knexjs.org/">knex.js</a>, and either mysql, pg, or sqlite3 from npm.</p>
-<pre class="prettyprint source lang-js"><code>$ npm install knex --save
+<pre class="prettyprint source lang-js"><code>$ npm install knex@0.13 --save
 $ npm install bookshelf --save
 
 # Then add one of the following:
@@ -178,6 +178,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <li><a href="https://github.com/estate/bookshelf-uuid">bookshelf-uuid</a> - Automatically generates UUIDs for your models.</li>
 <li><a href="https://github.com/bsiddiqui/bookshelf-modelbase">bookshelf-modelbase</a> - An alternative to extend <code>Model</code>, adding timestamps, attribute validation and some native CRUD methods.</li>
 <li><a href="https://github.com/sequiturs/bookshelf-advanced-serialization">bookshelf-advanced-serialization</a> - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.</li>
+<li><a href="https://github.com/popodidi/bookshelf-plugin-mode">bookshelf-plugin-mode</a> - Plugin inspired by <a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a> plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.</li>
 <li><a href="https://github.com/venables/bookshelf-secure-password">bookshelf-secure-password</a> - A plugin for easily securing passwords using bcrypt.</li>
 </ul>
 <h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a> or in the GitHub <a href="https://github.com/bookshelf/bookshelf/issues">issue tracker</a>.</p>
@@ -187,7 +188,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <h3 id="my-process-wont-exit-after-my-script-is-finished-why">My process won't exit after my script is finished, why?</h3><p>The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call <code>.destroy(cb)</code> on the <code>knex</code> property of your <code>Bookshelf</code> instance or on the <code>Knex</code> instance passed during initialization. More information about connection pooling can be found over at the <a href="http://knexjs.org/#Installation-pooling">Knex docs</a>.</p>
 <h3 id="how-do-i-debug">How do I debug?</h3><p>If you pass <code>{debug: true}</code> as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug code with <code>debugger</code> statements like you would in the browser.</p>
 <p>Bookshelf uses its own copy of the &quot;bluebird&quot; promise library, you can read up here for more on debugging these promises... but in short, adding:</p>
-<pre class="prettyprint source"><code>process.stderr.on('data', function(data) {
+<pre class="prettyprint source lang-js"><code>process.stderr.on('data', function(data) {
   console.log(data);
 });</code></pre><p>At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.</p>
 <h3 id="how-do-i-run-the-test-suite">How do I run the test suite?</h3><p>The test suite looks for an environment variable called <code>BOOKSHELF_TEST</code> for the path to the database configuration. If you run the following command: <code>$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'</code>, replacing with the path to your config file, and the config file is valid, the test suite should run with npm test.</p>
@@ -939,7 +940,7 @@ computed properties, and access control.</p></div>
           
           <span class="parameters"><span class="name"><a href="#Model">Model</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line12" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line14" class="source-link">source</a></h4>
 
         
     
@@ -1609,7 +1610,7 @@ records with a null value in that column will be excluded from the count.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
           </span
-          ><a href="docs/src_base_model.js.html#line610" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line619" class="source-link">source</a></h4>
 
         
     
@@ -2115,7 +2116,7 @@ you'll have to explicitly call it, along these lines:</em></p>
                   >model</span
                 >.</span><span class="name"><a href="#Model-instance-hasTimestamps">hasTimestamps</a></span><span class="type-signature"> :boolean|Array</span>
           </span
-          ><a href="docs/src_base_model.js.html#line130" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line139" class="source-link">source</a></h4>
 
         
     
@@ -2187,7 +2188,11 @@ you'll have to explicitly call it, along these lines:</em></p>
 <code>updated_at</code>.  To override the default column names, assign an array
 to <a href="#Model-instance-hasTimestamps"><code>hasTimestamps</code></a>.  The first element will
 be the created column name and the second will be the updated
-column name.</p>
+column name.
+You can pass values for the timestamps columns as parameter in the
+<a href="#Model-instance-save"><code>save</code></a> method. This will prevent the automatic
+update of the timestamps columns values during the <a href="#Model-instance-save"><code>save</code></a> method,
+while the final columns values will be the values you have specified.</p>
     </div>
   
 </div>
@@ -2206,7 +2211,7 @@ column name.</p>
                   >model</span
                 >.</span><span class="name"><a href="#Model-instance-idAttribute">idAttribute</a></span><span class="type-signature"> :string</span>
           </span
-          ><a href="docs/src_base_model.js.html#line115" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line120" class="source-link">source</a></h4>
 
         
     
@@ -2278,6 +2283,11 @@ for each database row (typically an auto-incrementing primary key named
 <code>&quot;id&quot;</code>). Note that if you are using <a href="#Model-instance-parse"><code>parse</code></a> and <a href="#Model-instance-format"><code>format</code></a> (to have your model's attributes in <code>camelCase</code>,
 but your database's columns in <code>snake_case</code>, for example) this refers to
 the name returned by parse (<code>myId</code>), not the database column (<code>my_id</code>).</p>
+<p>If the table you're working with does not have an Primary-Key in the form 
+of a single column - you'll have to override it with a getter that returns 
+null. (overriding with undefined does not cascade the default behavior of 
+the value <code>'id'</code>.
+Such a getter in ES6 would look like <code>get idAttribute() { return null }</code></p>
     </div>
   
 </div>
@@ -2402,7 +2412,7 @@ table name the model will query against.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsTo">belongsTo</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line153" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line155" class="source-link">source</a></h4>
 
         
     
@@ -2585,7 +2595,7 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then(function(book) {
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-belongsToMany">belongsToMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">table</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line201" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line203" class="source-link">source</a></h4>
 
         
     
@@ -2862,7 +2872,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clear">clear</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line373" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line382" class="source-link">source</a></h4>
 
         
     
@@ -2966,7 +2976,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clone">clone</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line430" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line439" class="source-link">source</a></h4>
 
         
     
@@ -3071,7 +3081,7 @@ model.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<Number></span>
           </span
-          ><a href="docs/src_model.js.html#line721" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line747" class="source-link">source</a></h4>
 
         
     
@@ -3231,7 +3241,7 @@ previous calls to <a href="#Model-instance-query"><code>Model#query</code></a>.<
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line1076" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1118" class="source-link">source</a></h4>
 
         
     
@@ -3442,7 +3452,7 @@ removal is completed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-escape">escape</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  string</span>
           </span
-          ><a href="docs/src_base_model.js.html#line304" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line313" class="source-link">source</a></h4>
 
         
     
@@ -3572,7 +3582,7 @@ removal is completed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-fetch">fetch</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>|null></span>
           </span
-          ><a href="docs/src_model.js.html#line567" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line593" class="source-link">source</a></h4>
 
         
     
@@ -3856,7 +3866,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-fetchAll">fetchAll</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Collection">Collection</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line745" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line771" class="source-link">source</a></h4>
 
         
     
@@ -4225,7 +4235,7 @@ the options to the <code>fetchAll</code> call.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-format">format</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line390" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line399" class="source-link">source</a></h4>
 
         
     
@@ -4358,7 +4368,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-get">get</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line140" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line149" class="source-link">source</a></h4>
 
         
     
@@ -4495,7 +4505,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-has">has</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  bool</span>
           </span
-          ><a href="docs/src_base_model.js.html#line315" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line324" class="source-link">source</a></h4>
 
         
     
@@ -4625,7 +4635,7 @@ current values of the model are left intact.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  bool</span>
           </span
-          ><a href="docs/src_base_model.js.html#line526" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line535" class="source-link">source</a></h4>
 
         
     
@@ -4758,7 +4768,7 @@ specific attribute has changed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasMany">hasMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line113" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line115" class="source-link">source</a></h4>
 
         
     
@@ -4936,7 +4946,7 @@ Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasOne">hasOne</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">foreignKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line65" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line67" class="source-link">source</a></h4>
 
         
     
@@ -5122,7 +5132,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-isNew">isNew</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_model.js.html#line211" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line220" class="source-link">source</a></h4>
 
         
     
@@ -5220,7 +5230,7 @@ considered &quot;new&quot;.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-load">load</a></span><span class="parenthesis">(</span><span class="item-name">relations</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line808" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line834" class="source-link">source</a></h4>
 
         
     
@@ -5420,7 +5430,7 @@ eager loading.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphMany">morphMany</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">name</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">morphValue</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line361" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line363" class="source-link">source</a></h4>
 
         
     
@@ -5625,7 +5635,7 @@ store/retrieve a different value in the <code>_type</code> column than the <code
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphOne">morphOne</a></span><span class="parenthesis">(</span><span class="item-name">Target</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">name</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">morphValue</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line309" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line311" class="source-link">source</a></h4>
 
         
     
@@ -5832,7 +5842,7 @@ If your argument is an array, it will be assumed to contain custom
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-morphTo">morphTo</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">columnNames</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="variable-ellipsis">&hellip;</span><span class="item-name">Target</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line413" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line415" class="source-link">source</a></h4>
 
         
     
@@ -5988,6 +5998,17 @@ of the <a href="#Model-instance-morphOne"><code>morphOne</code></a> or <a href="
   tableName: 'photos',
   imageable: function() {
     return this.morphTo('imageable', [&quot;ImageableType&quot;, &quot;ImageableId&quot;], Site, Post);
+  }
+});</code></pre><p>And with custom morphValues, the inverse of morphValue of
+<a href="#Model-instance-morphOne"><code>morphOne</code></a> and <a href="#Model-instance-morphMany"><code>morphMany</code></a>,
+where the <code>morphValues</code> may be optionally set to check against a
+different value in the <code>_type</code> column than the <a href="#Model-instance-tableName"><code>Model#tableName</code></a>;
+for example, a more descriptive name, or a name that betters adheres to
+whatever standard you are using for models.</p>
+<pre class="prettyprint source"><code>let Photo = bookshelf.Model.extend({
+  tableName: 'photos',
+  imageable: function() {
+    return this.morphTo('imageable', [Site, &quot;favicon&quot;], [Post, &quot;cover_photo&quot;]);
   }
 });</code></pre>
     </div>
@@ -6338,7 +6359,7 @@ for a combination of all events.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1244" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1286" class="source-link">source</a></h4>
 
         
     
@@ -6484,7 +6505,7 @@ table will be the table name of the model <code>orderBy</code> was called on.</p
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-parse">parse</a></span><span class="parenthesis">(</span><span class="item-name">response</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line347" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line356" class="source-link">source</a></h4>
 
         
     
@@ -6633,7 +6654,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line541" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line550" class="source-link">source</a></h4>
 
         
     
@@ -6763,7 +6784,7 @@ boolean in a sqlite3 database response.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line556" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line565" class="source-link">source</a></h4>
 
         
     
@@ -6869,7 +6890,7 @@ model, or getting back to a valid state after an error occurs.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|QueryBuilder</span>
           </span
-          ><a href="docs/src_model.js.html#line1166" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1208" class="source-link">source</a></h4>
 
         
     
@@ -7049,7 +7070,7 @@ returning the current model.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-refresh">refresh</a></span><span class="parenthesis">(</span><span class="item-name">options</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line542" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line568" class="source-link">source</a></h4>
 
         
     
@@ -7184,7 +7205,7 @@ all available fields.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-related">related</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|<a href="#Collection">Collection</a>|undefined</span>
           </span
-          ><a href="docs/src_base_model.js.html#line417" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line426" class="source-link">source</a></h4>
 
         
     
@@ -7337,7 +7358,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1153" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1195" class="source-link">source</a></h4>
 
         
     
@@ -7443,7 +7464,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-save">save</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">key</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">val</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">attrs</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line848" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line874" class="source-link">source</a></h4>
 
         
     
@@ -7782,7 +7803,7 @@ Model.forge({id: 5}).save('name', 'John Smith').then(function() { //...</code></
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-serialize">serialize</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line244" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line253" class="source-link">source</a></h4>
 
         
     
@@ -7976,7 +7997,7 @@ this function if you want to customize its output.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-set">set</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">value</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line158" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line167" class="source-link">source</a></h4>
 
         
     
@@ -8177,7 +8198,7 @@ customer.set("telephone", "555-555-1212");</code></pre>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-through">through</a></span><span class="parenthesis">(</span><span class="item-name">Interim</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKey</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">throughForeignKeyTarget</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">otherKeyTarget</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Collection">Collection</a></span>
           </span
-          ><a href="docs/src_model.js.html#line460" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line486" class="source-link">source</a></h4>
 
         
     
@@ -8417,7 +8438,7 @@ let Paragraph = bookshelf.Model.extend({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line483" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line492" class="source-link">source</a></h4>
 
         
     
@@ -8596,7 +8617,7 @@ timestamps.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-toJSON">toJSON</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_model.js.html#line285" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line294" class="source-link">source</a></h4>
 
         
     
@@ -8954,7 +8975,7 @@ event handlers (for validations, etc).</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-unset">unset</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line364" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line373" class="source-link">source</a></h4>
 
         
     
@@ -9083,7 +9104,7 @@ column in the database record, set the attribute value to <code>null</code> inst
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1214" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1256" class="source-link">source</a></h4>
 
         
     
@@ -9441,7 +9462,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1046" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1088" class="source-link">source</a></h4>
 
         
     
@@ -9604,7 +9625,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line982" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1024" class="source-link">source</a></h4>
 
         
     
@@ -9769,7 +9790,7 @@ exception from the handler will cancel the save operation.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1137" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1179" class="source-link">source</a></h4>
 
         
     
@@ -9933,7 +9954,7 @@ handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1116" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1158" class="source-link">source</a></h4>
 
         
     
@@ -10080,7 +10101,7 @@ will reject the promise and cancel the deletion.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-fetched">"fetched"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">response</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line686" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line712" class="source-link">source</a></h4>
 
         
     
@@ -10437,7 +10458,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">resp</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1034" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1076" class="source-link">source</a></h4>
 
         
     
@@ -10600,7 +10621,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line968" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1010" class="source-link">source</a></h4>
 
         
     
@@ -10765,7 +10786,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1058" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1100" class="source-link">source</a></h4>
 
         
     
@@ -10928,7 +10949,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line996" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1038" class="source-link">source</a></h4>
 
         
     
@@ -11120,7 +11141,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1366" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1408" class="source-link">source</a></h4>
 
         
     
@@ -11260,7 +11281,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1357" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1399" class="source-link">source</a></h4>
 
         
     
@@ -11400,7 +11421,7 @@ exception from the handler will cancel the save operation.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1347" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1389" class="source-link">source</a></h4>
 
         
     
@@ -18867,7 +18888,24 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.10.4</strong> - <small><em>Jul 17, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.11.0</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0">Diff</a></p>
+<ul>
+<li>Moved <code>.babelrc</code> -&gt; <code>src/.babelrc</code> <a href="https://github.com/bookshelf/bookshelf/pull/1470">#1470</a></li>
+<li>Timestamp on save now utilizes a date option for timestamp updates on insert and update. <a href="https://github.com/bookshelf/bookshelf/pull/1592">#1592</a><ul>
+<li>Used in options on save like so: <code>m.save({item: 'test'}, { date: dateInThePast })</code></li>
+</ul>
+</li>
+<li>Added <code>morphValues</code> for <code>morphTo</code> relation. <a href="https://github.com/bookshelf/bookshelf/pull/1326">#1326</a></li>
+<li>Added ability to also set timestamps as model attributes in save. #</li>
+<li>Removed non-production files from packaging / added them to .npmignore <a href="https://github.com/bookshelf/bookshelf/pull/1679">#1679</a></li>
+<li>Development Facing<ul>
+<li>Oracle tests only run when oracle is installed.</li>
+<li>Refactoring on the registry plugin</li>
+<li>Updated a lot of documents related to repo organization.</li>
+</ul>
+</li>
+</ul>
+<p><strong>0.10.4</strong> - <small><em>Jul 17, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4">Diff</a></p>
 <ul>
 <li>Allow knex 0.13.x</li>
 <li>Use uuid instead of node-uuid</li>
@@ -19198,10 +19236,10 @@ event handlers (for validations, etc).</p>
       <footer>
         <div>
           Documentation generated by
-          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
+          <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
           
             on
-          July 21st 2017
+          November 15th 2017
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
