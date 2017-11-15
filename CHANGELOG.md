@@ -1,5 +1,9 @@
 ## Change Log
 
+**0.11.1** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1)
+
+- Do that postinstall build before publish.
+
 **0.11.0** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0)
 
 - Moved `.babelrc` -> `src/.babelrc` [#1470](https://github.com/bookshelf/bookshelf/pull/1470)
