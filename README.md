@@ -25,7 +25,7 @@ It's a lean Object Relational Mapper, allowing you to drop down to the raw knex 
 You'll need to install a copy of [knex.js](http://knexjs.org/), and either mysql, pg, or sqlite3 from npm.
 
 ```js
-$ npm install knex --save
+$ npm install knex@0.13 --save
 $ npm install bookshelf --save
 
 # Then add one of the following:
@@ -122,6 +122,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [bookshelf-uuid](https://github.com/estate/bookshelf-uuid) - Automatically generates UUIDs for your models.
 * [bookshelf-modelbase](https://github.com/bsiddiqui/bookshelf-modelbase) - An alternative to extend `Model`, adding timestamps, attribute validation and some native CRUD methods.
 * [bookshelf-advanced-serialization](https://github.com/sequiturs/bookshelf-advanced-serialization) - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.
+* [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility) plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
 
 ## Support
@@ -149,11 +150,11 @@ The issue here is that Knex, the database abstraction layer used by Bookshelf, u
 If you pass `{debug: true}` as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
 
 Bookshelf uses its own copy of the "bluebird" promise library, you can read up here for more on debugging these promises... but in short, adding:
-
-    process.stderr.on('data', function(data) {
-      console.log(data);
-    });
-
+```js
+process.stderr.on('data', function(data) {
+  console.log(data);
+});
+```
 At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
 
 ### How do I run the test suite?

@@ -111,6 +111,11 @@ ModelBase.prototype.initialize = function() {};
  * but your database's columns in `snake_case`, for example) this refers to
  * the name returned by parse (`myId`), not the database column (`my_id`).
  *
+ * If the table you're working with does not have an Primary-Key in the form 
+ * of a single column - you'll have to override it with a getter that returns 
+ * null. (overriding with undefined does not cascade the default behavior of 
+ * the value `'id'`.
+ * Such a getter in ES6 would look like `get idAttribute() { return null }`
  */
 ModelBase.prototype.idAttribute = 'id';
 
@@ -125,6 +130,10 @@ ModelBase.prototype.idAttribute = 'id';
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
  * column name.
+ * You can pass values for the timestamps columns as parameter in the
+ * {@link Model#save save} method. This will prevent the automatic
+ * update of the timestamps columns values during the {@link Model#save save} method,
+ * while the final columns values will be the values you have specified.
  *
  */
 ModelBase.prototype.hasTimestamps = false;
@@ -490,24 +499,24 @@ ModelBase.prototype.timestamp = function(options) {
     ? this.hasTimestamps
     : DEFAULT_TIMESTAMP_KEYS;
 
+  const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
+  const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
+
   const [ createdAtKey, updatedAtKey ] = keys;
 
-  if (updatedAtKey) {
-    attributes[updatedAtKey] = this.attributes[updatedAtKey]
-      ? new Date(this.attributes[updatedAtKey])
-      : now;
+  if (updatedAtKey && canEditUpdatedAtKey) {
+    attributes[updatedAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert') {
-    attributes[createdAtKey] = this.attributes[createdAtKey]
-      ? new Date(this.attributes[createdAtKey])
-      : now;
+  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
+    attributes[createdAtKey] = now;
   }
 
   this.set(attributes, options);
 
   return attributes;
 };
+
 
 /**
  * @method

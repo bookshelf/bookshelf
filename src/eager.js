@@ -60,7 +60,7 @@ export default class EagerRelation extends EagerBase {
         .select()
         .tap(response => {
           const clone = relatedData.instance(
-            'morphTo', Target, {morphName, columnNames}
+            'morphTo', Target, {morphName, columnNames, morphValue: type}
           );
           return this._eagerLoadHelper(
             response, relationName, { relatedData: clone }, options
