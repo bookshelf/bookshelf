@@ -84,7 +84,7 @@ module.exports = function paginationPlugin (bookshelf) {
    *        rowCount: 53, // Total number of rows found for the query before pagination
    *        pageCount: 4, // Total number of pages of results
    *        page: 3, // The requested page number
-   *        pageSze: 15, // The requested number of rows per page
+   *        pageSize: 15, // The requested number of rows per page
    *
    *  // OR, if limit/offset pagination is used instead of page/pageSize:
    *        // offset: 30, // The requested offset
