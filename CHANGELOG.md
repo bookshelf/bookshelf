@@ -1,5 +1,22 @@
 ## Change Log
 
+**0.11.1** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1)
+
+- Do that postinstall build before publish.
+
+**0.11.0** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0)
+
+- Moved `.babelrc` -> `src/.babelrc` [#1470](https://github.com/bookshelf/bookshelf/pull/1470)
+- Timestamp on save now utilizes a date option for timestamp updates on insert and update. [#1592](https://github.com/bookshelf/bookshelf/pull/1592)
+  -  Used in options on save like so: ```m.save({item: 'test'}, { date: dateInThePast })```
+- Added `morphValues` for `morphTo` relation. [#1326](https://github.com/bookshelf/bookshelf/pull/1326)
+- Added ability to also set timestamps as model attributes in save. #
+- Removed non-production files from packaging / added them to .npmignore [#1679](https://github.com/bookshelf/bookshelf/pull/1679)
+- Development Facing
+  - Oracle tests only run when oracle is installed.
+  - Refactoring on the registry plugin
+  - Updated a lot of documents related to repo organization.
+
 **0.10.4** - <small>_Jul 17, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4)
 
 * Allow knex 0.13.x
