@@ -3,6 +3,10 @@ language: node_js
 dist: trusty
 sudo: required
 
+cache:
+  directories:
+    - node_modules
+
 services:
   - postgresql
   - mysql
