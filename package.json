@@ -11,7 +11,6 @@
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
     "test": "npm run build && npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
-    "gh-pages": "./scripts/gh-pages.sh",
     "prepublish": "node ./scripts/build.js lib && npm run build",
     "postpublish": "./scripts/postpublish.sh"
   },
