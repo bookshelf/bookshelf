@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.10.4",
+  "version": "0.11.1",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -11,10 +11,8 @@
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
     "test": "npm run build && npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
-    "gh-pages": "./scripts/gh-pages.sh",
-    "prepublish": "npm run build",
-    "postpublish": "./scripts/postpublish.sh",
-    "postinstall": "node ./scripts/build.js lib \"npm run build\""
+    "prepublish": "node ./scripts/build.js lib && npm run build",
+    "postpublish": "./scripts/postpublish.sh"
   },
   "homepage": "http://bookshelfjs.org",
   "repository": {
@@ -50,7 +48,7 @@
     "eslint": "2.13.1",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
-    "knex": "^0.12.0",
+    "knex": "^0.14.0",
     "minimist": "^1.1.0",
     "mocha": "^3.0.2",
     "mysql": "^2.5.2",
@@ -62,7 +60,7 @@
     "uuid": "~3.0.0"
   },
   "peerDependencies": {
-    "knex": ">=0.6.10 <=0.13.0"
+    "knex": ">=0.6.10 <0.15.0"
   },
   "buildDependencies": [
     "babel-cli",

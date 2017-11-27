@@ -111,6 +111,11 @@ ModelBase.prototype.initialize = function() {};
  * but your database's columns in `snake_case`, for example) this refers to
  * the name returned by parse (`myId`), not the database column (`my_id`).
  *
+ * If the table you're working with does not have an Primary-Key in the form 
+ * of a single column - you'll have to override it with a getter that returns 
+ * null. (overriding with undefined does not cascade the default behavior of 
+ * the value `'id'`.
+ * Such a getter in ES6 would look like `get idAttribute() { return null }`
  */
 ModelBase.prototype.idAttribute = 'id';
 
