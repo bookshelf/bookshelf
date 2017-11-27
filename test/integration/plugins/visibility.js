@@ -41,6 +41,12 @@ module.exports = function (bookshelf) {
       deepEqual(m.toJSON({hidden: hidden}), {lastName: 'Shmoe', address: '123 Main St.'});
     });
 
+    it('uses an `options.visibility` argument set to false to ignore the `options.hidden` and `options.visible` attributes', function () {
+      m.visible = ['firstName', 'lastName'];
+      m.hidden = ['lastName'];
+      deepEqual(m.toJSON({visibility: false}), {firstName: 'Joe', lastName: 'Shmoe', address: '123 Main St.'});
+    });
+
     it('uses both an `options.hidden` and `options.visible` argument and if both are set, prioritizing `firstName`', function() {
       var visible = ['firstName', 'lastName'];
       var hidden = ['lastName'];

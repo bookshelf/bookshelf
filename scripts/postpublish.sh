@@ -6,10 +6,13 @@ get_property() {
 
 version="$(get_property 'package.json' 'version')"
 
+git remote remove bookshelf-source
+git remote add bookshelf-source git@github.com:bookshelf/bookshelf.git
+
 git commit -am "Release $version"
 git tag $version
 
-git push origin master
-git push origin master --tags
+git push bookshelf-source master
+git push bookshelf-source master --tags
 
-npm run gh-pages
+./scripts/gh-pages

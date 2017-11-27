@@ -31,10 +31,22 @@ $ npm install
 At this point the only thing missing are the databases that will be used for running some of the tests of the automated
 test suite.
 
-There are two options for setting up this part. The first one is to change some configuration options of the database
-servers and the other is to use a config file in case you already have your servers configured and don't want to change
-any of their config files. The first two sections below deal with the first option and then there are instructions on
-how to use the other option.
+There are three options for setting up this part. The first one is to use docker containers for the database servers, alternatively you can provide configuration options of the database
+servers and lastly is to use a config file in case you already have your servers configured and don't want to change
+any of their config files.
+
+### Docker
+
+You can install [Docker](https://docs.docker.com/engine/installation/#supported-platforms) easily on any Operating System.
+After picking the correct operating system installer (via package manager or download) one just need to:
+
+`docker-compose up`
+
+**Note:** admin privileges are needed, act according to your chosen Operating System.
+
+### Database Servers
+
+The two sections below deal with setting up the database servers needed for running tests.
 
 #### MySQL
 
@@ -126,7 +138,7 @@ access on clients connecting locally. Do not use this setting in a production en
 
 After editing the `pg_hba.conf` file you'll need to restart the PostgreSQL server for the changes to take effect.
 
-#### Using a config file
+### Configuration File
 
 If you don't want to go to the trouble of performing the changes explained in the previous two sections you can instead
 use a config file that tells the test suite about your database setup.

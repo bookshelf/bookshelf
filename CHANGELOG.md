@@ -1,8 +1,19 @@
 ## Change Log
 
+**0.12.0** <small>_Nov 27, 2017_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.1...0.12.0)
+
+- Skip visibility-plugin `hidden` and `visible` attributes [#1699](https://github.com/bookshelf/bookshelf/pull/1699).
+  - Used w/ `<model>.toJSON({ visibility: false })`
+- Updated knex peer dependency version to 0.14.x [#1694](https://github.com/bookshelf/bookshelf/pull/1694).
+- Documentation typo fixes [#1693](https://github.com/bookshelf/bookshelf/pull/1693).
+- Now caching `node_modules` to speed up travis-ci builds [#1695](https://github.com/bookshelf/bookshelf/pull/1695).
+- Use Docker containers for test runs [#1674](https://github.com/bookshelf/bookshelf/pull/1674).
+- Make `postpublish` work regardless of git remote config [#1697](https://github.com/bookshelf/bookshelf/pull/1697).
+
 **0.11.1** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1)
 
-- Do that postinstall build before publish.
+- Fixed regression #1691: File missing on `postinstall`
+  - npm `postinstall` script can be run as a part of npm `prepublish` script.
 
 **0.11.0** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0)
 
