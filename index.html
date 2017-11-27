@@ -4110,7 +4110,7 @@ the options to the <code>fetchAll</code> call.</p>
        rowCount: 53, // Total number of rows found for the query before pagination
        pageCount: 4, // Total number of pages of results
        page: 3, // The requested page number
-       pageSze: 15, // The requested number of rows per page
+       pageSize: 15, // The requested number of rows per page
 
  // OR, if limit/offset pagination is used instead of page/pageSize:
        // offset: 30, // The requested offset
@@ -18888,9 +18888,24 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.11.1</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.12.0</strong> <small><em>Nov 27, 2017</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.11.1...0.12.0">Diff</a></p>
 <ul>
-<li>Do that postinstall build before publish.</li>
+<li>Skip visibility-plugin <code>hidden</code> and <code>visible</code> attributes <a href="https://github.com/bookshelf/bookshelf/pull/1699">#1699</a>.<ul>
+<li>Used w/ <code>&lt;model&gt;.toJSON({ visibility: false })</code></li>
+</ul>
+</li>
+<li>Updated knex peer dependency version to 0.14.x <a href="https://github.com/bookshelf/bookshelf/pull/1694">#1694</a>.</li>
+<li>Documentation typo fixes <a href="https://github.com/bookshelf/bookshelf/pull/1693">#1693</a>.</li>
+<li>Now caching <code>node_modules</code> to speed up travis-ci builds <a href="https://github.com/bookshelf/bookshelf/pull/1695">#1695</a>.</li>
+<li>Use Docker containers for test runs <a href="https://github.com/bookshelf/bookshelf/pull/1674">#1674</a>.</li>
+<li>Make <code>postpublish</code> work regardless of git remote config <a href="https://github.com/bookshelf/bookshelf/pull/1697">#1697</a>.</li>
+</ul>
+<p><strong>0.11.1</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1">Diff</a></p>
+<ul>
+<li>Fixed regression #1691: File missing on <code>postinstall</code><ul>
+<li>npm <code>postinstall</code> script can be run as a part of npm <code>prepublish</code> script.</li>
+</ul>
+</li>
 </ul>
 <p><strong>0.11.0</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0">Diff</a></p>
 <ul>
@@ -19243,7 +19258,7 @@ event handlers (for validations, etc).</p>
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
           
             on
-          November 15th 2017
+          November 27th 2017
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
