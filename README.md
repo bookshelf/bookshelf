@@ -126,6 +126,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility) plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
 * [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility), but operates on the database level.
+* [bookshelf-ez-fetch](https://github.com/DJAndries/bookshelf-ez-fetch) - Convenient fetching methods which allow for compact filtering, relation selection and error handling.
 
 ## Support
 
