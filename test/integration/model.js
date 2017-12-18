@@ -827,7 +827,7 @@ module.exports = function(bookshelf) {
           equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
           return stubSync;
         };
-        return m.save({item: 'test'}, { date: dateInThePast });
+        return m.save({item: 'test'}, {date: dateInThePast});
       });
 
 
@@ -908,18 +908,32 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
-      it('will save a new updated_at timestamp if passed as parameter', function() {
+      it('will save a new updated_at timestamp if passed as parameter and force option is present', function() {
         var model = new Models.Admin();
         var oldUpdatedAt = null;
         var newUpdatedAt = new Date();
         newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
         return model.save().then(function(m) {
           oldUpdatedAt = m.get('updated_at');
-          return model.save('updated_at',newUpdatedAt);
+          return model.save({updated_at: newUpdatedAt}, {forceTimestamps: true});
         })
         .then(function(m) {
           expect(m.get('updated_at')).to.be.eql(newUpdatedAt);
           expect(m.get('updated_at')).to.be.not.eql(oldUpdatedAt);
+        });
+      });
+
+      it('will not save a new updated_at timestamp if passed as parameter', function() {
+        var model = new Models.Admin();
+        var oldUpdatedAt = null;
+        var newUpdatedAt = new Date();
+        newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+        return model.save().then(function(m) {
+          oldUpdatedAt = m.get('updated_at');
+          return model.save('updated_at', newUpdatedAt);
+        })
+        .then(function(m) {
+          expect(m.get('updated_at')).to.be.not.eql(newUpdatedAt);
         });
       });
 

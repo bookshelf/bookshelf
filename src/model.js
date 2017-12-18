@@ -986,13 +986,16 @@ const BookshelfModel = ModelBase.extend({
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
       if (this.hasTimestamps) {
-        //If some of the new attributes are value for update_at or created_at columns disable the possibility for the timestamp function to update the columns
-        const editUpdatedAt = attrs[updatedAtKey] ? false : true;
-        const editCreatedAt = attrs[createdAtKey] ? false : true;
+        // If some of the new attributes are value for update_at or created_at
+        // columns disable the possibility for the timestamp function to update
+        // the columns
+        const {forceTimestamps = false} = options;
+        const editUpdatedAt = Boolean(attrs[updatedAtKey]) && forceTimestamps;
+        const editCreatedAt = Boolean(attrs[createdAtKey]) && forceTimestamps;
         const additionalOptions = {
           silent: true,
-          editUpdatedAt : editUpdatedAt ,
-          editCreatedAt : editCreatedAt
+          editUpdatedAt: editUpdatedAt,
+          editCreatedAt: editCreatedAt
         }
         _.extend(attrs, this.timestamp(_.extend(options, additionalOptions)));
       }
@@ -1049,67 +1052,67 @@ const BookshelfModel = ModelBase.extend({
        * @returns {Promise}
        */
       return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
-      .bind(this)
-      .then(function() {
-        return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
-      })
-      .then(function(resp) {
+        .bind(this)
+        .then(function() {
+          return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
+        })
+        .then(function(resp) {
 
-        // After a successful database save, the id is updated if the model was created
-        if (method === 'insert' && this.id == null) {
-          const updatedCols = {};
-          updatedCols[this.idAttribute] = this.id = resp[0];
-          const updatedAttrs = this.parse(updatedCols);
-          _.assign(this.attributes, updatedAttrs);
-        } else if (method === 'update' && resp === 0) {
-          if (options.require !== false) {
-            throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
+          // After a successful database save, the id is updated if the model was created
+          if (method === 'insert' && this.id == null) {
+            const updatedCols = {};
+            updatedCols[this.idAttribute] = this.id = resp[0];
+            const updatedAttrs = this.parse(updatedCols);
+            _.assign(this.attributes, updatedAttrs);
+          } else if (method === 'update' && resp === 0) {
+            if (options.require !== false) {
+              throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
+            }
           }
-        }
 
-        // In case we need to reference the `previousAttributes` for the this
-        // in the following event handlers.
-        options.previousAttributes = this._previousAttributes;
+          // In case we need to reference the `previousAttributes` for the this
+          // in the following event handlers.
+          options.previousAttributes = this._previousAttributes;
 
-        this._reset();
+          this._reset();
 
-        /**
-         * Saved event.
-         *
-         * Fired after an `insert` or `update` query.
-         *
-         * @event Model#saved
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} resp     The database response.
-         * @param {Object} options  Options object passed to {@link Model#save save}.
-         * @returns {Promise}
-         */
+          /**
+           * Saved event.
+           *
+           * Fired after an `insert` or `update` query.
+           *
+           * @event Model#saved
+           * @param {Model}  model    The model firing the event.
+           * @param {Object} resp     The database response.
+           * @param {Object} options  Options object passed to {@link Model#save save}.
+           * @returns {Promise}
+           */
 
-        /**
-         * Created event.
-         *
-         * Fired after an `insert` query.
-         *
-         * @event Model#created
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
-         * @param {Object} options  Options object passed to {@link Model#save save}.
-         * @returns {Promise}
-         */
+          /**
+           * Created event.
+           *
+           * Fired after an `insert` query.
+           *
+           * @event Model#created
+           * @param {Model}  model    The model firing the event.
+           * @param {Object} attrs    Model firing the event.
+           * @param {Object} options  Options object passed to {@link Model#save save}.
+           * @returns {Promise}
+           */
 
-        /**
-         * Updated event.
-         *
-         * Fired after an `update` query.
-         *
-         * @event Model#updated
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
-         * @param {Object} options  Options object passed to {@link Model#save save}.
-         * @returns {Promise}
-         */
-        return this.triggerThen((method === 'insert' ? 'created saved' : 'updated saved'), this, resp, options);
-      });
+          /**
+           * Updated event.
+           *
+           * Fired after an `update` query.
+           *
+           * @event Model#updated
+           * @param {Model}  model    The model firing the event.
+           * @param {Object} attrs    Model firing the event.
+           * @param {Object} options  Options object passed to {@link Model#save save}.
+           * @returns {Promise}
+           */
+          return this.triggerThen((method === 'insert' ? 'created saved' : 'updated saved'), this, resp, options);
+        });
     })
     .return(this);
   }),

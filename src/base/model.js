@@ -492,24 +492,23 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
 ModelBase.prototype.timestamp = function(options) {
   if (!this.hasTimestamps) return {};
 
-  const now          = (options || {}).date ? new Date(options.date) : new Date();
-  const attributes   = {};
-  const method       = this.saveMethod(options);
+  options = options || {};
+
+  const now = options.date ? new Date(options.date) : new Date();
+  const attributes = {};
+  const method = this.saveMethod(options);
   const keys = _.isArray(this.hasTimestamps)
     ? this.hasTimestamps
     : DEFAULT_TIMESTAMP_KEYS;
 
-  const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
-  const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
-
   const [ createdAtKey, updatedAtKey ] = keys;
 
-  if (updatedAtKey && canEditUpdatedAtKey) {
-    attributes[updatedAtKey] = now;
+  if (method === 'insert' && !options.editCreatedAt) {
+    attributes[createdAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
-    attributes[createdAtKey] = now;
+  if (!options.editUpdatedAt) {
+    attributes[updatedAtKey] = now;
   }
 
   this.set(attributes, options);
