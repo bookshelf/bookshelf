@@ -319,7 +319,7 @@ ModelBase.prototype.escape = function(key) {
  * @description
  * Returns `true` if the attribute contains a value that is not null or undefined.
  * @param {string} attribute The attribute to check.
- * @returns {bool} True if `attribute` is set, otherwise null.
+ * @returns {bool} True if `attribute` is set, otherwise `false`.
  */
 ModelBase.prototype.has = function(attr) {
   return this.get(attr) != null;
