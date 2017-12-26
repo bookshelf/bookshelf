@@ -1,7 +1,7 @@
 {
   "extends": "eslint:recommended",
   "parserOptions": {
-  	"ecmaFeatures": {
+    "ecmaFeatures": {
       "experimentalObjectRestSpread": true
     },
     "ecmaVersion": 6,
