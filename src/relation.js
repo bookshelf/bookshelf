@@ -413,7 +413,12 @@ export default RelationBase.extend({
       }
       if (groupedKey) {
         const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
-        relation.relatedData = this;
+        if(this.type === 'belongsToMany') {
+          // If type is of "belongsToMany" then the relatedData need to be recreated through the parent model
+          relation.relatedData = model[relationName]().relatedData;
+        } else {
+          relation.relatedData = this;
+        }
         if (this.isJoined()) _.extend(relation, pivotHelpers);
       }
     })
