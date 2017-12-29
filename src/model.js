@@ -1015,7 +1015,9 @@ const BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save.
        *
        * @event Model#saving
-       * @param {Model}  model    The model firing the event.
+       * @param {Model} model
+       *   The model firing the event. Its attributes are already changed but
+       *   not commited to the database yet.
        * @param {Object} attrs    Attributes that will be inserted or updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
@@ -1043,7 +1045,9 @@ const BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save operation.
        *
        * @event Model#updating
-       * @param {Model}  model    The model firing the event.
+       * @param {Model}  model
+       *   The model firing the event. Its attributes are already changed but
+       *   not commited to the database yet.
        * @param {Object} attrs    Attributes that will be updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
@@ -1080,7 +1084,7 @@ const BookshelfModel = ModelBase.extend({
          *
          * @event Model#saved
          * @param {Model}  model    The model firing the event.
-         * @param {Object} resp     The database response.
+         * @param {Object} attrs    The model's attributes after calling `toJSON()` on it.
          * @param {Object} options  Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
@@ -1092,7 +1096,7 @@ const BookshelfModel = ModelBase.extend({
          *
          * @event Model#created
          * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
+         * @param {Object} attrs    The model's attributes after calling `toJSON()` on it.
          * @param {Object} options  Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
@@ -1104,7 +1108,7 @@ const BookshelfModel = ModelBase.extend({
          *
          * @event Model#updated
          * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
+         * @param {Object} attrs    The model's attributes after calling `toJSON()` on it.
          * @param {Object} options  Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
