@@ -1188,7 +1188,7 @@ const BookshelfModel = ModelBase.extend({
        *
        * @event Model#destroying
        * @param {Model}  model    The model firing the event.
-       * @param {Object} options  Options object passed to {@link Model#save save}.
+       * @param {Object} options  Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
       return this.triggerThen('destroying', this, options);
