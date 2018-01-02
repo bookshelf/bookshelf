@@ -1022,9 +1022,10 @@ const BookshelfModel = ModelBase.extend({
        *   Attributes that will be inserted or updated.
        *
        *   **Note**: There's currently a bug that leads to attrs only
-       *   containing attributes that were passed as argument to `.save()`. You
-       *   can work around this by accessing `model.changed` which does contain
-       *   all the attributes that will be inserted or updated.
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   inserted or updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -1042,9 +1043,10 @@ const BookshelfModel = ModelBase.extend({
        *   Attributes that will be inserted.
        *
        *   **Note**: There's currently a bug that leads to attrs only
-       *   containing attributes that were passed as argument to `.save()`. You
-       *   can work around this by accessing `model.changed` which does contain
-       *   all the attributes that will be inserted.
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   inserted.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -1064,9 +1066,10 @@ const BookshelfModel = ModelBase.extend({
        *   Attributes that will be updated.
        *
        *   **Note**: There's currently a bug that leads to attrs only
-       *   containing attributes that were passed as argument to `.save()`. You
-       *   can work around this by accessing `model.changed` which does contain
-       *   all the attributes that will be updated.
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
