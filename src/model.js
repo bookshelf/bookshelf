@@ -1171,7 +1171,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @throws {Model.NoRowsDeletedError}
    *
-   * @returns {Promise<Model>} A promise resolving to the destroyed and thus "empty" model.
+   * @returns {Promise<Model>} A promise resolving to the destroyed and thus
+   *                           empty model, i.e. all attributes are `undefined`.
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
