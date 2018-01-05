@@ -11,7 +11,9 @@ It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
-## [Read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600)
+## Notice
+
+This project is currently undergoing some changes. You may want to [read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600) on GitHub.
 
 ## Introduction
 
@@ -125,6 +127,8 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [bookshelf-advanced-serialization](https://github.com/sequiturs/bookshelf-advanced-serialization) - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.
 * [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility) plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
+* [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility), but operates on the database level.
+* [bookshelf-ez-fetch](https://github.com/DJAndries/bookshelf-ez-fetch) - Convenient fetching methods which allow for compact filtering, relation selection and error handling.
 
 ## Support
 

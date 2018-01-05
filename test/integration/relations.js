@@ -510,6 +510,20 @@ module.exports = function(Bookshelf) {
             });
         });
 
+        it('can attach `belongsToMany` relation to models eager loaded with `fetchAll`, #629', function() {
+          return Author.fetchAll({withRelated: ['posts']}).then(function(authors) {
+            return Promise.all([
+              authors.at(0).related('posts').detach(),
+              new Post({id: 1}).fetch()
+            ]);
+          }).then(function(models) {
+            expect(models[0]).to.have.length(0);
+            return models[0].attach(models[1]);
+          }).then(function(posts) {
+            expect(posts).to.have.length(1);
+          });
+        });
+
         it('keeps the pivotal helper methods when cloning a collection having `relatedData` with `type` "belongsToMany", #1197', function() {
           var pivotalProps = ['attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'];
           var author = new Author({id: 1});
