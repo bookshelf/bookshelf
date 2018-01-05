@@ -11,7 +11,9 @@ It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
-## [Read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600)
+## Notice
+
+This project is currently undergoing some changes. You may want to [read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600) on GitHub.
 
 ## Introduction
 
