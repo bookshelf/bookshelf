@@ -329,9 +329,9 @@ ModelBase.prototype.has = function(attr) {
  * @method
  * @description
  *
- * The parse method is called whenever a {@link Model model}'s data is returned
- * in a {@link Model#fetch fetch} call. The function is passed the raw database
- * response object, and should return the {@link Model#attributes
+ * The `parse` method is called whenever a {@link Model model}'s data is
+ * returned in a {@link Model#fetch fetch} call. The function is passed the raw
+ * database response object, and should return the {@link Model#attributes
  * attributes} hash to be {@link Model#set set} on the model. The default
  * implementation is a no-op, simply passing through the JSON response.
  * Override this if you need to format the database responses - for example
@@ -339,6 +339,10 @@ ModelBase.prototype.has = function(attr) {
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
  * JSON.parse} on a text field containing JSON, or explicitly typecasting a
  * boolean in a sqlite3 database response.
+ *
+ * If you need to format your data before it is saved to the database, override
+ * the {@link Model#format format} method in your models. That method does the
+ * opposite operation of `parse`.
  *
  * @example
  *
@@ -392,6 +396,17 @@ ModelBase.prototype.clear = function(options) {
  * it is persisted to the database. The `attributes` passed are a shallow clone
  * of the {@link Model model}, and are only used for inserting/updating - the
  * current values of the model are left intact.
+ *
+ * Do note that `format` is used to modify the state of the model when
+ * accessing the database, so if you remove an attribute in your `format`
+ * method, that attribute will never be persisted to the database, but it will
+ * also never be used when doing a `fetch()`, which may cause unexpected
+ * results. You should be very cautious with implementations of this method
+ * that may remove the primary key from the list of attributes.
+ *
+ * If you need to modify the database data before it is given to the model,
+ * override the {@link Model#parse parse} method instead. That method does the
+ * opposite operation of `format`.
  *
  * @param {Object} attributes The attributes to be converted.
  * @returns {Object} Formatted attributes.
