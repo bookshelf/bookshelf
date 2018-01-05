@@ -14,7 +14,7 @@ services:
 node_js:
   - '4'
   - '6'
-  - '8'
+#  - '8' Disabled until either we fix the babel compilation error or remove babel
 
 before_install:
   - sudo apt-get update
