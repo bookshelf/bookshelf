@@ -1,8 +1,13 @@
 {
   "globals": {
+    "beforeEach": true,
+    "context": true,
     "describe": true,
     "it": true,
     "expect": true,
     "before": true
+  },
+  "rules": {
+    "no-var": 0
   }
 }
