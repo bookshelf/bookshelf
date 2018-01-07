@@ -411,7 +411,7 @@ export default RelationBase.extend({
         const formatted = model.format(_.clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
-      if (groupedKey) {
+      if (!_.isNil(groupedKey)) {
         const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
         if(this.type === 'belongsToMany') {
           // If type is of "belongsToMany" then the relatedData need to be recreated through the parent model
