@@ -7,7 +7,7 @@ module.exports = function(Bookshelf) {
   var Promise  = global.testPromise;
 
   var pg = require('knex')({client: 'postgres', connection: config.postgres});
-  var sqlite3 = require('knex')({client: 'sqlite3', connection: config.sqlite3});
+  var sqlite3 = require('knex')({client: 'sqlite3', connection: config.sqlite3, useNullAsDefault: true});
   var mysql = require('knex')({
     client: 'mysql',
     connection: config.mysql,
@@ -23,9 +23,9 @@ module.exports = function(Bookshelf) {
   var MySQL = require('../bookshelf')(mysql);
   var PostgreSQL = require('../bookshelf')(pg);
   var SQLite3 = require('../bookshelf')(sqlite3);
-  var Swapped = require('../bookshelf')(Knex({client: 'sqlite3'}));
+  var Swapped = require('../bookshelf')(Knex({client: 'sqlite3', useNullAsDefault: true}));
   Swapped.knex = sqlite3;
-  var databasesArray = [MySQL, PostgreSQL, SQLite3, Swapped];
+  var databasesArray = [SQLite3, Swapped, MySQL, PostgreSQL];
   // Load OracleDB tests only if the module is present in the system
   try{
     var oracleDbModuleName = require.resolve('oracledb');
@@ -42,7 +42,7 @@ module.exports = function(Bookshelf) {
   });
 
   it('should allow swapping in another knex instance', function() {
-    var bookshelf = new Bookshelf(Knex({client: 'sqlite3'}));
+    var bookshelf = new Bookshelf(Knex({client: 'sqlite3', useNullAsDefault: true}));
     var Models = require('./integration/helpers/objects')(bookshelf).Models;
     var site = new Models.Site();
 
