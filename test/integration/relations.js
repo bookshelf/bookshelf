@@ -82,11 +82,9 @@ module.exports = function(Bookshelf) {
             .fetch()
             .then(checkTest(this));
         });
-
       });
 
       describe('Eager Loading - Models', function() {
-
         it('eager loads "hasOne" relationships correctly (site -> meta)', function() {
           return new Site({id: 1}).fetch({
             withRelated: ['meta']
@@ -133,6 +131,16 @@ module.exports = function(Bookshelf) {
               qb.columns('id', 'site_id', 'first_name');
             }}]
           }).then(checkTest(this));
+        });
+
+        it('can load relations when foreign key is 0', function() {
+          return new Models.Backup({id: 1, backup_type_id: 0}).save().then(function() {
+            return Models.Backup.fetchAll({withRelated: ['type']});
+          }).then(function(backups) {
+            var relatedType = backups.at(0).related('type');
+            expect(relatedType.get('name')).to.be.a('string');
+            expect(relatedType.get('name')).to.not.be.empty;
+          });
         });
 
         it('throws an error on undefined first withRelated relations', function() {

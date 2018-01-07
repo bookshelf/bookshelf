@@ -2,14 +2,12 @@ var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
-  'sites', 'sitesmeta', 'admins',
-  'admins_sites', 'authors', 'authors_posts',
-  'blogs', 'posts', 'tags', 'posts_tags', 'comments',
-  'users', 'roles', 'photos', 'users_roles', 'info',
-  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
-  'parsed_users', 'tokens', 'thumbnails',
-  'lefts', 'rights', 'lefts_rights', 'organization',
-  'locales', 'translations'
+  'sites', 'sitesmeta', 'admins', 'admins_sites', 'authors', 'authors_posts',
+  'blogs', 'posts', 'tags', 'posts_tags', 'comments', 'users', 'roles',
+  'photos', 'users_roles', 'info', 'Customer', 'Settings', 'hostnames',
+  'instances', 'uuid_test', 'parsed_users', 'tokens', 'thumbnails', 'lefts',
+  'rights', 'lefts_rights', 'organization', 'locales', 'translations',
+  'backups', 'backup_types'
 ];
 
 module.exports = function(Bookshelf) {
@@ -171,6 +169,15 @@ module.exports = function(Bookshelf) {
     .createTable('translations', function(table) {
       table.string('code');
       table.string('customer');
+    })
+    .createTable('backup_types', function(table) {
+      table.increments();
+      table.string('name');
+    })
+    .createTable('backups', function(table) {
+      table.increments();
+      table.string('name');
+      table.integer('backup_type_id');
     })
   });
 
