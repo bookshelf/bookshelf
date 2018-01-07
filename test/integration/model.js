@@ -399,21 +399,21 @@ module.exports = function(bookshelf) {
       });
 
       it('allows specification of select columns as an `options` argument', function () {
-        var model = new Author({id: 1}).fetch({columns: ['first_name']})
+        new Author({id: 1}).fetch({columns: ['first_name']})
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
       it('allows specification of select columns in query callback', function () {
-        var model = new Author({id: 1}).query('select','first_name').fetch()
+        new Author({id: 1}).query('select','first_name').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
       it('will still select default columns if `distinct` is called without columns - #807', function () {
-        var model = new Author({id: 1}).query('distinct').fetch()
+        new Author({id: 1}).query('distinct').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {
               id: 1,
@@ -425,12 +425,11 @@ module.exports = function(bookshelf) {
       });
 
       it('resolves to null if no record exists', function() {
-        var model = new Author({id: 200}).fetch()
+        new Author({id: 200}).fetch()
           .then(function (model) {
             equal(model, null);
           });
       });
-
     });
 
     describe('fetchAll', function() {
@@ -596,7 +595,6 @@ module.exports = function(bookshelf) {
 
       it('fires saving and creating and then saves', function() {
         var user   = new bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
-        var query  = user.query();
         var events = 0;
         user.sync  = function() {
           return _.extend(stubSync, {
@@ -1052,7 +1050,6 @@ module.exports = function(bookshelf) {
     describe('previous, previousAttributes', function() {
 
       it('will return the previous value of an attribute the last time it was synced', function() {
-        var count = 0;
         var model = new Models.Site({id: 1});
         equal(model.previous('id'), undefined);
 

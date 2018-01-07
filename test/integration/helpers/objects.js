@@ -381,6 +381,17 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var BackupType = Bookshelf.Model.extend({
+    tableName: 'backup_types'
+  })
+
+  var Backup = Bookshelf.Model.extend({
+    tableName: 'backups',
+    type: function() {
+      return this.belongsTo(BackupType);
+    }
+  })
+
   return {
     Models: {
       Site: Site,
@@ -389,6 +400,8 @@ module.exports = function(Bookshelf) {
       Admin: Admin,
       Author: Author,
       AuthorParsed: AuthorParsed,
+      Backup: Backup,
+      BackupType: BackupType,
       Blog: Blog,
       Post: Post,
       PostParsed: PostParsed,
