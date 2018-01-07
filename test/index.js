@@ -40,7 +40,7 @@ describe('Bookshelf', function () {
   it('VERSION should equal version number in package.json',
     function () {
     var Knex = require('knex');
-    var bookshelf = Bookshelf(Knex({client: 'sqlite3'}));
+    var bookshelf = Bookshelf(Knex({client: 'sqlite3', useNullAsDefault: true}));
     var p = require('../package.json');
     expect(p.version).to.equal(bookshelf.VERSION);
   });
