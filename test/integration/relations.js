@@ -82,11 +82,9 @@ module.exports = function(Bookshelf) {
             .fetch()
             .then(checkTest(this));
         });
-
       });
 
       describe('Eager Loading - Models', function() {
-
         it('eager loads "hasOne" relationships correctly (site -> meta)', function() {
           return new Site({id: 1}).fetch({
             withRelated: ['meta']
@@ -133,6 +131,16 @@ module.exports = function(Bookshelf) {
               qb.columns('id', 'site_id', 'first_name');
             }}]
           }).then(checkTest(this));
+        });
+
+        it('can load relations when foreign key is 0', function() {
+          return new Models.Backup({id: 1, backup_type_id: 0}).save().then(function() {
+            return Models.Backup.fetchAll({withRelated: ['type']});
+          }).then(function(backups) {
+            var relatedType = backups.at(0).related('type');
+            expect(relatedType.get('name')).to.be.a('string');
+            expect(relatedType.get('name')).to.not.be.empty;
+          });
         });
 
         it('throws an error on undefined first withRelated relations', function() {
@@ -510,6 +518,20 @@ module.exports = function(Bookshelf) {
             });
         });
 
+        it('can attach `belongsToMany` relation to models eager loaded with `fetchAll`, #629', function() {
+          return Author.fetchAll({withRelated: ['posts']}).then(function(authors) {
+            return Promise.all([
+              authors.at(0).related('posts').detach(),
+              new Post({id: 1}).fetch()
+            ]);
+          }).then(function(models) {
+            expect(models[0]).to.have.length(0);
+            return models[0].attach(models[1]);
+          }).then(function(posts) {
+            expect(posts).to.have.length(1);
+          });
+        });
+
         it('keeps the pivotal helper methods when cloning a collection having `relatedData` with `type` "belongsToMany", #1197', function() {
           var pivotalProps = ['attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'];
           var author = new Author({id: 1});
@@ -857,6 +879,16 @@ module.exports = function(Bookshelf) {
           .then(function (blog) {
             var attrs = blog.related('parsedPosts').at(0).attributes;
             Object.keys(attrs).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+      it('parses eager-loaded models previous attributes after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var prev = blog.related('parsedPosts').at(0)._previousAttributes;
+            Object.keys(prev).forEach(function (key) {
               expect(/_parsed$/.test(key)).to.be.true;
             });
           });

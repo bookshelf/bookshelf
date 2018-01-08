@@ -789,8 +789,8 @@ const BookshelfModel = ModelBase.extend({
    *
    *   Optionally run the query in a transaction.
    *
-   * @fires Model#"fetching:collection"
-   * @fires Model#"fetched:collection"
+   * @fires Model#fetching:collection
+   * @fires Model#fetched:collection
    *
    * @throws {Collection.EmptyError}
    *
@@ -807,7 +807,7 @@ const BookshelfModel = ModelBase.extend({
          * Fired before a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#"fetching:collection"
+         * @event Model#fetching:collection
          * @param {Model}    collection The collection that has been fetched.
          * @param {string[]} columns    The columns being retrieved by the query.
          * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -820,7 +820,7 @@ const BookshelfModel = ModelBase.extend({
          * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
-         * @event Model#"fetched:collection"
+         * @event Model#fetched:collection
          * @param {Model}  collection The collection that has been fetched.
          * @param {Object} resp       The Knex query response.
          * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
@@ -1015,8 +1015,17 @@ const BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save.
        *
        * @event Model#saving
-       * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Attributes that will be inserted or updated.
+       * @param {Model} model
+       *   The model firing the event. Its attributes are already changed but
+       *   not commited to the database yet.
+       * @param {Object} attrs
+       *   Attributes that will be inserted or updated.
+       *
+       *   **Note**: There's currently a bug that leads to attrs only
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   inserted or updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -1030,7 +1039,14 @@ const BookshelfModel = ModelBase.extend({
        *
        * @event Model#creating
        * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Attributes that will be inserted.
+       * @param {Object} attrs
+       *   Attributes that will be inserted.
+       *
+       *   **Note**: There's currently a bug that leads to attrs only
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   inserted.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -1043,8 +1059,17 @@ const BookshelfModel = ModelBase.extend({
        * exception from the handler will cancel the save operation.
        *
        * @event Model#updating
-       * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Attributes that will be updated.
+       * @param {Model}  model
+       *   The model firing the event. Its attributes are already changed but
+       *   not commited to the database yet.
+       * @param {Object} attrs
+       *   Attributes that will be updated.
+       *
+       *   **Note**: There's currently a bug that leads to attrs only
+       *   containing attributes that were passed as argument to
+       *   {@link Model#save save}. You can work around this by accessing
+       *   `model.changed` which does contain all the attributes that will be
+       *   updated.
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
@@ -1054,7 +1079,6 @@ const BookshelfModel = ModelBase.extend({
         return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
       })
       .then(function(resp) {
-
         // After a successful database save, the id is updated if the model was created
         if (method === 'insert' && this.id == null) {
           const updatedCols = {};
@@ -1079,9 +1103,12 @@ const BookshelfModel = ModelBase.extend({
          * Fired after an `insert` or `update` query.
          *
          * @event Model#saved
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} resp     The database response.
-         * @param {Object} options  Options object passed to {@link Model#save save}.
+         * @param {Model} model The model firing the event.
+         * @param {(Array|Number)} response
+         *   A list containing the id of the newly created model in case of an
+         *   `insert` or a number representing the affected rows in the case of
+         *   an `update` query.
+         * @param {Object} options Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
 
@@ -1092,7 +1119,7 @@ const BookshelfModel = ModelBase.extend({
          *
          * @event Model#created
          * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
+         * @param {Array}  newId    A list containing the id of the newly created model.
          * @param {Object} options  Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
@@ -1103,9 +1130,9 @@ const BookshelfModel = ModelBase.extend({
          * Fired after an `update` query.
          *
          * @event Model#updated
-         * @param {Model}  model    The model firing the event.
-         * @param {Object} attrs    Model firing the event.
-         * @param {Object} options  Options object passed to {@link Model#save save}.
+         * @param {Model} model The model firing the event.
+         * @param {Number} affectedRows Number of rows affected by the update.
+         * @param {Object} options Options object passed to {@link Model#save save}.
          * @returns {Promise}
          */
         return this.triggerThen((method === 'insert' ? 'created saved' : 'updated saved'), this, resp, options);
@@ -1147,7 +1174,8 @@ const BookshelfModel = ModelBase.extend({
    *
    * @throws {Model.NoRowsDeletedError}
    *
-   * @returns {Promise<Model>} A promise resolving to the destroyed and thus "empty" model.
+   * @returns {Promise<Model>} A promise resolving to the destroyed and thus
+   *                           empty model, i.e. all attributes are `undefined`.
    */
   destroy: Promise.method(function(options) {
     options = options ? _.clone(options) : {};
@@ -1164,14 +1192,14 @@ const BookshelfModel = ModelBase.extend({
        *
        * @event Model#destroying
        * @param {Model}  model    The model firing the event.
-       * @param {Object} options  Options object passed to {@link Model#save save}.
+       * @param {Object} options  Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
       return this.triggerThen('destroying', this, options);
     }).then(function() {
       return sync.del();
-    }).then(function(resp) {
-      if (options.require && resp === 0) {
+  }).then(function(affectedRows) {
+      if (options.require && affectedRows === 0) {
         throw new this.constructor.NoRowsDeletedError('No Rows Deleted');
       }
       this.clear();
@@ -1183,12 +1211,12 @@ const BookshelfModel = ModelBase.extend({
        * handler for async behaviour.
        *
        * @event Model#destroyed
-       * @param {Model}  model    The model firing the event.
-       * @param {Object} attrs    Model firing the event.
-       * @param {Object} options  Options object passed to {@link Model#destroy destroy}.
+       * @param {Model}  model The model firing the event.
+       * @param {Object} affectedRows Number of affected rows.
+       * @param {Object} options Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
-      return this.triggerThen('destroyed', this, resp, options);
+      return this.triggerThen('destroyed', this, affectedRows, options);
     }).then(this._reset);
   }),
 

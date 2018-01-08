@@ -1,19 +1,25 @@
 #!/bin/bash -e
 
-# Checkout and update gh-pages branch.
+echo "Fetch branches from source"
+git fetch bookshelf-source
+
+echo "Checkout gh-pages branch from source"
 git checkout -B gh-pages bookshelf-source/gh-pages
 
-# Update to master.
+echo "Pulling latest master branch"
 git pull bookshelf-source master
 
-# Regenate documentation.
+echo "Regenerating documentation"
 npm run jsdoc
 
-# We must force add because these are usually ignored.
+echo "Add all docs to repo"
 git add --force --all index.html docs
 
-# Commit changes.
+echo "Commit docs changes"
 git commit -m "Update docs"
 
-# Push the update.
+echo "Push to gh-pages branch on github repo"
 git push bookshelf-source gh-pages
+
+echo "Re-checkout master"
+git checkout master
