@@ -1,4 +1,4 @@
-# How to contribute to Bookshelf.js
+# How to Contribute to Bookshelf.js
 
 * Before sending a pull request for a feature or bug fix, be sure to have
 [tests](https://github.com/bookshelf/bookshelf/tree/master/test).
@@ -190,7 +190,7 @@ is pointing correctly to it. For convenience you can put it in your home directo
 export BOOKSHELF_TEST='/home/myusername/.bookshelf_config.js'
 ```
 
-#### Database creation
+#### Database Creation
 
 After having ensured the test suite can access both database servers just create a new database on each that will be
 used exclusively by Bookshelf.js:
@@ -211,3 +211,16 @@ npm test
 ```
 
 Always make sure all the tests are passing before sending a pull request.
+
+## Publishing a New Release
+
+The release process is fairly well automated. You do need publishing rights to the npmjs.com
+[bookshelf package](https://www.npmjs.com/package/bookshelf) and write access to the GitHub repository. Once that's set
+just make sure to follow the process explained below in the correct order.
+
+1. You should draft a new release on GitHub. This isn't strictly necessary, but is highly recommended. At this time you
+shouldn't publish it yet, but just save it as a draft instead.
+2. Update the `CHANGELOG.md` file and update the version number of `package.json`. For the changelog just follow the
+format of the previous update. In general you should link to PRs instead of issues when mentioning changes. If the PRs'
+descriptions are well written they should already include any associated issues. At this point there is no need to commit and/or push these changes since that is taken care of automatically by the release scripts.
+3. Just run `npm publish` and sit back.
