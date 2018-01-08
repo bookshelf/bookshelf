@@ -24,4 +24,4 @@ echo "Pushing new version tag to source master"
 git push bookshelf-source master --tags
 
 echo "Running gh-pages publish"
-./scripts/gh-pages
+./scripts/gh-pages.sh
