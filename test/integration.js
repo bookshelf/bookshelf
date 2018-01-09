@@ -67,8 +67,12 @@ module.exports = function(Bookshelf) {
 
       this.dialect = dialect;
 
+      after(function() {
+        if (dialect !== 'sqlite3') bookshelf.knex.destroy();
+      })
+
       before(function() {
-        this.timeout(300000);
+        this.timeout(60000);
         return require('./integration/helpers/migration')(bookshelf).then(function() {
            return require('./integration/helpers/inserts')(bookshelf);
         });
