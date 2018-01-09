@@ -77,17 +77,32 @@ module.exports = function() {
 
     describe('update', function() {
       it('doesn\'t try to update the primary key if it hasn\'t changed', function() {
-        var sync = new Sync(stubSync())
+        var sync = new Sync(stubSync());
         _.extend(sync.query, {
           update: function(attrs) {
             expect(attrs).to.not.have.property('id');
           },
           where: function() {
-            this._statements = [{grouping: 'where'}]
+            this._statements = [{grouping: 'where'}];
           }
-        })
+        });
 
-        return sync.update({id: 1, name: 'something'})
+        return sync.update({id: 1, name: 'something'});
+      });
+
+      it('will update the primary key if it has changed', function() {
+        var sync = new Sync(stubSync());
+        _.extend(sync.query, {
+          update: function(attrs) {
+            expect(attrs).to.have.property('id');
+            expect(attrs.id).to.equal(2);
+          },
+          where: function() {
+            this._statements = [{grouping: 'where'}];
+          }
+        });
+
+        return sync.update({id: 2, name: 'something'});
       })
     })
   });
