@@ -74,5 +74,8 @@
     "web": "https://github.com/bookshelf"
   },
   "license": "MIT",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "engines": {
+    "node": ">=4"
+  }
 }
