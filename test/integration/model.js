@@ -614,6 +614,30 @@ module.exports = function(bookshelf) {
         return user.save();
       });
 
+      it('fires saving and then creating triggers', function() {
+        var user   = new bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
+        var triggered = [];
+        user.sync  = function() {
+          return _.extend(stubSync, {
+            insert: function() {
+              deepEqual(triggered, ['saving', 'creating']);
+              return Promise.resolve({});
+            }
+          });
+        };
+        user.on('saving', function() {
+          return Promise.resolve().then(function() {
+            triggered.push('saving');
+          });
+        });
+        user.on('creating', function() {
+          return Promise.resolve().then(function() {
+            triggered.push('creating');
+          });
+        });
+        return user.save();
+      });
+
       it('rejects if the saving event throws an error', function() {
         var Test = bookshelf.Model.extend({
           tableName: 'test',
