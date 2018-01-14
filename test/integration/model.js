@@ -9,9 +9,7 @@ var deepEqual = require('assert').deepEqual;
 var QueryBuilder = require('knex/lib/query/builder')
 
 module.exports = function(bookshelf) {
-
   describe('Model', function() {
-
     var Models    = require('./helpers/objects')(bookshelf).Models;
 
     var stubSync = {
@@ -23,12 +21,7 @@ module.exports = function(bookshelf) {
     };
 
     var dialect = bookshelf.knex.client.dialect;
-    var formatNumber = {
-      mysql:      _.identity,
-      sqlite3:    _.identity,
-      oracle:     _.identity,
-      postgresql: function(count) { return count.toString() }
-    }[dialect];
+    var formatNumber = require('./helpers').formatNumber(dialect);
     var checkCount = function(actual, expected) {
       expect(actual, formatNumber(expected));
     };
