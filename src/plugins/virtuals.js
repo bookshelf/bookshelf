@@ -13,18 +13,30 @@ module.exports = function (Bookshelf) {
     // If virtual properties have been defined they will be created
     // as simple getters on the model.
     constructor: function (attributes, options) {
-      proto.constructor.apply(this, arguments);
-      const { virtuals } = this;
+      // Initially model has a reference to prototype `virtuals`
+      // property. To not change the referenced `virtuals` property
+      // object it is required to deep clone it.
+      const virtuals = this.virtuals = _.cloneDeep(this.virtuals);
       if (_.isObject(virtuals)) {
+        // Prepare virtual getters and setters
         for (const virtualName in virtuals) {
           let getter, setter;
-          if (virtuals[virtualName].get) {
-            getter = virtuals[virtualName].get;
-            setter = virtuals[virtualName].set
-              ? virtuals[virtualName].set
-              : undefined;
+          if (virtuals[virtualName].get || virtuals[virtualName].set) {
+            if (virtuals[virtualName].get) {
+              getter = virtuals[virtualName].get = enableVirtualNesting(
+                virtuals[virtualName].get
+              );
+            }
+
+            if (virtuals[virtualName].set) {
+              setter = virtuals[virtualName].set = enableVirtualNesting(
+                virtuals[virtualName].set
+              );
+            }
           } else {
-            getter = virtuals[virtualName];
+            getter = virtuals[virtualName] = enableVirtualNesting(
+              virtuals[virtualName]
+            );
           }
           Object.defineProperty(this, virtualName, {
             enumerable: true,
@@ -33,6 +45,10 @@ module.exports = function (Bookshelf) {
           });
         }
       }
+      // As the Model base class may call `set` method which will also use
+      // virtual setters and getters it is requred to call base constructor
+      // after preparing the virtuals.
+      proto.constructor.apply(this, arguments);
     },
 
     // Passing `{virtuals: true}` or `{virtuals: false}` in the `options`
@@ -54,7 +70,8 @@ module.exports = function (Bookshelf) {
     // Allow virtuals to be fetched like normal properties
     get: function (attr) {
       const { virtuals } = this;
-      if (_.isObject(virtuals) && virtuals[attr]) {
+      const virtual = _.isObject(virtuals) && virtuals[attr]
+      if (hasVirtualGet(virtual) && !isNestedGet(virtual)) {
         return getVirtual(this, attr);
       }
       return proto.get.apply(this, arguments);
@@ -159,6 +176,34 @@ module.exports = function (Bookshelf) {
     };
   });
 
+  function enableVirtualNesting(virtualMethod) {
+    let method;
+    return method = function() {
+      try {
+        method.in = true;
+        return virtualMethod.apply(this, arguments);
+      } finally {
+        delete method.in;
+      }
+    };
+  }
+
+  function isNestedVirtual(virtualMethod) {
+    return virtualMethod && !!virtualMethod.in;
+  }
+
+  function isNestedGet(virtual) {
+    return virtual && isNestedVirtual(virtual.get || virtual);
+  }
+
+  function isNestedSet(virtual) {
+    return virtual && isNestedVirtual(virtual.set);
+  }
+
+  function hasVirtualGet(virtual) {
+    return virtual && _.some([virtual, virtual.get], _.isFunction);
+  }
+
   function getVirtual(model, virtualName) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
@@ -172,7 +217,9 @@ module.exports = function (Bookshelf) {
     const attrs = {};
     if (virtuals != null) {
       for (const virtualName in virtuals) {
-        attrs[virtualName] = getVirtual(model, virtualName);
+        if (hasVirtualGet(virtuals[virtualName])) {
+          attrs[virtualName] = getVirtual(model, virtualName);
+        }
       }
     }
     return attrs;
@@ -180,7 +227,7 @@ module.exports = function (Bookshelf) {
 
   function setVirtual(value, key) {
     const virtual = this.virtuals && this.virtuals[key];
-    if (virtual) {
+    if (virtual && !isNestedSet(virtual)) {
       if (virtual.set) {
         virtual.set.call(this, value);
       }

@@ -46,6 +46,45 @@ module.exports = function (bookshelf) {
       equal(m.get('lastName'), 'Shmoe');
     });
 
+    it('allows to create virtual properties with only getter present', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            get: function () {
+              return this.get('firstName') + ' ' + this.get('lastName');
+            }
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.fullName, 'Joe Shmoe');
+      m.fullName = 'Jack Shmoe';
+
+      equal(m.fullName, 'Joe Shmoe');
+      equal(m.get('firstName'), 'Joe');
+      equal(m.get('lastName'), 'Shmoe');
+    });
+
+    it('allows to create virtual properties with only setter present', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: {
+            set: function(value) {
+              value = value.split(' ');
+              this.set('firstName', value[0]);
+              this.set('lastName', value[1]);
+            }
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      equal(m.fullName, undefined);
+      m.fullName = 'Jack Shmoe';
+
+      equal(m.get('firstName'), 'Jack');
+      equal(m.get('lastName'), 'Shmoe');
+    });
+
     it('defaults virtual properties with no setter to a noop', function () {
        var m = new (bookshelf.Model.extend({
         virtuals: {
@@ -307,6 +346,40 @@ module.exports = function (bookshelf) {
         .catch(function(error) {
           expect(error.message).to.equal('Deliberately failing');
         })
+    });
+
+    it('when setter/getter called recursively for the same attribute key, it should call non-virtual setter/getter', function () {
+      var getCount = 0;
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          is_owner: {
+            get: function () {
+              getCount++;
+              return this.get('is_owner');
+            },
+            set: function(value) {
+              if (value) {
+                this.set('is_authorized', true);
+              }
+              this.set('is_owner', value);
+            }
+          }
+        }
+      }))({is_owner: true});
+
+      // getter should return is_owner value from attributes
+      expect(m.get('is_owner')).to.be.true;
+      expect(getCount).to.equal(1);
+      expect(m.attributes.is_owner).to.be.true;
+      expect(m.attributes.is_authorized).to.be.true;
+
+      m.set('is_owner', false);
+
+      // getter should return is_owner value from attributes
+      expect(m.get('is_owner')).to.be.false;
+      expect(getCount).to.equal(2);
+      expect(m.attributes.is_owner).to.be.false;
+      expect(m.attributes.is_authorized).to.be.true;
     });
   });
 };
