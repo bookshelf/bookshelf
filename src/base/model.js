@@ -352,16 +352,16 @@ ModelBase.prototype.has = function(attr) {
  * opposite operation of `parse`.
  *
  * @example
- *
- * // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
+ * // Example of a parser to convert snake_case to camelCase, using lodash
+ * // This is just an example. You can use the built-in case-converter plugin
+ * // to achieve the same functionality.
  * model.parse = function(attrs) {
- *   return _.reduce(attrs, function(memo, val, key) {
- *     memo[_.camelCase(key)] = val;
- *     return memo;
- *   }, {});
+ *   return _.mapKeys(attrs, function(value, key) {
+ *     return _.camelCase(key);
+ *   });
  * };
  *
- * @param {Object} response Hash of attributes to parse.
+ * @param {Object} attributes Hash of attributes to parse.
  * @returns {Object} Parsed attributes.
  */
 ModelBase.prototype.parse = identity;
