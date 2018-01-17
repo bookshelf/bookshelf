@@ -92,7 +92,7 @@ module.exports = function(Bookshelf) {
       return this.belongsTo(Site);
     },
     photo: function() {
-      return this.morphOne(Photo, 'imageable');
+      return this.morphOne(Photo, 'imageable', 'profile_pic');
     },
     thumbnail: function() {
       return this.morphOne(Thumbnail, 'imageable', ["ImageableType", "ImageableId"]);
@@ -114,7 +114,7 @@ module.exports = function(Bookshelf) {
     parse: _parsed,
     format: _format,
     photos: function() {
-      return this.morphMany(PhotoParsed, 'imageable');
+      return this.morphMany(PhotoParsed, 'imageable', 'profile_pic');
     }
   });
 
@@ -212,10 +212,10 @@ module.exports = function(Bookshelf) {
   var Photo = Bookshelf.Model.extend({
     tableName: 'photos',
     imageable: function() {
-      return this.morphTo('imageable', Site, Author);
+      return this.morphTo('imageable', Site, [Author, 'profile_pic']);
     },
     imageableParsed: function() {
-      return this.morphTo('imageable', SiteParsed, AuthorParsed);
+      return this.morphTo('imageable', [AuthorParsed, 'profile_pic'], SiteParsed);
     }
   });
 
@@ -381,6 +381,17 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var BackupType = Bookshelf.Model.extend({
+    tableName: 'backup_types'
+  })
+
+  var Backup = Bookshelf.Model.extend({
+    tableName: 'backups',
+    type: function() {
+      return this.belongsTo(BackupType);
+    }
+  })
+
   return {
     Models: {
       Site: Site,
@@ -389,6 +400,8 @@ module.exports = function(Bookshelf) {
       Admin: Admin,
       Author: Author,
       AuthorParsed: AuthorParsed,
+      Backup: Backup,
+      BackupType: BackupType,
       Blog: Blog,
       Post: Post,
       PostParsed: PostParsed,

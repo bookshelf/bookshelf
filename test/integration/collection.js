@@ -13,11 +13,7 @@ module.exports = function(bookshelf) {
     var json    = function(model) {
       return JSON.parse(JSON.stringify(model));
     };
-    var formatNumber = {
-      mysql:      _.identity,
-      sqlite3:    _.identity,
-      postgresql: function(count) { return count.toString() }
-    }[dialect];
+    var formatNumber = require('./helpers').formatNumber(dialect);
     var checkCount = function(actual, expected) {
       expect(actual).to.equal(formatNumber(expected));
     };

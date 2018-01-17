@@ -116,7 +116,7 @@ export default RelationBase.extend({
           : this.morphName + '_type';
         break;
       case 'morphValue':
-        this[keyName] = this.parentTableName || this.targetTableName;
+        this[keyName] = this.morphValue || this.parentTableName || this.targetTableName;
         break;
     }
     return this[keyName]
@@ -144,7 +144,11 @@ export default RelationBase.extend({
           return this.parentIdAttribute;
         }
 
-        if (this.isForeignKeyTargeted()) {
+        if (this.type === 'belongsTo' && this.foreignKey) {
+          return this.foreignKey;
+        }
+
+        if (this.type !== 'belongsTo' && this.isForeignKeyTargeted()) {
           return this.foreignKeyTarget;
         }
 
@@ -328,7 +332,7 @@ export default RelationBase.extend({
     const key = this.isInverse() && !this.isThrough()
       ? this.key('foreignKey')
       : this.parentIdAttribute;
-    return _(response).map(key).uniq().value();
+    return _.reject(_(response).map(key).uniq().value(), _.isNil);
   },
 
   // Generates the appropriate standard join table.
@@ -407,15 +411,23 @@ export default RelationBase.extend({
         const formatted = model.format(_.clone(model.attributes));
         groupedKey = formatted[keyColumn];
       }
-      const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
-      relation.relatedData = this;
-      if (this.isJoined()) _.extend(relation, pivotHelpers);
+      if (!_.isNil(groupedKey)) {
+        const relation = model.relations[relationName] = this.relatedInstance(grouped[groupedKey]);
+        if(this.type === 'belongsToMany') {
+          // If type is of "belongsToMany" then the relatedData need to be recreated through the parent model
+          relation.relatedData = model[relationName]().relatedData;
+        } else {
+          relation.relatedData = this;
+        }
+        if (this.isJoined()) _.extend(relation, pivotHelpers);
+      }
     })
 
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
     related.map(model => {
       model.attributes = model.parse(model.attributes)
+      model._reset();
     });
 
     return related;
@@ -534,7 +546,7 @@ const pivotHelpers = {
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
    * @returns {Promise<Collection>}
-   *   A promise resolving to the updated Collection.
+   *   A promise resolving to the updated Collection where this method was called.
    */
   attach(ids, options) {
     return Promise.try(() =>
@@ -548,9 +560,9 @@ const pivotHelpers = {
 
   /**
    * Detach one or more related objects from their pivot tables. If a model or
-   * id is passed, it attempts to remove the pivot table based on that foreign
-   * key. If no parameters are specified, we assume we will detach all related
-   * associations.
+   * id is passed, it attempts to remove from the pivot table based on that
+   * foreign key. If no parameters are specified, we assume we will detach all
+   * related associations.
    *
    * This method (along with {@link Collection#attach} and {@link
    * Collection#updatePivot}) are mixed in to a {@link Collection} when returned
@@ -564,7 +576,7 @@ const pivotHelpers = {
    * @param {Transaction} options.transacting
    *   Optionally run the query in a transaction.
    * @returns {Promise<undefined>}
-   *   A promise resolving to `undefined`.
+   *   A promise resolving to the updated Collection where this method was called.
    */
   detach(ids, options) {
     return Promise.try(() =>

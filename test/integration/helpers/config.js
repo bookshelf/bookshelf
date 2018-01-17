@@ -1,5 +1,4 @@
 module.exports = {
-
   mysql: {
     database: 'bookshelf_test',
     user: 'root',
@@ -14,5 +13,4 @@ module.exports = {
   sqlite3: {
     filename: ':memory:'
   }
-
 };

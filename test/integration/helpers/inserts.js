@@ -54,6 +54,9 @@ module.exports = function(bookshelf) {
     },{
       site_id: 2,
       name: 'Alternate Site Blog'
+    },{
+      site_id: null,
+      name: 'Orphan Blog Without a Site'
     }]),
 
     knex('authors').insert([{
@@ -154,12 +157,12 @@ module.exports = function(bookshelf) {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
       imageable_id: 1,
-      imageable_type: 'authors'
+      imageable_type: 'profile_pic'
     }, {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
       imageable_id: 2,
-      imageable_type: 'authors'
+      imageable_type: 'profile_pic'
     }, {
       caption: 'Lorem ipsum Quis Ut eu nostrud ea sint aute non aliqua ut ullamco cupidatat exercitation nisi nisi.',
       url: 'https://www.google.com/images/srpr/logo4w.png',
@@ -255,6 +258,13 @@ module.exports = function(bookshelf) {
       { code: 'en', customer: 'Customer1' },
       { code: 'en', customer: 'Customer2' },
       { code: 'pt', customer: 'Customer1' }
+    ]),
+
+    knex('backups').insert({name: 'first backup'}),
+
+    knex('backup_types').insert([
+      {id: 0, name: 'standard'},
+      {id: 1, name: 'enhanced'} // We need to explicitly set the id to 1 otherwise MySQL will get confused
     ])
 
   ]).then(null, function(e) {

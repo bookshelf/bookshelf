@@ -1,19 +1,21 @@
 {
-  "parser": "babel-eslint",
   "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
   "env": {
     "es6": true,
     "node": true
-  },
-  "ecmaFeatures": {
-    "destructuring": true,
-    "modules": true
   },
   "rules": {
     "no-console": 1,
     "no-const-assign": 2,
     "no-unused-vars": [1, {"vars": "all", "args": "none"}],
-    "no-var": 1,
+    "no-var": 0,
     "prefer-const": 1,
     "no-trailing-spaces": 1
   }

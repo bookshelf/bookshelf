@@ -82,11 +82,9 @@ module.exports = function(Bookshelf) {
             .fetch()
             .then(checkTest(this));
         });
-
       });
 
       describe('Eager Loading - Models', function() {
-
         it('eager loads "hasOne" relationships correctly (site -> meta)', function() {
           return new Site({id: 1}).fetch({
             withRelated: ['meta']
@@ -101,6 +99,12 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "belongsTo" relationships correctly (blog -> site)', function() {
           return new Blog({id: 3}).fetch({
+            withRelated: ['site']
+          }).then(checkTest(this));
+        });
+
+        it('does not load "belongsTo" relationship when foreignKey is null (blog -> site) #1299', function() {
+          return new Blog({id: 5}).fetch({
             withRelated: ['site']
           }).then(checkTest(this));
         });
@@ -127,6 +131,16 @@ module.exports = function(Bookshelf) {
               qb.columns('id', 'site_id', 'first_name');
             }}]
           }).then(checkTest(this));
+        });
+
+        it('can load relations when foreign key is 0', function() {
+          return new Models.Backup({id: 1, backup_type_id: 0}).save().then(function() {
+            return Models.Backup.fetchAll({withRelated: ['type']});
+          }).then(function(backups) {
+            var relatedType = backups.at(0).related('type');
+            expect(relatedType.get('name')).to.be.a('string');
+            expect(relatedType.get('name')).to.not.be.empty;
+          });
         });
 
         it('throws an error on undefined first withRelated relations', function() {
@@ -206,7 +220,7 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        it('eager loads "belongsTo" models correctly (blogs -> site)', function() {
+        it('eager loads "belongsTo" models correctly (blogs -> site) including #1299', function() {
           return Blog.fetchAll({
             withRelated: ['site']
           }).then(checkTest(this));
@@ -235,13 +249,20 @@ module.exports = function(Bookshelf) {
 
         it('eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.posts']
+            withRelated: {
+              'authors.posts': function (qb) {
+                return qb.orderBy('posts.id', 'ASC')
+              }
+            }
           }).then(checkTest(this));
         });
 
         it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
+            withRelated: ['authors.ownPosts', 'authors.site',
+            {'blogs.posts': function (qb) {
+              return qb.orderBy('posts.id', 'ASC')
+            }}]
           }).then(checkTest(this));
         });
 
@@ -497,6 +518,20 @@ module.exports = function(Bookshelf) {
             });
         });
 
+        it('can attach `belongsToMany` relation to models eager loaded with `fetchAll`, #629', function() {
+          return Author.fetchAll({withRelated: ['posts']}).then(function(authors) {
+            return Promise.all([
+              authors.at(0).related('posts').detach(),
+              new Post({id: 1}).fetch()
+            ]);
+          }).then(function(models) {
+            expect(models[0]).to.have.length(0);
+            return models[0].attach(models[1]);
+          }).then(function(posts) {
+            expect(posts).to.have.length(1);
+          });
+        });
+
         it('keeps the pivotal helper methods when cloning a collection having `relatedData` with `type` "belongsToMany", #1197', function() {
           var pivotalProps = ['attach', 'detach', 'updatePivot', 'withPivot', '_processPivot', '_processPlainPivot', '_processModelPivot'];
           var author = new Author({id: 1});
@@ -607,20 +642,20 @@ module.exports = function(Bookshelf) {
             .fetch().tap(checkTest(this));
         });
 
-        it('handles morphTo (imageable "authors")', function() {
-          return new Photo({imageable_id: 1, imageable_type: 'authors'})
+        it('handles morphTo with custom morphValue (imageable "authors")', function() {
+          return new Photo({imageable_id: 1, imageable_type: 'profile_pic'})
             .imageable()
             .fetch().tap(checkTest(this));
         });
 
         it('handles morphTo (imageble "authors", PhotoParsed)', function() {
-          return new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+          return new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'profile_pic'})
             .imageableParsed()
             .fetch().tap(checkTest(this));
         });
 
         it('has no side effects for morphTo (imageable "authors", PhotoParsed)', function() {
-          var photoParsed = new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'authors'})
+          var photoParsed = new PhotoParsed({imageable_id_parsed: 1, imageable_type_parsed: 'profile_pic'})
           return photoParsed.imageableParsed().fetch()
           .then( function() {
             return photoParsed.fetch()
@@ -712,7 +747,11 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads belongsToMany `through`', function() {
-          return Author.fetchAll({withRelated: 'blogs'}).tap(checkTest(this));
+          return Author.fetchAll({withRelated:
+            { blogs: function (qb) {
+              return qb.orderBy('blogs.id', 'ASC');
+            }}
+          }).tap(checkTest(this));
         });
 
         it('eager loads belongsTo `through`', function() {
@@ -840,6 +879,16 @@ module.exports = function(Bookshelf) {
           .then(function (blog) {
             var attrs = blog.related('parsedPosts').at(0).attributes;
             Object.keys(attrs).forEach(function (key) {
+              expect(/_parsed$/.test(key)).to.be.true;
+            });
+          });
+      });
+
+      it('parses eager-loaded models previous attributes after pairing', function () {
+        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
+          .then(function (blog) {
+            var prev = blog.related('parsedPosts').at(0)._previousAttributes;
+            Object.keys(prev).forEach(function (key) {
               expect(/_parsed$/.test(key)).to.be.true;
             });
           });
