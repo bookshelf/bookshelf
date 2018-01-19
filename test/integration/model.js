@@ -70,8 +70,8 @@ module.exports = function(bookshelf) {
       });
 
       it('doesn\'t have ommitted properties', function() {
-        equal(User.prototype.changedAttributes, undefined);
-        equal((new User()).changedAttributes, undefined);
+        equal(User.prototype.changed, undefined);
+        deepEqual((new User()).changed, {});
       });
 
       context('should have own errors: name of', function(){
