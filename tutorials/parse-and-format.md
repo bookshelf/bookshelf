@@ -27,7 +27,7 @@ A very common use case for this is converting camelCase attributes to snake_case
         });
       },
       format: function(attributes) {
-        return _.mapKeys(response, function(value, key) {
+        return _.mapKeys(attributes, function(value, key) {
           return _.snakeCase(key);
         });
       }
