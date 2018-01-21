@@ -267,7 +267,11 @@ module.exports = function(bookshelf) {
       {id: 1, name: 'enhanced'} // We need to explicitly set the id to 1 otherwise MySQL will get confused
     ])
 
-  ]).then(null, function(e) {
+  ]).then(function() {
+    if (knex.client.dialect === 'postgresql') {
+      return knex.raw('SELECT setval(\'backup_types_id_seq\', (SELECT MAX(id) from "backup_types"));')
+    }
+  }, function(e) {
     console.log(e.stack);
   });
 
