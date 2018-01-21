@@ -317,7 +317,9 @@ export default RelationBase.extend({
 
     const method = response ? 'whereIn' : 'where';
     const ids = response ? this.eagerKeys(response) : this.parentFk;
-    knex[method](key, ids);
+    if (ids != null) {
+      knex[method](key, ids);
+    }
 
     if (this.isMorph()) {
       const table = this.targetTableName;
