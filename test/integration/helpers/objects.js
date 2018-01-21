@@ -178,7 +178,7 @@ module.exports = function(Bookshelf) {
       email: '',
       comment: ''
     },
-    posts: function() {
+    post: function() {
       return this.belongsTo(Post);
     },
     blog: function() {

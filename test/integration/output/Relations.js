@@ -910,6 +910,54 @@ module.exports = {
       }
     }
   },
+  'eager loads "belongsTo" -> "belongsTo" (comments -> post.blog)': function() {
+    var result = {
+      result: [{
+        id: 1,
+        post_id: 1,
+        name: '(blank)',
+        email: 'test@example.com',
+        comment: 'this is neat.',
+        post: {
+          id: 1,
+          owner_id: 1,
+          blog_id: 1,
+          name: 'This is a new Title!',
+          content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
+          blog: {
+            id: 1,
+            site_id: 1,
+            name: 'Main Site Blog'
+          }
+        }
+      }]
+    };
+    return {mysql: result, postgresql: result, sqlite3: result};
+  }(),
+  'eager loads "belongsTo" -> "belongsTo" (comment -> post.blog) by using load': function() {
+    var result = {
+      result: {
+        id: 1,
+        post_id: 1,
+        name: '(blank)',
+        email: 'test@example.com',
+        comment: 'this is neat.',
+        post: {
+          id: 1,
+          owner_id: 1,
+          blog_id: 1,
+          name: 'This is a new Title!',
+          content: 'Lorem ipsum Labore eu sed sed Excepteur enim laboris deserunt adipisicing dolore culpa aliqua cupidatat proident ea et commodo labore est adipisicing ex amet exercitation est.',
+          blog: {
+            id: 1,
+            site_id: 1,
+            name: 'Main Site Blog'
+          }
+        }
+      }
+    };
+    return {mysql: result, postgresql: result, sqlite3: result};
+  }(),
   'eager loads "hasMany" -> "belongsToMany" (site -> authors.posts)': {
     mysql: {
       result: {

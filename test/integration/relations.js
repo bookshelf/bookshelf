@@ -276,6 +276,12 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('eager loads "belongsTo" -> "belongsTo" (comments -> post.blog)', function() {
+          return Comment.fetchAll({
+            withRelated: ['post.blog']
+          }).then(checkTest(this));
+        });
+
       });
 
       describe('Model & Collection - load', function() {
@@ -922,6 +928,17 @@ module.exports = function(Bookshelf) {
         });
       });
 
+
+    });
+
+    describe('Being suspicious on eager loading', function () {
+      
+      it('eager loads "belongsTo" -> "belongsTo" (comment -> post.blog) by using load', function() {
+        return Comment.forge({id: 1}).fetch()
+        .then(function (comment) {
+          return comment.load('post.blog');
+        }).then(checkTest(this));
+      });
 
     });
 
