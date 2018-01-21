@@ -878,17 +878,6 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
-      it('does not set created_at when {method: "update"} is passed', function() {
-        var m = new bookshelf.Model(null, {hasTimestamps: true});
-        m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('created_at')), false);
-          equal(_.isDate(this.get('updated_at')), true);
-          return stubSync;
-        };
-        return m.save({item: 'test'}, {method: 'update'});
-      });
-
       it('sets created_at when {method: "insert"} is passed', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
@@ -990,7 +979,7 @@ module.exports = function(bookshelf) {
         expect(newModel.get('created_at')).to.be.an.instanceOf(Date);
         expect(newModel.get('updated_at')).to.be.an.instanceOf(Date);
 
-        expect(existingModel.get('created_at')).to.not.exist;
+        expect(existingModel.get('created_at')).to.be.an.instanceOf(Date);
         expect(existingModel.get('updated_at')).to.be.an.instanceOf(Date);
       });
 

@@ -526,11 +526,11 @@ ModelBase.prototype.timestamp = function(options) {
 
   const [ createdAtKey, updatedAtKey ] = keys;
 
-  if (updatedAtKey && canEditUpdatedAtKey) {
+  if (updatedAtKey && canEditUpdatedAtKey && this.hasChanged()) {
     attributes[updatedAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
+  if (createdAtKey && (method === 'insert' || !this.get(createdAtKey) || canEditCreatedAtKey)) {
     attributes[createdAtKey] = now;
   }
 
