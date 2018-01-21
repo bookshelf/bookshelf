@@ -342,6 +342,14 @@ function Bookshelf(knex) {
       builder = tableNameOrBuilder;
     }
 
+    builder.on('query-error', (error, obj) =>
+      this.trigger('query-error', error, obj)
+    );
+
+    builder.on('query-response', (response, obj, builder) =>
+      this.trigger('query-response', response, obj, builder)
+    );
+
     return builder.on('query', data =>
       this.trigger('query', data)
     );
