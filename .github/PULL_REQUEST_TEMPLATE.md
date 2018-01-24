@@ -1,32 +1,26 @@
-# PR name
-
 * Related Issues: _#IssueNumber if necessary_
 * Previous PRs: _#PRNumber if this PR is a follow-up_
 
 ## Introduction
 
-A short description of what the feature or the bug-fix is. Try to keep it to a
-single-paragraph "elevator pitch" so the reader understands what
-problem this proposal is addressing.
+_A short description of what the feature or the bug-fix is. Try to keep it to a single paragraph "elevator pitch" style
+so the reader easily understands what problem this proposal is addressing._
 
 ## Motivation
 
-Describe the problems that this proposal seeks to address. If the
-problem is that some common pattern is currently hard to express, show
-how one can currently get a similar effect and describe its
-drawbacks. If it's completely new functionality that cannot be
-emulated, motivate why this new functionality is necessary.
+_Describe the problems that this proposal seeks to address and why it's important. If it's completely new functionality
+explain why this new functionality is necessary._
 
 ## Proposed solution
 
-Describe your solution to the problem. Provide examples and describe
-how they work. Show why your solution is better than current
-workarounds: is it cleaner, safer, or more efficient?
+_Describe your solution to the problem. If possible provide examples and describe how they work. Show why your solution
+is better than what's currently available: is it cleaner, safer, or more efficient?_
 
 ## Current PR Issues
 
-If present describe some issues in the Pull Request, in order to help others in the full development of the PR.
+_Are there any known issues in this Pull Request? This will help others understand if more work will be needed._
 
 ## Alternatives considered
 
-Describe alternative approaches to addressing the same problem, and why you chose this approach instead.
+_Describe any alternative approaches to addressing the same problem that you have thought about, and why you chose this
+approach instead._

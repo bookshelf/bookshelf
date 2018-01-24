@@ -86,7 +86,16 @@ const addOptions = {add: true, remove: false};
 /**
  * @method CollectionBase#initialize
  * @description
- * Custom initialization function.
+ * Called by the {@link Collection Collection constructor} when creating a new instance.
+ * Override this function to add custom initialization, such as event listeners.
+ * Because plugins may override this method in subclasses, make sure to call
+ * your super (extended) class.  e.g.
+ *
+ *     initialize: function() {
+ *         this.constructor.__super__.initialize.apply(this, arguments);
+ *         // Your initialization code ...
+ *     }
+ *
  * @see Collection
  */
 CollectionBase.prototype.initialize = noop;
@@ -572,7 +581,12 @@ CollectionBase.prototype.parse = function(resp) {
  * Create a new collection with an identical list of models as this one.
  */
 CollectionBase.prototype.clone = function() {
-  return new this.constructor(this.models, _.pick(this, collectionProps));
+  // Iterate over the selected list of collection properties and invoke `clone` for
+  // each property that has a method for that porpose.
+  const clonedProps = _(this).pick(collectionProps).mapValues((val) => {
+    return (val && typeof(val.clone) === 'function') ? val.clone() : val;
+  }).value();
+  return new this.constructor(this.models, clonedProps);
 };
 
 /**

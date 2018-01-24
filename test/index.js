@@ -21,12 +21,10 @@ process.on("unhandledRejection", function(reason, promise) {
 
 var Bookshelf = require('../bookshelf');
 var base = require('./base');
-
 global.sinon = require('sinon');
-
 var chai = global.chai = require('chai');
+var databaseConnections;
 
-// chai.use(require('chai-as-promised'));
 chai.use(require('sinon-chai'));
 chai.should();
 
@@ -35,14 +33,21 @@ global.AssertionError = chai.AssertionError;
 global.Assertion      = chai.Assertion;
 global.assert         = chai.assert;
 
+after(function() {
+  databaseConnections.forEach(function(connection) {
+    connection.knex.destroy()
+  })
+});
+
 describe('Bookshelf', function () {
 
   it('VERSION should equal version number in package.json',
     function () {
     var Knex = require('knex');
-    var bookshelf = Bookshelf(Knex({client: 'sqlite3'}));
+    var bookshelf = Bookshelf(Knex({client: 'sqlite3', useNullAsDefault: true}));
     var p = require('../package.json');
     expect(p.version).to.equal(bookshelf.VERSION);
+    bookshelf.knex.destroy()
   });
 
 });
@@ -62,5 +67,5 @@ describe('Unit Tests', function () {
 });
 
 describe('Integration Tests', function () {
-  require('./integration')(Bookshelf);
+  databaseConnections = require('./integration')(Bookshelf);
 });

@@ -9,9 +9,7 @@ var deepEqual = require('assert').deepEqual;
 var QueryBuilder = require('knex/lib/query/builder')
 
 module.exports = function(bookshelf) {
-
   describe('Model', function() {
-
     var Models    = require('./helpers/objects')(bookshelf).Models;
 
     var stubSync = {
@@ -23,12 +21,7 @@ module.exports = function(bookshelf) {
     };
 
     var dialect = bookshelf.knex.client.dialect;
-    var formatNumber = {
-      mysql:      _.identity,
-      sqlite3:    _.identity,
-      oracle:     _.identity,
-      postgresql: function(count) { return count.toString() }
-    }[dialect];
+    var formatNumber = require('./helpers').formatNumber(dialect);
     var checkCount = function(actual, expected) {
       expect(actual, formatNumber(expected));
     };
@@ -77,8 +70,8 @@ module.exports = function(bookshelf) {
       });
 
       it('doesn\'t have ommitted properties', function() {
-        equal(User.prototype.changedAttributes, undefined);
-        equal((new User()).changedAttributes, undefined);
+        equal(User.prototype.changed, undefined);
+        deepEqual((new User()).changed, {});
       });
 
       context('should have own errors: name of', function(){
@@ -399,21 +392,21 @@ module.exports = function(bookshelf) {
       });
 
       it('allows specification of select columns as an `options` argument', function () {
-        var model = new Author({id: 1}).fetch({columns: ['first_name']})
+        new Author({id: 1}).fetch({columns: ['first_name']})
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
       it('allows specification of select columns in query callback', function () {
-        var model = new Author({id: 1}).query('select','first_name').fetch()
+        new Author({id: 1}).query('select','first_name').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
       it('will still select default columns if `distinct` is called without columns - #807', function () {
-        var model = new Author({id: 1}).query('distinct').fetch()
+        new Author({id: 1}).query('distinct').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {
               id: 1,
@@ -425,12 +418,11 @@ module.exports = function(bookshelf) {
       });
 
       it('resolves to null if no record exists', function() {
-        var model = new Author({id: 200}).fetch()
+        new Author({id: 200}).fetch()
           .then(function (model) {
             equal(model, null);
           });
       });
-
     });
 
     describe('fetchAll', function() {
@@ -596,7 +588,6 @@ module.exports = function(bookshelf) {
 
       it('fires saving and creating and then saves', function() {
         var user   = new bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
-        var query  = user.query();
         var events = 0;
         user.sync  = function() {
           return _.extend(stubSync, {
@@ -611,6 +602,30 @@ module.exports = function(bookshelf) {
             return Promise.resolve().then(function() {
               events++;
             });
+          });
+        });
+        return user.save();
+      });
+
+      it('fires saving and then creating triggers', function() {
+        var user   = new bookshelf.Model({first_name: 'Testing'}, {tableName: 'users'});
+        var triggered = [];
+        user.sync  = function() {
+          return _.extend(stubSync, {
+            insert: function() {
+              deepEqual(triggered, ['saving', 'creating']);
+              return Promise.resolve({});
+            }
+          });
+        };
+        user.on('saving', function() {
+          return Promise.resolve().then(function() {
+            triggered.push('saving');
+          });
+        });
+        user.on('creating', function() {
+          return Promise.resolve().then(function() {
+            triggered.push('creating');
           });
         });
         return user.save();
@@ -1052,7 +1067,6 @@ module.exports = function(bookshelf) {
     describe('previous, previousAttributes', function() {
 
       it('will return the previous value of an attribute the last time it was synced', function() {
-        var count = 0;
         var model = new Models.Site({id: 1});
         equal(model.previous('id'), undefined);
 
