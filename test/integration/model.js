@@ -182,13 +182,7 @@ module.exports = function(bookshelf) {
         var q = model.query(function(qb) {
           this.where({id: 1}).orWhere('id', '>', '10');
         });
-        equal(q, model);
-        equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
-        qb = model.resetQuery().query();
-        equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
-        q = model.query(function(qb) {
-          qb.where({id: 1}).orWhere('id', '>', '10');
-        });
+
         equal(q, model);
         equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
       });
