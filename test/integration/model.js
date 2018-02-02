@@ -66,10 +66,11 @@ module.exports = function(bookshelf) {
             bookshelf.Model.apply(this, arguments);
           }
         });
+
         equal(new User().item, 'test');
       });
 
-      it('doesn\'t have ommitted properties', function() {
+      it('initializes an empty object for storing changed attributes', function() {
         equal(User.prototype.changed, undefined);
         deepEqual((new User()).changed, {});
       });
@@ -174,7 +175,7 @@ module.exports = function(bookshelf) {
         equal(_.filter(qb._statements, {grouping: 'where'}).length, 2);
       });
 
-      it('allows passing an function to query', function() {
+      it('allows passing a function to query', function() {
         var qb = model.resetQuery().query();
         equal(_.filter(qb._statements, {grouping: 'where'}).length, 0);
         var q = model.query(function(qb) {
@@ -533,7 +534,7 @@ module.exports = function(bookshelf) {
 
       });
 
-      it('does not error if if the row was not updated but require is false', function() {
+      it('does not error if the row was not updated but require is false', function() {
         return new Site({id: 200, name: 'This doesnt exist'}).save({}, {require: false});
       });
 
@@ -717,8 +718,7 @@ module.exports = function(bookshelf) {
 
       });
 
-      it('fails if no idAttribute or wheres are defined on the model.', function() {
-
+      it('fails if no idAttribute or wheres are defined on the model', function() {
         return new Site().destroy().then(null, function(e) {
           equal(e.toString(), 'Error: A model cannot be destroyed without a "where" clause or an idAttribute.');
         });
@@ -966,7 +966,7 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('will save the created_at timestamp with current time, if created_at column is not passed as attributed', function() {
+      it('will save the created_at timestamp with current time, if created_at column is not passed as attribute', function() {
         var model = new Models.Admin();
         var createdAt = null
         return model.save().then(function(m) {
