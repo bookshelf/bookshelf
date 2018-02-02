@@ -17,41 +17,30 @@ module.exports = function(Bookshelf) {
     };
 
     var objs        = require('./helpers/objects')(Bookshelf);
-    var Relation    = objs.Relation;
     var Models      = objs.Models;
 
     // Models
     var Site         = Models.Site;
-    var SiteMeta     = Models.SiteMeta;
     var Admin        = Models.Admin;
     var Author       = Models.Author;
     var Blog         = Models.Blog;
     var Post         = Models.Post;
     var Comment      = Models.Comment;
-    var Tag          = Models.Tag;
     var User         = Models.User;
-    var Role         = Models.Role;
     var Thumbnail    = Models.Thumbnail;
     var Photo        = Models.Photo;
     var PhotoParsed  = Models.PhotoParsed;
     var Customer     = Models.Customer;
-    var Instance     = Models.Instance;
     var Hostname     = Models.Hostname;
-
-    var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
-
     var LeftModel   = Models.LeftModel;
     var RightModel  = Models.RightModel;
     var JoinModel   = Models.JoinModel;
-
     var Locale = Models.Locale;
     var Translation = Models.Translation;
 
     describe('Bookshelf Relations', function() {
-
       describe('Standard Relations - Models', function() {
-
         it('handles belongsTo (blog, site)', function() {
           return new Blog({id: 4})
             .fetch()
