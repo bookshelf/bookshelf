@@ -339,13 +339,13 @@ module.exports = function(bookshelf) {
       var Site = Models.Site;
 
       it('will fetch a record by present attributes without an ID attribute', function() {
-        Site.forge({name: 'knexjs.org'}).refresh().then(function (model) {
+        return Site.forge({name: 'knexjs.org'}).refresh().then(function (model) {
           expect(model.id).to.equal(1);
         });
       });
 
       it("will update a model's attributes by fetching only by `idAttribute`", function() {
-        Site.forge({id: 1, name: 'NOT THE CORRECT NAME'}).refresh().then(function (model) {
+        return Site.forge({id: 1, name: 'NOT THE CORRECT NAME'}).refresh().then(function (model) {
           expect(model.get('name')).to.equal('knexjs.org');
         });
       });
@@ -398,22 +398,22 @@ module.exports = function(bookshelf) {
         return model.fetch()
       });
 
-      it('allows specification of select columns as an `options` argument', function () {
-        new Author({id: 1}).fetch({columns: ['first_name']})
+      it('allows specification of select columns as an `options` argument', function() {
+        return new Author({id: 1}).fetch({columns: ['first_name']})
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
-      it('allows specification of select columns in query callback', function () {
-        new Author({id: 1}).query('select','first_name').fetch()
+      it('allows specification of select columns in query callback', function() {
+        return new Author({id: 1}).query('select','first_name').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {id: 1, first_name: 'Tim'});
           });
       });
 
-      it('will still select default columns if `distinct` is called without columns - #807', function () {
-        new Author({id: 1}).query('distinct').fetch()
+      it('will still select default columns if `distinct` is called without columns - #807', function() {
+        return new Author({id: 1}).query('distinct').fetch()
           .then(function (model) {
             deepEqual(model.toJSON(), {
               id: 1,
@@ -425,7 +425,7 @@ module.exports = function(bookshelf) {
       });
 
       it('resolves to null if no record exists', function() {
-        new Author({id: 200}).fetch()
+        return new Author({id: 200}).fetch()
           .then(function (model) {
             equal(model, null);
           });
@@ -677,14 +677,15 @@ module.exports = function(bookshelf) {
         });
       });
 
-        it('passes custom `options` passed to `timestamp()` - #881', function () {
-          function stubTimestamp(options) {
-            expect(options.customOption).to.equal(testOptions.customOption);
-          }
-          var site = Models.Site.forge({id: 881}, {hasTimestamps: true});
-          var testOptions = {method: 'insert', customOption: 'CUSTOM_OPTION'}
-          site.timestamp = stubTimestamp;
-          site.save(null, testOptions).call('destroy');
+      it('passes custom `options` passed to `timestamp()` - #881', function() {
+        function stubTimestamp(options) {
+          expect(options.customOption).to.equal(testOptions.customOption);
+        }
+        var site = Models.Site.forge({id: 881}, {hasTimestamps: true});
+        var testOptions = {method: 'insert', customOption: 'CUSTOM_OPTION'}
+        site.timestamp = stubTimestamp;
+
+        return site.save(null, testOptions).call('destroy');
       });
 
       it('Will not break with prefixed id, #583', function() {
@@ -806,7 +807,7 @@ module.exports = function(bookshelf) {
 
       it('resets query after completing', function() {
         var posts =  Models.Post.collection();
-        posts.query('where', 'blog_id', 1).count()
+        return posts.query('where', 'blog_id', 1).count()
           .then(function(count)  {
             checkCount(count, 2);
             return posts.count();
