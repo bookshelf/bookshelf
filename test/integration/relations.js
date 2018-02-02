@@ -98,9 +98,13 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        // it('Throws an error if you try to fetch a related object without the necessary key', function() {
-        //   return new Blog({id: 1}).site().fetch().should.be.rejected;
-        // });
+        it('Throws an error if you try to fetch a related object without the necessary key', function() {
+          return new Blog({id: 1}).site().fetch().then(function() {
+            return Promise.reject()
+          }).catch(function(error) {
+            expect(error).to.be.an.instanceOf(Error)
+          });
+        });
 
         it('eager loads "belongsToMany" models correctly (post -> tags)', function() {
           return new Post({id: 1}).fetch({
