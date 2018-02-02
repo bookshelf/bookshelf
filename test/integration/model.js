@@ -220,13 +220,20 @@ module.exports = function(bookshelf) {
         deepEqual(m.toJSON(), {'_id': 1, 'name': 'Joe'});
       });
 
-      it('includes the relations loaded on the model, unless {shallow: true} is passed.', function() {
+      it('includes the relations loaded on the model', function() {
         var m = new bookshelf.Model({id: 1, name: 'Test'});
         m.relations = {someList: new bookshelf.Collection([{id:1}, {id:2}])};
         var json = m.toJSON();
+
         deepEqual(_.keys(json), ['id', 'name', 'someList']);
         equal(json.someList.length, 2);
+      });
+
+      it('doesn\'t include the relations loaded on the model if {shallow: true} is passed', function() {
+        var m = new bookshelf.Model({id: 1, name: 'Test'});
+        m.relations = {someList: new bookshelf.Collection([{id:1}, {id:2}])};
         var shallow = m.toJSON({shallow:true});
+
         deepEqual(_.keys(shallow), ['id', 'name']);
       });
 
@@ -281,13 +288,15 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('parses the model attributes on creation if {parse: true} is passed', function() {
-        var one = new ParsedSite({name: 'Site'});
-        equal(one.get('name'), 'Site');
-        var two = new ParsedSite({name: 'Site'}, {parse: true});
-        equal(two.get('name'), 'Test: Site');
+      it('doesn\'t parse the model attributes on creation', function() {
+        var site = new ParsedSite({name: 'Site'});
+        equal(site.get('name'), 'Site');
       });
 
+      it('parses the model attributes on creation if {parse: true} is passed', function() {
+        var site = new ParsedSite({name: 'Site'}, {parse: true});
+        equal(site.get('name'), 'Test: Site');
+      });
     });
 
     describe('format', function() {
