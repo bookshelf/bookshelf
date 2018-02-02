@@ -122,6 +122,7 @@ module.exports = function(bookshelf) {
         });
         var user = User.forge();
         equal(user.tableName, 'users');
+        expect(user).to.be.an.instanceof(User);
       });
 
     });
