@@ -54,10 +54,7 @@ describe('Bookshelf', function () {
 // Unit test all of the abstract base interfaces
 describe('Unit Tests', function () {
   base.Collection();
-  base.Model();
   base.Events();
-  base.Relation();
-  base.Eager();
 
   require('./unit/sql/sync')();
   require('./unit/sql/model')();
