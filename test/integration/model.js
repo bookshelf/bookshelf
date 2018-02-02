@@ -195,16 +195,18 @@ module.exports = function(bookshelf) {
     });
 
     describe('tableName', function() {
+      var table;
 
-      var table = new bookshelf.Model({}, {tableName: 'customers'});
+      beforeEach(function() {
+        table = new bookshelf.Model({}, {tableName: 'customers'});
+      })
 
       it('can be passed in the initialize options', function() {
         equal(table.tableName, 'customers');
       });
 
       it('should set the tableName for the query builder', function() {
-        // TODO: Make this doable again...
-        // equal(_.findWhere(table.query().statements, {grouping: 'table'}).value, '`customers`');
+        equal(table.query()._single.table, 'customers');
       });
 
     });
