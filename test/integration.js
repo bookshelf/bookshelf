@@ -1,4 +1,4 @@
-var _        = require('lodash');
+var _ = require('lodash');
 
 module.exports = function(Bookshelf) {
   var Knex     = require('knex');

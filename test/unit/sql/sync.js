@@ -1,10 +1,8 @@
 var _ = require('lodash');
+var path     = require('path');
+var basePath = process.cwd();
 
 module.exports = function() {
-  // This module is included into the `bookshelf` repository,
-  // and run from the root of the directory.
-  var path     = require('path');
-  var basePath = process.cwd();
   var Sync = require(path.resolve(basePath + '/lib/sync'));
 
   describe('Sync', function() {
@@ -14,6 +12,7 @@ module.exports = function() {
         qd.push(_.toArray(arguments));
         return this;
       };
+
       return {
         id: 1,
         idAttribute: 'id',
@@ -36,7 +35,7 @@ module.exports = function() {
     };
 
     describe('prefixFields', function() {
-      it('should prefix all keys of the passed in object with the tablename', function () {
+      it('should prefix all keys of the passed in object with the tablename', function() {
         var sync = new Sync(stubSync());
         var attributes = {
           'some': 'column',

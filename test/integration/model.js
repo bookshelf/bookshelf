@@ -1112,18 +1112,17 @@ module.exports = function(bookshelf) {
       var Post = Models.Post;
 
       it('event.once return a promise', function() {
-          var p = new Post({id: 1});
-          p.once('event', function() {
-            return Promise.resolve(1);
-          });
+        var p = new Post({id: 1});
+        p.once('event', function() {
+          return Promise.resolve(1);
+        });
+        var promise = p.triggerThen('event');
 
-          var promise = p.triggerThen('event');
+        equal(promise instanceof Promise, true);
 
-          equal(promise instanceof Promise, true);
-
-          return promise.then(function(results) {
-            deepEqual(results, [1]);
-          });
+        return promise.then(function(results) {
+          deepEqual(results, [1]);
+        });
       });
     });
 
