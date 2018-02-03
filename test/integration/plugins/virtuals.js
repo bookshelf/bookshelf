@@ -364,6 +364,33 @@ module.exports = function(bookshelf) {
 
         deepEqual(json, null);
       });
+
+      it('includes virtuals with parameters', function() {
+        var m = new (bookshelf.Model.extend({
+          virtuals: {
+            fullName: function(param) {
+              return this.get('firstName') + ' ' + param;
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+        var json = m.toJSON({virtualParams: {fullName: 'Danger'}});
+
+        deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
+        equal(json.fullName, 'Joe Danger');
+      });
+
+      it('includes virtuals with array parameters', function() {
+        var m = new (bookshelf.Model.extend({
+          virtuals: {
+            fullName: function(param) {
+              return this.get('firstName') + ' ' + param.join(' ');
+            }
+          }
+        }))({firstName: 'Joe', lastName: 'Shmoe'});
+        var json = m.toJSON({virtualParams: {fullName: ['Danger', 'Mouse', 'Explosion']}});
+
+        equal(json.fullName, 'Joe Danger Mouse Explosion');
+      });
     })
 
     it('works fine with `underscore` methods - #170', function() {

@@ -45,7 +45,7 @@ module.exports = function (Bookshelf) {
       }
       if (!options || options.virtuals !== false) {
         if ((options && options.virtuals === true) || this.outputVirtuals) {
-          attrs = _.extend(attrs, getVirtuals(this));
+          attrs = _.extend(attrs, getVirtuals(this, options && options.virtualParams));
         }
       }
       return attrs;
@@ -148,7 +148,7 @@ module.exports = function (Bookshelf) {
     }
   });
 
-  // Underscore methods that we want to implement on the Model.
+  // Lodash methods that we want to implement on the Model.
   const modelMethods = ['keys', 'values', 'toPairs', 'invert', 'pick', 'omit'];
 
   // Mix in each Lodash method as a proxy to `Model#attributes`.
@@ -166,12 +166,13 @@ module.exports = function (Bookshelf) {
     }
   }
 
-  function getVirtuals(model) {
+  function getVirtuals(model, params) {
     const { virtuals } = model;
     const attrs = {};
     if (virtuals != null) {
       for (const virtualName in virtuals) {
-        attrs[virtualName] = getVirtual(model, virtualName);
+        const paramsForVirtual = typeof(params) === 'object' && params !== null ? params[virtualName] : undefined;
+        attrs[virtualName] = getVirtual(model, virtualName, paramsForVirtual);
       }
     }
     return attrs;
