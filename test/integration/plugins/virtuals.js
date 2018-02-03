@@ -196,6 +196,54 @@ module.exports = function (bookshelf) {
       deepEqual(json, null);
     });
 
+    it('virtuals with paramaters work and can be getted by `Model.get` ', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: function(param) {
+              return this.get('firstName') + ' ' + param;
+          },
+
+          fullNameDouble: function(param1,param2) {
+              return this.get('firstName') + ' ' + param1 + ' ' + param2;
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      deepEqual(m.get('fullName','HELLO 1'),'Joe HELLO 1');
+      deepEqual(m.get('fullNameDouble','HELLO 1','HELLO 2'),'Joe HELLO 1 HELLO 2');
+    });
+
+    it('virtuals with paramaters work and are included in `toJSON`', function () {
+      var m = new (bookshelf.Model.extend({
+        virtuals: {
+          fullName: function(param) {
+              return this.get('firstName') + ' ' + param;
+          },
+          fullNameDouble: function(param1,param2) {
+              return this.get('firstName') + ' ' + param1 + ' ' + param2;
+          }
+        }
+      }))({firstName: 'Joe', lastName: 'Shmoe'});
+
+      // Testing With Blank Options Object
+      var json = m.toJSON({},{fullName:'HELLO' , fullNameDouble:['HELLO 1', 'HELLO 2']});
+      deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName','fullNameDouble']);
+      deepEqual(json.fullName,'Joe HELLO');
+      deepEqual(json.fullNameDouble,'Joe HELLO 1 HELLO 2');
+
+      // Testing With Virtual Disabled
+      var jsonBlank = m.toJSON({virtuals:false},{fullName:'HELLO' , fullNameDouble:['HELLO 1', 'HELLO 2']});
+      deepEqual(_.keys(jsonBlank), ['firstName', 'lastName']);
+
+      // Testing With No Options Object
+      var jsonNoOptions = m.toJSON({fullName:'HELLO' , fullNameDouble:['HELLO 1', 'HELLO 2']});
+      deepEqual(_.keys(jsonNoOptions), ['firstName', 'lastName', 'fullName','fullNameDouble']);
+      deepEqual(jsonNoOptions.fullName,'Joe HELLO');
+      deepEqual(jsonNoOptions.fullNameDouble,'Joe HELLO 1 HELLO 2');
+
+
+    });
+
     it('does not crash when no virtuals are set - #168', function () {
       var m = new bookshelf.Model();
       m.set('firstName', 'Joe');

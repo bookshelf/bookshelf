@@ -35,27 +35,69 @@ module.exports = function (Bookshelf) {
       }
     },
 
-    // Passing `{virtuals: true}` or `{virtuals: false}` in the `options`
-    // controls including virtuals on function-level and overrides the
-    // model-level setting
-    toJSON: function(options) {
+  /**
+   * @method toJSON
+   * @description
+   *
+   * Passing `{virtuals: true}` or `{virtuals: false}` in the `options`
+   * controls including virtuals on function-level and overrides the
+   * model-level setting
+   *
+   * Params must be an object like `{virtualName1 : paramsForVirtualName1,
+   * virtualName2 : paramsForVirtualName2}.
+   * paramsForVirtualName can be a value or an array, depending on the virtual
+   * function parameters
+   *
+   *     var PersonWithTitle = bookshelf.Model.extend({
+   *      virtuals: {
+   *        fullName: function(param) {
+   *          return this.get('firstName') + ' ' + param;
+   *        },
+   *        fullNameWithTitle: function(title,surname) {
+   *          return title + ' ' + this.get('firstName') + ' ' + surname;
+   *        }
+   *      }
+   *     })
+   *     var john = new Person({firstName:"John"});
+   *     var json = john.toJSON({fullName:'Wood' , fullNameWithTitle:['Mr.' , 'Wood']};
+   *     //Output : {firstName:'John', fullName:'John Wood', fullNameWithTitle:'Mr. John Wood'}
+   *     console.log(json);
+   *     var json = john.toJSON({virtuals:true},{fullName:'Wood' , fullNameWithTitle:['Mr.' , 'Wood']};
+   *     //Output : {firstName:'John', fullName:'John Wood', fullNameWithTitle:'Mr. John Wood'}
+   *     console.log(json);
+   *     var json = john.toJSON({virtuals:false},{fullName:'Wood' , fullNameWithTitle:['Mr.' , 'Wood']};
+   *     //Output : {firstName:'John'}
+   *     console.log(json);
+   *
+   * @param {Object=} options Options passed to {@link Model#serialize}.
+   * @param {Object|Any} params Params used to controll the virtuals that accept parameters
+   */
+
+    toJSON: function(options,params) {
       let attrs = proto.toJSON.call(this, options);
       if (options && options.omitNew && this.isNew()) {
         return attrs;
       }
       if (!options || options.virtuals !== false) {
         if ((options && options.virtuals === true) || this.outputVirtuals) {
-          attrs = _.extend(attrs, getVirtuals(this));
+          if(params){
+            attrs = _.extend(attrs, getVirtuals(this,params));
+          }else{
+            attrs = _.extend(attrs, getVirtuals(this,options));
+          }
         }
       }
       return attrs;
     },
 
     // Allow virtuals to be fetched like normal properties
-    get: function (attr) {
+    // the firts parameter is the attribute (or virtual) name.
+    // the other parameters are passed to the virtual function if the attribute is a virtual, their order
+    // must respect the order of the parameters in the virtual function
+    get: function (attr, ...params) {
       const { virtuals } = this;
       if (_.isObject(virtuals) && virtuals[attr]) {
-        return getVirtual(this, attr);
+        return getVirtual(this, attr, params);
       }
       return proto.get.apply(this, arguments);
     },
@@ -159,20 +201,32 @@ module.exports = function (Bookshelf) {
     };
   });
 
-  function getVirtual(model, virtualName) {
+  function getVirtual(model, virtualName, params) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
-      return virtuals[virtualName].get ? virtuals[virtualName].get.call(model)
-        : virtuals[virtualName].call(model);
+      // params can be a value or an array
+      if(params instanceof Array){
+        return virtuals[virtualName].get ? virtuals[virtualName].get.call(model,...params)
+        : virtuals[virtualName].call(model,...params);
+      }else{
+        return virtuals[virtualName].get ? virtuals[virtualName].get.call(model,params)
+        : virtuals[virtualName].call(model,params);
+      }
+
     }
   }
 
-  function getVirtuals(model) {
+  function getVirtuals(model,params) {
     const { virtuals } = model;
     const attrs = {};
     if (virtuals != null) {
       for (const virtualName in virtuals) {
-        attrs[virtualName] = getVirtual(model, virtualName);
+        let paramsForVirtualName = null;
+        if(params){
+          paramsForVirtualName = params[virtualName];
+        }
+
+        attrs[virtualName] = getVirtual(model, virtualName,paramsForVirtualName);
       }
     }
     return attrs;
