@@ -52,17 +52,16 @@ module.exports = function (Bookshelf) {
     },
 
     // Allow virtuals to be fetched like normal properties
-    get: function (attr) {
+    get: function(attr, ...params) {
       const { virtuals } = this;
       if (_.isObject(virtuals) && virtuals[attr]) {
-        return getVirtual(this, attr);
+        return getVirtual(this, attr, ...params);
       }
       return proto.get.apply(this, arguments);
     },
 
     // Allow virtuals to be set like normal properties
     set: function(key, value, options) {
-
       if (key == null) {
         return this;
       }
@@ -159,11 +158,11 @@ module.exports = function (Bookshelf) {
     };
   });
 
-  function getVirtual(model, virtualName) {
+  function getVirtual(model, virtualName, ...params) {
     const { virtuals } = model;
     if (_.isObject(virtuals) && virtuals[virtualName]) {
-      return virtuals[virtualName].get ? virtuals[virtualName].get.call(model)
-        : virtuals[virtualName].call(model);
+      return virtuals[virtualName].get ? virtuals[virtualName].get.call(model, ...params)
+        : virtuals[virtualName].call(model, ...params);
     }
   }
 
