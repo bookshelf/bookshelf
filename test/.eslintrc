@@ -8,7 +8,8 @@
     "describe": true,
     "it": true,
     "expect": true,
-    "before": true
+    "before": true,
+    "sinon": true
   },
   "rules": {
     "no-var": 0

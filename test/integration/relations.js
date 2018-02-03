@@ -2,9 +2,7 @@ var Promise   = global.testPromise;
 var equal     = require('assert').equal;
 
 module.exports = function(Bookshelf) {
-
   describe('Relations', function() {
-
     var output  = require('./output/Relations');
     var dialect = Bookshelf.knex.client.dialect;
     var json    = function(model) {
@@ -17,41 +15,30 @@ module.exports = function(Bookshelf) {
     };
 
     var objs        = require('./helpers/objects')(Bookshelf);
-    var Relation    = objs.Relation;
     var Models      = objs.Models;
 
     // Models
     var Site         = Models.Site;
-    var SiteMeta     = Models.SiteMeta;
     var Admin        = Models.Admin;
     var Author       = Models.Author;
     var Blog         = Models.Blog;
     var Post         = Models.Post;
     var Comment      = Models.Comment;
-    var Tag          = Models.Tag;
     var User         = Models.User;
-    var Role         = Models.Role;
     var Thumbnail    = Models.Thumbnail;
     var Photo        = Models.Photo;
     var PhotoParsed  = Models.PhotoParsed;
     var Customer     = Models.Customer;
-    var Instance     = Models.Instance;
     var Hostname     = Models.Hostname;
-
-    var UserParsed = Models.UserParsed;
     var UserTokenParsed = Models.UserTokenParsed;
-
     var LeftModel   = Models.LeftModel;
     var RightModel  = Models.RightModel;
     var JoinModel   = Models.JoinModel;
-
     var Locale = Models.Locale;
     var Translation = Models.Translation;
 
     describe('Bookshelf Relations', function() {
-
       describe('Standard Relations - Models', function() {
-
         it('handles belongsTo (blog, site)', function() {
           return new Blog({id: 4})
             .fetch()
@@ -109,9 +96,13 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        // it('Throws an error if you try to fetch a related object without the necessary key', function() {
-        //   return new Blog({id: 1}).site().fetch().should.be.rejected;
-        // });
+        it('Throws an error if you try to fetch a related object without the necessary key', function() {
+          return new Blog({id: 1}).site().fetch().then(function() {
+            return Promise.reject()
+          }).catch(function(error) {
+            expect(error).to.be.an.instanceOf(Error)
+          });
+        });
 
         it('eager loads "belongsToMany" models correctly (post -> tags)', function() {
           return new Post({id: 1}).fetch({
@@ -164,7 +155,6 @@ module.exports = function(Bookshelf) {
         });
 
         describe('emits \'fetching\' and \'fetched\' events for eagerly loaded relations with', function () {
-
           afterEach(function () {
             delete Site.prototype.initialize;
           });
@@ -180,6 +170,7 @@ module.exports = function(Bookshelf) {
                 countFetched++;
               });
             };
+
             return Blog.forge({id: 1}).fetch({withRelated: ['site']})
             .then(function() {
               equal(countFetching, 1);
@@ -198,6 +189,7 @@ module.exports = function(Bookshelf) {
                 countFetched++;
               });
             };
+
             return Blog.where({id: 1}).fetch()
             .then(function (blog) {
               return blog.load('site')
@@ -207,13 +199,10 @@ module.exports = function(Bookshelf) {
               });
             })
           });
-
         });
-
       });
 
       describe('Eager Loading - Collections', function() {
-
         it('eager loads "hasOne" models correctly (sites -> meta)', function() {
           return Site.fetchAll({
             withRelated: ['meta']
@@ -236,11 +225,9 @@ module.exports = function(Bookshelf) {
           return Post.where('blog_id', 1).fetchAll({withRelated: ['tags']})
             .then(checkTest(this));
         });
-
       });
 
       describe('Nested Eager Loading - Models', function() {
-
         it('eager loads "hasMany" -> "hasMany" (site -> authors.ownPosts)', function() {
           return new Site({id: 1}).fetch({
             withRelated: ['authors.ownPosts']
@@ -265,21 +252,17 @@ module.exports = function(Bookshelf) {
             }}]
           }).then(checkTest(this));
         });
-
       });
 
       describe('Nested Eager Loading - Collections', function() {
-
         it('eager loads "hasMany" -> "hasMany" (sites -> authors.ownPosts)', function() {
           return Site.fetchAll({
             withRelated: ['authors.ownPosts']
           }).then(checkTest(this));
         });
-
       });
 
       describe('Model & Collection - load', function() {
-
         it('eager loads relations on a populated model (site -> blogs, authors.site)', function() {
           return new Site({id: 1}).fetch().tap(checkTest(this)).then(function(m) {
             return m.load(['blogs', 'authors.site']);
@@ -294,7 +277,6 @@ module.exports = function(Bookshelf) {
       });
 
       describe('Pivot Tables', function() {
-
         beforeEach(function() {
           return Promise.all([
             new Site({id: 1}).admins().detach(),
@@ -302,7 +284,7 @@ module.exports = function(Bookshelf) {
           ]);
         });
 
-        it('attaching event get\'s triggered', function(done){
+        it('attaching event get\'s triggered', function(done) {
           var site1  = new Site({id: 1});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
 
@@ -317,7 +299,7 @@ module.exports = function(Bookshelf) {
           }).catch(done);
         });
 
-        it('creating event get\'s triggered', function(done){
+        it('creating event get\'s triggered', function(done) {
           var site1  = new Site({id: 1});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
 
@@ -334,7 +316,7 @@ module.exports = function(Bookshelf) {
           }).catch(done);
         });
 
-        it('has an attaching event, which will fail if an error is thrown', function(){
+        it('has an attaching event, which will fail if an error is thrown', function() {
           var site1  = new Site({id: 1});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
 
@@ -348,7 +330,7 @@ module.exports = function(Bookshelf) {
           });
         });
 
-        it('has an detaching event, which will fail if an error is thrown', function(){
+        it('has an detaching event, which will fail if an error is thrown', function() {
           var site1  = new Site({id: 1});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
 
@@ -366,7 +348,6 @@ module.exports = function(Bookshelf) {
         });
 
         it('provides "attach" for creating or attaching records', function() {
-
           var site1  = new Site({id: 1});
           var site2  = new Site({id: 2});
           var admin1 = new Admin({username: 'syncable', password: 'test'});
@@ -548,7 +529,7 @@ module.exports = function(Bookshelf) {
         });
       });
 
-      describe('Updating pivot tables with `updatePivot`', function () {
+      describe('Updating pivot tables with `updatePivot`', function() {
         var admin1_id;
         var admin2_id;
 
@@ -571,13 +552,12 @@ module.exports = function(Bookshelf) {
           var site1  = new Site({id: 1});
           return site1.admins()
             .updatePivot({item: 'allupdated'})
-            .then(function (relation) {
-              return relation.withPivot(['item']).fetch().then(function (col) {
+            .then(function(relation) {
+              return relation.withPivot(['item']).fetch().then(function(col) {
                 equal(col.get(admin1_id).pivot.get('item'), 'allupdated');
                 equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
               });
             });
-
         });
 
         it('updates all rows, which match the passed in query-criteria', function() {
@@ -588,13 +568,12 @@ module.exports = function(Bookshelf) {
               whereIn: ['admin_id', [admin1_id]]
             }
           })
-          .then(function (relation) {
-            return relation.withPivot(['item']).fetch().then(function (col) {
+          .then(function(relation) {
+            return relation.withPivot(['item']).fetch().then(function(col) {
               equal(col.get(admin1_id).pivot.get('item'), 'anotherupdate');
               equal(col.get(admin2_id).pivot.get('item'), 'allupdated');
             });
           });
-
         });
 
         it('throws an error if no columns are updated and `require: true` is passed as option', function() {
@@ -607,11 +586,9 @@ module.exports = function(Bookshelf) {
             assert(err instanceof Error);
           });
         });
-
       });
 
       describe('Custom foreignKey & otherKey', function() {
-
         it('works with many-to-many (user -> roles)', function() {
           return new User({uid: 1})
             .roles()
@@ -624,11 +601,9 @@ module.exports = function(Bookshelf) {
             .fetch({withRelated: ['roles']})
             .tap(checkTest(this));
         });
-
       });
 
       describe('Polymorphic associations', function() {
-
         it('handles morphOne (photo)', function() {
           return new Author({id: 1})
             .photo()
@@ -680,7 +655,6 @@ module.exports = function(Bookshelf) {
           return Photo.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
 
-
         it('handles morphOne with custom columnNames (thumbnail)', function() {
           return new Author({id: 1})
             .thumbnail()
@@ -717,11 +691,9 @@ module.exports = function(Bookshelf) {
         it('eager loads beyond the morphTo with custom columnNames, where possible', function() {
           return Thumbnail.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
-
       });
 
       describe('`through` relations', function() {
-
         it('handles hasMany `through`', function() {
           return new Blog({id: 1}).comments().fetch().tap(checkTest(this));
         });
@@ -757,15 +729,11 @@ module.exports = function(Bookshelf) {
         it('eager loads belongsTo `through`', function() {
           return new Comment().fetchAll({withRelated: 'blog'}).tap(checkTest(this));
         });
-
       });
-
     });
 
     describe('Issue #63 - hasOne relations', function() {
-
-      it('should return Customer (id=1) with settings', function () {
-
+      it('should return Customer (id=1) with settings', function() {
         var expected = {
           id      : 1,
           name    : 'Customer1',
@@ -776,16 +744,15 @@ module.exports = function(Bookshelf) {
           }
         };
 
-        return new Customer({ id: 1 })
-          .fetch({ withRelated: 'settings' })
-          .then(function (model) {
+        return new Customer({id: 1})
+          .fetch({withRelated: 'settings'})
+          .then(function(model) {
             var cust = model.toJSON();
             expect(cust).to.eql(expected);
           });
       });
 
-      it('should return Customer (id=4) with settings', function () {
-
+      it('should return Customer (id=4) with settings', function() {
         var expected = {
           id : 4,
           name : 'Customer4',
@@ -796,9 +763,9 @@ module.exports = function(Bookshelf) {
           }
         };
 
-        return new Customer({ id: 4 })
-          .fetch({ withRelated: 'settings' })
-          .then(function (model) {
+        return new Customer({id: 4})
+          .fetch({withRelated: 'settings'})
+          .then(function(model) {
             var cust = model.toJSON();
             expect(cust).to.eql(expected);
           });
@@ -806,87 +773,63 @@ module.exports = function(Bookshelf) {
     });
 
     describe('Issue #65, custom idAttribute with eager loaded belongsTo', function() {
-
       it('#65 - should eager load correctly for models', function() {
-
         return new Hostname({hostname: 'google.com'}).fetch({withRelated: 'instance'}).tap(checkTest(this));
-
       });
 
       it('#65 - should eager load correctly for collections', function() {
-
-        return new Bookshelf.Collection([], {model: Hostname}).fetch({ withRelated: 'instance'}).tap(checkTest(this));
-
+        return new Bookshelf.Collection([], {model: Hostname}).fetch({withRelated: 'instance'}).tap(checkTest(this));
       });
-
     });
 
     describe('Issue #70 - fetching specific columns, and relations', function() {
-
       it('doesnt pass the columns along to sub-queries', function() {
-
         return new Author({id: 2})
           .fetch({
             withRelated: 'posts',
             columns: ['id', 'last_name']
           })
           .then(function(author) {
-
             expect(author.attributes.first_name).to.be.undefined;
-
             expect(author.related('posts').length).to.equal(2);
-
           });
-
       });
-
     });
 
     describe('Issue #77 - Using collection.create() on relations', function() {
-
       it('maintains the correct parent model references when using related()', function() {
-
         return new Site().fetch({withRelated: 'authors'}).then(function(site) {
-
           return site.related('authors').create({first_name: 'Dummy', last_name: 'Account'}).then(function(model) {
-
             expect(model.attributes).to.eql({first_name: 'Dummy', last_name: 'Account', site_id: site.id, id: model.id});
-
             expect(site.related('authors')).to.have.length(3);
-
           });
-
         });
-
       });
-
     });
 
     describe('Issue #97, #377 - Eager loading on parsed models', function() {
-
-      it('correctly pairs eager-loaded models before parse()', function () {
+      it('correctly pairs eager-loaded models before parse()', function() {
         return Promise.all([
           new Blog({id: 1}).related('parsedPosts').fetch(),
-          new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
-        ]).then(function (data) {
-          var parsedPosts = data[0], blog = data[1];
+          new Blog({id: 1}).fetch({withRelated: 'parsedPosts'})
+        ]).spread(function(parsedPosts, blog) {
           expect(blog.related('parsedPosts').length).to.equal(parsedPosts.length);
         });
       });
 
-      it('parses eager-loaded models after pairing', function () {
-        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
-          .then(function (blog) {
+      it('parses eager-loaded models after pairing', function() {
+        return new Blog({id: 1}).fetch({withRelated: 'parsedPosts'})
+          .then(function(blog) {
             var attrs = blog.related('parsedPosts').at(0).attributes;
-            Object.keys(attrs).forEach(function (key) {
+            Object.keys(attrs).forEach(function(key) {
               expect(/_parsed$/.test(key)).to.be.true;
             });
           });
       });
 
-      it('parses eager-loaded models previous attributes after pairing', function () {
-        return new Blog({id: 1}).fetch({ withRelated: 'parsedPosts' })
-          .then(function (blog) {
+      it('parses eager-loaded models previous attributes after pairing', function() {
+        return new Blog({id: 1}).fetch({withRelated: 'parsedPosts'})
+          .then(function(blog) {
             var prev = blog.related('parsedPosts').at(0)._previousAttributes;
             Object.keys(prev).forEach(function (key) {
               expect(/_parsed$/.test(key)).to.be.true;
@@ -894,12 +837,12 @@ module.exports = function(Bookshelf) {
           });
       });
 
-      it('parses eager-loaded morphTo relations (model)', function () {
-        return Photo.fetchAll({ withRelated: 'imageableParsed.meta', log: true })
-          .then(function (photos) {
+      it('parses eager-loaded morphTo relations (model)', function() {
+        return Photo.fetchAll({withRelated: 'imageableParsed.meta', log: true})
+          .then(function(photos) {
             photos.forEach(function(photo) {
               var attrs = photo.related('imageableParsed').attributes;
-              Object.keys(attrs).forEach(function (key) {
+              Object.keys(attrs).forEach(function(key) {
                 expect(/_parsed$/.test(key)).to.be.true;
               });
             });
@@ -909,7 +852,7 @@ module.exports = function(Bookshelf) {
       it('eager fetches belongsTo correctly on a dual parse', function() {
         return UserTokenParsed.forge({token: 'testing'}).fetch({
           withRelated: ['user']
-        }).then(function (model) {
+        }).then(function(model) {
           expect(model.related('user').get('id')).to.equal(10);
         });
       });
@@ -921,24 +864,19 @@ module.exports = function(Bookshelf) {
           expect(model.related('user').get('id')).to.equal(10);
         });
       });
-
-
     });
 
-    describe('Issue #212 - Skipping unnecessary queries', function () {
-      var oldAuthorSync;
-      var oldSiteSync;
+    describe('Issue #212 - Skipping unnecessary queries', function() {
       var siteSyncCount = 0;
-      var author;
 
-      beforeEach(function () {
+      beforeEach(function() {
         siteSyncCount = 0;
       });
 
-      before(function () {
-        Photo.prototype.sync = function () {
+      before(function() {
+        Photo.prototype.sync = function() {
           return {
-            first: function () {
+            first: function() {
               return Promise.resolve([{
                 id:1,
                 imageable_type: 'sites',
@@ -948,15 +886,15 @@ module.exports = function(Bookshelf) {
           };
         };
 
-        Author.prototype.sync = function () {
+        Author.prototype.sync = function() {
           return {
-            select: function () {
+            select: function() {
               return Promise.resolve([{
                 id:1,
                 dummy: 'author'
               }]);
             },
-            first: function () {
+            first: function() {
               return Promise.resolve([{
                 id:1,
                 first_name: 'Johannes',
@@ -967,16 +905,16 @@ module.exports = function(Bookshelf) {
           };
         };
 
-        Site.prototype.sync = function () {
+        Site.prototype.sync = function() {
           siteSyncCount++;
           return {
-            select: function () {
+            select: function() {
               return Promise.resolve([{
                 id:1,
                 dummy: 'content'
               }]);
             },
-            first: function () {
+            first: function() {
               return Promise.resolve([{
                 id:1,
                 dummy: 'content'
@@ -993,57 +931,48 @@ module.exports = function(Bookshelf) {
         delete Site.prototype.sync;
       });
 
-      it('should not run a query for eagerly loaded `belongsTo` relations if the foreign key is null', function () {
+      it('should not run a query for eagerly loaded `belongsTo` relations if the foreign key is null', function() {
         var a = new Author({id: 1});
 
         return a.fetch({withRelated:'site'})
-        .then(function (model) {
+        .then(function(model) {
           equal(siteSyncCount, 0);
-        }).catch(function (err){
-          console.log(err);
-        });
-
+        })
       });
 
-      it('should not run a query for eagerly loaded `morphTo` relations if the foreign key is null', function () {
+      it('should not run a query for eagerly loaded `morphTo` relations if the foreign key is null', function() {
         var p = new Photo({id: 1});
 
         return p.fetch({withRelated:'imageable'})
-        .then(function () {
+        .then(function() {
           equal(siteSyncCount, 0);
         });
       });
-
     });
 
-
     describe('Issue #353 - wrong key set on a belongsTo relation', function() {
-
       it('should not set the foreign key on the target model when saving', function() {
         return new Blog({id: 4})
         .fetch()
         .then(function(model) {
           return model.site().fetch();
         })
-        .then(function (site) {
+        .then(function(site) {
           return site.save();
         });
       });
-
     });
 
-
-    describe('Issue #578 - lifecycle events on pivot model for belongsToMany().through()', function () {
-
+    describe('Issue #578 - lifecycle events on pivot model for belongsToMany().through()', function() {
       // Overrides the `initialize` method on the JoinModel to throw an Error
       // when the current lifecycleEvent is triggered. Additionally overrides
       // the Left/Right models `.belongsToMany().through()` configuration with
       // the overridden JoinModel.
       function initializeModelsForLifecycleEvent(lifecycleEvent) {
         JoinModel = JoinModel.extend({
-          initialize: (function (v) {
-            return function () {
-              this.on(lifecycleEvent, function () {
+          initialize: (function(v) {
+            return function() {
+              this.on(lifecycleEvent, function() {
                 throw new Error('`' + lifecycleEvent + '` triggered on JoinModel()');
               });
             };
@@ -1051,13 +980,13 @@ module.exports = function(Bookshelf) {
         });
 
         LeftModel = LeftModel.extend({
-          rights: function () {
+          rights: function() {
             return this.belongsToMany(RightModel).through(JoinModel);
           }
         });
 
         RightModel = RightModel.extend({
-          lefts: function () {
+          lefts: function() {
             return this.belongsToMany(LeftModel).through(JoinModel).withPivot(['parsedName']);
           }
         });
@@ -1067,20 +996,20 @@ module.exports = function(Bookshelf) {
       // step through the entire lifecycle of a JoinModel, returning a promise.
       function joinModelLifecycleRoutine(lifecycleEvent) {
         initializeModelsForLifecycleEvent(lifecycleEvent);
-        return (new LeftModel).save().then(function (left) {
+        return (new LeftModel).save().then(function(left) {
           // creating, saving, created, saved
           return [left, left.rights().create()];
-        }).spread(function (left, right) {
+        }).spread(function(left, right) {
           // fetching, fetched
           return [left, right, right.lefts().fetch()];
-        }).spread(function (left, right, lefts) {
+        }).spread(function(left, right, lefts) {
           // updating, updated
           return [left, right, left.rights().updatePivot({})];
-        }).spread(function (left, right, relationship) {
-          return (new LeftModel).save().then(function (left) {
+        }).spread(function(left, right, relationship) {
+          return (new LeftModel).save().then(function(left) {
             return [left, right, right.lefts().attach(left)];
           });
-        }).spread(function (left, right, relationship) {
+        }).spread(function(left, right, relationship) {
           // destroying, destroyed
           return left.rights().detach(right);
         });
@@ -1101,9 +1030,9 @@ module.exports = function(Bookshelf) {
         'updated',
         'destroying',
         'destroyed'
-      ].forEach(function (v) {
-        it('should trigger pivot model lifecycle event: ' + v, function () {
-          return joinModelLifecycleRoutine(v).catch(function (err) {
+      ].forEach(function(v) {
+        it('should trigger pivot model lifecycle event: ' + v, function() {
+          return joinModelLifecycleRoutine(v).catch(function(err) {
             assert(err instanceof Error)
             equal(err.message, '`' + v + '` triggered on JoinModel()');
           });
@@ -1112,113 +1041,109 @@ module.exports = function(Bookshelf) {
     });
 
     describe('Issue #1388 - Custom foreignKeyTarget & otherKeyTarget', function() {
-
       it('works with hasOne relation (locale -> translation)', function() {
-        return new Locale({ isoCode: 'pt' })
+        return new Locale({isoCode: 'pt'})
           .translation()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded hasOne relation (locale -> translation)', function() {
-        return new Locale({ isoCode: 'pt' })
-          .fetch({ withRelated: 'translation' })
+        return new Locale({isoCode: 'pt'})
+          .fetch({withRelated: 'translation'})
           .then(checkTest(this));
       });
 
       it('works with hasOne `through` relation (customer -> locale)', function() {
-        return new Customer({ name: 'Customer2' })
+        return new Customer({name: 'Customer2'})
           .locale()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded hasOne `through` relation (customer -> locale)', function() {
-        return new Customer({ name: 'Customer2' })
-          .fetch({ withRelated: 'locale' })
+        return new Customer({name: 'Customer2'})
+          .fetch({withRelated: 'locale'})
           .then(checkTest(this));
       });
 
       it('works with hasMany relation (locale -> translations)', function() {
-        return new Locale({ isoCode: 'en' })
+        return new Locale({isoCode: 'en'})
           .translations()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded hasMany relation (locale -> translations)', function() {
-        return new Locale({ isoCode: 'en' })
-          .fetch({ withRelated: 'translations' })
+        return new Locale({isoCode: 'en'})
+          .fetch({withRelated: 'translations'})
           .then(checkTest(this));
       });
 
       it('works with hasMany `through` relation (customer -> locales)', function() {
-        return new Customer({ name: 'Customer1' })
+        return new Customer({name: 'Customer1'})
           .locales()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded hasMany `through` relation (customer -> locales)', function() {
-        return new Customer({ name: 'Customer1' })
-          .fetch({ withRelated: 'locales' })
+        return new Customer({name: 'Customer1'})
+          .fetch({withRelated: 'locales'})
           .then(checkTest(this));
       });
 
       it('works with belongsTo relation (translation -> locale)', function() {
-        return new Translation({ code: 'pt' })
+        return new Translation({code: 'pt'})
           .locale()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded belongsTo relation (translation -> locale)', function() {
-        return new Translation({ code: 'pt' })
-          .fetch({ withRelated: 'locale' })
+        return new Translation({code: 'pt'})
+          .fetch({withRelated: 'locale' })
           .then(checkTest(this));
       });
 
       it('works with belongsTo `through` relation (locale -> customer)', function() {
-        return new Locale({ isoCode: 'pt' })
+        return new Locale({isoCode: 'pt'})
           .customer()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded belongsTo `through` relation (locale -> customer)', function() {
-        return new Locale({ isoCode: 'pt' })
-          .fetch({ withRelated: 'customer' })
+        return new Locale({isoCode: 'pt'})
+          .fetch({withRelated: 'customer'})
           .then(checkTest(this));
       });
 
       it('works with belongsToMany relation (locale -> customers)', function() {
-        return new Locale({ isoCode: 'en' })
+        return new Locale({isoCode: 'en'})
           .customers()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager loaded belongsToMany relation (locale -> customers)', function() {
-        return new Locale({ isoCode: 'en' })
-          .fetch({ withRelated: 'customers' })
+        return new Locale({isoCode: 'en'})
+          .fetch({withRelated: 'customers'})
           .then(checkTest(this));
       });
 
       it('works with belongsToMany `through` relation (locale -> customers)', function() {
-        return new Locale({ isoCode: 'en' })
+        return new Locale({isoCode: 'en'})
           .customersThrough()
           .fetch()
           .then(checkTest(this));
       });
 
       it('works with eager belongsToMany `through` relation (locale -> customers)', function() {
-        return new Locale({ isoCode: 'en' })
-          .fetch({ withRelated: 'customersThrough' })
+        return new Locale({isoCode: 'en'})
+          .fetch({withRelated: 'customersThrough'})
           .then(checkTest(this));
       });
-
     });
-
   });
-
 };
