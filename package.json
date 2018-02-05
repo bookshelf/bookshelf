@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
@@ -28,36 +28,35 @@
     "active record"
   ],
   "dependencies": {
-    "babel-runtime": "^6.6.1",
+    "babel-runtime": "^6.26.0",
     "bluebird": "^3.4.3",
-    "chalk": "^1.0.0",
+    "chalk": "^2.3.0",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
     "inherits": "~2.0.1",
     "lodash": "^4.13.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.0.15",
-    "babel-eslint": "^8.0.1",
-    "babel-plugin-syntax-object-rest-spread": "^6.0.14",
-    "babel-plugin-transform-object-rest-spread": "^6.0.14",
-    "babel-plugin-transform-runtime": "^6.6.0",
-    "babel-preset-es2015": "^6.0.14",
-    "bookshelf-jsdoc-theme": "^0.1.2",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "bookshelf-jsdoc-theme": "^0.2.0",
     "chai": "^3.5.0",
-    "eslint": "4.12.1",
+    "eslint": "4.17.0",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.14.0",
     "minimist": "^1.1.0",
-    "mocha": "^3.0.2",
+    "mocha": "^5.0.0",
     "mysql": "^2.5.2",
-    "pg": "^6.1.0",
+    "pg": "^7.4.1",
     "semver": "^5.0.3",
-    "sinon": "^1.11.1",
+    "sinon": "^4.1.3",
     "sinon-chai": "^2.6.0",
     "sqlite3": "^3.0.5",
-    "uuid": "~3.0.0"
+    "uuid": "^3.1.0"
   },
   "peerDependencies": {
     "knex": ">=0.6.10 <0.15.0"
@@ -75,5 +74,8 @@
     "web": "https://github.com/bookshelf"
   },
   "license": "MIT",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "engines": {
+    "node": ">=4"
+  }
 }

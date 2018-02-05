@@ -16,8 +16,8 @@ module.exports = function(Bookshelf) {
 		});
 
 		beforeEach(function () {
-			this._relation.reset();
-			this.morphTo.reset();
+			this._relation.resetHistory();
+			this.morphTo.resetHistory();
 		});
 
 		before(function() {
@@ -182,7 +182,7 @@ module.exports = function(Bookshelf) {
 		});
 
 		describe('bookshelf.resolve', function() {
-			
+
 			it('resolves the path to a model with a custom function', function() {
 				var one = Bookshelf.Model.extend({});
 				var two = Bookshelf.Model.extend({});

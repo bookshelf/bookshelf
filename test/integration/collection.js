@@ -1,24 +1,15 @@
 var Promise   = global.testPromise;
-
 var assert    = require('assert');
-var _         = require('lodash');
 var equal     = assert.equal
 
 module.exports = function(bookshelf) {
-
   describe('Collection', function() {
-
-    var output  = require('./output/Collection');
+    var output = require('./output/Collection');
     var dialect = bookshelf.knex.client.dialect;
-    var json    = function(model) {
+    var json = function(model) {
       return JSON.parse(JSON.stringify(model));
     };
-    var formatNumber = {
-      mysql:      _.identity,
-      sqlite3:    _.identity,
-      oracle:     _.identity,
-      postgresql: function(count) { return count.toString() }
-    }[dialect];
+    var formatNumber = require('./helpers').formatNumber(dialect);
     var checkCount = function(actual, expected) {
       expect(actual).to.equal(formatNumber(expected));
     };
@@ -28,27 +19,18 @@ module.exports = function(bookshelf) {
       };
     };
 
-    var Models      = require('./helpers/objects')(bookshelf).Models;
-
-    // Models
+    var Models = require('./helpers/objects')(bookshelf).Models;
     var Site     = Models.Site;
-    var SiteMeta = Models.SiteMeta;
-    var Admin    = Models.Admin;
     var Author   = Models.Author;
     var Blog     = Models.Blog;
     var Post     = Models.Post;
-    var Comment  = Models.Comment;
-    var Tag      = Models.Tag;
-    var User     = Models.User;
-    var Role     = Models.Role;
-    var Photo    = Models.Photo;
 
     describe('extend', function() {
       it ('should have own EmptyError', function() {
         var Sites = bookshelf.Collection.extend({model: Site});
         var OtherSites = bookshelf.Collection.extend({model: Site});
-
         var err = new Sites.EmptyError();
+
         expect(Sites.EmptyError).to.not.be.eql(bookshelf.Collection.EmptyError);
         expect(Sites.EmptyError).to.not.be.eql(OtherSites.EmptyError);
         expect(Sites.EmptyError).to.not.be.eql(OtherSites.EmptyError);
@@ -57,14 +39,12 @@ module.exports = function(bookshelf) {
     });
 
     describe('fetch', function() {
-
       it ('fetches the models in a collection', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
           .fetch()
           .tap(checkTest(this));
       });
-
     });
 
     describe('count', function() {
@@ -119,7 +99,6 @@ module.exports = function(bookshelf) {
     });
 
     describe('fetchOne', function() {
-
       it ('fetches a single model from the collection', function() {
         return new Site({id:1})
           .authors()
@@ -130,7 +109,6 @@ module.exports = function(bookshelf) {
       });
 
       it ('maintains a clone of the query builder from the current collection', function() {
-
         return new Site({id:1})
           .authors()
           .query({where: {id: 40}})
@@ -142,7 +120,6 @@ module.exports = function(bookshelf) {
       });
 
       it ('follows the typical model options, like require: true', function() {
-
         return new Site({id:1})
           .authors()
           .query({where: {id: 40}})
@@ -155,7 +132,6 @@ module.exports = function(bookshelf) {
       });
 
       it ('resolves to null if no model exists', function() {
-
         return new Site({id:1})
           .authors()
           .query({where: {id: 40}})
@@ -173,7 +149,6 @@ module.exports = function(bookshelf) {
           .authors()
           .orderBy('first_name', 'ASC')
           .fetch();
-
         var desc = new Site({id: 1})
           .authors()
           .orderBy('first_name', 'DESC')
@@ -187,30 +162,22 @@ module.exports = function(bookshelf) {
       })
     })
 
-
-
     describe('sync', function() {
-
       it('creates a new instance of Sync', function(){
         var model = new bookshelf.Model();
         assert(model.sync(model) instanceof require('../../lib/sync'));
       });
-
     });
 
     describe('create', function() {
-
       it('creates and saves a new model instance, saving it to the collection', function () {
-
         return Site.collection().create({name: 'google.com'}).then(function(model) {
           expect(model.get('name')).to.equal('google.com');
           return model.destroy();
         });
-
       });
 
       it('should populate a `hasMany` or `morphMany` with the proper keys', function() {
-
         return new Site({id: 10})
           .authors()
           .create({first_name: 'test', last_name: 'tester'})
@@ -247,11 +214,9 @@ module.exports = function(bookshelf) {
                 expect(photo.get('url')).to.equal('http://image.dev');
               });
           });
-
       });
 
       it('should not set incorrect foreign key in a `hasMany` `through` relation - #768', function() {
-
         // This will fail if an unknown field (eg. `blog_id`) is added to insert query.
         return new Blog({id: 768})
           .comments()
@@ -262,14 +227,12 @@ module.exports = function(bookshelf) {
       });
 
       it('should automatically create a join model when joining a belongsToMany', function() {
-
         return new Site({id: 1})
           .admins()
           .create({username: 'test', password: 'test'})
           .then(function(admin) {
             expect(admin.get('username')).to.equal('test');
           });
-
       });
 
       it('should maintain the correct constraints when creating a model from a relation', function() {
@@ -284,19 +247,16 @@ module.exports = function(bookshelf) {
       });
 
       it('should populate the nested relations with the proper keys', function() {
-
         return new Author({id: 1}).fetch({withRelated: 'site.photos'}).then(function(author) {
           return author.related('site').related('photos').create({
             imageable_id: author.related('site').id,
             url: 'http://image.dev',
             caption: 'this is a test image'
           });
-
         }).then(function(photo) {
           expect(photo.get('url')).to.equal('http://image.dev');
           return photo.destroy();
         });
-
       });
 
       it('can require items in the response', function() {
@@ -325,13 +285,10 @@ module.exports = function(bookshelf) {
     });
 
     describe('clone', function() {
-
       it('should contain a copy of internal QueryBuilder object - #945', function() {
-
         var original = Post.collection()
           .query('where', 'share_count', '>', 10)
           .query('orderBy', 'created_at');
-
         var cloned = original.clone();
 
         expect(original.query()).to.not.equal(cloned.query());
@@ -343,5 +300,4 @@ module.exports = function(bookshelf) {
       });
     });
   });
-
 };

@@ -8,7 +8,7 @@ echo "Getting version number from package.json"
 version="$(get_property 'package.json' 'version')"
 
 echo "(Re)Creating bookshelf-source remote"
-git remote remove bookshelf-source
+git remote remove bookshelf-source || true
 git remote add bookshelf-source git@github.com:bookshelf/bookshelf.git
 
 echo "Committing new release version w/ any outstanding changes"
@@ -24,4 +24,4 @@ echo "Pushing new version tag to source master"
 git push bookshelf-source master --tags
 
 echo "Running gh-pages publish"
-./scripts/gh-pages
+./scripts/gh-pages.sh

@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 
 var exec = function (cmd, args) {
   return new Promise(function(resolve, reject) {
-    // Execute command
+    if (typeof cmd !== 'string') return resolve();
     var child = child_process.exec(cmd, {cwd: process.cwd(), env: process.env});
 
     // Pass stdout and stderr
