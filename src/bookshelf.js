@@ -11,6 +11,7 @@ import BookshelfModel from './model';
 import BookshelfCollection from './collection';
 import BookshelfRelation from './relation';
 import Errors from './errors';
+import Knex from 'knex';
 
 /**
  * @class Bookshelf
@@ -24,6 +25,9 @@ import Errors from './errors';
  * @param {Knex} knex Knex instance.
  */
 function Bookshelf(knex) {
+  if (!knex || !(knex.client instanceof Knex.Client)) {
+    throw new Error('Invalid knex instance');
+  }
   const bookshelf = {
     VERSION: require('../package.json').version
   };
