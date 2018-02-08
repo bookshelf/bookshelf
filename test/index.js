@@ -49,6 +49,10 @@ describe('Bookshelf', function () {
 
     return bookshelf.knex.destroy()
   });
+
+  it('should fail without knex instance', function() {
+    expect(() => Bookshelf()).to.throw(/knex/);
+  });
 });
 
 // Unit test all of the abstract base interfaces
