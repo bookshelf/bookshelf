@@ -1,13 +1,8 @@
-var Promise   = testPromise;
-var _         = require('lodash');
+var _ = require('lodash');
+var path     = require('path');
+var basePath = process.cwd();
 
 module.exports = function() {
-
-  // This module is included into the `bookshelf` repository,
-  // and run from the root of the directory.
-  var path     = require('path');
-  var basePath = process.cwd();
-
   var Sync = require(path.resolve(basePath + '/lib/sync'));
 
   describe('Sync', function() {
@@ -18,6 +13,7 @@ module.exports = function() {
         qd.push(_.toArray(arguments));
         return this;
       };
+
       return {
         idAttribute: idAttribute || 'id',
         id: 'pk',
@@ -25,6 +21,7 @@ module.exports = function() {
           idAttribute: 'pk'
         },
         tableName: 'testtable',
+        format: _.identity,
         isNew: function() {
           return true
         },
@@ -36,7 +33,7 @@ module.exports = function() {
           where: function(where) { qd.push({grouping: 'where', where}) },
           limit: function(limit) { qd.push({grouping: 'limit', limit}) },
         },
-        resetQuery: function () {
+        resetQuery: function() {
           return this;
         },
         getWhereParts: function() {
@@ -51,12 +48,9 @@ module.exports = function() {
       };
     };
 
-    describe('prefixFields', function () {
-
-      it('should prefix all keys of the passed in object with the tablename', function () {
-
+    describe('prefixFields', function() {
+      it('should prefix all keys of the passed in object with the tablename', function() {
         var sync = new Sync(stubSync());
-
         var attributes = {
           'some': 'column',
           'another': 'column'
@@ -66,11 +60,9 @@ module.exports = function() {
           'testtable.some':'column',
           'testtable.another':'column'
         });
-
       });
 
       it('should run after format for select', function() {
-
         var attributes = {
           'Some': 'column',
           'Another': 'column'
@@ -84,14 +76,15 @@ module.exports = function() {
             return data;
           }
         }));
+
         sync.select = function() {
           expect(this.syncing.queryData[0].where).to.eql({ 
             "testtable.some": "column",
             "testtable.another": "column"
           });
         };
-        return sync.first(attributes);
 
+        return sync.first(attributes);
       });
 
       it('should format attributes for updates, including id attribute', function(done) {
@@ -157,6 +150,35 @@ module.exports = function() {
 
     });
 
-  });
+    describe('update', function() {
+      it('doesn\'t try to update the primary key if it hasn\'t changed', function() {
+        var sync = new Sync(stubSync());
+        _.extend(sync.query, {
+          update: function(attrs) {
+            expect(attrs).to.not.have.property('id');
+          },
+          where: function() {
+            this._statements = [{grouping: 'where'}];
+          }
+        });
 
+        return sync.update({id: 'pk', name: 'something'});
+      });
+
+      it('will update the primary key if it has changed', function() {
+        var sync = new Sync(stubSync());
+        _.extend(sync.query, {
+          update: function(attrs) {
+            expect(attrs).to.have.property('id');
+            expect(attrs.id).to.equal('updated');
+          },
+          where: function() {
+            this._statements = [{grouping: 'where'}];
+          }
+        });
+
+        return sync.update({id: 'updated', name: 'something'});
+      })
+    })
+  });
 };

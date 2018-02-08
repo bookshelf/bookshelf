@@ -1,10 +1,15 @@
- {
-   "associations": {
-     "title": "Associations",
-     "children": ["one-to-one", "one-to-many","many-to-many", "polymorphic"]
-   },
-   "one-to-one":   { "title": "One-to-one" },
-   "one-to-many":  { "title": "One-to-many" },
-   "many-to-many": { "title": "Many-to-many" },
-   "polymorphic": { "title": "Polymorphic" }
- }
+{
+  "associations": {
+    "title": "Associations",
+    "children": ["one-to-one", "one-to-many", "many-to-many", "polymorphic"]
+  },
+  "tutorials": {
+    "title": "Tutorials",
+    "children": ["parse-and-format"]
+  },
+  "one-to-one": { "title": "One-to-one" },
+  "one-to-many": { "title": "One-to-many" },
+  "many-to-many": { "title": "Many-to-many" },
+  "polymorphic": { "title": "Polymorphic" },
+  "parse-and-format": { "title": "Parse and Format" }
+}

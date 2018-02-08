@@ -201,7 +201,11 @@ _.extend(Sync.prototype, {
     if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
-    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+    var updating = syncing.format(_.extend(Object.create(null), attrs));
+    if (syncing.id === updating[syncing.idAttribute]) {
+      delete updating[syncing.idAttribute];
+    }
+    return query.update(updating);
   }),
 
   // Issues a `delete` command on the query.
