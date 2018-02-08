@@ -167,9 +167,7 @@ At the start of your application code will catch any errors not otherwise caught
 
 ### How do I run the test suite?
 
-The test suite looks for an environment variable called `BOOKSHELF_TEST` for the path to the database configuration. If you run the following command: `$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'`, replacing with the path to your config file, and the config file is valid, the test suite should run with npm test.
-
-Also note that you will have to create the appropriate database(s) for the test suite to run. For example, with MySQL, you'll need to run the command `create database bookshelf_test;` in addition to exporting the correct test settings prior to running the test suite.
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md#running-the-tests).
 
 ### Can I use Bookshelf outside of Node.js?
 

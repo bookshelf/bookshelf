@@ -201,6 +201,18 @@ CREATE DATABASE bookshelf_test;
 
 ### Running the Tests
 
+The recommended way to run the tests is:
+
+- Install [docker & docker-compose](#using-docker-containers)
+- Run the test databases, `docker-compose up -d`
+- Run the tests, `npm test`
+  - You may run the tests many times against the same DB instances.  The tests reset DB state on each run.
+- Teardown the databases, `docker-compose down --remove-orphans`
+
+For advanced testing, you can configure the test databases manually.  The test suite looks for an environment variable called `BOOKSHELF_TEST` for the path to the database configuration. If you run the following command: `$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'`, replacing with the path to your config file, and the config file is valid, the test suite should run with npm test.
+
+Also note that you will have to create the appropriate database(s) for the test suite to run. For example, with MySQL, you'll need to run the command `create database bookshelf_test;` in addition to exporting the correct test settings prior to running the test suite.
+
 The test suite requires that both MySQL and PostgreSQL servers have a database named `bookshelf_test`. See the sections
 above for further instructions.
 
