@@ -39,13 +39,22 @@ their configurations.
 
 ### Using Docker Containers
 
-You can install [Docker](https://docs.docker.com/engine/installation/#supported-platforms) easily on any Operating
-System. After picking the correct operating system installer (via package manager or download) just run the
-following command on the root of your cloned Bookshelf repository:
+You can install [Docker](https://docs.docker.com/engine/installation/#supported-platforms) and `docker-compose` easily
+on any Operating System. After picking the correct operating system installer (via package manager or download) just
+run the following command on the root of your cloned Bookshelf repository:
 
 ```sh
-docker-compose up
+# This starts the test databases
+docker-compose up -d
 ```
+
+You can also teardown the databases with:
+
+```sh
+docker-compose down --remove-orphans
+```
+
+When using Docker you may run the tests many times against the same DB instances. The tests reset DB state on each run.
 
 **Note:** admin privileges are needed, so you should act according to your chosen Operating System.
 
@@ -150,7 +159,7 @@ After editing the `pg_hba.conf` file you'll need to restart the PostgreSQL serve
 ### Using a Configuration File
 
 If you don't want to go to the trouble of performing the changes explained in the previous two sections you can instead
-use a config file that tells the test suite about your database setup.
+use a config file that tells the test suite about your current database setup.
 
 The tests will look for a `BOOKSHELF_TEST` environment variable that points to a `config.js` file with the connection
 details for each database server. This file must not be the same database config file you use for any other application,
@@ -199,12 +208,16 @@ used exclusively by Bookshelf.js:
 CREATE DATABASE bookshelf_test;
 ```
 
+Note that this step isn't necessary when using Docker.
+
 ### Running the Tests
+
+The easiest way to run the tests is by using docker & docker-compose as [explained above](#using-docker-containers).
 
 The test suite requires that both MySQL and PostgreSQL servers have a database named `bookshelf_test`. See the sections
 above for further instructions.
 
-Once you have done that, you can run the tests:
+Once you have your development environment properly setup, you can run the tests:
 
 ```sh
 npm test
