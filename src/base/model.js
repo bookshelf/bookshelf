@@ -113,16 +113,20 @@ ModelBase.prototype.initialize = function() {};
  *
  * This tells the model which attribute to expect as the unique identifier
  * for each database row (typically an auto-incrementing primary key named
- * `"id"`). Note that if you are using {@link Model#parse parse} and {@link
+ * `'id'`). Note that if you are using {@link Model#parse parse} and {@link
  * Model#format format} (to have your model's attributes in `camelCase`,
  * but your database's columns in `snake_case`, for example) this refers to
- * the name returned by parse (`myId`), not the database column (`my_id`).
+ * the name returned by parse (`myId`), not the actual database column
+ * (`my_id`).
  *
- * If the table you're working with does not have an Primary-Key in the form
- * of a single column - you'll have to override it with a getter that returns
- * null. (overriding with undefined does not cascade the default behavior of
- * the value `'id'`.
- * Such a getter in ES6 would look like `get idAttribute() { return null }`
+ * You can also get the parsed id attribute value by using the model's
+ * {@link Model#parsedIdAttribute parsedIdAttribute} method.
+ *
+ * If the table you're working with does not have a Primary-Key in the form
+ * of a single column you'll have to override it with a getter that returns
+ * `null`. Overriding with `undefined` does not cascade the default behavior of
+ * the value `'id'`. Such a getter in ES6 would look like
+ * `get idAttribute() { return null }`.
  */
 ModelBase.prototype.idAttribute = 'id';
 
@@ -157,6 +161,29 @@ ModelBase.prototype.get = function(attr) {
   return this.attributes[attr];
 };
 
+/**
+ * @method
+ * @description
+ *
+ * Returns the model's {@link Model#idAttribute idAttribute} after applying the
+ * model's {@link Model#parse parse} method to it. Doesn't mutate the original
+ * value of {@link Model#idAttribute idAttribute} in any way.
+ *
+ * @example
+ *
+ * var Customer = bookshelf.Model.extend({
+ *   idAttribute: 'id',
+ *   parse: function(attrs) {
+ *     return _.mapKeys(attrs, function(value, key) {
+ *       return 'parsed_' + key;
+ *     });
+ *   }
+ * });
+ *
+ * customer.parsedIdAttribute() // 'parsed_id'
+ *
+ * @returns {mixed} Whatever value the parse method returns.
+ */
 ModelBase.prototype.parsedIdAttribute = function() {
   var parsedAttributes = this.parse({[this.idAttribute]: null})
   return parsedAttributes && Object.keys(parsedAttributes)[0]
