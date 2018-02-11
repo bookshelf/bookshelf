@@ -127,7 +127,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('id, idAttribute', function() {
+    describe('#id, #idAttribute', function() {
       it('should attach the id as a property on the model', function() {
         var test = new bookshelf.Model({id: 1});
         equal(test.id, 1);
@@ -138,6 +138,20 @@ module.exports = function(bookshelf) {
           idAttribute: '_id'
         });
         var test = new Test({_id: 2});
+
+        equal(test.id, 2);
+      });
+
+      it('#id should be set when model has custom parse method', function() {
+        var TestModel = bookshelf.Model.extend({
+          idAttribute: 'test_id',
+          parse: function(attrs) {
+            return _.mapKeys(attrs, function(val, key) {
+              return _.camelCase(key);
+            });
+          }
+        });
+        var test = new TestModel({test_id: 2}, {parse: true});
 
         equal(test.id, 2);
       });
