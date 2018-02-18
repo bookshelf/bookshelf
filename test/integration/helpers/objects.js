@@ -85,6 +85,10 @@ module.exports = function(Bookshelf) {
     hasTimestamps: true
   });
 
+  var TestAuthor = Bookshelf.Model.extend({
+    tableName: 'authors'
+  })
+
   // Author of a blog post.
   var Author = Bookshelf.Model.extend({
     tableName: 'authors',
@@ -398,6 +402,7 @@ module.exports = function(Bookshelf) {
       SiteParsed: SiteParsed,
       SiteMeta: SiteMeta,
       Admin: Admin,
+      TestAuthor: TestAuthor,
       Author: Author,
       AuthorParsed: AuthorParsed,
       Backup: Backup,
