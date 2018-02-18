@@ -3,9 +3,10 @@ var uuid = require('uuid');
 
 var Promise   = global.testPromise;
 
-var assert    = require('assert')
-var equal     = require('assert').strictEqual;
-var deepEqual = require('assert').deepEqual;
+var assert = require('assert');
+var equal = assert.strictEqual;
+var deepEqual = assert.deepEqual;
+var helpers = require('./helpers');
 var QueryBuilder = require('knex/lib/query/builder')
 
 module.exports = function(bookshelf) {
@@ -19,7 +20,8 @@ module.exports = function(bookshelf) {
       del:    function() { return Promise.resolve({}); }
     };
     var dialect = bookshelf.knex.client.dialect;
-    var formatNumber = require('./helpers').formatNumber(dialect);
+    var formatNumber = helpers.formatNumber(dialect);
+    var countTestAuthors = helpers.countModels(Models.TestAuthor, {withSchema: 'test'});
     var checkCount = function(actual, expected) {
       expect(actual, formatNumber(expected));
     };
@@ -436,6 +438,14 @@ module.exports = function(bookshelf) {
             equal(model, null);
           });
       });
+
+      it('uses the schema name passed in options', function() {
+        if (dialect !== 'postgresql') return this.skip();
+
+        return new Models.TestAuthor({id: 1}).fetch({withSchema: 'test'}).then(function(author) {
+          expect(author.get('name')).to.eql('Ryan Coogler');
+        })
+      })
     });
 
     describe('fetchAll', function() {
@@ -767,6 +777,22 @@ module.exports = function(bookshelf) {
           assert(err instanceof bookshelf.NoRowsDeletedError)
         })
       });
+
+      it('can destroy from the correct schema', function() {
+        if (dialect !== 'postgresql') return this.skip();
+
+        var initialCount;
+
+        return countTestAuthors().then(function(count) {
+          initialCount = count
+          return new Models.TestAuthor({id: 1}).destroy({withSchema: 'test'})
+        }).then(function(author) {
+          expect(author.get('name')).to.be.undefined;
+          return countTestAuthors();
+        }).then(function(count) {
+          expect(count).to.be.below(initialCount);
+        })
+      })
     });
 
     describe('count', function() {
@@ -809,6 +835,21 @@ module.exports = function(bookshelf) {
           })
           .then(function(count) { checkCount(count, 5); });
       });
+
+      it('counts from the correct schema', function() {
+        if (dialect !== 'postgresql') return this.skip();
+
+        var initialCount;
+
+        return countTestAuthors().then(function(count) {
+          initialCount = count;
+          return Models.TestAuthor.forge().save({name: 'Testing'}, {withSchema: 'test'});
+        }).then(function() {
+          return countTestAuthors();
+        }).then(function(count) {
+          expect(count).to.be.above(initialCount);
+        })
+      })
     });
 
     describe('resetQuery', function() {
