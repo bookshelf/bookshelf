@@ -6,7 +6,7 @@ var drops = [
   'photos', 'users_roles', 'info', 'Customer', 'Settings', 'hostnames',
   'instances', 'uuid_test', 'parsed_users', 'tokens', 'thumbnails', 'lefts',
   'rights', 'lefts_rights', 'organization', 'locales', 'translations',
-  'backups', 'backup_types', 'test.authors'
+  'backups', 'backup_types'
 ];
 
 module.exports = function(Bookshelf) {
@@ -14,10 +14,6 @@ module.exports = function(Bookshelf) {
   var isPostgreSQL = Bookshelf.knex.client.dialect === 'postgresql';
 
   return Promise.all(drops.map(function(tableName) {
-    if (isPostgreSQL && tableName.split('.').length > 1) {
-      const tableIdentifier = tableName.split('.');
-      return knex.schema.withSchema(tableIdentifier[0]).dropTableIfExists(tableIdentifier[1])
-    }
     return knex.schema.dropTableIfExists(tableName);
   })).then(function() {
     if (isPostgreSQL) return Bookshelf.knex.raw('DROP SCHEMA IF EXISTS "test" CASCADE');
