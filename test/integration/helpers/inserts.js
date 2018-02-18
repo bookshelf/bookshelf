@@ -268,11 +268,13 @@ module.exports = function(bookshelf) {
     ])
 
   ]).then(function() {
-    if (knex.client.dialect === 'postgresql') {
-      return knex.raw('SELECT setval(\'backup_types_id_seq\', (SELECT MAX(id) from "backup_types"));')
-    }
-  }, function(e) {
+    if (knex.client.dialect !== 'postgresql') return;
+
+    return Promise.all([
+      knex('authors').withSchema('test').insert([{name: 'Ryan Coogler'}]),
+      knex.raw('SELECT setval(\'backup_types_id_seq\', (SELECT MAX(id) from "backup_types"));')
+    ]);
+  }).catch(function(e) {
     console.log(e.stack);
   });
-
 };
