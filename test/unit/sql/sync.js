@@ -1,18 +1,13 @@
 var _ = require('lodash');
-var path     = require('path');
+var path = require('path');
 var basePath = process.cwd();
 
 module.exports = function() {
   var Sync = require(path.resolve(basePath + '/lib/sync'));
 
   describe('Sync', function() {
-
-    var stubSync = function(idAttribute) {
+    var stubModel = function(idAttribute) {
       var qd = [];
-      var stubQuery = function() {
-        qd.push(_.toArray(arguments));
-        return this;
-      };
 
       return {
         idAttribute: idAttribute || 'id',
@@ -25,7 +20,7 @@ module.exports = function() {
         isNew: function() {
           return true
         },
-        queryData: qd, 
+        queryData: qd,
         operation: null,
         query: function() { return this._query },
         _query: {
@@ -50,7 +45,7 @@ module.exports = function() {
 
     describe('prefixFields', function() {
       it('should prefix all keys of the passed in object with the tablename', function() {
-        var sync = new Sync(stubSync());
+        var sync = new Sync(stubModel());
         var attributes = {
           'some': 'column',
           'another': 'column'
@@ -67,7 +62,7 @@ module.exports = function() {
           'Some': 'column',
           'Another': 'column'
         };
-        var sync = new Sync(_.extend(stubSync(), {
+        var sync = new Sync(_.extend(stubModel(), {
           format: function(attrs) {
             var data = {};
             for (var key in attrs) {
@@ -78,7 +73,7 @@ module.exports = function() {
         }));
 
         sync.select = function() {
-          expect(this.syncing.queryData[0].where).to.eql({ 
+          expect(this.syncing.queryData[0].where).to.eql({
             "testtable.some": "column",
             "testtable.another": "column"
           });
@@ -89,7 +84,7 @@ module.exports = function() {
 
       it('should format attributes for updates, including id attribute', function(done) {
         var snakeCase = _.snakeCase;
-        var stubModelInstance = _.extend(stubSync('idAttribute'), {
+        var stubModelInstance = _.extend(stubModel('idAttribute'), {
           format: function(attrs) {
             var data = {};
             for (var key in attrs) {
@@ -98,23 +93,15 @@ module.exports = function() {
             return data;
           }
         });
-
         var updateFields = {
           someColumn: 'updated',
           otherColumn: 'updated'
         };
 
         stubModelInstance._query.update = function(attrs) {
-            expect(stubModelInstance.getWhereParts()).to.eql([
-              { id_attribute: 'pk' }
-            ]);
-
-            expect(attrs).to.eql({
-              'some_column': 'updated',
-              'other_column': 'updated'
-            });
-
-            done()
+          expect(stubModelInstance.getWhereParts()).to.eql([{id_attribute: 'pk'}]);
+          expect(attrs).to.eql({'some_column': 'updated', 'other_column': 'updated'});
+          done()
         }
 
         var sync = new Sync(stubModelInstance);
@@ -123,8 +110,7 @@ module.exports = function() {
 
       it('should format id attribute for deletes', function(done) {
         var snakeCase = _.snakeCase;
-
-        var stubModelInstance = _.extend(stubSync('idAttribute'), {
+        var stubModelInstance = _.extend(stubModel('idAttribute'), {
           idAttribute: 'idAttribute',
           format: function(attrs) {
             var data = {};
@@ -134,25 +120,20 @@ module.exports = function() {
             return data;
           }
         })
-        
-        stubModelInstance._query.del = function() {
-            expect(stubModelInstance.getWhereParts()).to.eql([
-              { id_attribute: 'pk' }
-            ]);
 
-            done()
+        stubModelInstance._query.del = function() {
+          expect(stubModelInstance.getWhereParts()).to.eql([{id_attribute: 'pk'}]);
+          done()
         }
-        
+
         var sync = new Sync(stubModelInstance);
         sync.del()
-        
       });
-
     });
 
     describe('update', function() {
       it('doesn\'t try to update the primary key if it hasn\'t changed', function() {
-        var sync = new Sync(stubSync());
+        var sync = new Sync(stubModel());
         _.extend(sync.query, {
           update: function(attrs) {
             expect(attrs).to.not.have.property('id');
@@ -166,7 +147,7 @@ module.exports = function() {
       });
 
       it('will update the primary key if it has changed', function() {
-        var sync = new Sync(stubSync());
+        var sync = new Sync(stubModel());
         _.extend(sync.query, {
           update: function(attrs) {
             expect(attrs).to.have.property('id');
