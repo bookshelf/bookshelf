@@ -7,3 +7,9 @@ exports.formatNumber = function(dialect) {
     postgresql: function(count) { return count.toString() }
   }[dialect];
 }
+
+exports.countModels = function countModels(Model, options) {
+  return function() {
+    return Model.forge().count(options);
+  }
+}
