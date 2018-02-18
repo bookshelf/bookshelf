@@ -43,6 +43,21 @@ module.exports = function() {
       };
     };
 
+    it('accepts a withSchema option', function() {
+      var testSchema = 'test';
+      var setSchema = sinon.spy();
+      var mockModel = {
+        query: function() {
+          return {withSchema: setSchema}
+        },
+        resetQuery: function() {}
+      }
+
+      new Sync(mockModel, {withSchema: testSchema});
+
+      setSchema.should.have.been.calledWith(testSchema);
+    })
+
     describe('prefixFields', function() {
       it('should prefix all keys of the passed in object with the tablename', function() {
         var sync = new Sync(stubModel());
