@@ -3,6 +3,8 @@
 import _ from 'lodash';
 import Promise from './base/promise';
 
+const supportsReturning = (client) => _.includes(['postgresql', 'postgres', 'pg', 'oracle', 'mssql'], client)
+
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
 // a hash of options that are used in the various query methods.
@@ -192,7 +194,8 @@ _.extend(Sync.prototype, {
   // Issues an `insert` command on the query - only used by models.
   insert: Promise.method(function() {
     const syncing = this.syncing;
-    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)),
+                             supportsReturning(this.query.client.config.client) ? syncing.idAttribute : null);
   }),
 
   // Issues an `update` command on the query - only used by models.
