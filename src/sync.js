@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import Promise from './base/promise';
 
-const supportsReturning = (client) => { return ['postgresql', 'oracle', 'mssql'].includes(client) }
+const supportsReturning = (client) => { return _.includes(['postgresql', 'oracle', 'mssql'], client) }
 
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
