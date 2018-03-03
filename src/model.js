@@ -1159,7 +1159,8 @@ const BookshelfModel = ModelBase.extend({
    * @param {Object=}      options                  Hash of options.
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
    * @param {bool} [options.require=true]
-   *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy.
+   *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy. This is
+   *   the default behavior as of version 0.13.0.
    *
    * @example
    *
