@@ -1,19 +1,11 @@
-var Promise = require('bluebird');
 var expect = require('chai').expect;
-var sinon = require('sinon');
 
 module.exports = function (bookshelf) {
-
   describe('Pagination Plugin', function () {
-
     bookshelf.plugin('pagination');
-    var knex = bookshelf.knex;
     var Models = require('../helpers/objects')(bookshelf).Models;
 
-
-
     describe('Model instance fetchPage', function () {
-
       it('fetches a single page of results with defaults', function () {
         return Models.Customer.forge().fetchPage().then(function (results) {
           ['models', 'pagination'].forEach(function (prop) {
@@ -110,6 +102,22 @@ module.exports = function (bookshelf) {
           expect(results.length).to.equal(0);
           ['models', 'pagination'].forEach(function (prop) {
             expect(results).to.have.property(prop);
+          });
+        });
+      })
+    })
+
+    describe('Inside a transaction', function() {
+      it('returns consistent results for rowCount and number of models', function() {
+        return bookshelf.transaction(function(t) {
+          var options = {transacting: t};
+
+          return Models.Site.forge({name: 'A new site'}).save(null, options).then(function() {
+            options.pageSize = 25;
+            options.page = 1;
+            return Models.Site.forge().fetchPage(options);
+          }).then(function(sites) {
+            expect(sites.pagination.rowCount).to.eql(sites.models.length);
           });
         });
       })
