@@ -1199,7 +1199,7 @@ const BookshelfModel = ModelBase.extend({
     }).then(function() {
       return sync.del();
   }).then(function(affectedRows) {
-      if (options.require && affectedRows === 0) {
+      if (options.require !== false && affectedRows === 0) {
         throw new this.constructor.NoRowsDeletedError('No Rows Deleted');
       }
       this.clear();
