@@ -258,10 +258,23 @@ module.exports = function(bookshelf) {
       { code: 'en', customer: 'Customer1' },
       { code: 'en', customer: 'Customer2' },
       { code: 'pt', customer: 'Customer1' }
+    ]),
+
+    knex('backups').insert({name: 'first backup'}),
+
+    knex('backup_types').insert([
+      {id: 0, name: 'standard'},
+      {id: 1, name: 'enhanced'} // We need to explicitly set the id to 1 otherwise MySQL will get confused
     ])
 
-  ]).then(null, function(e) {
+  ]).then(function() {
+    if (knex.client.dialect !== 'postgresql') return;
+
+    return Promise.all([
+      knex('authors').withSchema('test').insert([{name: 'Ryan Coogler'}]),
+      knex.raw('SELECT setval(\'backup_types_id_seq\', (SELECT MAX(id) from "backup_types"));')
+    ]);
+  }).catch(function(e) {
     console.log(e.stack);
   });
-
 };

@@ -1,4 +1,4 @@
-import {isPlainObject, drop, map, isArray, isNil} from 'lodash';
+import {isPlainObject, drop, map, isArray, isNil, update} from 'lodash';
 
 // Registry Plugin -
 // Create a central registry of model/collection constructors to
@@ -40,6 +40,8 @@ module.exports = function (bookshelf) {
   // Provide a custom function to resolve the location of a model or collection.
   bookshelf.resolve = function(name) { return void 0; };
 
+  class ModelNotResolved extends Error {}
+
   // Check the collection or module caches for a Model or Collection constructor,
   // returning if the input is not an object. Check for a collection first,
   // since these are potentially used with *-to-many relation. Otherwise, check for a
@@ -47,7 +49,7 @@ module.exports = function (bookshelf) {
   function resolveModel(input) {
     if (typeof input === 'string') {
       return bookshelf.collection(input) || bookshelf.model(input) || (function() {
-        throw new Error('The model ' + input + ' could not be resolved from the registry plugin.');
+        throw new ModelNotResolved('The model ' + input + ' could not be resolved from the registry plugin.');
       })();
     }
     return input;
@@ -58,16 +60,9 @@ module.exports = function (bookshelf) {
   // Re-implement the `bookshelf.Model` _relation method to include a check for
   // the registered model.
   const _relation = Model.prototype._relation;
-  Model.prototype._relation = function (method, Target) {
+  Model.prototype._relation = function() {
     // The second argument is always a model, so resolve it and call the original method.
-    return _relation.apply(this, [method, resolveModel(Target)].concat(drop(arguments, 2)));
-  }
-
-  // The `through` method doesn't use `_relation` beneath, so we have to
-  // re-implement it specifically
-  const through = Model.prototype.through;
-  Model.prototype.through = function (Target) {
-    return through.apply(this, [resolveModel(Target)].concat(drop(arguments)));
+    return _relation.apply(this, update(arguments, 1, resolveModel));
   }
 
   // `morphTo` takes the relation name first, and then a variadic set of models so we
@@ -89,26 +84,37 @@ module.exports = function (bookshelf) {
         columnNames[0] = resolveModel(columnNames[0]);
       } catch (err) {
         // if it did not work, they were real columnNames
-        if (err.message !== `The model ${columnNames[0]} could not be resolved from the registry plugin.`) {
+        if (err instanceof ModelNotResolved) {
           throw err;
         }
       }
     }
 
-    return morphTo.apply(this, [relationName, columnNames].concat(map(candidates, (target) => {
+    const models = map(candidates, (target) => {
       if (isArray(target)) {
         const [model, morphValue] = target;
         return [resolveModel(model), morphValue];
+      } else {
+        return resolveModel(target);
       }
-
-      return resolveModel(target);
-    })));
+    });
+    return morphTo.apply(this, [relationName, columnNames].concat(models));
   };
 
-  // The `through` method exists on the Collection as well, for `hasMany` / `belongsToMany` through relations.
+  // The `through` method doesn't use `_relation` beneath, so we have to
+  // re-implement it specifically
+  const modelThrough = Model.prototype.through;
+  Model.prototype.through = function() {
+    // The first argument is the model
+    return modelThrough.apply(this, update(arguments, 0, resolveModel));
+  }
+
+  // The `through` method exists on the Collection as well, for
+  // `hasMany` / `belongsToMany` through relations.
   const collectionThrough = Collection.prototype.through;
-  Collection.prototype.through = function(Target) {
-    return collectionThrough.apply(this, [resolveModel(Target)].concat(drop(arguments)));
+  Collection.prototype.through = function() {
+    // The first argument is the model
+    return collectionThrough.apply(this, update(arguments, 0, resolveModel));
   };
 
 };

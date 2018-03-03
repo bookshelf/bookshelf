@@ -21,12 +21,10 @@ process.on("unhandledRejection", function(reason, promise) {
 
 var Bookshelf = require('../bookshelf');
 var base = require('./base');
-
 global.sinon = require('sinon');
-
 var chai = global.chai = require('chai');
+var databaseConnections;
 
-// chai.use(require('chai-as-promised'));
 chai.use(require('sinon-chai'));
 chai.should();
 
@@ -35,32 +33,37 @@ global.AssertionError = chai.AssertionError;
 global.Assertion      = chai.Assertion;
 global.assert         = chai.assert;
 
-describe('Bookshelf', function () {
+after(function() {
+  return databaseConnections.forEach(function(connection) {
+    return connection.knex.destroy();
+  })
+});
 
-  it('VERSION should equal version number in package.json',
-    function () {
+describe('Bookshelf', function () {
+  it('VERSION should equal version number in package.json', function() {
     var Knex = require('knex');
-    var bookshelf = Bookshelf(Knex({client: 'sqlite3'}));
+    var bookshelf = Bookshelf(Knex({client: 'sqlite3', useNullAsDefault: true}));
     var p = require('../package.json');
+
     expect(p.version).to.equal(bookshelf.VERSION);
+
+    return bookshelf.knex.destroy()
   });
 
+  it('should fail without knex instance', function() {
+    expect(() => Bookshelf()).to.throw(/knex/);
+  });
 });
 
 // Unit test all of the abstract base interfaces
 describe('Unit Tests', function () {
-
   base.Collection();
-  base.Model();
   base.Events();
-  base.Relation();
-  base.Eager();
 
   require('./unit/sql/sync')();
   require('./unit/sql/model')();
-
 });
 
 describe('Integration Tests', function () {
-  require('./integration')(Bookshelf);
+  databaseConnections = require('./integration')(Bookshelf);
 });

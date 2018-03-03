@@ -1,5 +1,51 @@
 ## Change Log
 
+**0.12.1** <small>_Jan 8, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.12.0...0.12.1)
+
+- Lots of documentation fixes and updates:
+  - Fix incorrect value of second argument to model event handlers: [#1723](https://github.com/bookshelf/bookshelf/pull/1723)
+  - Fix incorrect return value from `.detach()`: [#1720](https://github.com/bookshelf/bookshelf/pull/1720)
+  - Fix incorrect return value from `model.has()`: [#1712](https://github.com/bookshelf/bookshelf/pull/1712)
+  - Fix `fetching:collection` and `fetched:collection` not being generated or visible on the navigation bar: [#1114](https://github.com/bookshelf/bookshelf/pull/1114)
+  - Update contributing document and issue templates: [#1736](https://github.com/bookshelf/bookshelf/pull/1736)
+  - Add more information and links to Parse and Format docs: [#1727](https://github.com/bookshelf/bookshelf/pull/1727)
+  - Add bookshelf-ez-fetch to Community Plugins: [#1708](https://github.com/bookshelf/bookshelf/pull/1708)
+  - Add bookshelf-default-select to Community Plugins: [#1706](https://github.com/bookshelf/bookshelf/pull/1706)
+  - Add information and examples about calling `super()` on model's `initialize()`: [#1529](https://github.com/bookshelf/bookshelf/pull/1529)
+  - Add npm version badge to readme: [f4dd792](https://github.com/bookshelf/bookshelf/commit/f4dd79267ad8267a7073dd5c9f0661f6591ae96f)
+- Fix inability to attach belongsToMany relation to models fetched with `fetchAll()`: [#1716](https://github.com/bookshelf/bookshelf/pull/1716)
+- Fix foreign key = 0 not fetching related object: [#1639](https://github.com/bookshelf/bookshelf/pull/1639)
+- Fix unparsed `previousAttributes` for related models: [#1457](https://github.com/bookshelf/bookshelf/pull/1457)
+- Update some dependencies: [#1734](https://github.com/bookshelf/bookshelf/pull/1734), [#1733](https://github.com/bookshelf/bookshelf/pull/1733), [#1732](https://github.com/bookshelf/bookshelf/pull/1732), [#1728](https://github.com/bookshelf/bookshelf/pull/1728), [#1726](https://github.com/bookshelf/bookshelf/pull/1726)
+
+**0.12.0** <small>_Nov 27, 2017_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.1...0.12.0)
+
+- Skip visibility-plugin `hidden` and `visible` attributes [#1699](https://github.com/bookshelf/bookshelf/pull/1699).
+  - Used w/ `<model>.toJSON({ visibility: false })`
+- Updated knex peer dependency version to 0.14.x [#1694](https://github.com/bookshelf/bookshelf/pull/1694).
+- Documentation typo fixes [#1693](https://github.com/bookshelf/bookshelf/pull/1693).
+- Now caching `node_modules` to speed up travis-ci builds [#1695](https://github.com/bookshelf/bookshelf/pull/1695).
+- Use Docker containers for test runs [#1674](https://github.com/bookshelf/bookshelf/pull/1674).
+- Make `postpublish` work regardless of git remote config [#1697](https://github.com/bookshelf/bookshelf/pull/1697).
+
+**0.11.1** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1)
+
+- Fixed regression #1691: File missing on `postinstall`
+  - npm `postinstall` script can be run as a part of npm `prepublish` script.
+
+**0.11.0** <small>_Nov 15, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0)
+
+- Moved `.babelrc` -> `src/.babelrc` [#1470](https://github.com/bookshelf/bookshelf/pull/1470)
+- Timestamp on save now utilizes a date option for timestamp updates on insert and update. [#1592](https://github.com/bookshelf/bookshelf/pull/1592)
+  -  Used in options on save like so: ```m.save({item: 'test'}, { date: dateInThePast })```
+- Added `morphValues` for `morphTo` relation. [#1326](https://github.com/bookshelf/bookshelf/pull/1326)
+- Added ability to also set timestamps as model attributes in save. #
+- Removed non-production files from packaging / added them to .npmignore [#1679](https://github.com/bookshelf/bookshelf/pull/1679)
+- Development Facing
+  - Oracle tests only run when oracle is installed.
+  - Refactoring on the registry plugin
+  - Updated a lot of documents related to repo organization.
+
 **0.10.4** - <small>_Jul 17, 2017_</small> — [Diff](https://github.com/bookshelf/bookshelf/compare/0.10.3...0.10.4)
 
 * Allow knex 0.13.x

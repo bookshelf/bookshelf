@@ -73,6 +73,13 @@ inherits(ModelBase, Events);
  *
  * Called by the {@link Model Model constructor} when creating a new instance.
  * Override this function to add custom initialization, such as event listeners.
+ * Because plugins may override this method in subclasses, make sure to call
+ * your super (extended) class.  e.g.
+ *
+ *     initialize: function() {
+ *         this.constructor.__super__.initialize.apply(this, arguments);
+ *         // Your initialization code ...
+ *     }
  *
  * @see Model
  *
@@ -106,11 +113,20 @@ ModelBase.prototype.initialize = function() {};
  *
  * This tells the model which attribute to expect as the unique identifier
  * for each database row (typically an auto-incrementing primary key named
- * `"id"`). Note that if you are using {@link Model#parse parse} and {@link
+ * `'id'`). Note that if you are using {@link Model#parse parse} and {@link
  * Model#format format} (to have your model's attributes in `camelCase`,
  * but your database's columns in `snake_case`, for example) this refers to
- * the name returned by parse (`myId`), not the database column (`my_id`).
+ * the name returned by parse (`myId`), not the actual database column
+ * (`my_id`).
  *
+ * You can also get the parsed id attribute value by using the model's
+ * {@link Model#parsedIdAttribute parsedIdAttribute} method.
+ *
+ * If the table you're working with does not have a Primary-Key in the form
+ * of a single column you'll have to override it with a getter that returns
+ * `null`. Overriding with `undefined` does not cascade the default behavior of
+ * the value `'id'`. Such a getter in ES6 would look like
+ * `get idAttribute() { return null }`.
  */
 ModelBase.prototype.idAttribute = 'id';
 
@@ -147,6 +163,34 @@ ModelBase.prototype.get = function(attr) {
 
 /**
  * @method
+ * @description
+ *
+ * Returns the model's {@link Model#idAttribute idAttribute} after applying the
+ * model's {@link Model#parse parse} method to it. Doesn't mutate the original
+ * value of {@link Model#idAttribute idAttribute} in any way.
+ *
+ * @example
+ *
+ * var Customer = bookshelf.Model.extend({
+ *   idAttribute: 'id',
+ *   parse: function(attrs) {
+ *     return _.mapKeys(attrs, function(value, key) {
+ *       return 'parsed_' + key;
+ *     });
+ *   }
+ * });
+ *
+ * customer.parsedIdAttribute() // 'parsed_id'
+ *
+ * @returns {mixed} Whatever value the parse method returns.
+ */
+ModelBase.prototype.parsedIdAttribute = function() {
+  var parsedAttributes = this.parse({[this.idAttribute]: null})
+  return parsedAttributes && Object.keys(parsedAttributes)[0]
+}
+
+/**
+ * @method
  * @description  Set a hash of attributes (one or many) on the model.
  * @example
  *
@@ -178,7 +222,10 @@ ModelBase.prototype.set = function(key, val, options) {
   const prev    = this._previousAttributes;
 
   // Check for changes of `id`.
-  if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+  if (this.idAttribute in attrs)
+    this.id = attrs[this.idAttribute];
+  else if (this.parsedIdAttribute() in attrs)
+    this.id = attrs[this.parsedIdAttribute()];
 
   // For each `set` attribute, update or delete the current value.
   for (const attr in attrs) {
@@ -314,7 +361,7 @@ ModelBase.prototype.escape = function(key) {
  * @description
  * Returns `true` if the attribute contains a value that is not null or undefined.
  * @param {string} attribute The attribute to check.
- * @returns {bool} True if `attribute` is set, otherwise null.
+ * @returns {bool} True if `attribute` is set, otherwise `false`.
  */
 ModelBase.prototype.has = function(attr) {
   return this.get(attr) != null;
@@ -324,9 +371,9 @@ ModelBase.prototype.has = function(attr) {
  * @method
  * @description
  *
- * The parse method is called whenever a {@link Model model}'s data is returned
- * in a {@link Model#fetch fetch} call. The function is passed the raw database
- * response object, and should return the {@link Model#attributes
+ * The `parse` method is called whenever a {@link Model model}'s data is
+ * returned in a {@link Model#fetch fetch} call. The function is passed the raw
+ * database response object, and should return the {@link Model#attributes
  * attributes} hash to be {@link Model#set set} on the model. The default
  * implementation is a no-op, simply passing through the JSON response.
  * Override this if you need to format the database responses - for example
@@ -335,17 +382,21 @@ ModelBase.prototype.has = function(attr) {
  * JSON.parse} on a text field containing JSON, or explicitly typecasting a
  * boolean in a sqlite3 database response.
  *
- * @example
+ * If you need to format your data before it is saved to the database, override
+ * the {@link Model#format format} method in your models. That method does the
+ * opposite operation of `parse`.
  *
- * // Example of a "parse" to convert snake_case to camelCase, using `underscore.string`
+ * @example
+ * // Example of a parser to convert snake_case to camelCase, using lodash
+ * // This is just an example. You can use the built-in case-converter plugin
+ * // to achieve the same functionality.
  * model.parse = function(attrs) {
- *   return _.reduce(attrs, function(memo, val, key) {
- *     memo[_.camelCase(key)] = val;
- *     return memo;
- *   }, {});
+ *   return _.mapKeys(attrs, function(value, key) {
+ *     return _.camelCase(key);
+ *   });
  * };
  *
- * @param {Object} response Hash of attributes to parse.
+ * @param {Object} attributes Hash of attributes to parse.
  * @returns {Object} Parsed attributes.
  */
 ModelBase.prototype.parse = identity;
@@ -387,6 +438,17 @@ ModelBase.prototype.clear = function(options) {
  * it is persisted to the database. The `attributes` passed are a shallow clone
  * of the {@link Model model}, and are only used for inserting/updating - the
  * current values of the model are left intact.
+ *
+ * Do note that `format` is used to modify the state of the model when
+ * accessing the database, so if you remove an attribute in your `format`
+ * method, that attribute will never be persisted to the database, but it will
+ * also never be used when doing a `fetch()`, which may cause unexpected
+ * results. You should be very cautious with implementations of this method
+ * that may remove the primary key from the list of attributes.
+ *
+ * If you need to modify the database data before it is given to the model,
+ * override the {@link Model#parse parse} method instead. That method does the
+ * opposite operation of `format`.
  *
  * @param {Object} attributes The attributes to be converted.
  * @returns {Object} Formatted attributes.
@@ -626,6 +688,7 @@ _.each(modelMethods, function(method) {
  *
  *     var Customer = bookshelf.Model.extend({
  *       initialize: function() {
+ *         this.constructor.__super__.initialize.apply(this, arguments);
  *         this.on('saving', this.validateSave);
  *       },
  *

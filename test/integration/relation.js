@@ -1,11 +1,10 @@
 var equal = require('assert').equal;
 
 module.exports = function(Bookshelf) {
-
   describe('Relation', function() {
-
     var Relation = require('../../lib/relation').default;
 
+    // TODO: Move all this Model creation stuff to a better place in helpers
     var Photo = Bookshelf.Model.extend({
       tableName: 'photos',
       imageable: function() {
@@ -112,12 +111,9 @@ module.exports = function(Bookshelf) {
     });
 
     describe('Bookshelf.Relation', function() {
-
-      it('should not error if the type / target are not specified', function() {
-
+      it('should not error if the type/target are not specified', function() {
         var relation = new Relation();
         equal(relation.type, undefined);
-
       });
 
       it('should not error when accessing a relation through an uninstantiated model', function() {
@@ -140,7 +136,6 @@ module.exports = function(Bookshelf) {
       });
 
       it('should handle a hasOne relation', function() {
-
         var base        = new Doctor({id: 1});
         var relation    = base.meta();
         var _knex       = relation.query();
@@ -590,9 +585,6 @@ module.exports = function(Bookshelf) {
 
         equal(_knex.toString(), sql);
       });
-
     });
-
   });
-
 };

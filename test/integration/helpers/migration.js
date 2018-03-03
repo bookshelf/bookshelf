@@ -1,27 +1,34 @@
-var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
-  'sites', 'sitesmeta', 'admins',
-  'admins_sites', 'authors', 'authors_posts',
-  'blogs', 'posts', 'tags', 'posts_tags', 'comments',
-  'users', 'roles', 'photos', 'users_roles', 'info',
-  'Customer', 'Settings', 'hostnames', 'instances', 'uuid_test',
-  'parsed_users', 'tokens', 'thumbnails',
-  'lefts', 'rights', 'lefts_rights', 'organization',
-  'locales', 'translations'
+  'sites', 'sitesmeta', 'admins', 'admins_sites', 'authors', 'authors_posts',
+  'blogs', 'posts', 'tags', 'posts_tags', 'comments', 'users', 'roles',
+  'photos', 'users_roles', 'info', 'Customer', 'Settings', 'hostnames',
+  'instances', 'uuid_test', 'parsed_users', 'tokens', 'thumbnails', 'lefts',
+  'rights', 'lefts_rights', 'organization', 'locales', 'translations',
+  'backups', 'backup_types'
 ];
 
 module.exports = function(Bookshelf) {
+  var knex = Bookshelf.knex;
+  var isPostgreSQL = Bookshelf.knex.client.dialect === 'postgresql';
 
-  var schema = Bookshelf.knex.schema;
+  return Promise.all(drops.map(function(tableName) {
+    return knex.schema.dropTableIfExists(tableName);
+  })).then(function() {
+    if (isPostgreSQL) return Bookshelf.knex.raw('DROP SCHEMA IF EXISTS "test" CASCADE');
+  }).then(function() {
+    if (isPostgreSQL) return knex.schema.createSchema('test');
+  }).then(function() {
+    if (!isPostgreSQL) return;
 
-  return Promise.all(_.map(drops, function(val) {
-    return schema.dropTableIfExists(val);
-  }))
+    return knex.schema.withSchema('test').createTable('authors', function(table) {
+      table.increments('id');
+      table.string('name');
+    });
+  })
   .then(function() {
-
-    return schema.createTable('sites', function(table) {
+    return knex.schema.createTable('sites', function(table) {
       table.increments('id');
       table.string('name');
     })
@@ -172,6 +179,14 @@ module.exports = function(Bookshelf) {
       table.string('code');
       table.string('customer');
     })
+    .createTable('backup_types', function(table) {
+      table.increments();
+      table.string('name');
+    })
+    .createTable('backups', function(table) {
+      table.increments();
+      table.string('name');
+      table.integer('backup_type_id');
+    })
   });
-
 };

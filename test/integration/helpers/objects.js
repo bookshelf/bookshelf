@@ -85,6 +85,10 @@ module.exports = function(Bookshelf) {
     hasTimestamps: true
   });
 
+  var TestAuthor = Bookshelf.Model.extend({
+    tableName: 'authors'
+  })
+
   // Author of a blog post.
   var Author = Bookshelf.Model.extend({
     tableName: 'authors',
@@ -381,14 +385,28 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var BackupType = Bookshelf.Model.extend({
+    tableName: 'backup_types'
+  })
+
+  var Backup = Bookshelf.Model.extend({
+    tableName: 'backups',
+    type: function() {
+      return this.belongsTo(BackupType);
+    }
+  })
+
   return {
     Models: {
       Site: Site,
       SiteParsed: SiteParsed,
       SiteMeta: SiteMeta,
       Admin: Admin,
+      TestAuthor: TestAuthor,
       Author: Author,
       AuthorParsed: AuthorParsed,
+      Backup: Backup,
+      BackupType: BackupType,
       Blog: Blog,
       Post: Post,
       PostParsed: PostParsed,

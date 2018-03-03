@@ -11,6 +11,7 @@ import BookshelfModel from './model';
 import BookshelfCollection from './collection';
 import BookshelfRelation from './relation';
 import Errors from './errors';
+import Knex from 'knex';
 
 /**
  * @class Bookshelf
@@ -24,6 +25,9 @@ import Errors from './errors';
  * @param {Knex} knex Knex instance.
  */
 function Bookshelf(knex) {
+  if (!knex || !(knex.client instanceof Knex.Client)) {
+    throw new Error('Invalid knex instance');
+  }
   const bookshelf = {
     VERSION: require('../package.json').version
   };
@@ -238,9 +242,56 @@ function Bookshelf(knex) {
      * @returns {Promise<mixed>}
      */
 
-    // Provides a nice, tested, standardized way of adding plugins to a
-    // `Bookshelf` instance, injecting the current instance into the plugin,
-    // which should be a module.exports.
+    /**
+     * @method Bookshelf#plugin
+     * @memberOf Bookshelf
+     * @description
+     *
+     * This method provides a nice, tested, standardized way of adding plugins
+     * to a `Bookshelf` instance, injecting the current instance into the
+     * plugin, which should be a `module.exports`.
+     *
+     * You can add a plugin by specifying a string with the name of the plugin
+     * to load. In this case it will try to find a module. It will first check
+     * for a match within the `bookshelf/plugins` directory. If nothing is
+     * found it will pass the string to `require()`, so you can either require
+     * an npm dependency by name or one of your own modules by relative path:
+     *
+     *     bookshelf.plugin('./bookshelf-plugins/my-favourite-plugin');
+     *     bookshelf.plugin('plugin-from-npm');
+     *
+     * There are a few built-in plugins already, along with many independently
+     * developed ones. See [the list of available plugins](#plugins).
+     *
+     * You can also provide an array of strings or functions, which is the same
+     * as calling `bookshelf.plugin()` multiple times. In this case the same
+     * options object will be reused:
+     *
+     *       bookshelf.plugin(['registry', './my-plugins/special-parse-format']);
+     *
+     * Example plugin:
+     *
+     *     // Converts all string values to lower case when setting attributes on a model
+     *     module.exports = function(bookshelf) {
+     *       bookshelf.Model = bookshelf.Model.extend({
+     *         set: function(key, value, options) {
+     *           if (!key) return this;
+     *           if (typeof value === 'string') value = value.toLowerCase();
+     *           return bookshelf.Model.prototype.set.call(this, key, value, options);
+     *         }
+     *       });
+     *     }
+     *
+     * @param {string|array|Function} plugin
+     *    The plugin or plugins to add. If you provide a string it can
+     *    represent a built-in plugin, an npm package or a file somewhere on
+     *    your project. You can also pass a function as argument to add it as a
+     *    plugin. Finally, it's also possible to pass an array of strings or
+     *    functions to add them all at once.
+     * @param {mixed} options
+     *    This can be anything you want and it will be passed directly to the
+     *    plugin as the second argument when loading it.
+     */
     plugin(plugin, options) {
       if (isString(plugin)) {
         try {

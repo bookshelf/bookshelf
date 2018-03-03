@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { remove, assign } from 'lodash';
+import { remove, assign, noop } from 'lodash';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -30,7 +30,7 @@ const DEFAULT_PAGE = 1;
  * See methods below for details.
  */
 module.exports = function paginationPlugin (bookshelf) {
-
+  const Model = bookshelf.Model;
   /**
    * @method Model#fetchPage
    * @belongsTo Model
@@ -84,7 +84,7 @@ module.exports = function paginationPlugin (bookshelf) {
    *        rowCount: 53, // Total number of rows found for the query before pagination
    *        pageCount: 4, // Total number of pages of results
    *        page: 3, // The requested page number
-   *        pageSze: 15, // The requested number of rows per page
+   *        pageSize: 15, // The requested number of rows per page
    *
    *  // OR, if limit/offset pagination is used instead of page/pageSize:
    *        // offset: 30, // The requested offset
@@ -134,13 +134,16 @@ module.exports = function paginationPlugin (bookshelf) {
       _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
     }
 
-    const tableName = this.constructor.prototype.tableName;
-    const idAttribute = this.constructor.prototype.idAttribute ?
-      this.constructor.prototype.idAttribute : 'id';
+    const isModel = this instanceof Model;
+    const [fetchMethodName, targetModel] = isModel
+      ? ['fetchAll', this.constructor]
+      : ['fetch', this.target || this.model];
+    const {tableName, idAttribute = 'id'} = targetModel.prototype;
+    const targetIdColumn = `${tableName}.${idAttribute}`;
 
     const paginate = () => {
       // const pageQuery = clone(this.query());
-      const pager = this.constructor.forge();
+      const pager = this.clone();
 
       return pager
 
@@ -149,9 +152,7 @@ module.exports = function paginationPlugin (bookshelf) {
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
           return null;
-        })
-
-      .fetchAll(fetchOptions);
+        })[fetchMethodName](fetchOptions);
     };
 
     const count = () => {
@@ -161,7 +162,7 @@ module.exports = function paginationPlugin (bookshelf) {
         'groupByBasic',
         'groupByRaw'
       ];
-      const counter = this.constructor.forge();
+      const counter = this.clone();
 
       return counter.query(qb => {
         assign(qb, this.query().clone());
@@ -173,9 +174,14 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
+        if (!isModel && counter.relatedData) {
+          // Remove joining columns that break COUNT operation.
+          // eg. pivotal coulmns for belongsToMany relation.
+          counter.relatedData.joinColumns = noop;
+        }
+        qb.countDistinct.apply(qb, [targetIdColumn]);
 
-      }).fetchAll({transacting}).then(result => {
+    })[fetchMethodName]({transacting}).then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
@@ -211,8 +217,5 @@ module.exports = function paginationPlugin (bookshelf) {
     return this.forge().fetchPage(...args);
   }
 
-  bookshelf.Collection.prototype.fetchPage = function (...args) {
-    return fetchPage.apply(this.model.forge(), args);
-  };
-
+  bookshelf.Collection.prototype.fetchPage = fetchPage;
 }
