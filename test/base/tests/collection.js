@@ -78,18 +78,15 @@ module.exports = function() {
       });
 
       it('should support large arrays', function() {
-        this.timeout(15000);
+        this.timeout(120000);
 
         var count = 200000;
         var models = [];
-        var i;
 
-        for (i = 0; i < count; ++i) {
-          models.push(new collection.model({
-            some_id: i,
-            name: 'Large-' + i
-          }));
+        for (var i = 0; i < count; ++i) {
+          models.push(new collection.model({some_id: i, name: 'Large-' + i}));
         }
+
         collection.set(models, {add: true, remove: false, merge: false});
 
         equal(collection.get(count - 1).get('name'), 'Large-' + (count - 1));
