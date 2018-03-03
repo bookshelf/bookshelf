@@ -1212,11 +1212,10 @@ const BookshelfModel = ModelBase.extend({
        *
        * @event Model#destroyed
        * @param {Model}  model The model firing the event.
-       * @param {Object} affectedRows Number of affected rows.
        * @param {Object} options Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
-      return this.triggerThen('destroyed', this, affectedRows, options);
+      return this.triggerThen('destroyed', this, options);
     }).then(this._reset);
   }),
 
