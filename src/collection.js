@@ -420,7 +420,10 @@ const BookshelfCollection = CollectionBase.extend({
    */
   _handleResponse: function(response) {
     const { relatedData } = this;
-    this.set(response, {silent: true, parse: true}).invokeMap('_reset');
+
+    this.set(response, {silent: true, parse: true}).invokeMap('formatTimestamps');
+    this.invokeMap('_reset');
+
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot(this.models);
     }

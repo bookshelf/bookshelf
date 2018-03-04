@@ -426,8 +426,8 @@ export default RelationBase.extend({
     // Now that related models have been successfully paired, update each with
     // its parsed attributes
     related.map(model => {
-      model.attributes = model.parse(model.attributes)
-      model._reset();
+      model.attributes = model.parse(model.attributes);
+      model.formatTimestamps()._reset();
     });
 
     return related;

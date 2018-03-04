@@ -1385,7 +1385,8 @@ const BookshelfModel = ModelBase.extend({
   _handleResponse(response) {
     const relatedData = this.relatedData;
 
-    this.set(this.parse(response[0]), {silent: true})._reset();
+    this.set(this.parse(response[0]), {silent: true}).formatTimestamps()._reset();
+
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot([this]);
     }
