@@ -772,9 +772,17 @@ module.exports = function(bookshelf) {
         return m.destroy();
       });
 
-      it('will throw an error when trying to destroy a non-existent object with {require: true}', function() {
-        return new Site({id: 1337}).destroy({require: true}).catch(function(err) {
-          assert(err instanceof bookshelf.NoRowsDeletedError)
+      it('will throw an error when trying to destroy a non-existent object', function() {
+        return new Site({id: 1337}).destroy().then(function() {
+          throw new Error('Should not have succeeded');
+        }).catch(function(error) {
+          assert(error instanceof bookshelf.NoRowsDeletedError);
+        })
+      });
+
+      it('will not throw an error when trying to destroy a non-existent object with {require: false}', function() {
+        return new Site({id: 1337}).destroy({require: false}).then(function(site) {
+          assert(site instanceof Site);
         })
       });
 
