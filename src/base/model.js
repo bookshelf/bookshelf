@@ -525,6 +525,10 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
     : method.toLowerCase();
 };
 
+ModelBase.prototype.getTimestampKeys = function() {
+  return Array.isArray(this.hasTimestamps) ? this.hasTimestamps : DEFAULT_TIMESTAMP_KEYS;
+}
+
 /**
  * @method
  * @description
@@ -552,14 +556,9 @@ ModelBase.prototype.timestamp = function(options) {
   const now          = (options || {}).date ? new Date(options.date) : new Date();
   const attributes   = {};
   const method       = this.saveMethod(options);
-  const keys = _.isArray(this.hasTimestamps)
-    ? this.hasTimestamps
-    : DEFAULT_TIMESTAMP_KEYS;
-
   const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
   const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
-
-  const [ createdAtKey, updatedAtKey ] = keys;
+  const [ createdAtKey, updatedAtKey ] = this.getTimestampKeys();
 
   if (updatedAtKey && canEditUpdatedAtKey) {
     attributes[updatedAtKey] = now;
