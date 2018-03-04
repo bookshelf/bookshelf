@@ -10,6 +10,9 @@ exports.formatNumber = function(dialect) {
 
 exports.countModels = function countModels(Model, options) {
   return function() {
-    return Model.forge().count(options);
+    return Model.forge().count(options).then(function(count) {
+      if (typeof count === 'string') return parseInt(count);
+      return count;
+    });
   }
 }
