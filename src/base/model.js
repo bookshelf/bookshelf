@@ -149,6 +149,16 @@ ModelBase.prototype.idAttribute = 'id';
  */
 ModelBase.prototype.hasTimestamps = false;
 
+ModelBase.prototype.formatTimestamps = function formatTimestamps() {
+  if (!this.hasTimestamps) return this;
+
+  this.getTimestampKeys().forEach((key) => {
+    this.set(key, new Date(this.get(key)));
+  });
+
+  return this;
+};
+
 /**
  * @method
  * @description  Get the current value of an attribute from the model.
