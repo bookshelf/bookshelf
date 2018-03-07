@@ -1,10 +1,8 @@
 import { clone, omit, isString, isArray, extend, toArray } from 'lodash';
-
 import Sync from './sync';
 import Helpers from './helpers';
 import EagerRelation from './eager';
 import Errors from './errors';
-
 import CollectionBase from './base/collection';
 import Promise from './base/promise';
 import createError from 'create-error';

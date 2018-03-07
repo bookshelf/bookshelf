@@ -4,9 +4,7 @@ import _, { assign, identity, mapKeys, mapValues, clone } from 'lodash';
 import inherits from 'inherits';
 
 import Events from './events';
-
-const PIVOT_PREFIX = '_pivot_';
-const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
+import {PIVOT_PREFIX, DEFAULT_TIMESTAMP_KEYS} from '../constants';
 
 // List of attributes attached directly from the `options` passed to the constructor.
 const modelProps = ['tableName', 'hasTimestamps'];
