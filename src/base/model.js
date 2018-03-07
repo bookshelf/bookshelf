@@ -149,6 +149,21 @@ ModelBase.prototype.idAttribute = 'id';
  */
 ModelBase.prototype.hasTimestamps = false;
 
+/**
+ * @method
+ * @private
+ * @description
+ *
+ * Converts the timestamp keys to actual Date objects. This will not run if the
+ * model doesn't have {@link Model#hasTimestamps hasTimestamps} set to either
+ * `true` or an array of key names.
+ * This method is run internally when reading data from the database to ensure
+ * data consistency between the several database implementations.
+ * It returns the model instance that called it, so it allows chaining of other
+ * model methods.
+ *
+ * @returns {Model} The model that called this.
+ */
 ModelBase.prototype.formatTimestamps = function formatTimestamps() {
   if (!this.hasTimestamps) return this;
 
@@ -173,6 +188,7 @@ ModelBase.prototype.get = function(attr) {
 
 /**
  * @method
+ * @private
  * @description
  *
  * Returns the model's {@link Model#idAttribute idAttribute} after applying the
@@ -535,6 +551,18 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
     : method.toLowerCase();
 };
 
+/**
+ * @method
+ * @private
+ * @description
+ *
+ * Returns the automatic timestamp key names set on this model. Note that this
+ * will always return a value even if the model has {@link Model#hasTimestamps
+ * hasTimestamps} set to `false`. In this case and when set to `true` the
+ * return value will be the default names of `created_at` and `updated_at`.
+ *
+ * @returns {Array<string>} The two timestamp key names.
+ */
 ModelBase.prototype.getTimestampKeys = function() {
   return Array.isArray(this.hasTimestamps) ? this.hasTimestamps : DEFAULT_TIMESTAMP_KEYS;
 }
@@ -582,7 +610,6 @@ ModelBase.prototype.timestamp = function(options) {
 
   return attributes;
 };
-
 
 /**
  * @method
