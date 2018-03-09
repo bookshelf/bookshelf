@@ -4,9 +4,7 @@ import _, { assign, identity, mapKeys, mapValues, clone } from 'lodash';
 import inherits from 'inherits';
 
 import Events from './events';
-
-const PIVOT_PREFIX = '_pivot_';
-const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
+import {PIVOT_PREFIX, DEFAULT_TIMESTAMP_KEYS} from '../constants';
 
 // List of attributes attached directly from the `options` passed to the constructor.
 const modelProps = ['tableName', 'hasTimestamps'];
@@ -151,6 +149,31 @@ ModelBase.prototype.hasTimestamps = false;
 
 /**
  * @method
+ * @private
+ * @description
+ *
+ * Converts the timestamp keys to actual Date objects. This will not run if the
+ * model doesn't have {@link Model#hasTimestamps hasTimestamps} set to either
+ * `true` or an array of key names.
+ * This method is run internally when reading data from the database to ensure
+ * data consistency between the several database implementations.
+ * It returns the model instance that called it, so it allows chaining of other
+ * model methods.
+ *
+ * @returns {Model} The model that called this.
+ */
+ModelBase.prototype.formatTimestamps = function formatTimestamps() {
+  if (!this.hasTimestamps) return this;
+
+  this.getTimestampKeys().forEach((key) => {
+    this.set(key, new Date(this.get(key)));
+  });
+
+  return this;
+};
+
+/**
+ * @method
  * @description  Get the current value of an attribute from the model.
  * @example      note.get("title");
  *
@@ -163,6 +186,7 @@ ModelBase.prototype.get = function(attr) {
 
 /**
  * @method
+ * @private
  * @description
  *
  * Returns the model's {@link Model#idAttribute idAttribute} after applying the
@@ -527,6 +551,22 @@ ModelBase.prototype.saveMethod = function({ method = null, patch = false } = {})
 
 /**
  * @method
+ * @private
+ * @description
+ *
+ * Returns the automatic timestamp key names set on this model. Note that this
+ * will always return a value even if the model has {@link Model#hasTimestamps
+ * hasTimestamps} set to `false`. In this case and when set to `true` the
+ * return value will be the default names of `created_at` and `updated_at`.
+ *
+ * @returns {Array<string>} The two timestamp key names.
+ */
+ModelBase.prototype.getTimestampKeys = function() {
+  return Array.isArray(this.hasTimestamps) ? this.hasTimestamps : DEFAULT_TIMESTAMP_KEYS;
+}
+
+/**
+ * @method
  * @description
  * Sets the timestamp attributes on the model, if {@link Model#hasTimestamps
  * hasTimestamps} is set to `true` or an array. Check if the model {@link
@@ -552,14 +592,9 @@ ModelBase.prototype.timestamp = function(options) {
   const now          = (options || {}).date ? new Date(options.date) : new Date();
   const attributes   = {};
   const method       = this.saveMethod(options);
-  const keys = _.isArray(this.hasTimestamps)
-    ? this.hasTimestamps
-    : DEFAULT_TIMESTAMP_KEYS;
-
   const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
   const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
-
-  const [ createdAtKey, updatedAtKey ] = keys;
+  const [ createdAtKey, updatedAtKey ] = this.getTimestampKeys();
 
   if (updatedAtKey && canEditUpdatedAtKey) {
     attributes[updatedAtKey] = now;
@@ -573,7 +608,6 @@ ModelBase.prototype.timestamp = function(options) {
 
   return attributes;
 };
-
 
 /**
  * @method

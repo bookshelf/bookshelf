@@ -1,10 +1,8 @@
 import { clone, omit, isString, isArray, extend, toArray } from 'lodash';
-
 import Sync from './sync';
 import Helpers from './helpers';
 import EagerRelation from './eager';
 import Errors from './errors';
-
 import CollectionBase from './base/collection';
 import Promise from './base/promise';
 import createError from 'create-error';
@@ -420,7 +418,10 @@ const BookshelfCollection = CollectionBase.extend({
    */
   _handleResponse: function(response) {
     const { relatedData } = this;
-    this.set(response, {silent: true, parse: true}).invokeMap('_reset');
+
+    this.set(response, {silent: true, parse: true}).invokeMap('formatTimestamps');
+    this.invokeMap('_reset');
+
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot(this.models);
     }

@@ -870,6 +870,70 @@ module.exports = function(bookshelf) {
     });
 
     describe('hasTimestamps', function() {
+      describe('Date value', function() {
+        // These tests have to be skipped in MySQL until issue #2524 in knex is fixed
+        if (bookshelf.knex.client.dialect === 'mysql') return;
+
+        var admin;
+
+        beforeEach(function() {
+          return Models.Admin.forge({username: 'a_new_user'}).save().then(function(newAdmin) {
+            admin = newAdmin;
+          })
+        })
+
+        afterEach(function() {
+          return admin.destroy();
+        })
+
+        it('is the same between saving and fetching models', function() {
+          return Models.Admin.forge({id: admin.id}).fetch({require: true}).then(function(fetchedAdmin) {
+            expect(fetchedAdmin.get('created_at')).to.eql(admin.get('created_at'));
+            expect(fetchedAdmin.get('updated_at')).to.eql(admin.get('updated_at'));
+          })
+        })
+
+        it('is the same between saving and fetching all models', function() {
+          return Models.Admin.forge().where({id: admin.id}).fetchAll().then(function(admins) {
+            expect(admins.at(0).get('created_at')).to.eql(admin.get('created_at'));
+            expect(admins.at(0).get('updated_at')).to.eql(admin.get('updated_at'));
+          })
+        })
+
+        it('is the same after updating model', function() {
+          return admin.save({'username': 'updated_user'}, {patch: true}).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('created_at')).to.eql(admin.get('created_at'));
+          })
+        })
+
+        it('is the same for eager loaded related items', function() {
+          return Models.Site.forge({name: 'a site'}).save().tap(function(site) {
+            return site.admins().attach(admin);
+          }).then(function(site) {
+            return Models.Site.forge({id: site.id}).fetch({withRelated: 'admins'});
+          }).tap(function(site) {
+            var relatedAdmin = site.related('admins').shift();
+            expect(relatedAdmin.get('created_at')).to.eql(admin.get('created_at'));
+            expect(relatedAdmin.get('updated_at')).to.eql(admin.get('updated_at'));
+          }).then(function(site) {
+            return site.destroy();
+          })
+        })
+
+        it('is the same for related items', function() {
+          return Models.Site.forge({name: 'a site'}).save().bind({}).tap(function(site) {
+            this.site = site
+            return site.admins().attach(admin);
+          }).then(function(site) {
+            return Models.Site.forge({id: site.id}).admins().fetch();
+          }).then(function(admins) {
+            expect(admins.at(0).get('created_at')).to.eql(admin.get('created_at'));
+            expect(admins.at(0).get('updated_at')).to.eql(admin.get('updated_at'));
+            return this.site.destroy();
+          })
+        });
+      });
+
       it('will set the created_at and updated_at columns if true', function() {
         var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
         m.sync = function() {

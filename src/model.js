@@ -9,8 +9,6 @@ import Errors from './errors';
 import ModelBase from './base/model';
 import Promise from './base/promise';
 
-const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
-
 /**
  * @class Model
  * @extends ModelBase
@@ -975,13 +973,7 @@ const BookshelfModel = ModelBase.extend({
       // timestamps, as `timestamp` calls `set` internally.
       this.set(attrs, {silent: true});
 
-
-      // Obtain the keys for the timestamp columns
-      const keys = _.isArray(this.hasTimestamps)
-        ? this.hasTimestamps
-        : DEFAULT_TIMESTAMP_KEYS;
-
-      const [ createdAtKey, updatedAtKey ] = keys;
+      const [ createdAtKey, updatedAtKey ] = this.getTimestampKeys();
 
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
@@ -1392,7 +1384,9 @@ const BookshelfModel = ModelBase.extend({
    */
   _handleResponse(response) {
     const relatedData = this.relatedData;
-    this.set(this.parse(response[0]), {silent: true})._reset();
+
+    this.set(this.parse(response[0]), {silent: true}).formatTimestamps()._reset();
+
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot([this]);
     }
