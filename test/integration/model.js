@@ -517,6 +517,30 @@ module.exports = function(bookshelf) {
         });
       });
 
+      it('ensure events are triggered sequentially when the handlers do async stuff', function() {
+          var m = new Site({name: 'new'});
+
+          m.on('saving', function(model) {
+            return new Promise(function (resolve) {
+              setTimeout(function () {
+                model.set('x', 'y');
+                resolve();
+              }, 200);
+            });
+          });
+
+          m.on('saving', function(model) {
+            equal(model.get('x'), 'y');
+            model.unset('x');
+            m.off();
+          });
+
+          return m.save(null, {method: 'insert'})
+            .then(function () {
+              return m.destroy();
+            });
+      });
+
       it('updates an existing object', function() {
         return new Site({id: 4, name: 'Fourth Site Updated'}).save()
           .then(function() {

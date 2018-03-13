@@ -98,7 +98,7 @@ export default class Events extends EventEmitter {
   triggerThen(nameOrNames, ...args) {
     const names = eventNames(nameOrNames);
     const listeners = flatMap(names, name => this.listeners(name));
-    return Promise.map(listeners, listener => listener.apply(this, args));
+    return Promise.mapSeries(listeners, listener => listener.apply(this, args));
   }
 
   /**
