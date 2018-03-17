@@ -6,17 +6,15 @@ Promise.onPossiblyUnhandledRejection(function (err) {
 });
 
 global.testPromise = Promise;
-var testQueryCache = global.testQueryCache = [];
 var oldIt = it;
 
 it = function() {
-  testQueryCache = [];
   return oldIt.apply(this, arguments);
 };
 
 // http://bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events
 process.on("unhandledRejection", function(reason, promise) {
-    console.error(reason);
+  console.error(reason);
 });
 
 var Bookshelf = require('../bookshelf');
