@@ -25,7 +25,7 @@ import Knex from 'knex';
  * @param {Knex} knex Knex instance.
  */
 function Bookshelf(knex) {
-  if (!knex || !(knex.client instanceof Knex.Client)) {
+  if (!knex || knex.name !== 'knex') {
     throw new Error('Invalid knex instance');
   }
   const bookshelf = {

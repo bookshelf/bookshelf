@@ -48,8 +48,14 @@ describe('Bookshelf', function () {
     return bookshelf.knex.destroy()
   });
 
-  it('should fail without knex instance', function() {
-    expect(() => Bookshelf()).to.throw(/knex/);
+  describe('Construction', function() {
+    it('should fail without a knex instance', function() {
+      expect(() => Bookshelf()).to.throw(/Invalid knex/);
+    });
+
+    it('should fail if passing a random object', function() {
+      expect(() => Bookshelf({config: 'something', options: ['one', 'two']})).to.throw(/Invalid knex/);
+    })
   });
 });
 
