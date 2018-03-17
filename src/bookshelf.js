@@ -11,7 +11,6 @@ import BookshelfModel from './model';
 import BookshelfCollection from './collection';
 import BookshelfRelation from './relation';
 import Errors from './errors';
-import Knex from 'knex';
 
 /**
  * @class Bookshelf
@@ -33,7 +32,6 @@ function Bookshelf(knex) {
   };
 
   const Model = bookshelf.Model = BookshelfModel.extend({
-
     _builder: builderFn,
 
     // The `Model` constructor is referenced as a property on the `Bookshelf`
@@ -47,7 +45,6 @@ function Bookshelf(knex) {
       }
       return new Relation(type, Target, options);
     }
-
   }, {
 
     /**
