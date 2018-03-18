@@ -581,7 +581,12 @@ CollectionBase.prototype.parse = function(resp) {
  * Create a new collection with an identical list of models as this one.
  */
 CollectionBase.prototype.clone = function() {
-  return new this.constructor(this.models, _.pick(this, collectionProps));
+  // Iterate over the selected list of collection properties and invoke `clone` for
+  // each property that has a method for that porpose.
+  const clonedProps = _(this).pick(collectionProps).mapValues((val) => {
+    return (val && typeof(val.clone) === 'function') ? val.clone() : val;
+  }).value();
+  return new this.constructor(this.models, clonedProps);
 };
 
 /**

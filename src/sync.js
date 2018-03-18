@@ -3,6 +3,8 @@
 import _ from 'lodash';
 import Promise from './base/promise';
 
+const supportsReturning = (client) => _.includes(['postgresql', 'postgres', 'pg', 'oracle', 'mssql'], client)
+
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
 // a hash of options that are used in the various query methods.
@@ -15,6 +17,7 @@ const Sync = function(syncing, options) {
   this.options = options;
   if (options.debug) this.query.debug();
   if (options.transacting) this.query.transacting(options.transacting);
+  if (options.withSchema) this.query.withSchema(options.withSchema);
 };
 
 _.extend(Sync.prototype, {
@@ -191,23 +194,28 @@ _.extend(Sync.prototype, {
   // Issues an `insert` command on the query - only used by models.
   insert: Promise.method(function() {
     const syncing = this.syncing;
-    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)), syncing.idAttribute);
+    return this.query.insert(syncing.format(_.extend(Object.create(null), syncing.attributes)),
+                             supportsReturning(this.query.client.config.client) ? syncing.idAttribute : null);
   }),
 
   // Issues an `update` command on the query - only used by models.
   update: Promise.method(function(attrs) {
     const syncing = this.syncing, query = this.query;
-    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+    if (syncing.id != null) query.where(syncing.format({[syncing.idAttribute]: syncing.id}));
     if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be updated without a "where" clause or an idAttribute.');
     }
-    return query.update(syncing.format(_.extend(Object.create(null), attrs)));
+    var updating = syncing.format(_.extend(Object.create(null), attrs));
+    if (syncing.id === updating[syncing.idAttribute]) {
+      delete updating[syncing.idAttribute];
+    }
+    return query.update(updating);
   }),
 
   // Issues a `delete` command on the query.
   del: Promise.method(function() {
     const query = this.query, syncing = this.syncing;
-    if (syncing.id != null) query.where(syncing.idAttribute, syncing.id);
+    if (syncing.id != null) query.where(syncing.format({[syncing.idAttribute]: syncing.id}));
     if (_.filter(query._statements, {grouping: 'where'}).length === 0) {
       throw new Error('A model cannot be destroyed without a "where" clause or an idAttribute.');
     }

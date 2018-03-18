@@ -9,8 +9,6 @@ import Errors from './errors';
 import ModelBase from './base/model';
 import Promise from './base/promise';
 
-const DEFAULT_TIMESTAMP_KEYS = ['created_at', 'updated_at'];
-
 /**
  * @class Model
  * @extends ModelBase
@@ -975,13 +973,7 @@ const BookshelfModel = ModelBase.extend({
       // timestamps, as `timestamp` calls `set` internally.
       this.set(attrs, {silent: true});
 
-
-      // Obtain the keys for the timestamp columns
-      const keys = _.isArray(this.hasTimestamps)
-        ? this.hasTimestamps
-        : DEFAULT_TIMESTAMP_KEYS;
-
-      const [ createdAtKey, updatedAtKey ] = keys;
+      const [ createdAtKey, updatedAtKey ] = this.getTimestampKeys();
 
       // Now set timestamps if appropriate. Extend `attrs` so that the
       // timestamps will be provided for a patch operation.
@@ -1073,7 +1065,7 @@ const BookshelfModel = ModelBase.extend({
        * @param {Object} options  Options object passed to {@link Model#save save}.
        * @returns {Promise}
        */
-      return this.triggerThen((method === 'insert' ? 'creating saving' : 'updating saving'), this, attrs, options)
+      return this.triggerThen((method === 'insert' ? 'saving creating' : 'saving updating'), this, attrs, options)
       .bind(this)
       .then(function() {
         return sync[options.method](method === 'update' && options.patch ? attrs : this.attributes);
@@ -1159,7 +1151,8 @@ const BookshelfModel = ModelBase.extend({
    * @param {Object=}      options                  Hash of options.
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
    * @param {bool} [options.require=true]
-   *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy.
+   *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy. This is
+   *   the default behavior as of version 0.13.0.
    *
    * @example
    *
@@ -1199,7 +1192,7 @@ const BookshelfModel = ModelBase.extend({
     }).then(function() {
       return sync.del();
   }).then(function(affectedRows) {
-      if (options.require && affectedRows === 0) {
+      if (options.require !== false && affectedRows === 0) {
         throw new this.constructor.NoRowsDeletedError('No Rows Deleted');
       }
       this.clear();
@@ -1212,11 +1205,10 @@ const BookshelfModel = ModelBase.extend({
        *
        * @event Model#destroyed
        * @param {Model}  model The model firing the event.
-       * @param {Object} affectedRows Number of affected rows.
        * @param {Object} options Options object passed to {@link Model#destroy destroy}.
        * @returns {Promise}
        */
-      return this.triggerThen('destroyed', this, affectedRows, options);
+      return this.triggerThen('destroyed', this, options);
     }).then(this._reset);
   }),
 
@@ -1392,7 +1384,9 @@ const BookshelfModel = ModelBase.extend({
    */
   _handleResponse(response) {
     const relatedData = this.relatedData;
-    this.set(this.parse(response[0]), {silent: true})._reset();
+
+    this.set(this.parse(response[0]), {silent: true}).formatTimestamps()._reset();
+
     if (relatedData && relatedData.isJoined()) {
       relatedData.parsePivot([this]);
     }

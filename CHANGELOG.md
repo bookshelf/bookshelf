@@ -1,5 +1,49 @@
 ## Change Log
 
+**0.13.0** <small>_Mar 18, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.12.1...0.13.0)
+
+#### Breaking changes
+
+- Make `require: true` the default when deleting models: [#1779](https://github.com/bookshelf/bookshelf/pull/1779)
+- Remove the second argument to the model's destroyed event handler: [#1777](https://github.com/bookshelf/bookshelf/pull/1777)
+- Events are now triggered sequentially even when the handlers execute asynchronous code: [#1768](https://github.com/bookshelf/bookshelf/pull/1768)
+- Drop support for Node versions older than 4: [#1696](https://github.com/bookshelf/bookshelf/pull/1696)
+- Reorder `saving` and `creating` events to reflect the documentation: [#1142](https://github.com/bookshelf/bookshelf/pull/1142)
+
+#### Enhancements
+
+- Only request `returning` attribute if client supports `returning`: [#1770](https://github.com/bookshelf/bookshelf/pull/1770)
+- Throw error if user doesn't pass a valid Knex instance on initialize: [#1756](https://github.com/bookshelf/bookshelf/pull/1756)
+- Add parameterized virtual properties to virtuals plugin: [#1755](https://github.com/bookshelf/bookshelf/pull/1755)
+- Add individual attribute processor plugin to core: [#1741](https://github.com/bookshelf/bookshelf/pull/1741)
+- Format `idAttribute` on save and delete: [#1680](https://github.com/bookshelf/bookshelf/pull/1680)
+- Add `withSchema` option to all database operations: [#1638](https://github.com/bookshelf/bookshelf/pull/1638)
+- Add a case converter plugin to core: [#1093](https://github.com/bookshelf/bookshelf/pull/1093)
+
+#### Bug fixes
+- Fix inconsistent timestamp values between save and fetch: [#1784](https://github.com/bookshelf/bookshelf/pull/1784)
+- Set `model.id` if attributes being `.set()` contain a parsed version of `idAttribute`: [#1760](https://github.com/bookshelf/bookshelf/pull/1760)
+- Fix pagination plugin's `fetchPage()` ignoring or hanging with transactions: [#1625](https://github.com/bookshelf/bookshelf/pull/1625)
+- Fix `fetchPage()` from pagination plugin not working for relation collections: [#1561](https://github.com/bookshelf/bookshelf/pull/1561)
+- Don't try to update `idAttribute` if it hasn't changed: [#1260](https://github.com/bookshelf/bookshelf/pull/1260)
+
+#### Test suite
+
+- Increase timeout of the large arrays test: [#1778](https://github.com/bookshelf/bookshelf/pull/1778)
+- Add test to verify that `parentId` is not undefined when using `fetchAll` with relations: [#1769](https://github.com/bookshelf/bookshelf/pull/1769)
+- Fixes and general improvements to the test suite: [#1753](https://github.com/bookshelf/bookshelf/pull/1753)
+- Remove OracleDB tests: [#1744](https://github.com/bookshelf/bookshelf/pull/1744)
+- Fix invalid test related to dirty attributes: [#1312](https://github.com/bookshelf/bookshelf/pull/1312)
+
+#### Documentation
+- Improve docs about running tests: [#1761](https://github.com/bookshelf/bookshelf/pull/1761)
+- Fix typo on parse-and-format tutorial: [#1748](https://github.com/bookshelf/bookshelf/pull/1748)
+- Add Bookshelf Manager to list of community plugins: [#1747](https://github.com/bookshelf/bookshelf/pull/1747)
+
+#### Dependencies
+
+- Update some dependencies: [#1787](https://github.com/bookshelf/bookshelf/pull/1787), [#1782](https://github.com/bookshelf/bookshelf/pull/1782), [#1780](https://github.com/bookshelf/bookshelf/pull/1780), [#1767](https://github.com/bookshelf/bookshelf/pull/1767) [#1746](https://github.com/bookshelf/bookshelf/pull/1746), [#1730](https://github.com/bookshelf/bookshelf/pull/1730)
+
 **0.12.1** <small>_Jan 8, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.12.0...0.12.1)
 
 - Lots of documentation fixes and updates:

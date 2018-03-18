@@ -1,7 +1,7 @@
 # .travis.yml
 language: node_js
 dist: xenial
-sudo: required
+sudo: false
 
 cache:
   directories:
@@ -13,14 +13,10 @@ services:
 
 node_js:
   - '4'
+  - '5'
   - '6'
+  - '7'
 #  - '8' Disabled until either we fix the babel compilation error or remove babel
-
-before_install:
-  - sudo apt-get update
-  - wget https://raw.githubusercontent.com/Vincit/travis-oracledb-xe/master/accept_the_license_agreement_for_oracledb_xe_11g_and_install.sh
-  - bash ./accept_the_license_agreement_for_oracledb_xe_11g_and_install.sh
-  - npm install oracledb
 
 before_script:
   - psql -c 'create database bookshelf_test;' -U postgres
@@ -30,7 +26,7 @@ notifications:
   email: false
 
 env:
-  - KNEX_TEST_TIMEOUT=60000 ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
+  - KNEX_TEST_TIMEOUT=60000
 
 matrix:
   fast_finish: true

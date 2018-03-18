@@ -113,6 +113,8 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [Virtuals](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
 * [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility): Specify a whitelist/blacklist of model attributes when serialized toJSON.
 * [Pagination](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Pagination): Adds `fetchPage` methods to use for pagination in place of `fetch` and `fetchAll`.
+* [Case Converter](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Case-Converter): Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.
+* [Processor](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Processor): Allows defining custom processor functions that handle transformation of values whenever they are `.set()` on a model.
 
 ## Community plugins
 
@@ -129,6 +131,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
 * [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility), but operates on the database level.
 * [bookshelf-ez-fetch](https://github.com/DJAndries/bookshelf-ez-fetch) - Convenient fetching methods which allow for compact filtering, relation selection and error handling.
+* [bookshelf-manager](https://github.com/ericclemmons/bookshelf-manager) - Model & Collection manager to make it easy to create & save deep, nested JSON structures from API requests.
 
 ## Support
 
@@ -164,9 +167,8 @@ At the start of your application code will catch any errors not otherwise caught
 
 ### How do I run the test suite?
 
-The test suite looks for an environment variable called `BOOKSHELF_TEST` for the path to the database configuration. If you run the following command: `$ export BOOKSHELF_TEST='/path/to/your/bookshelf_config.js'`, replacing with the path to your config file, and the config file is valid, the test suite should run with npm test.
-
-Also note that you will have to create the appropriate database(s) for the test suite to run. For example, with MySQL, you'll need to run the command `create database bookshelf_test;` in addition to exporting the correct test settings prior to running the test suite.
+See the [CONTRIBUTING](https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md#running-the-tests)
+document on GitHub.
 
 ### Can I use Bookshelf outside of Node.js?
 

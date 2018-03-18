@@ -1,18 +1,11 @@
-var Promise = require('bluebird');
 var expect = require('chai').expect;
-var sinon = require('sinon');
 
 module.exports = function (bookshelf) {
-
   describe('Pagination Plugin', function () {
-
     bookshelf.plugin('pagination');
     var Models = require('../helpers/objects')(bookshelf).Models;
 
-
-
     describe('Model instance fetchPage', function () {
-
       it('fetches a single page of results with defaults', function () {
         return Models.Customer.forge().fetchPage().then(function (results) {
           ['models', 'pagination'].forEach(function (prop) {
@@ -94,7 +87,40 @@ module.exports = function (bookshelf) {
           });
         })
       })
+      it('fetches a page from a relation collection', function () {
+        return Models.User.forge({uid: 1}).roles().fetchPage().then(function (results) {
+          expect(results.length).to.equal(1);
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        });
+      })
+      it('fetches a page from a relation collection with additional condition', function () {
+        return Models.User.forge({uid: 1}).roles().query(function (query) {
+          query.where('roles.rid', '!=', 4);
+        }).fetchPage().then(function (results) {
+          expect(results.length).to.equal(0);
+          ['models', 'pagination'].forEach(function (prop) {
+            expect(results).to.have.property(prop);
+          });
+        });
+      })
     })
 
+    describe('Inside a transaction', function() {
+      it('returns consistent results for rowCount and number of models', function() {
+        return bookshelf.transaction(function(t) {
+          var options = {transacting: t};
+
+          return Models.Site.forge({name: 'A new site'}).save(null, options).then(function() {
+            options.pageSize = 25;
+            options.page = 1;
+            return Models.Site.forge().fetchPage(options);
+          }).then(function(sites) {
+            expect(sites.pagination.rowCount).to.eql(sites.models.length);
+          });
+        });
+      })
+    })
   });
 };

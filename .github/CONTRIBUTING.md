@@ -1,4 +1,4 @@
-# How to contribute to Bookshelf.js
+# How to Contribute to Bookshelf.js
 
 * Before sending a pull request for a feature or bug fix, be sure to have
 [tests](https://github.com/bookshelf/bookshelf/tree/master/test).
@@ -39,13 +39,22 @@ their configurations.
 
 ### Using Docker Containers
 
-You can install [Docker](https://docs.docker.com/engine/installation/#supported-platforms) easily on any Operating
-System. After picking the correct operating system installer (via package manager or download) just run the
-following command on the root of your cloned Bookshelf repository:
+You can install [Docker](https://docs.docker.com/engine/installation/#supported-platforms) and `docker-compose` easily
+on any Operating System. After picking the correct operating system installer (via package manager or download) just
+run the following command on the root of your cloned Bookshelf repository:
 
 ```sh
-docker-compose up
+# This starts the test databases
+docker-compose up -d
 ```
+
+You can also teardown the databases with:
+
+```sh
+docker-compose down --remove-orphans
+```
+
+When using Docker you may run the tests many times against the same DB instances. The tests reset DB state on each run.
 
 **Note:** admin privileges are needed, so you should act according to your chosen Operating System.
 
@@ -150,7 +159,7 @@ After editing the `pg_hba.conf` file you'll need to restart the PostgreSQL serve
 ### Using a Configuration File
 
 If you don't want to go to the trouble of performing the changes explained in the previous two sections you can instead
-use a config file that tells the test suite about your database setup.
+use a config file that tells the test suite about your current database setup.
 
 The tests will look for a `BOOKSHELF_TEST` environment variable that points to a `config.js` file with the connection
 details for each database server. This file must not be the same database config file you use for any other application,
@@ -190,7 +199,7 @@ is pointing correctly to it. For convenience you can put it in your home directo
 export BOOKSHELF_TEST='/home/myusername/.bookshelf_config.js'
 ```
 
-#### Database creation
+#### Database Creation
 
 After having ensured the test suite can access both database servers just create a new database on each that will be
 used exclusively by Bookshelf.js:
@@ -199,15 +208,32 @@ used exclusively by Bookshelf.js:
 CREATE DATABASE bookshelf_test;
 ```
 
+Note that this step isn't necessary when using Docker.
+
 ### Running the Tests
+
+The easiest way to run the tests is by using docker & docker-compose as [explained above](#using-docker-containers).
 
 The test suite requires that both MySQL and PostgreSQL servers have a database named `bookshelf_test`. See the sections
 above for further instructions.
 
-Once you have done that, you can run the tests:
+Once you have your development environment properly setup, you can run the tests:
 
 ```sh
 npm test
 ```
 
 Always make sure all the tests are passing before sending a pull request.
+
+## Publishing a New Release
+
+The release process is fairly well automated. You do need publishing rights to the npmjs.com
+[bookshelf package](https://www.npmjs.com/package/bookshelf) and write access to the GitHub repository. Once that's set
+just make sure to follow the process explained below in the correct order.
+
+1. You should draft a new release on GitHub. This isn't strictly necessary, but is highly recommended. At this time you
+shouldn't publish it yet, but just save it as a draft instead.
+2. Update the `CHANGELOG.md` file and update the version number of `package.json`. For the changelog just follow the
+format of the previous update. In general you should link to PRs instead of issues when mentioning changes. If the PRs'
+descriptions are well written they should already include any associated issues. At this point there is no need to commit and/or push these changes since that is taken care of automatically by the release scripts.
+3. Just run `npm publish` and sit back.

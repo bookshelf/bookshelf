@@ -1,4 +1,3 @@
-var _ = require('lodash')
 var Promise = global.testPromise;
 
 var drops = [
@@ -11,15 +10,25 @@ var drops = [
 ];
 
 module.exports = function(Bookshelf) {
+  var knex = Bookshelf.knex;
+  var isPostgreSQL = Bookshelf.knex.client.dialect === 'postgresql';
 
-  var schema = Bookshelf.knex.schema;
+  return Promise.all(drops.map(function(tableName) {
+    return knex.schema.dropTableIfExists(tableName);
+  })).then(function() {
+    if (isPostgreSQL) return Bookshelf.knex.raw('DROP SCHEMA IF EXISTS "test" CASCADE');
+  }).then(function() {
+    if (isPostgreSQL) return knex.schema.createSchema('test');
+  }).then(function() {
+    if (!isPostgreSQL) return;
 
-  return Promise.all(_.map(drops, function(val) {
-    return schema.dropTableIfExists(val);
-  }))
+    return knex.schema.withSchema('test').createTable('authors', function(table) {
+      table.increments('id');
+      table.string('name');
+    });
+  })
   .then(function() {
-
-    return schema.createTable('sites', function(table) {
+    return knex.schema.createTable('sites', function(table) {
       table.increments('id');
       table.string('name');
     })
@@ -180,5 +189,4 @@ module.exports = function(Bookshelf) {
       table.integer('backup_type_id');
     })
   });
-
 };

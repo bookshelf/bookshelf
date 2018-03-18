@@ -1,7 +1,6 @@
-var _        = require('lodash');
+var _ = require('lodash');
 
 module.exports = function(Bookshelf) {
-
   var Knex     = require('knex');
   var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
   var Promise  = global.testPromise;
@@ -26,16 +25,7 @@ module.exports = function(Bookshelf) {
   var SQLite3 = require('../bookshelf')(sqlite3);
   var Swapped = require('../bookshelf')(Knex({client: 'sqlite3', useNullAsDefault: true}));
   Swapped.knex = sqlite3;
-  var databasesArray = [SQLite3, Swapped, MySQL, PostgreSQL];
-  // Load OracleDB tests only if the module is present in the system
-  try{
-    var oracleDbModuleName = require.resolve('oracledb');
-    var oracledb = require('knex')({client: 'oracledb', connection: config.oracledb});
-    var OracleDB = require('../bookshelf')(oracledb);
-    databasesArray.push(OracleDB);
-  }catch(e){
-    // empty
-  }
+  var databases = [SQLite3, Swapped, MySQL, PostgreSQL];
 
   it('should allow creating a new Bookshelf instance with "new"', function() {
     var bookshelf = new Bookshelf(sqlite3);
@@ -59,16 +49,14 @@ module.exports = function(Bookshelf) {
     });
   });
 
-  _.each(databasesArray, function(bookshelf) {
-
+  _.each(databases, function(bookshelf) {
     var dialect = bookshelf.knex.client.dialect;
 
     describe('Dialect: ' + dialect, function() {
-
       this.dialect = dialect;
 
       before(function() {
-        this.timeout(300000);
+        this.timeout(60000);
         return require('./integration/helpers/migration')(bookshelf).then(function() {
            return require('./integration/helpers/inserts')(bookshelf);
         });
@@ -89,8 +77,10 @@ module.exports = function(Bookshelf) {
       require('./integration/plugins/visibility')(bookshelf);
       require('./integration/plugins/registry')(bookshelf);
       require('./integration/plugins/pagination')(bookshelf);
+      require('./integration/plugins/case-converter')(bookshelf);
+      require('./integration/plugins/processor')(bookshelf);
     });
-
   });
 
+  return databases;
 };
