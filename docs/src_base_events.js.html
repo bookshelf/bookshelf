@@ -172,7 +172,7 @@ export default class Events extends EventEmitter {
   triggerThen(nameOrNames, ...args) {
     const names = eventNames(nameOrNames);
     const listeners = flatMap(names, name => this.listeners(name));
-    return Promise.map(listeners, listener => listener.apply(this, args));
+    return Promise.mapSeries(listeners, listener => listener.apply(this, args));
   }
 
   /**
@@ -215,7 +215,7 @@ export default class Events extends EventEmitter {
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
           
             on
-          January 8th 2018
+          March 18th 2018
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">

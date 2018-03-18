@@ -4,7 +4,7 @@
       <meta charset="utf-8">
       <link rel="icon" href="images/favicon.ico" />
       <link rel="canonical" href="http://bookshelfjs.org" />
-      <title>bookshelf.js</title>
+      <title>src/plugins/case-converter.js</title>
       <!--
       ._.                                                      ._.
       | |    ______             _        _          _  __      | |
@@ -62,7 +62,7 @@
     <div class="main-container source-page">
       <div class="main-column">
         
-          <h1 class="page-title">bookshelf.js</h1>
+          <h1 class="page-title">src/plugins/case-converter.js</h1>
         
 
         
@@ -73,13 +73,51 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * (c) 2013-present Tim Griesser
- * Bookshelf may be freely distributed under the MIT license.
- * For all details and documentation:
- * http://bookshelfjs.org
+ * Case Converter Plugin
  *
+ * Handles the conversion between the database's snake_cased and a model's camelCased properties automatically. You just
+ * need to load it somewhere in your code.
+ *
+ * @example
+ * var bookshelf = Bookshelf(knex);
+ * bookshelf.plugin('case-converter');
+ *
+ * @module plugins/case-converter
  */
-module.exports = require('./lib/bookshelf').default;
+module.exports = function caseConverter(bookshelf) {
+  const _ = require('lodash');
+
+  /**
+   * Monkey-patched Model class.
+   * @class Model
+   */
+  bookshelf.Model = bookshelf.Model.extend({
+
+    /**
+     * @method
+     * @description Converts attribute keys to camel case when fetching data from the database.
+     * @override
+     */
+    parse: function(attrs) {
+      return _.mapKeys(attrs, function(value, key) {
+        return _.camelCase(key);
+      });
+    },
+
+    /**
+     * @method
+     * @description
+     *    Converts attribute keys to snake case just before saving a model to the database. The converted attributes
+     *    will not be set on the model.
+     * @override
+     */
+    format: function(attrs) {
+      return _.mapKeys(attrs, function(value, key) {
+        return _.snakeCase(key);
+      });
+    }
+  });
+};
 </code></pre>
         </article>
     </section>

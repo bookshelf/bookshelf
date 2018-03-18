@@ -73,7 +73,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import Promise from 'bluebird';
-import { remove, assign } from 'lodash';
+import { remove, assign, noop } from 'lodash';
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -104,7 +104,7 @@ const DEFAULT_PAGE = 1;
  * See methods below for details.
  */
 module.exports = function paginationPlugin (bookshelf) {
-
+  const Model = bookshelf.Model;
   /**
    * @method Model#fetchPage
    * @belongsTo Model
@@ -173,6 +173,7 @@ module.exports = function paginationPlugin (bookshelf) {
    */
   function fetchPage (options = {}) {
     const {page, pageSize, limit, offset, ...fetchOptions} = options;
+    const {transacting} = fetchOptions;
 
     let usingPageSize = false; // usingPageSize = false means offset/limit, true means page/pageSize
     let _page;
@@ -207,13 +208,16 @@ module.exports = function paginationPlugin (bookshelf) {
       _offset = ensureIntWithDefault(offset, DEFAULT_OFFSET);
     }
 
-    const tableName = this.constructor.prototype.tableName;
-    const idAttribute = this.constructor.prototype.idAttribute ?
-      this.constructor.prototype.idAttribute : 'id';
+    const isModel = this instanceof Model;
+    const [fetchMethodName, targetModel] = isModel
+      ? ['fetchAll', this.constructor]
+      : ['fetch', this.target || this.model];
+    const {tableName, idAttribute = 'id'} = targetModel.prototype;
+    const targetIdColumn = `${tableName}.${idAttribute}`;
 
     const paginate = () => {
       // const pageQuery = clone(this.query());
-      const pager = this.constructor.forge();
+      const pager = this.clone();
 
       return pager
 
@@ -222,9 +226,7 @@ module.exports = function paginationPlugin (bookshelf) {
           qb.limit.apply(qb, [_limit]);
           qb.offset.apply(qb, [_offset]);
           return null;
-        })
-
-      .fetchAll(fetchOptions);
+        })[fetchMethodName](fetchOptions);
     };
 
     const count = () => {
@@ -234,7 +236,7 @@ module.exports = function paginationPlugin (bookshelf) {
         'groupByBasic',
         'groupByRaw'
       ];
-      const counter = this.constructor.forge();
+      const counter = this.clone();
 
       return counter.query(qb => {
         assign(qb, this.query().clone());
@@ -246,9 +248,14 @@ module.exports = function paginationPlugin (bookshelf) {
           return (notNeededQueries.indexOf(statement.type) > -1) ||
             statement.grouping === 'columns';
         });
-        qb.countDistinct.apply(qb, [`${tableName}.${idAttribute}`]);
+        if (!isModel &amp;&amp; counter.relatedData) {
+          // Remove joining columns that break COUNT operation.
+          // eg. pivotal coulmns for belongsToMany relation.
+          counter.relatedData.joinColumns = noop;
+        }
+        qb.countDistinct.apply(qb, [targetIdColumn]);
 
-      }).fetchAll().then(result => {
+    })[fetchMethodName]({transacting}).then(result => {
 
         const metadata = usingPageSize
           ? {page: _page, pageSize: _limit}
@@ -284,10 +291,7 @@ module.exports = function paginationPlugin (bookshelf) {
     return this.forge().fetchPage(...args);
   }
 
-  bookshelf.Collection.prototype.fetchPage = function (...args) {
-    return fetchPage.apply(this.model.forge(), args);
-  };
-
+  bookshelf.Collection.prototype.fetchPage = fetchPage;
 }
 </code></pre>
         </article>
@@ -305,7 +309,7 @@ module.exports = function paginationPlugin (bookshelf) {
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
           
             on
-          January 8th 2018
+          March 18th 2018
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
