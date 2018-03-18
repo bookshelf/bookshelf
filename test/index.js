@@ -6,17 +6,15 @@ Promise.onPossiblyUnhandledRejection(function (err) {
 });
 
 global.testPromise = Promise;
-var testQueryCache = global.testQueryCache = [];
 var oldIt = it;
 
 it = function() {
-  testQueryCache = [];
   return oldIt.apply(this, arguments);
 };
 
 // http://bluebirdjs.com/docs/api/error-management-configuration.html#global-rejection-events
 process.on("unhandledRejection", function(reason, promise) {
-    console.error(reason);
+  console.error(reason);
 });
 
 var Bookshelf = require('../bookshelf');
@@ -50,8 +48,14 @@ describe('Bookshelf', function () {
     return bookshelf.knex.destroy()
   });
 
-  it('should fail without knex instance', function() {
-    expect(() => Bookshelf()).to.throw(/knex/);
+  describe('Construction', function() {
+    it('should fail without a knex instance', function() {
+      expect(() => Bookshelf()).to.throw(/Invalid knex/);
+    });
+
+    it('should fail if passing a random object', function() {
+      expect(() => Bookshelf({config: 'something', options: ['one', 'two']})).to.throw(/Invalid knex/);
+    })
   });
 });
 
