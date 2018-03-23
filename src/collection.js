@@ -31,7 +31,7 @@ import createError from 'create-error';
  *
  * @param {(Model[])=} models Initial array of models.
  * @param {Object=} options
- * @param {bool} [options.comparator=false]
+ * @param {Boolean} [options.comparator=false]
  *   {@link Collection#comparator Comparator} for collection, or `false` to disable sorting.
  */
 const BookshelfCollection = CollectionBase.extend({
@@ -101,7 +101,7 @@ const BookshelfCollection = CollectionBase.extend({
    *   Upon a sucessful query resulting in no records returns. Only fired if `require: true` is passed as an option.
    *
    * @param {Object=} options
-   * @param {bool} [options.require=false] Trigger a {@link Collection.EmptyError} if no records are found.
+   * @param {Boolean} [options.require=false] Trigger a {@link Collection.EmptyError} if no records are found.
    * @param {string|string[]} [options.withRelated=[]] A relation, or list of relations, to be eager loaded as part of the `fetch` operation.
    * @returns {Promise<Collection>}
    */
@@ -209,7 +209,7 @@ const BookshelfCollection = CollectionBase.extend({
    *   });
    *
    * @param {Object=}  options
-   * @param {boolean} [options.require=false]
+   * @param {Boolean} [options.require=false]
    *   If `true`, will reject the returned response with a {@link
    *   Model.NotFoundError NotFoundError} if no result is found.
    * @param {(string|string[])} [options.columns='*']
