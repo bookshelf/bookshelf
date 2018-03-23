@@ -1125,6 +1125,12 @@ module.exports = function(bookshelf) {
           expect(fin.get('created_at')).to.be.eql(createdAt);
         });
       });
+
+      it('will not set timestamps on the model if the associated columns are ommitted in fetch', function() {
+        return Models.Admin.forge({id: 1}).fetch({columns: ['id']}).then(function(admin) {
+          expect(admin.get('created_at')).to.be.undefined;
+        })
+      })
     });
 
     describe('timestamp', function() {

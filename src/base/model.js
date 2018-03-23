@@ -166,7 +166,7 @@ ModelBase.prototype.formatTimestamps = function formatTimestamps() {
   if (!this.hasTimestamps) return this;
 
   this.getTimestampKeys().forEach((key) => {
-    this.set(key, new Date(this.get(key)));
+    if (this.get(key)) this.set(key, new Date(this.get(key)));
   });
 
   return this;
