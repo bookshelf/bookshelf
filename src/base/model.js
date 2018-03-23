@@ -129,13 +129,37 @@ ModelBase.prototype.initialize = function() {};
 ModelBase.prototype.idAttribute = 'id';
 
 /**
+ * @member {Object|Null}
+ * @default null
+ * @description
+ *
+ * This can be used to define any default values for attributes that are not
+ * present when creating or updating a model in a {@link Model#save save} call.
+ * The default behavior is to *not* use these default values on updates unless
+ * the `defaults: true` option is passed to the {@link Model#save save} call.
+ * For inserts the default values will always be used if present.
+ *
+ * @example
+ *
+ * var MyModel = bookshelf.Model.extend({
+ *   defaults: {property1: 'foo', property2: 'bar'},
+ *   tableName: 'my_table'
+ * })
+ *
+ * MyModel.forge({property1: 'blah'}).save().then(function(model) {
+ *   // {property1: 'blah', property2: 'bar'}
+ * })
+ */
+ModelBase.prototype.defaults = null;
+
+/**
  * @member {Boolean|Array}
  * @default false
  * @description
  *
  * Sets the current date/time on the timestamps columns `created_at` and
  * `updated_at` for a given method. The 'update' method will only update
- * `updated_at`.  To override the default column names, assign an array
+ * `updated_at`. To override the default column names, assign an array
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
  * column name.

@@ -873,22 +873,31 @@ const BookshelfModel = ModelBase.extend({
    * @method Model#save
    * @description
    *
-   * `save` is used to perform either an insert or update query using the
+   * This method is used to perform either an insert or update query using the
    * model's set {@link Model#attributes attributes}.
    *
    * If the model {@link Model#isNew isNew}, any {@link Model#defaults defaults}
    * will be set and an `insert` query will be performed. Otherwise it will
-   * `update` the record with a corresponding ID. This behaviour can be overriden
-   * with the `method` option.
+   * `update` the record with a corresponding ID. It is also possible to
+   * set default attributes on an `update` by passing the `{defaults: true}`
+   * option in the second argument to the `save` call. This will also use the
+   * same {@link Model#defaults defaults} as the `insert` operation.
    *
-   *     new Post({name: 'New Article'}).save().then(function(model) {
-   *       // ...
-   *     });
+   * The type of operation to perform (either `insert` or `update`) can be
+   * overriden with the `method` option:
+   *
+   *     // This forces an insert with the specified id instead of the expected
+   *     // update
+   *     new Post({name: 'New Article', id: 34})
+   *       .save(null, {method: 'insert'})
+   *       .then(function(model) {
+   *         // ...
+   *       });
    *
    * If you only wish to update with the params passed to the save, you may pass
-   * a {patch: true} flag to the database:
+   * a `{patch: true}` option in the second argument to `save`:
    *
-   *     // update authors set "bio" = 'Short user bio' where "id" = 1
+   *     // UPDATE authors SET "bio" = 'Short user bio' WHERE "id" = 1
    *     new Author({id: 1, first_name: 'User'})
    *       .save({bio: 'Short user bio'}, {patch: true})
    *       .then(function(model) {
@@ -907,13 +916,19 @@ const BookshelfModel = ModelBase.extend({
    * available in `options.query`.
    *
    *     // Save with no arguments
-   *     Model.forge({id: 5, firstName: "John", lastName: "Smith"}).save().then(function() { //...
+   *     Model.forge({id: 5, firstName: 'John', lastName: 'Smith'}).save().then(function() {
+   *       //...
+   *     });
    *
    *     // Or add attributes during save
-   *     Model.forge({id: 5}).save({firstName: "John", lastName: "Smith"}).then(function() { //...
+   *     Model.forge({id: 5}).save({firstName: 'John', lastName: 'Smith'}).then(function() {
+   *       //...
+   *     });
    *
    *     // Or, if you prefer, for a single attribute
-   *     Model.forge({id: 5}).save('name', 'John Smith').then(function() { //...
+   *     Model.forge({id: 5}).save('name', 'John Smith').then(function() {
+   *       //...
+   *     });
    *
    * @param {string=}      key                      Attribute name.
    * @param {string=}      val                      Attribute value.
@@ -924,7 +939,8 @@ const BookshelfModel = ModelBase.extend({
    * @param {string=} options.method
    *   Explicitly select a save method, either `"update"` or `"insert"`.
    * @param {Boolean} [options.defaults=false]
-   *   Assign {@link Model#defaults defaults} in an `update` operation.
+   *   Whether to assign or not {@link Model#defaults default} attribute values
+   *   on a model when performing an update or create operation.
    * @param {Boolean} [options.patch=false]
    *   Only save attributes supplied in arguments to `save`.
    * @param {Boolean} [options.require=true]
