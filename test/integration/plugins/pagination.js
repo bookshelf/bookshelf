@@ -67,6 +67,13 @@ module.exports = function (bookshelf) {
           expect(md.rowCount).to.equal(4);
         })
       })
+
+      it('returns correct values for rowCount and pageCount when hasTimestamps is used', function() {
+        return Models.Admin.fetchPage({page: 1, pageSize: 4}).then(function(admins) {
+          expect(admins.pagination.rowCount).to.be.a('number');
+          expect(admins.pagination.pageCount).to.be.a('number');
+        })
+      })
     })
 
     describe('Model static fetchPage', function () {
