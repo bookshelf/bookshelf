@@ -129,7 +129,7 @@ ModelBase.prototype.initialize = function() {};
 ModelBase.prototype.idAttribute = 'id';
 
 /**
- * @member {boolean|Array}
+ * @member {Boolean|Array}
  * @default false
  * @description
  *
@@ -312,8 +312,8 @@ ModelBase.prototype.isNew = function() {
  * // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
  *
  * @param {Object=} options
- * @param {bool}    [options.shallow=false]   Exclude relations.
- * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+ * @param {Boolean}    [options.shallow=false]   Exclude relations.
+ * @param {Boolean}    [options.omitPivot=false] Exclude pivot values.
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options = {}) {
@@ -385,7 +385,7 @@ ModelBase.prototype.escape = function(key) {
  * @description
  * Returns `true` if the attribute contains a value that is not null or undefined.
  * @param {string} attribute The attribute to check.
- * @returns {bool} True if `attribute` is set, otherwise `false`.
+ * @returns {Boolean} True if `attribute` is set, otherwise `false`.
  */
 ModelBase.prototype.has = function(attr) {
   return this.get(attr) != null;
@@ -619,7 +619,7 @@ ModelBase.prototype.timestamp = function(options) {
  * specific attribute has changed.
  *
  * @param {string=} attribute
- * @returns {bool}
+ * @returns {Boolean}
  * `true` if any attribute has changed. Or, if `attribute` was specified, true
  * if it has changed.
  */

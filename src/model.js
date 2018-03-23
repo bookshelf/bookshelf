@@ -50,11 +50,11 @@ import Promise from './base/promise';
  * @param {Object}   attributes            Initial values for this model's attributes.
  * @param {Object=}  options               Hash of options.
  * @param {string=}  options.tableName     Initial value for {@link Model#tableName tableName}.
- * @param {boolean=} [options.hasTimestamps=false]
+ * @param {Boolean=} [options.hasTimestamps=false]
  *
  *   Initial value for {@link Model#hasTimestamps hasTimestamps}.
  *
- * @param {boolean} [options.parse=false]
+ * @param {Boolean} [options.parse=false]
  *
  *   Convert attributes by {@link Model#parse parse} before being {@link
  *   Model#set set} on the model.
@@ -650,7 +650,7 @@ const BookshelfModel = ModelBase.extend({
    * @method Model#fetch
    *
    * @param {Object=}  options - Hash of options.
-   * @param {boolean=} [options.require=false]
+   * @param {Boolean=} [options.require=false]
    *   Reject the returned response with a {@link Model.NotFoundError
    *   NotFoundError} if results are empty.
    * @param {string|string[]} [options.columns='*']
@@ -779,7 +779,7 @@ const BookshelfModel = ModelBase.extend({
    * @method Model#fetchAll
    *
    * @param {Object=}  options - Hash of options.
-   * @param {boolean=} [options.require=false]
+   * @param {Boolean=} [options.require=false]
    *
    *  Rejects the returned promise with an `Collection.EmptyError` if no records are returned.
    *
@@ -1150,7 +1150,7 @@ const BookshelfModel = ModelBase.extend({
    *
    * @param {Object=}      options                  Hash of options.
    * @param {Transaction=} options.transacting      Optionally run the query in a transaction.
-   * @param {bool} [options.require=true]
+   * @param {Boolean} [options.require=true]
    *   Throw a {@link Model.NoRowsDeletedError} if no records are affected by destroy. This is
    *   the default behavior as of version 0.13.0.
    *

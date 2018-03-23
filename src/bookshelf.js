@@ -57,11 +57,11 @@ function Bookshelf(knex) {
      * @param {Object=} attributes Initial values for this model's attributes.
      * @param {Object=}  options               Hash of options.
      * @param {string=}  options.tableName     Initial value for {@linkcode Model#tableName tableName}.
-     * @param {boolean=} [options.hasTimestamps=false]
+     * @param {Boolean=} [options.hasTimestamps=false]
      *
      *   Initial value for {@linkcode Model#hasTimestamps hasTimestamps}.
      *
-     * @param {boolean} [options.parse=false]
+     * @param {Boolean} [options.parse=false]
      *
      *   Convert attributes by {@linkcode Model#parse parse} before being
      *   {@linkcode Model#set set} on the `model`.
