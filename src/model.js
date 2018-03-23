@@ -923,11 +923,11 @@ const BookshelfModel = ModelBase.extend({
    *   Optionally run the query in a transaction.
    * @param {string=} options.method
    *   Explicitly select a save method, either `"update"` or `"insert"`.
-   * @param {string} [options.defaults=false]
+   * @param {Boolean} [options.defaults=false]
    *   Assign {@link Model#defaults defaults} in an `update` operation.
-   * @param {bool} [options.patch=false]
+   * @param {Boolean} [options.patch=false]
    *   Only save attributes supplied in arguments to `save`.
-   * @param {bool} [options.require=true]
+   * @param {Boolean} [options.require=true]
    *   Throw a {@link Model.NoRowsUpdatedError} if no records are affected by save.
    *
    * @fires Model#saving
