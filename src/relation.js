@@ -605,7 +605,7 @@ const pivotHelpers = {
    * @param {function|Object} [options.query]
    *   Constrain the update query. Similar to the `method` argument to {@link
    *   Model#query}.
-   * @param {bool} [options.require=false]
+   * @param {Boolean} [options.require=false]
    *   Causes promise to be rejected with an Error if no rows were updated.
    * @param {Transaction} [options.transacting]
    *   Optionally run the query in a transaction.

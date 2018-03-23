@@ -1,5 +1,13 @@
 ## Change Log
 
+**0.13.2** <small>_Mar 23, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.0...0.13.2)
+
+#### Bug fixes
+- Fix timestamps set with Invalid Date in some cases: [#1796](https://github.com/bookshelf/bookshelf/pull/1796)
+
+#### Documentation
+- Fix incorrect data types and undocumented Model#defaults property: [#1797](https://github.com/bookshelf/bookshelf/pull/1797)
+
 **0.13.0** <small>_Mar 18, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.12.1...0.13.0)
 
 #### Breaking changes

@@ -129,13 +129,37 @@ ModelBase.prototype.initialize = function() {};
 ModelBase.prototype.idAttribute = 'id';
 
 /**
- * @member {boolean|Array}
+ * @member {Object|Null}
+ * @default null
+ * @description
+ *
+ * This can be used to define any default values for attributes that are not
+ * present when creating or updating a model in a {@link Model#save save} call.
+ * The default behavior is to *not* use these default values on updates unless
+ * the `defaults: true` option is passed to the {@link Model#save save} call.
+ * For inserts the default values will always be used if present.
+ *
+ * @example
+ *
+ * var MyModel = bookshelf.Model.extend({
+ *   defaults: {property1: 'foo', property2: 'bar'},
+ *   tableName: 'my_table'
+ * })
+ *
+ * MyModel.forge({property1: 'blah'}).save().then(function(model) {
+ *   // {property1: 'blah', property2: 'bar'}
+ * })
+ */
+ModelBase.prototype.defaults = null;
+
+/**
+ * @member {Boolean|Array}
  * @default false
  * @description
  *
  * Sets the current date/time on the timestamps columns `created_at` and
  * `updated_at` for a given method. The 'update' method will only update
- * `updated_at`.  To override the default column names, assign an array
+ * `updated_at`. To override the default column names, assign an array
  * to {@link Model#hasTimestamps hasTimestamps}.  The first element will
  * be the created column name and the second will be the updated
  * column name.
@@ -166,7 +190,7 @@ ModelBase.prototype.formatTimestamps = function formatTimestamps() {
   if (!this.hasTimestamps) return this;
 
   this.getTimestampKeys().forEach((key) => {
-    this.set(key, new Date(this.get(key)));
+    if (this.get(key)) this.set(key, new Date(this.get(key)));
   });
 
   return this;
@@ -312,8 +336,8 @@ ModelBase.prototype.isNew = function() {
  * // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
  *
  * @param {Object=} options
- * @param {bool}    [options.shallow=false]   Exclude relations.
- * @param {bool}    [options.omitPivot=false] Exclude pivot values.
+ * @param {Boolean}    [options.shallow=false]   Exclude relations.
+ * @param {Boolean}    [options.omitPivot=false] Exclude pivot values.
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options = {}) {
@@ -385,7 +409,7 @@ ModelBase.prototype.escape = function(key) {
  * @description
  * Returns `true` if the attribute contains a value that is not null or undefined.
  * @param {string} attribute The attribute to check.
- * @returns {bool} True if `attribute` is set, otherwise `false`.
+ * @returns {Boolean} True if `attribute` is set, otherwise `false`.
  */
 ModelBase.prototype.has = function(attr) {
   return this.get(attr) != null;
@@ -619,7 +643,7 @@ ModelBase.prototype.timestamp = function(options) {
  * specific attribute has changed.
  *
  * @param {string=} attribute
- * @returns {bool}
+ * @returns {Boolean}
  * `true` if any attribute has changed. Or, if `attribute` was specified, true
  * if it has changed.
  */
