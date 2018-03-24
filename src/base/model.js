@@ -616,19 +616,19 @@ ModelBase.prototype.timestamp = function(options) {
   const now          = (options || {}).date ? new Date(options.date) : new Date();
   const attributes   = {};
   const method       = this.saveMethod(options);
-  const canEditUpdatedAtKey = (options || {}).editUpdatedAt!= undefined ? options.editUpdatedAt : true;
-  const canEditCreatedAtKey = (options || {}).editCreatedAt!= undefined ? options.editCreatedAt : true;
-  const [ createdAtKey, updatedAtKey ] = this.getTimestampKeys();
+  const [createdAtKey, updatedAtKey] = this.getTimestampKeys();
+  const isNewModel = method === 'insert';
+  const setUpdatedAt = updatedAtKey && this.hasChanged(updatedAtKey)
 
-  if (updatedAtKey && canEditUpdatedAtKey) {
+  if (isNewModel && !setUpdatedAt || this.hasChanged() && !setUpdatedAt) {
     attributes[updatedAtKey] = now;
   }
 
-  if (createdAtKey && method === 'insert' && canEditCreatedAtKey) {
+  if (createdAtKey && isNewModel && !this.hasChanged(createdAtKey)) {
     attributes[createdAtKey] = now;
   }
 
-  this.set(attributes, options);
+  this.set(attributes, _.extend(options, {silent: true}));
 
   return attributes;
 };

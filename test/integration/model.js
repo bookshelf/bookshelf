@@ -1045,8 +1045,7 @@ module.exports = function(bookshelf) {
         it('will set the created_at timestamp to the user supplied value', function() {
           var admin = new Models.Admin();
           var oldCreatedAt;
-          var newCreatedAt = new Date();
-          newCreatedAt.setMinutes(newCreatedAt.getMinutes() + 1);
+          var newCreatedAt = new Date(1999, 1, 1);
 
           return admin.save().then(function(savedAdmin) {
             oldCreatedAt = savedAdmin.get('created_at');
