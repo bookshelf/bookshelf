@@ -958,172 +958,169 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('will set the created_at and updated_at columns if true', function() {
-        var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
-        m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('created_at')), true);
-          equal(_.isDate(this.get('updated_at')), true);
-          return stubSync;
-        };
+      describe('On update', function() {
+        it('does not set created_at when {method: "update"} is passed as option to save', function() {
+          var m = new bookshelf.Model(null, {hasTimestamps: true});
+          m.sync = function() {
+            expect(this.get('created_at')).to.be.undefined;
+            expect(this.get('updated_at')).to.be.a('date');
+            return stubSync;
+          };
 
-        return m.save({item: 'test'});
-      });
+          return m.save({item: 'test'}, {method: 'update'});
+        });
 
-      it('will set the created_at and updated_at columns to provided time', function() {
-        var dateInThePast = new Date(1999, 1, 1);
-        var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
-        m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
-          equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
-          return stubSync;
-        };
+        it('will update the updated_at timestamp if user doesn\'t set a value for it', function() {
+          var admin = new Models.Admin();
+          var originalDate;
 
-        return m.save({item: 'test'}, { date: dateInThePast });
-      });
+          return admin.save().then(function(savedAdmin) {
+            originalDate = savedAdmin.get('updated_at');
 
-      it('only sets the updated_at for existing models', function() {
-        var m1 = new (bookshelf.Model.extend({hasTimestamps: true}))();
-        m1.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('updated_at')), true);
-          return stubSync;
-        };
+            return Promise.delay(100).then(function() {
+              return savedAdmin.save('username', 'pablo');
+            });
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('updated_at')).to.not.be.eql(originalDate);
+          });
+        });
 
-        return m1.save({item: 'test'});
-      });
+        it('will not update the updated_at timestamp if the model hasn\'t changed', function() {
+          var admin = new Models.Admin();
+          var originalDate;
 
-      it('allows passing hasTimestamps in the options hash', function() {
+          return admin.save().then(function(savedAdmin) {
+            originalDate = savedAdmin.get('updated_at');
+
+            return Promise.delay(100).then(function() {
+              return savedAdmin.save();
+            });
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('updated_at')).to.be.eql(originalDate);
+          });
+        });
+
+        it('will set the updated_at timestamp to the user supplied value', function() {
+          var admin = new Models.Admin();
+          var oldUpdatedAt;
+          var newUpdatedAt = new Date();
+          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+
+          return admin.save().then(function(savedAdmin) {
+            oldUpdatedAt = savedAdmin.get('updated_at');
+            return savedAdmin.save('updated_at', newUpdatedAt);
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('updated_at')).to.be.eql(newUpdatedAt);
+            expect(updatedAdmin.get('updated_at')).to.not.be.eql(oldUpdatedAt);
+          });
+        });
+
+        it('will not change the existing created_at timestamp if user doesn\'t set a value for it', function() {
+          var model = new Models.Admin();
+          var createdAt;
+
+          return model.save().then(function(savedAdmin) {
+            createdAt = savedAdmin.get('created_at');
+            return savedAdmin.save('username', 'pablo');
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('created_at')).to.be.eql(createdAt);
+          });
+        });
+
+        it('will set the created_at timestamp to the user supplied value', function() {
+          var admin = new Models.Admin();
+          var oldCreatedAt;
+          var newCreatedAt = new Date();
+          newCreatedAt.setMinutes(newCreatedAt.getMinutes() + 1);
+
+          return admin.save().then(function(savedAdmin) {
+            oldCreatedAt = savedAdmin.get('created_at');
+            return admin.save('created_at', newCreatedAt);
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('created_at')).to.be.eql(newCreatedAt);
+            expect(updatedAdmin.get('created_at')).to.be.not.eql(oldCreatedAt);
+          });
+        });
+      })
+
+      describe('On insert', function() {
+        it('sets created_at when {method: "insert"} is passed as option', function() {
+          var m = new bookshelf.Model(null, {hasTimestamps: true});
+          m.sync = function() {
+            expect(this.get('created_at')).to.be.a('date');
+            expect(this.get('updated_at')).to.be.a('date');
+            return stubSync;
+          };
+
+          return m.save({id: 1, item: 'test'}, {method: 'insert'});
+        });
+
+        it('will set the created_at and updated_at columns if true', function() {
+          var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
+          m.sync = function() {
+            expect(this.get('created_at')).to.be.a('date');
+            expect(this.get('updated_at')).to.be.a('date');
+            return stubSync;
+          };
+
+          return m.save({item: 'test'});
+        });
+
+        it('will set the timestamps columns to provided time in date option', function() {
+          var dateInThePast = new Date(1999, 1, 1);
+          var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
+          m.sync = function() {
+            equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
+            equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
+            return stubSync;
+          };
+
+          return m.save({item: 'test'}, {date: dateInThePast});
+        });
+      })
+
+      it('allows passing hasTimestamps in the options hash of model instantiation', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: true});
         m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('created_at')), true);
-          equal(_.isDate(this.get('updated_at')), true);
+          expect(this.get('created_at')).to.be.a('date');
+          expect(this.get('updated_at')).to.be.a('date');
           return stubSync;
         };
 
         return m.save({item: 'test'});
       });
 
-      it('allows custom keys for the created at & update at values', function() {
+      it('allows custom keys for the created and updated values', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', 'updatedAt']});
         m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('createdAt')), true);
-          equal(_.isDate(this.get('updatedAt')), true);
+          expect(this.get('createdAt')).to.be.a('date');
+          expect(this.get('updatedAt')).to.be.a('date');
           return stubSync;
         };
 
         return m.save({item: 'test'});
       });
 
-      it('does not set created_at when {method: "update"} is passed', function() {
-        var m = new bookshelf.Model(null, {hasTimestamps: true});
-        m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('created_at')), false);
-          equal(_.isDate(this.get('updated_at')), true);
-          return stubSync;
-        };
-
-        return m.save({item: 'test'}, {method: 'update'});
-      });
-
-      it('sets created_at when {method: "insert"} is passed', function() {
-        var m = new bookshelf.Model(null, {hasTimestamps: true});
-        m.sync = function() {
-          equal(this.id, 1);
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('created_at')), true);
-          equal(_.isDate(this.get('updated_at')), true);
-          return stubSync;
-        };
-
-        return m.save({id: 1, item: 'test'}, {method: 'insert'});
-      });
-
-      it('will accept a falsy value as an option for created and ignore it', function() {
+      it('will accept a falsy value as an option for the updated key name to ignore it', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
         m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('createdAt')), true);
-          equal(_.isDate(this.get('updatedAt')), false);
+          expect(this.get('createdAt')).to.be.a('date');
+          expect(this.get('updatedAt')).to.be.undefined;
           return stubSync;
         };
 
         return m.save({item: 'test'});
       });
 
-      it('will accept a falsy value as an option for updated and ignore it', function() {
+      it('will accept a falsy value as an option for the created key to ignore it', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
         m.sync = function() {
-          equal(this.get('item'), 'test');
-          equal(_.isDate(this.get('updatedAt')), true);
-          equal(_.isDate(this.get('createdAt')), false);
+          expect(this.get('updatedAt')).to.be.a('date');
+          expect(this.get('createdAt')).to.be.undefined;
           return stubSync;
         };
 
         return m.save({item: 'test'});
-      });
-
-      it('will save a new updated_at timestamp if passed as parameter', function() {
-        var model = new Models.Admin();
-        var oldUpdatedAt = null;
-        var newUpdatedAt = new Date();
-        newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
-
-        return model.save().then(function(m) {
-          oldUpdatedAt = m.get('updated_at');
-          return model.save('updated_at',newUpdatedAt);
-        })
-        .then(function(m) {
-          expect(m.get('updated_at')).to.be.eql(newUpdatedAt);
-          expect(m.get('updated_at')).to.be.not.eql(oldUpdatedAt);
-        });
-      });
-
-      it('will save the updated_at timestamp with current time, if updated_at column is not passed as attributed', function() {
-        var model = new Models.Admin();
-        var updatedAt = null;
-
-        return model.save().then(function(m) {
-          updatedAt = m.get('updated_at');
-          return Promise.delay(100).then(function () {
-            return m.save('username', 'pablo');
-          });
-        }).then(function(fin) {
-          expect(fin.get('updated_at')).to.be.not.eql(updatedAt);
-        });
-      });
-
-      it('will save a new created_at timestamp if passed as parameter', function() {
-        var model = new Models.Admin();
-        var oldCreatedAt = null;
-        var newCreatedAt = new Date();
-        newCreatedAt.setMinutes(newCreatedAt.getMinutes() + 1);
-
-        return model.save().then(function(m) {
-          oldCreatedAt = m.get('created_at');
-          return model.save('created_at',newCreatedAt);
-        })
-        .then(function(m) {
-          expect(m.get('created_at')).to.be.eql(newCreatedAt);
-          expect(m.get('created_at')).to.be.not.eql(oldCreatedAt);
-        });
-      });
-
-      it('will save the created_at timestamp with current time, if created_at column is not passed as attribute', function() {
-        var model = new Models.Admin();
-        var createdAt = null
-
-        return model.save().then(function(m) {
-          createdAt = m.get('created_at');
-          return m.save('username','pablo');
-        })
-        .then(function(fin) {
-          expect(fin.get('created_at')).to.be.eql(createdAt);
-        });
       });
 
       it('will not set timestamps on the model if the associated columns are ommitted in fetch', function() {
