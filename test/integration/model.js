@@ -1133,36 +1133,6 @@ module.exports = function(bookshelf) {
       })
     });
 
-    describe('timestamp', function() {
-      it('will set the `updated_at` attribute to a date, and the `created_at` for new entries', function() {
-        var newModel      = new bookshelf.Model({}, {hasTimestamps: true});
-        var existingModel = new bookshelf.Model({id: 1}, {hasTimestamps: true});
-        newModel.timestamp();
-        existingModel.timestamp();
-
-        expect(newModel.get('created_at')).to.be.an.instanceOf(Date);
-        expect(newModel.get('updated_at')).to.be.an.instanceOf(Date);
-        expect(existingModel.get('created_at')).to.not.exist;
-        expect(existingModel.get('updated_at')).to.be.an.instanceOf(Date);
-      });
-
-      it('will set the `created_at` when inserting new entries', function() {
-        var model = new bookshelf.Model({id: 1}, {hasTimestamps: true});
-        model.timestamp({method: 'insert'});
-
-        expect(model.get('created_at')).to.be.an.instanceOf(Date);
-        expect(model.get('updated_at')).to.be.an.instanceOf(Date);
-      });
-
-      it('will not set timestamps on a model without `setTimestamps` set to true', function () {
-        var model = new bookshelf.Model();
-        model.timestamp();
-
-        expect(model.get('created_at')).to.not.exist;
-        expect(model.get('updated_at')).to.not.exist;
-      });
-    });
-
     describe('defaults', function() {
       it('assigns defaults on save, rather than initialize', function() {
         var Item = bookshelf.Model.extend({defaults: {item: 'test', json: {key1: 'defaultValue1', key2: 'defaultValue2'}}});
