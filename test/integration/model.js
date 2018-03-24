@@ -959,7 +959,7 @@ module.exports = function(bookshelf) {
       });
 
       describe('On update', function() {
-        it('does not set created_at when {method: "update"} is passed as option to save', function() {
+        it('does not update created_at when {method: "update"} is passed as option to save', function() {
           var m = new bookshelf.Model(null, {hasTimestamps: true});
           m.sync = function() {
             expect(this.get('created_at')).to.be.undefined;
@@ -970,7 +970,22 @@ module.exports = function(bookshelf) {
           return m.save({item: 'test'}, {method: 'update'});
         });
 
-        it('will update the updated_at timestamp if user doesn\'t set a value for it', function() {
+        it('does not update created_at timestamp if the user doesn\'t set it', function() {
+          var admin = new Models.Admin();
+          var originalDate;
+
+          return admin.save().then(function(savedAdmin) {
+            originalDate = savedAdmin.get('created_at');
+
+            return Promise.delay(100).then(function() {
+              return savedAdmin.save('username', 'pablo');
+            });
+          }).then(function(updatedAdmin) {
+            expect(updatedAdmin.get('created_at')).to.be.eql(originalDate);
+          });
+        });
+
+        it('will automatically set the updated_at timestamp if the user doesn\'t set it', function() {
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1044,8 +1059,13 @@ module.exports = function(bookshelf) {
       })
 
       describe('On insert', function() {
+        var m;
+
+        beforeEach(function() {
+          m = new (bookshelf.Model.extend({hasTimestamps: true}))();
+        })
+
         it('sets created_at when {method: "insert"} is passed as option', function() {
-          var m = new bookshelf.Model(null, {hasTimestamps: true});
           m.sync = function() {
             expect(this.get('created_at')).to.be.a('date');
             expect(this.get('updated_at')).to.be.a('date');
@@ -1056,7 +1076,6 @@ module.exports = function(bookshelf) {
         });
 
         it('will set the created_at and updated_at columns if true', function() {
-          var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
           m.sync = function() {
             expect(this.get('created_at')).to.be.a('date');
             expect(this.get('updated_at')).to.be.a('date');
@@ -1066,9 +1085,28 @@ module.exports = function(bookshelf) {
           return m.save({item: 'test'});
         });
 
+        it('sets created_at to the user specified value if present in the model\'s attributes', function() {
+          var userDate = new Date(1999, 1, 1);
+          m.sync = function() {
+            expect(this.get('created_at')).to.be.eql(userDate);
+            return stubSync;
+          };
+
+          return m.save({item: 'test', created_at: userDate});
+        })
+
+        it('sets updated_at to the user specified value if present in the model\'s attributes', function() {
+          var userDate = new Date(1999, 1, 1);
+          m.sync = function() {
+            expect(this.get('updated_at')).to.be.eql(userDate);
+            return stubSync;
+          };
+
+          return m.save({item: 'test', updated_at: userDate});
+        })
+
         it('will set the timestamps columns to provided time in date option', function() {
           var dateInThePast = new Date(1999, 1, 1);
-          var m = new (bookshelf.Model.extend({hasTimestamps: true}))();
           m.sync = function() {
             equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
             equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
