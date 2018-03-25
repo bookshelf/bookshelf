@@ -1064,7 +1064,7 @@ module.exports = function(bookshelf) {
           m = new (bookshelf.Model.extend({hasTimestamps: true}))();
         })
 
-        it('sets created_at when {method: "insert"} is passed as option', function() {
+        it('sets created_at and updated_at when {method: "insert"} is passed as option', function() {
           m.sync = function() {
             expect(this.get('created_at')).to.be.a('date');
             expect(this.get('updated_at')).to.be.a('date');
