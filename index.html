@@ -1829,7 +1829,7 @@ records with a null value in that column will be excluded from the count.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
           </span
-          ><a href="docs/src_base_model.js.html#line734" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line761" class="source-link">source</a></h4>
 
         
     
@@ -2440,13 +2440,39 @@ For inserts the default values will always be used if present.</p>
                   >model</span
                 >.</span><span class="name"><a href="#Model-instance-hasTimestamps">hasTimestamps</a></span><span class="type-signature"> :Boolean|Array</span>
           </span
-          ><a href="docs/src_base_model.js.html#line172" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line198" class="source-link">source</a></h4>
 
         
     
 
   <div class="attributes">
 
+    
+      <div class="example">
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var MyModel = bookshelf.Model.extend({
+  hasTimestamps: true,
+  tableName: 'my_table'
+})
+
+var myModel = MyModel.forge({name: 'blah'}).save().then(function(savedModel) {
+  // {
+  //   name: 'blah',
+  //   created_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)',
+  //   updated_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)'
+  // }
+})
+
+myModel.save({created_at: new Date(2015, 5, 2)}).then(function(updatedModel) {
+  // {
+  //   name: 'blah',
+  //   created_at: 'Tue Jun 02 2015 00:00:00 GMT+0100 (WEST)',
+  //   updated_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)'
+  // }
+})</code></pre>
+
+      </div>
     
 
     
@@ -2507,16 +2533,18 @@ For inserts the default values will always be used if present.</p>
 
   
     <div class="item-description">
-        <p>Sets the current date/time on the timestamps columns <code>created_at</code> and
-<code>updated_at</code> for a given method. The 'update' method will only update
-<code>updated_at</code>. To override the default column names, assign an array
-to <a href="#Model-instance-hasTimestamps"><code>hasTimestamps</code></a>.  The first element will
-be the created column name and the second will be the updated
-column name.
-You can pass values for the timestamps columns as parameter in the
-<a href="#Model-instance-save"><code>save</code></a> method. This will prevent the automatic
-update of the timestamps columns values during the <a href="#Model-instance-save"><code>save</code></a> method,
-while the final columns values will be the values you have specified.</p>
+        <p>Automatically sets the current date and time on the timestamp attributes
+<code>created_at</code> and <code>updated_at</code> based on the type of save method. The <em>update</em>
+method will only update <code>updated_at</code>, while the <em>insert</em> method will set
+both values.</p>
+<p>To override the default attribute names, assign an array to this property.
+The first element will be the <em>created</em> column name and the second will be
+the <em>updated</em> one. If any of these elements is set to <code>null</code> that particular
+timestamp attribute will not be used in the model. For example, to
+automatically update only the <code>created_at</code> attribute set this property to
+<code>['created_at', null]</code>.</p>
+<p>You can override the timestamp attribute values of a model and those values
+will be used instead of the automatic ones when saving.</p>
     </div>
   
 </div>
@@ -3286,7 +3314,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clear">clear</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line476" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line502" class="source-link">source</a></h4>
 
         
     
@@ -3390,7 +3418,7 @@ information.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-clone">clone</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line544" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line570" class="source-link">source</a></h4>
 
         
     
@@ -3655,7 +3683,7 @@ previous calls to <a href="#Model-instance-query"><code>Model#query</code></a>.<
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="#Model">Model</a>></span>
           </span
-          ><a href="docs/src_model.js.html#line1153" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1143" class="source-link">source</a></h4>
 
         
     
@@ -3874,7 +3902,7 @@ removal is completed.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-escape">escape</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  string</span>
           </span
-          ><a href="docs/src_base_model.js.html#line403" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line429" class="source-link">source</a></h4>
 
         
     
@@ -4669,7 +4697,7 @@ the options to the <code>fetchAll</code> call.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-format">format</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line504" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line530" class="source-link">source</a></h4>
 
         
     
@@ -4811,7 +4839,7 @@ opposite operation of <code>format</code>.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-get">get</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line207" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line233" class="source-link">source</a></h4>
 
         
     
@@ -4948,7 +4976,7 @@ opposite operation of <code>format</code>.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-has">has</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Boolean</span>
           </span
-          ><a href="docs/src_base_model.js.html#line414" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line440" class="source-link">source</a></h4>
 
         
     
@@ -5078,7 +5106,7 @@ opposite operation of <code>format</code>.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Boolean</span>
           </span
-          ><a href="docs/src_base_model.js.html#line650" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line677" class="source-link">source</a></h4>
 
         
     
@@ -5575,7 +5603,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-isNew">isNew</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_model.js.html#line310" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line336" class="source-link">source</a></h4>
 
         
     
@@ -6802,7 +6830,7 @@ for a combination of all events.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1322" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1312" class="source-link">source</a></h4>
 
         
     
@@ -6948,7 +6976,7 @@ table will be the table name of the model <code>orderBy</code> was called on.</p
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-parse">parse</a></span><span class="parenthesis">(</span><span class="item-name">attributes</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line450" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line476" class="source-link">source</a></h4>
 
         
     
@@ -7101,7 +7129,7 @@ opposite operation of <code>parse</code>.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
           </span
-          ><a href="docs/src_base_model.js.html#line665" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line692" class="source-link">source</a></h4>
 
         
     
@@ -7231,7 +7259,7 @@ opposite operation of <code>parse</code>.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line680" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line707" class="source-link">source</a></h4>
 
         
     
@@ -7337,7 +7365,7 @@ model, or getting back to a valid state after an error occurs.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|QueryBuilder</span>
           </span
-          ><a href="docs/src_model.js.html#line1244" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1234" class="source-link">source</a></h4>
 
         
     
@@ -7652,7 +7680,7 @@ all available fields.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-related">related</a></span><span class="parenthesis">(</span><span class="item-name">name</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a>|<a href="#Collection">Collection</a>|undefined</span>
           </span
-          ><a href="docs/src_base_model.js.html#line531" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line557" class="source-link">source</a></h4>
 
         
     
@@ -7805,7 +7833,7 @@ the relations hash if one exists and has not yet been loaded.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1231" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1221" class="source-link">source</a></h4>
 
         
     
@@ -8279,7 +8307,7 @@ Model.forge({id: 5}).save('name', 'John Smith').then(function() {
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-serialize">serialize</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line343" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line369" class="source-link">source</a></h4>
 
         
     
@@ -8473,7 +8501,7 @@ this function if you want to customize its output.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-set">set</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">value</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line254" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line280" class="source-link">source</a></h4>
 
         
     
@@ -8914,7 +8942,7 @@ let Paragraph = bookshelf.Model.extend({
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
           </span
-          ><a href="docs/src_base_model.js.html#line613" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line638" class="source-link">source</a></h4>
 
         
     
@@ -8965,27 +8993,8 @@ let Paragraph = bookshelf.Model.extend({
       
 
       <div class="description">
-        <p>Either <code>'insert'</code> or <code>'update'</code>. Specify what kind of save the attribute
+        <p>Either <code>'insert'</code> or <code>'update'</code> to specify what kind of save the attribute
   update is for.</p>
-        
-      </div>
-
-    </li>
-  
-    <li>
-      <code class="param"><span class="optional-bracket">[</span><span class="item-name">date</span><span class="optional-bracket">]</span></code>
-
-      
-          <code class="param-type"><span class="param-type"
-            ><code class="param-type"
-  >string</code
->
-</span></code>
-      
-
-      <div class="description">
-        <p>Either a Date object or ms since the epoch. Specify what date is used for
-  the timestamps updated.</p>
         
       </div>
 
@@ -9070,11 +9079,15 @@ let Paragraph = bookshelf.Model.extend({
 
   
     <div class="item-description">
-        <p>Sets the timestamp attributes on the model, if <a href="#Model-instance-hasTimestamps"><code>hasTimestamps</code></a> is set to <code>true</code> or an array. Check if the model <a href="#Model-instance-isNew"><code>isNew</code></a> or if <code>{method: 'insert'}</code> is provided as an option and
-set the <code>created_at</code> and <code>updated_at</code> attributes to the current date if it
-is being inserted, and just the <code>updated_at</code> attribute if it's being updated.
-This method may be overriden to use different column names or types for the
-timestamps.</p>
+        <p>Automatically sets the timestamp attributes on the model, if
+<a href="#Model-instance-hasTimestamps"><code>hasTimestamps</code></a> is set to <code>true</code> or an array. It
+checks if the model is new and sets the <code>created_at</code> and <code>updated_at</code>
+attributes (or any other custom attribute names you have set) to the current
+date. If the model is not new and is just being updated then only the
+<code>updated_at</code> attribute gets automatically updated.</p>
+<p>If the model contains any user defined <code>created_at</code> or <code>updated_at</code> values,
+there won't be any automatic updated of these attributes and the user
+supplied values will be used instead.</p>
     </div>
   
 </div>
@@ -9093,7 +9106,7 @@ timestamps.</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-toJSON">toJSON</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_base_model.js.html#line384" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line410" class="source-link">source</a></h4>
 
         
     
@@ -9451,7 +9464,7 @@ event handlers (for validations, etc).</p>
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-unset">unset</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_base_model.js.html#line467" class="source-link">source</a></h4>
+          ><a href="docs/src_base_model.js.html#line493" class="source-link">source</a></h4>
 
         
     
@@ -9580,7 +9593,7 @@ column in the database record, set the attribute value to <code>null</code> inst
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="#Model">Model</a></span>
           </span
-          ><a href="docs/src_model.js.html#line1292" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1282" class="source-link">source</a></h4>
 
         
     
@@ -9938,7 +9951,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">newId</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1123" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1113" class="source-link">source</a></h4>
 
         
     
@@ -10101,7 +10114,7 @@ returned from the event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1041" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1031" class="source-link">source</a></h4>
 
         
     
@@ -10271,7 +10284,7 @@ exception from the handler will cancel the save operation.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1216" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1206" class="source-link">source</a></h4>
 
         
     
@@ -10417,7 +10430,7 @@ handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1195" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1185" class="source-link">source</a></h4>
 
         
     
@@ -10921,7 +10934,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">response</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1108" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1098" class="source-link">source</a></h4>
 
         
     
@@ -11088,7 +11101,7 @@ event handler for async behaviour.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1018" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1008" class="source-link">source</a></h4>
 
         
     
@@ -11259,7 +11272,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">affectedRows</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1135" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1125" class="source-link">source</a></h4>
 
         
     
@@ -11422,7 +11435,7 @@ exception from the handler will cancel the save.</p>
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
           </span
-          ><a href="docs/src_model.js.html#line1062" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1052" class="source-link">source</a></h4>
 
         
     
@@ -11946,7 +11959,7 @@ may be returned from the event handler for async behaviour.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1446" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1436" class="source-link">source</a></h4>
 
         
     
@@ -12086,7 +12099,7 @@ may be returned from the event handler for async behaviour.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1437" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1427" class="source-link">source</a></h4>
 
         
     
@@ -12226,7 +12239,7 @@ may be returned from the event handler for async behaviour.</p>
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
           </span
-          ><a href="docs/src_model.js.html#line1427" class="source-link">source</a></h4>
+          ><a href="docs/src_model.js.html#line1417" class="source-link">source</a></h4>
 
         
     
@@ -19704,7 +19717,17 @@ event handlers (for validations, etc).</p>
 
 <article class="tutorial">
   <h2 id=""></h2>
-  <h2>Change Log</h2><p><strong>0.13.2</strong> <small><em>Mar 23, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.0...0.13.2">Diff</a></p>
+  <h2>Change Log</h2><p><strong>0.13.3</strong> <small><em>Mar 26, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3">Diff</a></p>
+<h4>Potentially breaking changes</h4><ul>
+<li>Saving a model that hasn't changed will not update its <code>updated_at</code> attribute. This was included in a patch release because the chances of any applications depending on this behavior are very small: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
+</ul>
+<h4>Bug fixes</h4><ul>
+<li>Clean up automatic timestamps feature: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
+</ul>
+<h4>Documentation</h4><ul>
+<li>Expand documentation of the automatic timestamps feature: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
+</ul>
+<p><strong>0.13.2</strong> <small><em>Mar 23, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.0...0.13.2">Diff</a></p>
 <h4>Bug fixes</h4><ul>
 <li>Fix timestamps set with Invalid Date in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1796">#1796</a></li>
 </ul>
@@ -20140,7 +20163,7 @@ event handlers (for validations, etc).</p>
           <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
           
             on
-          March 23rd 2018
+          March 26th 2018
         </div>
         <div>
           <a href="https://github.com/aral/fork-me-on-github-retina-ribbons">
