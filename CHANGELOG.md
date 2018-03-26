@@ -1,5 +1,16 @@
 ## Change Log
 
+**0.13.3** <small>_Mar 26, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3)
+
+#### Potentially breaking changes
+- Saving a model that hasn't changed will not update its `updated_at` attribute. This was included in a patch release because the chances of any applications depending on this behavior are very small: [#1798](https://github.com/bookshelf/bookshelf/pull/1798)
+
+#### Bug fixes
+- Clean up automatic timestamps feature: [#1798](https://github.com/bookshelf/bookshelf/pull/1798)
+
+#### Documentation
+- Expand documentation of the automatic timestamps feature: [#1798](https://github.com/bookshelf/bookshelf/pull/1798)
+
 **0.13.2** <small>_Mar 23, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.0...0.13.2)
 
 #### Bug fixes
