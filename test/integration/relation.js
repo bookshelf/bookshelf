@@ -158,7 +158,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `doctormeta`.* from `doctormeta` where `doctormeta`.`doctoring_id` = 1 limit 1');
+        equal(_knex.toString(), 'select distinct `doctormeta`.* from `doctormeta` where `doctormeta`.`doctoring_id` = 1 limit 1');
       });
 
       it('should handle a hasOne -> through relation', function() {
@@ -193,7 +193,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1 limit 1';
+        var sql = 'select distinct `account_histories`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `account_histories` inner join `accounts` on `accounts`.`id` = `account_histories`.`account_id` where `accounts`.`supplier_id` = 1 limit 1';
 
         equal(_knex.toString(), sql);
       });
@@ -230,7 +230,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `suppliers`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `suppliers` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1 limit 1';
+        var sql = 'select distinct `suppliers`.*, `accounts`.`id` as `_pivot_id`, `accounts`.`supplier_id` as `_pivot_supplier_id` from `suppliers` inner join `accounts` on `accounts`.`supplier_id` = `suppliers`.`id` inner join `account_histories` on `accounts`.`id` = `account_histories`.`account_id` where `account_histories`.`id` = 1 limit 1';
 
         equal(_knex.toString(), sql);
       });
@@ -267,7 +267,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `patients`.*, `appointments`.`id` as `_pivot_id`, `appointments`.`doctor_id` as `_pivot_doctor_id`, `appointments`.`patient_id` as `_pivot_patient_id` from `patients` inner join `appointments` on `appointments`.`patient_id` = `patients`.`id` where `appointments`.`doctor_id` = 1';
+        var sql = 'select distinct `patients`.*, `appointments`.`id` as `_pivot_id`, `appointments`.`doctor_id` as `_pivot_doctor_id`, `appointments`.`patient_id` as `_pivot_patient_id` from `patients` inner join `appointments` on `appointments`.`patient_id` = `patients`.`id` where `appointments`.`doctor_id` = 1';
 
         equal(_knex.toString(), sql);
       });
@@ -297,7 +297,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `patients`.*, `doctors_patients`.`doctor_id` as `_pivot_doctor_id`, `doctors_patients`.`patient_id` as `_pivot_patient_id` from `patients` inner join `doctors_patients` on `doctors_patients`.`patient_id` = `patients`.`id` where `doctors_patients`.`doctor_id` = 1';
+        var sql = 'select distinct `patients`.*, `doctors_patients`.`doctor_id` as `_pivot_doctor_id`, `doctors_patients`.`patient_id` as `_pivot_patient_id` from `patients` inner join `doctors_patients` on `doctors_patients`.`patient_id` = `patients`.`id` where `doctors_patients`.`doctor_id` = 1';
 
         equal(_knex.toString(), sql);
       });
@@ -325,7 +325,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = "select `photos`.* from `photos` where `photos`.`imageable_id` = 1 and `photos`.`imageable_type` = 'doctors'";
+        var sql = "select distinct `photos`.* from `photos` where `photos`.`imageable_id` = 1 and `photos`.`imageable_type` = 'doctors'";
 
         equal(_knex.toString(), sql);
       });
@@ -353,7 +353,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `translations`.* from `translations` where `translations`.`code` = \'en\' limit 1');
+        equal(_knex.toString(), 'select distinct `translations`.* from `translations` where `translations`.`code` = \'en\' limit 1');
       });
 
       it('should handle a hasOne -> through relation with explicit foreignKeyTarget', function() {
@@ -388,7 +388,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\' limit 1');
+        equal(_knex.toString(), 'select distinct `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\' limit 1');
       });
 
       it('should handle a hasMany relation with explicit foreignKeyTarget', function() {
@@ -414,7 +414,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `translations`.* from `translations` where `translations`.`code` = \'en\'');
+        equal(_knex.toString(), 'select distinct `translations`.* from `translations` where `translations`.`code` = \'en\'');
       });
 
       it('should handle a hasMany -> through relation with explicit foreignKeyTarget', function() {
@@ -449,7 +449,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        equal(_knex.toString(), 'select `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\'');
+        equal(_knex.toString(), 'select distinct `locales`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `locales` inner join `translations` on `translations`.`code` = `locales`.`isoCode` where `translations`.`customer` = \'foobar\'');
       });
 
       it('should handle a belongsTo relation with explicit foreignKeyTarget', function() {
@@ -475,7 +475,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `locales`.* from `locales` where `locales`.`isoCode` = \'en\' limit 1';
+        var sql = 'select distinct `locales`.* from `locales` where `locales`.`isoCode` = \'en\' limit 1';
 
         equal(_knex.toString(), sql);
       });
@@ -512,7 +512,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` inner join `locales` on `translations`.`code` = `locales`.`isoCode` where `locales`.`isoCode` = \'en\' limit 1';
+        var sql = 'select distinct `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` inner join `locales` on `translations`.`code` = `locales`.`isoCode` where `locales`.`isoCode` = \'en\' limit 1';
 
         equal(_knex.toString(), sql);
       });
@@ -543,7 +543,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
+        var sql = 'select distinct `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
 
         equal(_knex.toString(), sql);
       });
@@ -581,7 +581,7 @@ module.exports = function(Bookshelf) {
         // init the select constraints
         relatedData.selectConstraints(_knex, {});
 
-        var sql = 'select `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
+        var sql = 'select distinct `customers`.*, `translations`.`code` as `_pivot_code`, `translations`.`code` as `_pivot_code`, `translations`.`customer` as `_pivot_customer` from `customers` inner join `translations` on `translations`.`customer` = `customers`.`name` where `translations`.`code` = \'en\'';
 
         equal(_knex.toString(), sql);
       });
