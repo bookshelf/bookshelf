@@ -32,6 +32,10 @@ const DEFAULT_PAGE = 1;
 module.exports = function paginationPlugin (bookshelf) {
   const Model = bookshelf.Model;
   /**
+   * In order to use this function, you must have the {@link
+   * https://github.com/bookshelf/bookshelf/wiki/Plugin:-Pagination Pagination}
+   * plugin installed.
+   *
    * @method Model#fetchPage
    * @belongsTo Model
    *
