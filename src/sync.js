@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Promise from './base/promise';
 
 const supportsReturning = (client) => _.includes(['postgresql', 'postgres', 'pg', 'oracle', 'mssql'], client)
+const validLocks = ['forShare', 'forUpdate']
 
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
@@ -16,7 +17,10 @@ const Sync = function(syncing, options) {
   this.syncing = syncing.resetQuery();
   this.options = options;
   if (options.debug) this.query.debug();
-  if (options.transacting) this.query.transacting(options.transacting);
+  if (options.transacting) {
+    this.query.transacting(options.transacting);
+    if (validLocks.indexOf(options.lock) > -1) this.query[options.lock]();
+  }
   if (options.withSchema) this.query.withSchema(options.withSchema);
 };
 
