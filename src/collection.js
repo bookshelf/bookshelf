@@ -214,8 +214,12 @@ const BookshelfCollection = CollectionBase.extend({
    *   Model.NotFoundError NotFoundError} if no result is found.
    * @param {(string|string[])} [options.columns='*']
    *   Limit the number of columns fetched.
-   * @param {Transaction} options.transacting
+   * @param {Transaction} [options.transacting]
    *  Optionally run the query in a transaction.
+   * @param {string} [options.lock]
+   *  Type of row-level lock to use. Valid options are `forShare` and
+   *  `forUpdate`. This only works in conjunction with the `transacting`
+   *  option, and requires a database that supports it.
    *
    * @throws {Model.NotFoundError}
    * @returns {Promise<Model|null>}
@@ -240,6 +244,10 @@ const BookshelfCollection = CollectionBase.extend({
    *  @param {string|string[]} relations The relation, or relations, to be loaded.
    *  @param {Object=}      options Hash of options.
    *  @param {Transaction=} options.transacting
+   *  @param {string=} options.lock
+   *  Type of row-level lock to use. Valid options are `forShare` and
+   *  `forUpdate`. This only works in conjunction with the `transacting`
+   *  option, and requires a database that supports it.
    *
    *  @returns {Promise<Collection>} A promise resolving to this {@link
    *  Collection collection}
