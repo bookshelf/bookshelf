@@ -58,6 +58,34 @@ module.exports = function() {
       setSchema.should.have.been.calledWith(testSchema);
     })
 
+    it('accepts a lock option option if called with a transaction', function() {
+      var setLock = sinon.spy();
+      var mockModel = {
+        query: function() {
+          return {forUpdate: setLock, transacting: function() {}}
+        },
+        resetQuery: function() {}
+      }
+
+      new Sync(mockModel, {lock: 'forUpdate', transacting: 'something'});
+
+      setLock.should.have.been.called;
+    })
+
+    it('ignores the lock option if called without a transaction', function() {
+      var setLock = sinon.spy();
+      var mockModel = {
+        query: function() {
+          return {forUpdate: setLock, transacting: function() {}}
+        },
+        resetQuery: function() {}
+      }
+
+      new Sync(mockModel, {lock: 'forUpdate'});
+
+      setLock.should.not.have.been.called;
+    })
+
     describe('prefixFields', function() {
       it('should prefix all keys of the passed in object with the tablename', function() {
         var sync = new Sync(stubModel());

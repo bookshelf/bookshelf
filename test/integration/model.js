@@ -446,6 +446,56 @@ module.exports = function(bookshelf) {
           expect(author.get('name')).to.eql('Ryan Coogler');
         })
       })
+
+      it('locks the table when called with the forUpdate option during a transaction', function() {
+        var newAuthorId;
+
+        return new Models.Author().save({first_name: 'foo', site_id: 1}).then(function(author) {
+          newAuthorId = author.id;
+
+          return Promise.all([
+            bookshelf.transaction(function(t) {
+              return new Models.Author({id: author.id}).fetch({transacting: t, lock: 'forUpdate'}).then(function() {
+                return Promise.delay(100)
+              }).then(function() {
+                return new Models.Author({id: author.id}).fetch({transacting: t})
+              }).then(function(author) {
+                expect(author.get('first_name')).to.equal('foo')
+              })
+            }),
+            Promise.delay(25).then(function() {
+              return new Models.Author({id: author.id}).save({first_name: 'changed'})
+            })
+          ])
+        }).then(function() {
+          return new Models.Author({id: newAuthorId}).destroy()
+        })
+      })
+
+      it('locks the table when called with the forShare option during a transaction', function() {
+        var newAuthorId;
+
+        return new Models.Author().save({first_name: 'foo', site_id: 1}).then(function(author) {
+          newAuthorId = author.id;
+
+          return Promise.all([
+            bookshelf.transaction(function(t) {
+              return new Models.Author({id: author.id}).fetch({transacting: t, lock: 'forShare'}).then(function() {
+                return Promise.delay(100)
+              }).then(function() {
+                return new Models.Author({id: author.id}).fetch({transacting: t})
+              }).then(function(author) {
+                expect(author.get('first_name')).to.equal('foo')
+              })
+            }),
+            Promise.delay(25).then(function() {
+              return new Models.Author({id: author.id}).save({first_name: 'changed'})
+            })
+          ])
+        }).then(function() {
+          return new Models.Author({id: newAuthorId}).destroy()
+        })
+      })
     });
 
     describe('fetchAll', function() {
