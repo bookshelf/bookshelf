@@ -233,7 +233,7 @@ export default RelationBase.extend({
     const currentColumns = _.find(knex._statements, {grouping: 'columns'});
 
     if (!currentColumns || currentColumns.length === 0) {
-      knex.column(this.targetTableName + '.*');
+      knex.distinct(this.targetTableName + '.*');
     }
 
     if (this.isJoined()) this.joinColumns(knex);
