@@ -657,6 +657,10 @@ const BookshelfModel = ModelBase.extend({
    *   Specify columns to be retrieved.
    * @param {Transaction} [options.transacting]
    *  Optionally run the query in a transaction.
+   * @param {string} [options.lock]
+   *  Type of row-level lock to use. Valid options are `forShare` and
+   *  `forUpdate`. This only works in conjunction with the `transacting`
+   *  option, and requires a database that supports it.
    * @param {string|Object|mixed[]} [options.withRelated]
    *  Relations to be retrieved with `Model` instance. Either one or more
    *  relation names or objects mapping relation names to query callbacks.
@@ -859,6 +863,10 @@ const BookshelfModel = ModelBase.extend({
    * @param {Object=}      options Hash of options.
    * @param {Transaction=} options.transacting
    *   Optionally run the query in a transaction.
+   * @param {string=} options.lock
+   *  Type of row-level lock to use. Valid options are `forShare` and
+   *  `forUpdate`. This only works in conjunction with the `transacting`
+   *  option, and requires a database that supports it.
    * @returns {Promise<Model>} A promise resolving to this {@link Model model}
    */
   load: Promise.method(function(relations, options) {

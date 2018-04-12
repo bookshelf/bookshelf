@@ -193,6 +193,11 @@ function Bookshelf(knex) {
      * resolve when the transaction is committed, or fail if the transaction is
      * rolled back.
      *
+     * When fetching inside a transaction it's possible to specify a row-level
+     * lock by passing the wanted lock type in the `lock` option to
+     * {@linkcode Model#fetch fetch}. Available options are `forUpdate` and
+     * `forShare`.
+     *
      *     var Promise = require('bluebird');
      *
      *     Bookshelf.transaction(function(t) {
