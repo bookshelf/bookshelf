@@ -100,6 +100,10 @@ const addOptions = {add: true, remove: false};
  */
 CollectionBase.prototype.initialize = noop;
 
+CollectionBase.prototype[Symbol.iterator] = function () {
+  return this.toArray()[Symbol.iterator]();
+};
+
 /**
  * @method
  * @private
