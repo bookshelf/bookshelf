@@ -53,9 +53,9 @@ export default class EagerRelation extends EagerBase {
 
       return type
     });
-    const TargetByType = _.mapValues(parentsByType, (parents, type) => {
-      return Helpers.morphCandidate(relatedData.candidates, type)
-    });
+    const TargetByType = _.mapValues(parentsByType, (parents, type) =>
+      Helpers.morphCandidate(relatedData.candidates, type)
+    );
 
     return Promise.all(_.map(parentsByType, (parents, type) => {
       const Target = TargetByType[type];
