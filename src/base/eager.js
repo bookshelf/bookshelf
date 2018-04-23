@@ -74,8 +74,8 @@ _.extend(EagerBase.prototype, {
     return Promise.all(pendingDeferred).return(this.parentResponse);
   }),
 
-  // Prep the `withRelated` object, to normalize into an object where each
-  // has a function that is called when running the query.
+  // Prep the `withRelated` object, to normalize into an object, where the value
+  // of each key is a function that is called when running the query.
   prepWithRelated: function(withRelated) {
     if (!_.isArray(withRelated)) withRelated = [withRelated];
     const obj = {};
