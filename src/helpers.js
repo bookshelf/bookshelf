@@ -21,13 +21,14 @@ const helpers = {
     return model.set(model.parse(data));
   },
 
-  // Finds the specific `morphTo` table we should be working with, or throws
+  // Finds the specific `morphTo` target Model we should be working with, or throws
   // an error if none is matched.
   morphCandidate: function(candidates, morphValue) {
-    const [Target] = _.find(candidates, ([,tableName]) => tableName === morphValue);
-    if (!Target) {
-      throw new Error('The target polymorphic model was not found');
-    }
+    const [Target] = _.find(candidates, ([,tableName]) => tableName === morphValue) || [];
+
+    if (!Target)
+      throw new Error('The target polymorphic type "' + morphValue + '" is not one of the defined target types');
+
     return Target;
   },
 

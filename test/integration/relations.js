@@ -708,6 +708,27 @@ module.exports = function(Bookshelf) {
             var expectedMessage = 'The target polymorphic model could not be determined because it\'s missing the ' +
                                   'type attribute'
             expect(error.message).to.equal(expectedMessage)
+          }).finally(function() {
+            return Photo.where('imageable_type', null).destroy({require: false})
+          })
+        })
+
+        it('throws an error if the type attribute is not one of the expected types', function() {
+          var badType = 'not the one'
+
+          return Bookshelf.knex('photos').insert({
+            caption: 'a caption',
+            imageable_id: 1,
+            imageable_type: badType
+          }).then(function() {
+            return Photo.fetchAll({withRelated: ['imageable']})
+          }).then(function(photos) {
+            expect(photos).to.be.undefined
+          }).catch(function(error) {
+            var expectedMessage = 'The target polymorphic type "' + badType + '" is not one of the defined target types'
+            expect(error.message).to.equal(expectedMessage)
+          }).finally(function() {
+            return Photo.where('imageable_type', badType).destroy({require: false})
           })
         })
       });
