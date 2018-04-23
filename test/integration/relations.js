@@ -1,12 +1,19 @@
-var Promise   = global.testPromise;
-var equal     = require('assert').equal;
+var Promise = global.testPromise;
+var equal = require('assert').equal;
+var helpers = require('./helpers')
 
 module.exports = function(Bookshelf) {
   describe('Relations', function() {
     var output  = require('./output/Relations');
     var dialect = Bookshelf.knex.client.dialect;
     var json    = function(model) {
-      return JSON.parse(JSON.stringify(model));
+      model = model.toJSON()
+
+      if (Array.isArray(model))  {
+        return helpers.sortCollection(model)
+      }
+
+      return helpers.sort(model)
     };
     var checkTest = function(ctx) {
       return function(resp) {
