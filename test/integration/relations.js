@@ -698,6 +698,18 @@ module.exports = function(Bookshelf) {
         it('eager loads beyond the morphTo with custom columnNames, where possible', function() {
           return Thumbnail.fetchAll({withRelated: ['imageable.authors']}).tap(checkTest(this));
         });
+
+        it('throws an error if the type attribute is not defined', function() {
+          return Bookshelf.knex('photos').insert({caption: 'a caption', imageable_id: 1}).then(function() {
+            return Photo.fetchAll({withRelated: ['imageable']})
+          }).then(function(photos) {
+            expect(photos).to.be.undefined;
+          }).catch(function(error) {
+            var expectedMessage = 'The target polymorphic model could not be determined because it\'s missing the ' +
+                                  'type attribute'
+            expect(error.message).to.equal(expectedMessage)
+          })
+        })
       });
 
       describe('`through` relations', function() {

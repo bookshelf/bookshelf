@@ -45,10 +45,17 @@ export default class EagerRelation extends EagerBase {
       typeColumn = `${morphName}_type`, idColumn = `${morphName}_id`
     ] = columnNames;
 
-    const parentsByType = _.groupBy(this.parent, model => model.get(typeColumn));
-    const TargetByType = _.mapValues(parentsByType, (parents, type) =>
-      Helpers.morphCandidate(relatedData.candidates, type)
-    );
+    const parentsByType = _.groupBy(this.parent, model => {
+      const type = model.get(typeColumn);
+
+      if (!type)
+        throw new Error('The target polymorphic model could not be determined because it\'s missing the type attribute')
+
+      return type
+    });
+    const TargetByType = _.mapValues(parentsByType, (parents, type) => {
+      return Helpers.morphCandidate(relatedData.candidates, type)
+    });
 
     return Promise.all(_.map(parentsByType, (parents, type) => {
       const Target = TargetByType[type];
