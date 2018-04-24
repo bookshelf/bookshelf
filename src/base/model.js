@@ -1,7 +1,6 @@
 // Base Model
 // ---------------
 import _, { assign, identity, mapKeys, mapValues, clone } from 'lodash';
-import {deprecate} from '../helpers';
 import inherits from 'inherits';
 import Events from './events';
 import {PIVOT_PREFIX, DEFAULT_TIMESTAMP_KEYS} from '../constants';
@@ -633,6 +632,9 @@ ModelBase.prototype.getTimestampKeys = function() {
  * @param {string} [options.method]
  *   Either `'insert'` or `'update'` to specify what kind of save the attribute
  *   update is for.
+ * @param {string} [options.date]
+ *   Either a Date object or ms since the epoch. Specify what date is used for
+ *   updateing the timestamps, i.e. if something other than `new Date()` should be used.
  * @returns {Object} A hash of timestamp attributes that were set.
  */
 ModelBase.prototype.timestamp = function(options) {
@@ -644,8 +646,6 @@ ModelBase.prototype.timestamp = function(options) {
   const [createdAtKey, updatedAtKey] = this.getTimestampKeys();
   const isNewModel = method === 'insert';
   const setUpdatedAt = updatedAtKey && this.hasChanged(updatedAtKey)
-
-  if (options && options.date) deprecate('options.date', 'the model\'s timestamp attributes to set these values')
 
   if (updatedAtKey && (isNewModel && !setUpdatedAt || this.hasChanged() && !setUpdatedAt)) {
     attributes[updatedAtKey] = now;
