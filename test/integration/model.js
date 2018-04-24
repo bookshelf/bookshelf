@@ -1153,6 +1153,17 @@ module.exports = function(bookshelf) {
 
           return m.save({item: 'test', updated_at: userDate});
         })
+
+        it('will set the timestamps columns to provided time in date option', function() {
+          var dateInThePast = new Date(1999, 1, 1);
+          m.sync = function() {
+            equal(this.get('created_at').toISOString(), dateInThePast.toISOString());
+            equal(this.get('updated_at').toISOString(), dateInThePast.toISOString());
+            return stubSync;
+          };
+
+          return m.save({item: 'test'}, {date: dateInThePast});
+        });
       })
 
       it('allows passing hasTimestamps in the options hash of model instantiation', function() {
