@@ -647,7 +647,7 @@ ModelBase.prototype.timestamp = function(options) {
 
   if (options && options.date) deprecate('options.date', 'the model\'s timestamp attributes to set these values')
 
-  if (isNewModel && !setUpdatedAt || this.hasChanged() && !setUpdatedAt) {
+  if (updatedAtKey && (isNewModel && !setUpdatedAt || this.hasChanged() && !setUpdatedAt)) {
     attributes[updatedAtKey] = now;
   }
 
