@@ -16,3 +16,23 @@ exports.countModels = function countModels(Model, options) {
     });
   }
 }
+
+exports.sort = function sort(model) {
+  var sorted = {}
+
+  for (var attribute in model) {
+    sorted[attribute] = this.sortCollection(model[attribute])
+  }
+
+  return sorted
+}
+
+exports.sortCollection = function sortCollection(collection) {
+  if (!Array.isArray(collection)) return collection
+
+  collection.sort(function(model1, model2) {
+    return model1.id - model2.id
+  })
+
+  return collection.map(this.sort, exports)
+}
