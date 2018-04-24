@@ -1199,6 +1199,16 @@ module.exports = function(bookshelf) {
         return m.save({item: 'test'});
       });
 
+      it('will not set an attribute named "null" when passing a literal null as a key name', function() {
+        var m = new bookshelf.Model(null, {hasTimestamps: ['createdAt', null]});
+        m.sync = function() {
+          expect(this.get('null')).to.be.undefined;
+          return stubSync;
+        };
+
+        return m.save({item: 'test'});
+      })
+
       it('will accept a falsy value as an option for the created key to ignore it', function() {
         var m = new bookshelf.Model(null, {hasTimestamps: [null, 'updatedAt']});
         m.sync = function() {

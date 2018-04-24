@@ -1,16 +1,24 @@
-var Promise   = global.testPromise;
-var equal     = require('assert').equal;
+var Promise = global.testPromise;
+var equal = require('assert').equal;
+var helpers = require('./helpers')
 
 module.exports = function(Bookshelf) {
   describe('Relations', function() {
     var output  = require('./output/Relations');
     var dialect = Bookshelf.knex.client.dialect;
     var json    = function(model) {
-      return JSON.parse(JSON.stringify(model));
+      model = model.toJSON()
+
+      if (Array.isArray(model))  {
+        return helpers.sortCollection(model)
+      }
+
+      return helpers.sort(model)
     };
-    var checkTest = function(ctx) {
+    var checkTest = function(ctx, options) {
       return function(resp) {
-        expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);
+        resp = options && options.sort === false ? resp.toJSON() : json(resp)
+        expect(resp).to.eql(output[ctx.test.title][dialect].result)
       };
     };
 
@@ -248,15 +256,12 @@ module.exports = function(Bookshelf) {
                 return qb.orderBy('posts.id', 'ASC')
               }
             }
-          }).then(checkTest(this));
+          }).then(checkTest(this, {sort: false}));
         });
 
         it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.ownPosts', 'authors.site',
-            {'blogs.posts': function (qb) {
-              return qb.orderBy('posts.id', 'ASC')
-            }}]
+            withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
           }).then(checkTest(this));
         });
       });
@@ -730,7 +735,7 @@ module.exports = function(Bookshelf) {
             { blogs: function (qb) {
               return qb.orderBy('blogs.id', 'ASC');
             }}
-          }).tap(checkTest(this));
+          }).tap(checkTest(this, {sort: false}));
         });
 
         it('eager loads belongsTo `through`', function() {
