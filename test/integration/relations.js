@@ -15,9 +15,10 @@ module.exports = function(Bookshelf) {
 
       return helpers.sort(model)
     };
-    var checkTest = function(ctx) {
+    var checkTest = function(ctx, options) {
       return function(resp) {
-        expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);
+        resp = options && options.sort === false ? resp.toJSON() : json(resp)
+        expect(resp).to.eql(output[ctx.test.title][dialect].result)
       };
     };
 
@@ -255,15 +256,12 @@ module.exports = function(Bookshelf) {
                 return qb.orderBy('posts.id', 'ASC')
               }
             }
-          }).then(checkTest(this));
+          }).then(checkTest(this, {sort: false}));
         });
 
         it('does multi deep eager loads (site -> authors.ownPosts, authors.site, blogs.posts)', function() {
           return new Site({id: 1}).fetch({
-            withRelated: ['authors.ownPosts', 'authors.site',
-            {'blogs.posts': function (qb) {
-              return qb.orderBy('posts.id', 'ASC')
-            }}]
+            withRelated: ['authors.ownPosts', 'authors.site', 'blogs.posts']
           }).then(checkTest(this));
         });
       });
@@ -737,7 +735,7 @@ module.exports = function(Bookshelf) {
             { blogs: function (qb) {
               return qb.orderBy('blogs.id', 'ASC');
             }}
-          }).tap(checkTest(this));
+          }).tap(checkTest(this, {sort: false}));
         });
 
         it('eager loads belongsTo `through`', function() {
