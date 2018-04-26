@@ -17,6 +17,7 @@ node_js:
   - '6'
   - '7'
 #  - '8' Disabled until either we fix the babel compilation error or remove babel
+  - '10'
 
 before_script:
   - psql -c 'create database bookshelf_test;' -U postgres
