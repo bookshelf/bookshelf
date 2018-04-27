@@ -810,25 +810,33 @@ const BookshelfModel = ModelBase.extend({
          * may be returned from the event handler for async behaviour.
          *
          * @event Model#fetching:collection
-         * @param {Model}    collection The collection that has been fetched.
-         * @param {string[]} columns    The columns being retrieved by the query.
-         * @param {Object}   options    Options object passed to {@link Model#fetchAll fetchAll}.
+         * @param {Collection} collection
+         *  The collection that is going to be fetched. At this point it's still empty since the
+         *  fetch hasn't happened yet.
+         * @param {string[]} columns
+         *  The columns to be retrieved by the query as provided by the underlying query builder.
+         *  If the `columns` option is not specified the value of this will usually be an array
+         *  with a single string `'tableName.*'`.
+         * @param {Object} options Options object passed to {@link Model#fetchAll fetchAll}.
          * @returns {Promise}
          */
         return this.triggerThen('fetching:collection', collection, columns, opts);
       })
-      .once('fetched', (__, resp, opts) => {
+      .once('fetched', (__, response, opts) => {
         /**
          * Fired after a {@link Model#fetchAll fetchAll} operation. A promise
          * may be returned from the event handler for async behaviour.
          *
          * @event Model#fetched:collection
-         * @param {Model}  collection The collection that has been fetched.
-         * @param {Object} resp       The Knex query response.
-         * @param {Object} options    Options object passed to {@link Model#fetchAll fetchAll}.
+         * @param {Collection} collection The collection that has been fetched.
+         * @param {Object} response
+         *  The raw response from the underlying query builder. This will be an array with objects
+         *  representing each row, similar to the output of a
+         *  {@link Model#serialize serialized Model}.
+         * @param {Object} options Options object passed to {@link Model#fetchAll fetchAll}.
          * @returns {Promise}
          */
-        return this.triggerThen('fetched:collection', collection, resp, opts);
+        return this.triggerThen('fetched:collection', collection, response, opts);
       })
       .fetch(options);
   },
