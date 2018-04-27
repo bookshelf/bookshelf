@@ -29,6 +29,15 @@ module.exports = function() {
       equal(collection.tableName(), 'test_table');
     });
 
+    it('should be iterable', function () {
+      var models = []
+      collection = new Collection([{some_id: 1}, {some_id: 2}]);
+      for (var model of collection) {
+        models.push(model)
+      }
+      equal(models.length, collection.length)
+    })
+
     it('should have an idAttribute method, returning the idAttribute of the model', function() {
       equal(collection.idAttribute(), 'some_id');
     });
