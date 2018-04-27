@@ -601,6 +601,11 @@ CollectionBase.prototype._reset = function() {
   this._byId  = Object.create(null);
 };
 
+// Make collection iterable in for of loops
+CollectionBase.prototype[Symbol.iterator] = function*() {
+  yield * this.models
+}
+
 /**
  * @method CollectionBase#forEach
  * @see http://lodash.com/docs/#forEach
