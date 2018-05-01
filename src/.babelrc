@@ -1,8 +1,0 @@
-{
-  "presets": ["es2015"],
-  "plugins": [
-    "syntax-object-rest-spread",
-    "transform-object-rest-spread",
-    ["transform-runtime", {"polyfill": false}]
-  ]
-}
