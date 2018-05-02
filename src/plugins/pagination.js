@@ -167,9 +167,20 @@ module.exports = function paginationPlugin (bookshelf) {
         'groupByRaw'
       ];
       const counter = this.clone();
+      const countIds = [];
 
       return counter.query(qb => {
         assign(qb, this.query().clone());
+        
+        // Check the group by values
+        // for count query
+         (qb._statements.forEach(statement => {
+              if ( statement.grouping === 'group') {
+                  (statement.value.forEach(value => {
+                      countIds.push(tableName + '.' + value);
+                  }));
+              }
+          }));
 
         // Remove grouping and ordering. Ordering is unnecessary
         // for a count, and grouping returns the entire result set
@@ -183,7 +194,11 @@ module.exports = function paginationPlugin (bookshelf) {
           // eg. pivotal coulmns for belongsToMany relation.
           counter.relatedData.joinColumns = noop;
         }
-        qb.countDistinct.apply(qb, [targetIdColumn]);
+       
+       // if Group By? check by countIds
+       if(countIds && countIds.length > 0) {
+             qb.distinct.apply(qb, countIds).from(tableName);
+        } else  qb.countDistinct.apply(qb, [targetIdColumn]);
 
     })[fetchMethodName]({transacting}).then(result => {
 
@@ -201,6 +216,8 @@ module.exports = function paginationPlugin (bookshelf) {
             const key = Object.keys(count.attributes)[0];
             metadata.rowCount = parseInt(count.attributes[key]);
           }
+        }else {
+            metadata.rowCount = result.length;
         }
 
         return metadata;
