@@ -867,7 +867,7 @@ const BookshelfModel = ModelBase.extend({
    *   ]
    * }
    *
-   * @param {string|string[]} relations The relation, or relations, to be loaded.
+   * @param {string|Object|mixed[]} relations The relation, or relations, to be loaded.
    * @param {Object=}      options Hash of options.
    * @param {Transaction=} options.transacting
    *   Optionally run the query in a transaction.
