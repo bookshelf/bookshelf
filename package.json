@@ -4,14 +4,10 @@
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
-    "clean": "rm -rf ./lib",
-    "dev": "babel -w -q -L -D ./src/ --out-dir ./lib/",
-    "build": "babel -q -L -D ./src/ --out-dir ./lib/",
-    "lint": "eslint bookshelf.js src/",
+    "lint": "eslint bookshelf.js lib/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
-    "test": "npm run build && npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
+    "test": "npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
     "jsdoc": "./scripts/jsdoc.sh",
-    "prepublish": "node ./scripts/build.js lib && npm run build",
     "postpublish": "./scripts/postpublish.sh"
   },
   "homepage": "http://bookshelfjs.org",
@@ -28,20 +24,13 @@
     "active record"
   ],
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "bluebird": "^3.4.3",
     "chalk": "^2.3.0",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
-    "inherits": "~2.0.1",
     "lodash": "^4.13.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2015": "^6.24.1",
     "bookshelf-jsdoc-theme": "^0.2.0",
     "chai": "4.0.2",
     "eslint": "^4.17.0",
@@ -61,14 +50,6 @@
   "peerDependencies": {
     "knex": ">=0.6.10 <0.15.0"
   },
-  "buildDependencies": [
-    "babel-cli",
-    "babel-runtime",
-    "babel-plugin-syntax-object-rest-spread",
-    "babel-plugin-transform-object-rest-spread",
-    "babel-plugin-transform-runtime",
-    "babel-preset-es2015"
-  ],
   "author": {
     "name": "Bookshelf",
     "web": "https://github.com/bookshelf"

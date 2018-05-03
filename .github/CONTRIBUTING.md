@@ -7,8 +7,6 @@
 * Use the [issue](https://github.com/bookshelf/bookshelf/blob/master/ISSUE-TEMPLATE.js) or
 [pull request](https://github.com/bookshelf/bookshelf/blob/master/PR-TEMPLATE.js) templates when creating your entry,
 this will help clarify the scope of your proposal or the subject of your issue.
-* Make changes in the `/src` directory, running `npm run dev` which will kick off transpilation from ES6 in the
-background.
 * All pull requests should be made to the `master` branch.
 
 ## Development Environment Setup

@@ -693,7 +693,7 @@ module.exports = function(Bookshelf) {
         });
 
         it('eager loads morphMany with custom columnNames (sites -> thumbnails)', function() {
-          return new Site().fetchAll({withRelated: ['thumbnails']}).tap(checkTest(this));
+          return Site.fetchAll({withRelated: ['thumbnails']}).tap(checkTest(this));
         });
 
         it('eager loads morphTo with custom columnNames (thumbnails -> imageable)', function() {

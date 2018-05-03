@@ -2,7 +2,7 @@ var equal = require('assert').equal;
 
 module.exports = function(Bookshelf) {
   describe('Relation', function() {
-    var Relation = require('../../lib/relation').default;
+    var Relation = require('../../lib/relation');
 
     // TODO: Move all this Model creation stuff to a better place in helpers
     var Photo = Bookshelf.Model.extend({

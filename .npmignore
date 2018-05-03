@@ -6,8 +6,6 @@ index.html
 .istanbul.yml
 .travis.yml
 .npmignore
-.babelrc
 CNAME
-CONTRIBUTING.md
-src
+docker-compose.yml
 scripts

@@ -69,7 +69,7 @@ module.exports = function (bookshelf) {
       })
 
       it('returns correct values for rowCount and pageCount when hasTimestamps is used', function() {
-        return Models.Admin.fetchPage({page: 1, pageSize: 4}).then(function(admins) {
+        return Models.Admin.forge().fetchPage({page: 1, pageSize: 4}).then(function(admins) {
           expect(admins.pagination.rowCount).to.be.a('number');
           expect(admins.pagination.pageCount).to.be.a('number');
         })
