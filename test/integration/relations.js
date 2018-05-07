@@ -44,6 +44,11 @@ module.exports = function(Bookshelf) {
     var JoinModel   = Models.JoinModel;
     var Locale = Models.Locale;
     var Translation = Models.Translation;
+    var Organization = Models.OrgModel.extend({
+      members: function() {
+        return this.hasMany(Models.Member, 'organization_id')
+      }
+    })
 
     describe('Bookshelf Relations', function() {
       describe('Standard Relations - Models', function() {
@@ -240,6 +245,12 @@ module.exports = function(Bookshelf) {
               result.models[0].related('tags').relatedData.parentId.should.eql(1);
           });
         });
+
+        it('when parent model has custom id attribute and a parse method that mutates it', function() {
+          return Organization.forge({id: 1}).fetch({withRelated: ['members']}).then(function(organization) {
+            expect(organization.related('members').length).to.be.above(0);
+          })
+        })
       });
 
       describe('Nested Eager Loading - Models', function() {

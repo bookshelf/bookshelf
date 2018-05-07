@@ -6,7 +6,7 @@ var drops = [
   'photos', 'users_roles', 'info', 'Customer', 'Settings', 'hostnames',
   'instances', 'uuid_test', 'parsed_users', 'tokens', 'thumbnails', 'lefts',
   'rights', 'lefts_rights', 'organization', 'locales', 'translations',
-  'backups', 'backup_types'
+  'backups', 'backup_types', 'members'
 ];
 
 module.exports = function(Bookshelf) {
@@ -171,6 +171,10 @@ module.exports = function(Bookshelf) {
       table.increments('organization_id');
       table.string('organization_name').notNullable();
       table.boolean('organization_is_active').defaultTo(false);
+    })
+    .createTable('members', function(table) {
+      table.increments();
+      table.integer('organization_id').notNullable();
     })
     .createTable('locales', function(table) {
       table.string('isoCode');

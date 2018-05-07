@@ -771,14 +771,14 @@ module.exports = function(bookshelf) {
       });
 
       it('Will not break with prefixed id, #583', function() {
-        var acmeOrg = new Models.OrgModel ({name: "ACME, Inc", is_active: true});
+        var acmeOrg = new Models.OrgModel({name: "ACME, Inc", is_active: true});
         var acmeOrg1;
 
         return acmeOrg.save().then(function() {
-          acmeOrg1 = new Models.OrgModel({id: 1})
+          acmeOrg1 = new Models.OrgModel({name: "ACME, Inc"})
           return acmeOrg1.fetch();
         }).then(function() {
-          equal(Number(acmeOrg1.attributes.id), 1);
+          equal(typeof acmeOrg1.get('id'), 'number');
           equal(acmeOrg1.attributes.name, "ACME, Inc");
           equal(acmeOrg1.attributes.organization_id, undefined);
           equal(acmeOrg1.attributes.organization_name, undefined);
@@ -786,7 +786,6 @@ module.exports = function(bookshelf) {
           expect(acmeOrg.attributes.name).to.equal("ACME, Inc");
           // field name needs to be processed through model.parse
           equal(acmeOrg.attributes.organization_id, undefined);
-          expect(Number(acmeOrg.attributes.id)).to.equal(1);
         });
       });
     });
