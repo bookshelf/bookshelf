@@ -341,7 +341,6 @@ module.exports = function(Bookshelf) {
 
   var OrgModel = Bookshelf.Model.extend({
     tableName: 'organization',
-    // defaults: { parsedName: '' },
     idAttribute: 'organization_id',
     format: function (fields) {
       var cols = {};
@@ -358,6 +357,10 @@ module.exports = function(Bookshelf) {
       return fields;
     }
   });
+
+  var Member = Bookshelf.Model.extend({
+    tableName: 'members'
+  })
 
   var Translation = Bookshelf.Model.extend({
     tableName: 'translations',
@@ -429,6 +432,7 @@ module.exports = function(Bookshelf) {
       RightModel: RightModel,
       JoinModel: JoinModel,
       OrgModel: OrgModel,
+      Member: Member,
       Locale: Locale,
       Translation: Translation
     }
