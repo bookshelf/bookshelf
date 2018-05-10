@@ -91,6 +91,12 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('does not load "hasOne" relationship when it doesn\'t exist (site -> meta)', function() {
+          return new Site({id: 3}).fetch({withRelated: ['meta']}).then(function(site) {
+            expect(site.toJSON()).to.not.have.property('meta')
+          });
+        });
+
         it('eager loads "hasMany" relationships correctly (site -> authors, blogs)', function() {
           return new Site({id: 1}).fetch({
             withRelated: ['authors', 'blogs']
