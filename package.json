@@ -51,9 +51,12 @@
     "knex": ">=0.6.10 <0.15.0"
   },
   "author": {
-    "name": "Bookshelf",
-    "web": "https://github.com/bookshelf"
+    "name": "Tim Griesser",
+    "url": "https://github.com/tgriesser"
   },
+  "contributors": [
+    {"name": "Ricardo Graça", "url": "https://github.com/ricardograca"}
+  ],
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
