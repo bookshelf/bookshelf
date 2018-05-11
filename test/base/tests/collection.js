@@ -79,9 +79,10 @@ module.exports = function() {
 
     describe('#set()', function() {
       it('should delete old models and add new ones by default', function() {
-        collection.set([{some_id: 1, name: 'Test'}, {some_id: 2, name: 'Item'}]);
+        collection.set([{some_id: 1, name: 'Item 1'}, {some_id: 2, name: 'Item 2'}]);
         equal(collection.length, 2);
-        equal(collection.models.length, 2);
+        equal(collection.at(0).get('name'), 'Item 1');
+        equal(collection.at(1).get('name'), 'Item 2');
       });
 
       it('should not remove models with {remove: false} option set', function() {
