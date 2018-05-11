@@ -525,6 +525,12 @@ module.exports = function(bookshelf) {
           equal(true, false);
         });
       });
+
+      it('should load models with duplicate ids when the merge and remove options are true', function() {
+        return new Models.Member().fetchAll({merge: false, remove: false}).then(function(members) {
+          expect(members.pluck('name')).to.include.members(['Alice', 'Bob']);
+        })
+      })
     });
 
     describe('orderBy', function() {
