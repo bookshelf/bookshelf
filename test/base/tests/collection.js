@@ -48,6 +48,34 @@ module.exports = function() {
       equal(collection.at(1).id, undefined);
     });
 
+    describe('#add()', function() {
+      it('adds new models to the collection', function() {
+        var originalLength = collection.length;
+        var newLength = collection.add({some_id: 3, name: 'Alice'}).length;
+        expect(newLength).to.be.above(originalLength);
+      })
+
+      it('ignores duplicate models by default', function() {
+        collection.add({some_id: 1, name: 'Not Test'});
+        expect(collection.at(0).get('name')).to.equal('Test');
+      })
+
+      it('merges duplicate models when the merge option is set', function() {
+        collection.add({some_id: 1, name: 'Not Test'}, {merge: true});
+        expect(collection.at(0).get('name')).to.equal('Not Test');
+      })
+
+      it('Ignores the remove option when it\'s set to true', function() {
+        collection.add({some_id: 1, name: 'Not Test'}, {remove: true});
+        expect(collection.at(0).get('name')).to.equal('Test');
+      })
+
+      it('Ignores the add option when it\'s set to false and still adds new models', function() {
+        var originalLength = collection.length;
+        var newLength = collection.add({some_id: 3, name: 'Alice'}, {add: false}).length;
+        expect(newLength).to.be.above(originalLength);
+      })
+    });
 
     describe('#set()', function() {
       it('should delete old models and add new ones by default', function() {
