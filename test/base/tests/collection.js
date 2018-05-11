@@ -22,10 +22,10 @@ module.exports = function() {
     });
 
     beforeEach(function() {
-      collection = new Collection([{some_id: 1, name: 'Test'}, {id: 2, name: 'No Id'}]);
+      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'No Id'}]);
     });
 
-    it('should have a tableName method, returning the tableName of the model', function () {
+    it('should have a tableName method that returns the tableName of the model', function() {
       equal(collection.tableName(), 'test_table');
     });
 
@@ -142,7 +142,7 @@ module.exports = function() {
       assert.ok((newModel instanceof collection.model));
     });
 
-    it('contains a mapThen method, which calls map on the models, and returns a when.all promise', function() {
+    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
       var spyIterator = sinon.spy(function(model) {
         return model.id;
       });
@@ -153,7 +153,7 @@ module.exports = function() {
       });
     });
 
-    it('contains an invokeThen method, which does an invoke on the models, and returns a when.all promise', function() {
+    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
       return collection.invokeThen('invokedMethod').then(function(resp) {
         expect(_.compact(resp)).to.eql([1]);
       })
