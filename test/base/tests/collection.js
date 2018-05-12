@@ -99,6 +99,14 @@ module.exports = function() {
       it('should merge duplicate models by default', function() {
         collection.set({some_id: 1, name: 'Not Test'});
         expect(collection.at(0).get('name')).to.equal('Not Test');
+        expect(collection.length).to.equal(1);
+      })
+
+      it('should merge duplicate models in the new set', function() {
+        collection.set([{some_id: 1, name: 'Not Test'}, {some_id: 1, name: 'Not Test As Well'}]);
+        expect(collection.at(0).get('name')).to.equal('Not Test As Well');
+        expect(collection.toJSON().length).to.equal(collection.length);
+        expect(collection.length).to.equal(1);
       })
 
       it('should not remove models with {remove: false} option set', function() {
