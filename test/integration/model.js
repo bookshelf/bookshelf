@@ -526,9 +526,17 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('should load models with duplicate ids when the merge and remove options are true', function() {
+      it('should load models with duplicate ids when the merge and remove options are false', function() {
         return new Models.Member().fetchAll({merge: false, remove: false}).then(function(members) {
+          expect(members.length).to.equal(3);
           expect(members.pluck('name')).to.include.members(['Alice', 'Bob']);
+        })
+      })
+
+      it('should merge models with duplicate ids by default', function() {
+        return new Models.Member().fetchAll().then(function(members) {
+          expect(members.length).to.equal(2);
+          expect(members.pluck('name')).to.include.members(['Alice', 'Shuri']);
         })
       })
     });
