@@ -66,8 +66,11 @@ module.exports = function() {
       })
 
       it('Ignores the remove option when it\'s set to true', function() {
-        collection.add({some_id: 1, name: 'Not Test'}, {remove: true});
+        var originalLength = collection.length;
+        var newLength = collection.add(null, {remove: true}).length;
+
         expect(collection.at(0).get('name')).to.equal('Test');
+        expect(newLength).to.equal(originalLength);
       })
 
       it('Ignores the add option when it\'s set to false and still adds new models', function() {
