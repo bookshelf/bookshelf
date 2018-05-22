@@ -55,6 +55,8 @@
     "url": "https://github.com/tgriesser"
   },
   "contributors": [
+    {"name": "Edward Greve", "url": "https://github.com/anyong"},
+    {"name": "Rhys van der Waerden", "url": "https://github.com/rhys-vdw"},
     {"name": "Ricardo Graça", "url": "https://github.com/ricardograca"}
   ],
   "license": "MIT",
