@@ -22,10 +22,10 @@ module.exports = function() {
     });
 
     beforeEach(function() {
-      collection = new Collection([{some_id: 1, name: 'Test'}, {id: 2, name: 'No Id'}]);
+      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'No Id'}]);
     });
 
-    it('should have a tableName method, returning the tableName of the model', function () {
+    it('should have a tableName method that returns the tableName of the model', function() {
       equal(collection.tableName(), 'test_table');
     });
 
@@ -48,13 +48,69 @@ module.exports = function() {
       equal(collection.at(1).id, undefined);
     });
 
+    describe('#add()', function() {
+      it('adds new models to the collection', function() {
+        var originalLength = collection.length;
+        var newLength = collection.add({some_id: 3, name: 'Alice'}).length;
+        expect(newLength).to.be.above(originalLength);
+      })
+
+      it('ignores duplicate models by default', function() {
+        collection.add({some_id: 1, name: 'Not Test'});
+        expect(collection.at(0).get('name')).to.equal('Test');
+      })
+
+      it('merges duplicate models when the merge option is set', function() {
+        collection.add({some_id: 1, name: 'Not Test'}, {merge: true});
+        expect(collection.at(0).get('name')).to.equal('Not Test');
+      })
+
+      it('Ignores the remove option when it\'s set to true', function() {
+        var originalLength = collection.length;
+        var newLength = collection.add(null, {remove: true}).length;
+
+        expect(collection.at(0).get('name')).to.equal('Test');
+        expect(newLength).to.equal(originalLength);
+      })
+
+      it('Ignores the add option when it\'s set to false and still adds new models', function() {
+        var originalLength = collection.length;
+        var newLength = collection.add({some_id: 3, name: 'Alice'}, {add: false}).length;
+        expect(newLength).to.be.above(originalLength);
+      })
+    });
 
     describe('#set()', function() {
-      it('should delete old models and add new ones by default', function() {
-        collection.set([{some_id: 1, name: 'Test'}, {some_id: 2, name: 'Item'}]);
-        equal(collection.length, 2);
-        equal(collection.models.length, 2);
+      it('should accept a single object as argument', function() {
+        collection.set({some_id: 3, name: 'New Model'});
+        expect(collection.at(0).get('name')).to.equal('New Model');
       });
+
+      it('should accept Models as argument', function() {
+        var model = new collection.model({some_id: 3, name: 'New Model'});
+        collection.set([model]);
+        expect(collection.at(0).get('name')).to.equal('New Model');
+      });
+
+      it('should delete old models and add new ones by default', function() {
+        collection.set([{some_id: 1, name: 'Item 1'}, {some_id: 2, name: 'Item 2'}]);
+        equal(collection.length, 2);
+        equal(collection.at(0).get('name'), 'Item 1');
+        equal(collection.at(1).get('name'), 'Item 2');
+      });
+
+      it('should merge duplicate models by default', function() {
+        collection.set({some_id: 1, name: 'Not Test'});
+        expect(collection.at(0).get('name')).to.equal('Not Test');
+        expect(collection.length).to.equal(1);
+      })
+
+      it('should merge duplicate models in the new set', function() {
+        collection.set([{some_id: 1, name: 'Not Test'}, {some_id: 1, name: 'Not Test As Well'}]);
+        expect(collection.at(0).get('name')).to.equal('Not Test As Well');
+        expect(collection.toJSON().length).to.equal(collection.length);
+        expect(collection.length).to.equal(1);
+      })
 
       it('should not remove models with {remove: false} option set', function() {
         collection.set([{some_id: 2, name: 'Item2'}], {remove: false});
@@ -62,24 +118,15 @@ module.exports = function() {
       });
 
       it('should not merge new attribute values with {merge: false} option set', function() {
-        collection.set([{some_id: 1, name: 'WontChange'}], {merge: false, parse: true});
+        collection.set([{some_id: 1, name: 'WontChange'}], {merge: false});
         equal(collection.get(1).get('name'), 'Test');
       });
 
-      it('should accept a single model, not an array', function() {
-        collection.set({some_id: 1, name: 'Changed'});
-        equal(collection.get(1).get('name'), 'Changed');
-      });
-
-      it('should accept Models', function() {
-        var model = new collection.model({
-          some_id: 3,
-          name: 'Changed'
-        });
-        collection.set([model]);
-
-        equal(collection.get(3).get('name'), 'Changed');
-      });
+      it('should add duplicate models if both the remove and merge options are false', function() {
+        var originalLength = collection.length;
+        var newLength = collection.set({some_id: 1, name: 'Not Test'}, {merge: false, remove: false}).length;
+        expect(newLength).to.be.above(originalLength);
+      })
 
       it('should not add models with {add: false} option set', function() {
         collection.set([{some_id: 3, name: 'WontAdd'}], {add: false});
@@ -114,7 +161,7 @@ module.exports = function() {
       assert.ok((newModel instanceof collection.model));
     });
 
-    it('contains a mapThen method, which calls map on the models, and returns a when.all promise', function() {
+    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
       var spyIterator = sinon.spy(function(model) {
         return model.id;
       });
@@ -125,7 +172,7 @@ module.exports = function() {
       });
     });
 
-    it('contains an invokeThen method, which does an invoke on the models, and returns a when.all promise', function() {
+    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
       return collection.invokeThen('invokedMethod').then(function(resp) {
         expect(_.compact(resp)).to.eql([1]);
       })

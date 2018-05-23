@@ -265,9 +265,13 @@ module.exports = function(bookshelf) {
       {id: 1, name: 'enhanced'} // We need to explicitly set the id to 1 otherwise MySQL will get confused
     ]),
 
-    knex('organization').insert({organization_name: 'Test Organization'}),
+    knex('organization').insert([{organization_name: 'Test Organization'}, {organization_name: 'Duplicates'}]),
 
-    knex('members').insert({organization_id: 1}, {organization_id: 2})
+    knex('members').insert([
+      {id: 1, organization_id: 1, name: 'Shuri'},
+      {id: 2, organization_id: 2, name: 'Bob'},
+      {id: 2, organization_id: 2, name: 'Alice'}
+    ])
   ]).then(function() {
     if (knex.client.dialect !== 'postgresql') return;
 

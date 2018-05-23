@@ -173,8 +173,9 @@ module.exports = function(Bookshelf) {
       table.boolean('organization_is_active').defaultTo(false);
     })
     .createTable('members', function(table) {
-      table.increments();
+      table.integer('id').notNullable();
       table.integer('organization_id').notNullable();
+      table.string('name');
     })
     .createTable('locales', function(table) {
       table.string('isoCode');

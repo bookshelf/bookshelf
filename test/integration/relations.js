@@ -103,6 +103,16 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
+        it('eager loads "hasMany" relationships when children have duplicate ids', function() {
+          return new Organization({id: 2}).fetch({
+            withRelated: ['members'],
+            merge: false,
+            remove: false
+          }).then(function(organization) {
+            expect(organization.related('members').pluck('name')).to.include.members(['Alice', 'Bob']);
+          })
+        })
+
         it('eager loads "belongsTo" relationships correctly (blog -> site)', function() {
           return new Blog({id: 3}).fetch({
             withRelated: ['site']
