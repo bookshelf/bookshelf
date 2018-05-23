@@ -488,7 +488,7 @@ module.exports = function(bookshelf) {
                 expect(author.get('first_name')).to.equal('foo')
               })
             }),
-            Promise.delay(25).then(function() {
+            Promise.delay(60).then(function() {
               return new Models.Author({id: author.id}).save({first_name: 'changed'})
             })
           ])
