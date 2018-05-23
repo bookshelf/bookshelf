@@ -1289,37 +1289,82 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('previous, previousAttributes', function() {
-      it('will return the previous value of an attribute the last time it was synced', function() {
+    describe('#previous()', function() {
+      it('returns undefined for attributes that have not been synced yet', function() {
         var model = new Models.Site({id: 1});
         equal(model.previous('id'), undefined);
+      });
+
+      it('returns the previous value of an attribute the last time it was synced', function() {
+        var model = new Models.Site({id: 1});
 
         return model.fetch().then(function() {
-          deepEqual(model.previousAttributes(), {id: 1, name: 'knexjs.org'});
-          deepEqual(model.changed, {});
           model.set('id', 2);
           equal(model.previous('id'), 1);
-          deepEqual(model.changed, {id: 2});
-          model.set('id', 1);
-          deepEqual(model.changed, {});
         });
       });
 
-      it('will return `undefined` if no attribute is supplied', function() {
+      it('returns undefined if no attribute name is supplied', function() {
         var model = new Models.Site({id: 1});
-        equal(model.previous(null), undefined);
+        equal(model.previous(), undefined);
       });
     });
 
-    describe('hasChanged', function() {
-      it('will determine whether an attribute, or the model has changed', function() {
+    describe('#previousAttributes()', function() {
+      it('returns the current model\'s attributes if no attributes were changed since the last sync', function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
-          equal(site.hasChanged(), false);
-          site.set('name', 'Changed site');
-          equal(site.hasChanged('name'), true);
-          deepEqual(site.changed, {name: 'Changed site'});
+          expect(site.previousAttributes()).to.eql(site.attributes);
         });
       });
+
+      it('returns the model\'s original attributes if the model has changed', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          var originalAttributes = _.clone(site.attributes);
+          site.set('name', 'Blah');
+          expect(site.previousAttributes()).to.eql(originalAttributes);
+          expect(site.previousAttributes()).to.not.eql(site.attributes);
+        });
+      });
+    });
+
+    describe('#hasChanged()', function() {
+      it('returns true if passing an attribute name that has changed since the last sync', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          site.set('name', 'Changed site');
+          equal(site.hasChanged('name'), true);
+        });
+      });
+
+      it('returns false if passing an attribute name that has not changed since the last sync', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          site.set('name', 'Changed site');
+          equal(site.hasChanged('id'), false);
+        });
+      });
+
+      it('returns true if no arguments are provided and an attribute of the model has changed', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          site.set('name', 'Changed site');
+          equal(site.hasChanged(), true);
+        });
+      });
+
+      it('returns false if no arguments are provided and the model hasn\'t changed', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          equal(site.hasChanged(), false);
+        });
+      });
+
+      it('returns false if attribute is changed and then changed again to the initial value', function() {
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          var name = site.get('name')
+
+          site.set('name', 'Changed site');
+          site.set('name', name);
+
+          equal(site.hasChanged('name'), false);
+        })
+      })
     });
 
     describe('Model.collection', function() {
