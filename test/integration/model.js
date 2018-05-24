@@ -1304,6 +1304,14 @@ module.exports = function(bookshelf) {
         });
       });
 
+      it('returns the current value of an attribute if it hasn\'t been changed', function() {
+        var model = new Models.Site({id: 1});
+
+        return model.fetch().then(function() {
+          equal(model.previous('id'), 1);
+        });
+      });
+
       it('returns undefined if no attribute name is supplied', function() {
         var model = new Models.Site({id: 1});
         equal(model.previous(), undefined);
@@ -1324,6 +1332,11 @@ module.exports = function(bookshelf) {
           expect(site.previousAttributes()).to.eql(originalAttributes);
           expect(site.previousAttributes()).to.not.eql(site.attributes);
         });
+      });
+
+      it('returns an empty object if no model data has been fetched yet', function() {
+        var site = new Models.Site({id: 1});
+        expect(site.previousAttributes()).to.eql({})
       });
     });
 
