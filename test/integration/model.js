@@ -1290,7 +1290,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('#previous()', function() {
-      it('returns undefined for attributes that have not been synced yet', function() {
+      it('returns undefined for attributes that have not been fetched or saved yet', function() {
         var model = new Models.Site({id: 1});
         equal(model.previous('id'), undefined);
       });
@@ -1319,7 +1319,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('#previousAttributes()', function() {
-      it('returns the current model\'s attributes if no attributes were changed since the last sync', function() {
+      it('returns the current model\'s attributes if no attributes were changed', function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
           expect(site.previousAttributes()).to.eql(site.attributes);
         });
@@ -1329,6 +1329,33 @@ module.exports = function(bookshelf) {
         return new Models.Site({id: 1}).fetch().then(function(site) {
           var originalAttributes = _.clone(site.attributes);
           site.set('name', 'Blah');
+          expect(site.previousAttributes()).to.eql(originalAttributes);
+          expect(site.previousAttributes()).to.not.eql(site.attributes);
+        });
+      });
+
+      it('returns the model\'s original attributes after save', function() {
+        var originalAttributes
+
+        return new Models.Site({id: 1}).fetch().then(function(site) {
+          originalAttributes = _.clone(site.attributes);
+          return site.save({name: 'Blah'});
+        }).then(function(site) {
+          expect(site.previousAttributes()).to.eql(originalAttributes);
+          expect(site.previousAttributes()).to.not.eql(site.attributes);
+        }).finally(function() {
+          return new Models.Site({id: 1}).save({name: originalAttributes.name});
+        });
+      });
+
+      it('returns the model\'s original attributes after destroy', function() {
+        var originalAttributes
+
+        return new Models.Site({name: 'Blah'}).save().then(function(site) {
+          originalAttributes = _.clone(site.attributes);
+          console.log('previous', site.previousAttributes())
+          return site.destroy();
+        }).then(function(site) {
           expect(site.previousAttributes()).to.eql(originalAttributes);
           expect(site.previousAttributes()).to.not.eql(site.attributes);
         });
