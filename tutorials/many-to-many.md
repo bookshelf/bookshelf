@@ -1,5 +1,6 @@
 Many-to-many associations can be created with {@link Model#belongsToMany belongsToMany}, and {@link Model#through through} relation types.
 
+```js
     var Book = bookshelf.Model.extend({
       tableName: 'books',
       authors: function() {
@@ -13,9 +14,10 @@ Many-to-many associations can be created with {@link Model#belongsToMany belongs
         return this.belongsToMany(Book);
       }
     });
-
+```
 A Knex migration for the above relationship could be created with:
 
+```js
     exports.up = function(knex, Promise) {
       return knex.schema.createTable('books', function(table) {
         table.increments('id').primary();
@@ -34,3 +36,4 @@ A Knex migration for the above relationship could be created with:
         .dropTable('authors')
         .dropTable('authors_books');
     };
+```

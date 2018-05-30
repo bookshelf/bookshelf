@@ -1,5 +1,6 @@
 One-to-many associations can be created with {@link Model#belongsTo belongsTo}, {@link Model#hasMany hasMany}, {@link Model#morphMany morphMany} / {@link Model#morphTo morphTo}, and some of the {@link Model#through through} relation types.
 
+```js
     var Book = bookshelf.Model.extend({
       tableName: 'books',
       pages: function() {
@@ -13,9 +14,10 @@ One-to-many associations can be created with {@link Model#belongsTo belongsTo}, 
         return this.belongsTo(Book);
       }
     });
-
+```
 A Knex migration for the above relationship could be created with:
 
+```js
     exports.up = function(knex, Promise) {
       return knex.schema.createTable('books', function(table) {
         table.increments('id').primary();
@@ -31,3 +33,4 @@ A Knex migration for the above relationship could be created with:
       return knex.schema.dropTable('books')
         .dropTable('pages');
     };
+```

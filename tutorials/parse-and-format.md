@@ -5,6 +5,7 @@ parse.
 This can be done with the model's {@link Model#parse parse} and {@link Model#format format}
 methods:
 
+```js
     Book = bookshelf.Model.extend({
       tableName: 'books',
       parse: function(response) {
@@ -16,9 +17,11 @@ methods:
         return attributes;
       }
     });
+```
 
 A very common use case for this is converting camelCase attributes to snake_case column names and vice-versa:
 
+```js
     Book = bookshelf.Model.extend({
       tableName: 'books',
       parse: function(response) {
@@ -32,3 +35,4 @@ A very common use case for this is converting camelCase attributes to snake_case
         });
       }
     });
+```
