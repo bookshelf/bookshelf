@@ -125,7 +125,7 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        it('Throws an error if you try to fetch a related object without the necessary key', function() {
+        it('throws an error if you try to fetch a related object without the necessary key', function() {
           return new Blog({id: 1}).site().fetch().then(function() {
             return Promise.reject()
           }).catch(function(error) {
@@ -139,7 +139,7 @@ module.exports = function(Bookshelf) {
           }).then(checkTest(this));
         });
 
-        it('Attaches an empty related model or collection if the `EagerRelation` comes back blank', function() {
+        it('attaches an empty related model or collection if the `EagerRelation` comes back blank', function() {
           return new Site({id: 3}).fetch({
             withRelated: ['meta', 'blogs', 'authors.posts']
           }).then(checkTest(this));
@@ -182,6 +182,21 @@ module.exports = function(Bookshelf) {
             expect(err.message).to.equal('undefinedRelation is not defined on the model.');
           });
         });
+
+        it('is possible to add withRelated in events', function() {
+          var TestSiteMeta = Models.SiteMeta.extend({
+            initialize: function() {
+              this.on('fetching fetching:collection', function(model, columns, options) {
+                if (!options.withRelated) options.withRelated = [];
+                options.withRelated.push('site');
+              })
+            }
+          });
+
+          return new TestSiteMeta({id: 1}).fetch().then(function(sitemeta) {
+            expect(sitemeta.related('site').get('id')).to.not.be.undefined;
+          })
+        })
 
         describe('emits \'fetching\' and \'fetched\' events for eagerly loaded relations with', function () {
           afterEach(function () {
