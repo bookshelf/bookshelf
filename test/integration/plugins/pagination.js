@@ -5,7 +5,7 @@ module.exports = function (bookshelf) {
     bookshelf.plugin('pagination');
     var Models = require('../helpers/objects')(bookshelf).Models;
 
-    describe('Model instance fetchPage', function () {
+    describe('Model#fetchPage()', function () {
       it('fetches a single page of results with defaults', function () {
         return Models.Customer.forge().fetchPage().then(function (results) {
           ['models', 'pagination'].forEach(function (prop) {
@@ -76,7 +76,7 @@ module.exports = function (bookshelf) {
       })
     })
 
-    describe('Model static fetchPage', function () {
+    describe('Model.fetchPage()', function () {
       it('fetches a page without calling forge', function () {
         return Models.Customer.fetchPage().then(function (results) {
           ['models', 'pagination'].forEach(function (prop) {
@@ -86,7 +86,7 @@ module.exports = function (bookshelf) {
       })
     })
 
-    describe('Collection fetchPage', function () {
+    describe('Collection#fetchPage()', function () {
       it('fetches a page from a collection', function () {
         return Models.Customer.collection().fetchPage().then(function (results) {
           ['models', 'pagination'].forEach(function (prop) {
@@ -94,6 +94,7 @@ module.exports = function (bookshelf) {
           });
         })
       })
+
       it('fetches a page from a relation collection', function () {
         return Models.User.forge({uid: 1}).roles().fetchPage().then(function (results) {
           expect(results.length).to.equal(1);
@@ -102,6 +103,7 @@ module.exports = function (bookshelf) {
           });
         });
       })
+
       it('fetches a page from a relation collection with additional condition', function () {
         return Models.User.forge({uid: 1}).roles().query(function (query) {
           query.where('roles.rid', '!=', 4);
@@ -114,7 +116,7 @@ module.exports = function (bookshelf) {
       })
     })
 
-    describe('Inside a transaction', function() {
+    describe('inside a transaction', function() {
       it('returns consistent results for rowCount and number of models', function() {
         return bookshelf.transaction(function(t) {
           var options = {transacting: t};
@@ -127,6 +129,25 @@ module.exports = function (bookshelf) {
             expect(sites.pagination.rowCount).to.eql(sites.models.length);
           });
         });
+      })
+    })
+
+    describe('with groupBy', function() {
+      it('counts grouped rows instead of total rows', function() {
+        var total
+
+        return Models.Blog.count().then(function(count) {
+          total = parseInt(count, 10);
+
+          return Models.Blog.query(function(qb) {
+            qb.max('id');
+            qb.groupBy('site_id');
+            qb.whereNotNull('site_id');
+          }).fetchPage()
+        }).then(function(blogs) {
+          expect(blogs.pagination.rowCount).to.equal(blogs.length);
+          expect(blogs.length).to.be.below(total);
+        })
       })
     })
   });
