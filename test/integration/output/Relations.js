@@ -374,7 +374,7 @@ module.exports = {
       }
     }
   },
-  'Attaches an empty related model or collection if the `EagerRelation` comes back blank': {
+  'attaches an empty related model or collection if the `EagerRelation` comes back blank': {
     mysql: {
       result: {
         id: 3,
