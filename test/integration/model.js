@@ -1290,9 +1290,14 @@ module.exports = function(bookshelf) {
     });
 
     describe('#previous()', function() {
-      it('returns undefined for attributes that have not been fetched or saved yet', function() {
+      it('returns undefined for attributes that have not been set, fetched or saved yet', function() {
         var model = new Models.Site({id: 1});
-        equal(model.previous('id'), undefined);
+        equal(model.previous('name'), undefined);
+      });
+
+      it('returns the current value that has been set if the model hasn\'t been synced yet', function() {
+        var model = new Models.Site({id: 1});
+        equal(model.previous('id'), 1);
       });
 
       it('returns the previous value of an attribute the last time it was synced', function() {
@@ -1361,10 +1366,29 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('returns an empty object if no model data has been fetched yet', function() {
+      it('returns only the set attributes if no model data has been fetched yet', function() {
         var site = new Models.Site({id: 1});
-        expect(site.previousAttributes()).to.eql({})
+        expect(site.previousAttributes()).to.eql({id: 1})
       });
+
+      it('returns the current model\'s attributes when the model is eager loaded without changes', function() {
+        return new Models.Author({id: 1}).fetch({withRelated: ['site']}).then(function(author) {
+          var site = author.related('site');
+          expect(site.previousAttributes()).to.eql(site.attributes);
+        });
+      })
+
+      it('returns the model\'s original attributes when the model is eager loaded', function() {
+        return new Models.Author({id: 1}).fetch({withRelated: ['site']}).then(function(author) {
+          var site = author.related('site');
+          var originalAttributes = _.clone(site.attributes);
+
+          site.set('name', 'changed name');
+
+          expect(site.previousAttributes()).to.eql(originalAttributes);
+          expect(site.attributes).to.not.eql(originalAttributes);
+        });
+      })
     });
 
     describe('#hasChanged()', function() {
