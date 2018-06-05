@@ -1358,7 +1358,6 @@ module.exports = function(bookshelf) {
 
         return new Models.Site({name: 'Blah'}).save().then(function(site) {
           originalAttributes = _.clone(site.attributes);
-          console.log('previous', site.previousAttributes())
           return site.destroy();
         }).then(function(site) {
           expect(site.previousAttributes()).to.eql(originalAttributes);
