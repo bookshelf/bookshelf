@@ -902,8 +902,10 @@ module.exports = function(Bookshelf) {
       it('parses eager-loaded models previous attributes after pairing', function() {
         return new Blog({id: 1}).fetch({withRelated: 'parsedPosts'})
           .then(function(blog) {
-            var prev = blog.related('parsedPosts').at(0)._previousAttributes;
-            Object.keys(prev).forEach(function (key) {
+            var previous = blog.related('parsedPosts').at(0).previousAttributes();
+
+            expect(previous).to.not.eql({});
+            Object.keys(previous).forEach(function(key) {
               expect(/_parsed$/.test(key)).to.be.true;
             });
           });
