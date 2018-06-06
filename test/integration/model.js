@@ -590,11 +590,9 @@ module.exports = function(bookshelf) {
           isFetchedTriggered = true;
         });
 
-        site.fetchAll().then(function() {
+        return site.fetchAll().then(function() {
           equal(isFetchingTriggered, true);
           equal(isFetchedTriggered, true);
-        }).catch(function() {
-          equal(true, false);
         });
       });
 
