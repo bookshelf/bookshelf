@@ -26,6 +26,78 @@ module.exports = function(bookshelf) {
       expect(actual, formatNumber(expected));
     };
 
+    describe('Events', function() {
+      describe('fetching:collection', function() {
+        it('passes the collection as first argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetching:collection', function(collection) {
+            expect(collection).to.be.an.instanceof(bookshelf.Collection);
+            expect(collection.model).to.eql(Models.Site);
+          });
+
+          return site.fetchAll();
+        })
+
+        it('passes the column definitions to fetch as second argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetching:collection', function(collection, columns) {
+            expect(columns).to.be.an.instanceof(Array);
+            expect(columns.length).to.be.above(0);
+          });
+
+          return site.fetchAll();
+        })
+
+        it('passes options as third argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetching:collection', function(collection, columns, options) {
+            expect(options).to.be.an.instanceof(Object);
+            expect(options).to.have.property('query');
+          });
+
+          return site.fetchAll();
+        })
+      })
+
+      describe('fetched:collection', function() {
+        it('passes the collection as first argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetched:collection', function(collection) {
+            expect(collection).to.be.an.instanceof(bookshelf.Collection);
+            expect(collection.model).to.eql(Models.Site);
+          });
+
+          return site.fetchAll();
+        })
+
+        it('passes the fetched columns as second argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetched:collection', function(collection, columns) {
+            expect(columns).to.be.an.instanceof(Array);
+            expect(columns.length).to.be.above(0);
+          });
+
+          return site.fetchAll();
+        })
+
+        it('passes options as third argument to the listener', function() {
+          var site = new Models.Site();
+
+          site.on('fetching:collection', function(collection, columns, options) {
+            expect(options).to.be.an.instanceof(Object);
+            expect(options).to.have.property('query');
+          });
+
+          return site.fetchAll();
+        })
+      })
+    })
+
     describe('extend/constructor/initialize', function() {
       var User = bookshelf.Model.extend({
         idAttribute: 'user_id',
@@ -518,11 +590,9 @@ module.exports = function(bookshelf) {
           isFetchedTriggered = true;
         });
 
-        site.fetchAll().then(function() {
+        return site.fetchAll().then(function() {
           equal(isFetchingTriggered, true);
           equal(isFetchedTriggered, true);
-        }).catch(function() {
-          equal(true, false);
         });
       });
 
