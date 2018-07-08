@@ -52,6 +52,20 @@ module.exports = function(bookshelf) {
         });
     });
 
+    it('can update attributes without affecting _previousAttributes', function() {
+      return Command.forge({id: 0}).fetch()
+        .then(function(command) {
+          const newTarget = {
+            x: 7,
+            y: 13,
+          };
+          const updatedInfo = command.get('info');
+          updatedInfo.target = newTarget;
+          command.set('info', updatedInfo);
+          expect(command.get('info')).to.not.deep.eql(command.previous('info'));
+        });
+    });
+
     it('Trying to fetch a model automatically excludes JSON column', function() {
       return Command.forge({unit_id: 1, type: 'attack', info: {test: 'blah'}}).fetch()
         .then(function(command) {
