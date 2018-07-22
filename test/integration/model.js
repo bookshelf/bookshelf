@@ -1295,9 +1295,9 @@ module.exports = function(bookshelf) {
         equal(model.previous('name'), undefined);
       });
 
-      it('returns the current value that has been set if the model hasn\'t been synced yet', function() {
+      it('returns undefined for attributes that have been set if the model hasn\'t been synced yet', function() {
         var model = new Models.Site({id: 1});
-        equal(model.previous('id'), 1);
+        equal(model.previous('id'), undefined);
       });
 
       it('returns the previous value of an attribute the last time it was synced', function() {
@@ -1324,7 +1324,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('#previousAttributes()', function() {
-      it('returns the current model\'s attributes if no attributes were changed', function() {
+      it('returns the current model\'s attributes if no attributes were changed after fetch', function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
           expect(site.previousAttributes()).to.eql(site.attributes);
         });
@@ -1365,9 +1365,9 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('returns only the set attributes if no model data has been fetched yet', function() {
+      it('returns an empty object if no model data has been fetched yet', function() {
         var site = new Models.Site({id: 1});
-        expect(site.previousAttributes()).to.eql({id: 1})
+        expect(site.previousAttributes()).to.eql({})
       });
 
       it('returns the current model\'s attributes when the model is eager loaded without changes', function() {
@@ -1420,13 +1420,26 @@ module.exports = function(bookshelf) {
 
       it('returns false if attribute is changed and then changed again to the initial value', function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
-          var name = site.get('name')
+          var name = site.get('name');
 
           site.set('name', 'Changed site');
           site.set('name', name);
 
           equal(site.hasChanged('name'), false);
-        })
+        });
+      });
+
+      it('returns false after an attribute is changed and the model is saved', function() {
+        var originalName;
+
+        return new Models.Site({id: 3}).fetch().then(function(site) {
+          originalName = site.get('name');
+          return site.save({name: 'Changed site'});
+        }).then(function(savedSite) {
+          equal(savedSite.hasChanged('name'), false);
+        }).finally(function() {
+          if (originalName) return new Models.Site({id: 3}).save({'name': originalName});
+        });
       })
     });
 
