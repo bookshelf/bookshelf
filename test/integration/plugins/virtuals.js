@@ -1,7 +1,7 @@
-var _         = require('lodash');
-var equal     = require('assert').equal;
+var _ = require('lodash');
+var equal = require('assert').equal;
 var deepEqual = require('assert').deepEqual;
-var expect    = require('chai').expect;
+var expect = require('chai').expect;
 
 module.exports = function(bookshelf) {
   describe('Virtuals Plugin', function() {
@@ -13,7 +13,7 @@ module.exports = function(bookshelf) {
       var m = new (bookshelf.Model.extend({
         virtuals: {
           fullName: function() {
-              return this.get('firstName') + ' ' + this.get('lastName');
+            return this.get('firstName') + ' ' + this.get('lastName');
           }
         }
       }))({firstName: 'Joe', lastName: 'Shmoe'});
@@ -72,7 +72,7 @@ module.exports = function(bookshelf) {
             }
           }
         }
-      }))({fullName: 'Peter Griffin', dogName:'Brian'});
+      }))({fullName: 'Peter Griffin', dogName: 'Brian'});
 
       equal(m.get('firstName'), 'Peter');
       equal(m.get('lastName'), 'Griffin');
@@ -131,7 +131,7 @@ module.exports = function(bookshelf) {
         equal(m.get('fullName', 'Danger', 'Explosion'), 'Joe Danger Explosion');
       });
 
-      it('can access parameterized virtual properties with getter and setter without passing an argument', function () {
+      it('can access parameterized virtual properties with getter and setter without passing an argument', function() {
         var m = new (bookshelf.Model.extend({
           virtuals: {
             fullName: {
@@ -241,7 +241,7 @@ module.exports = function(bookshelf) {
       });
 
       it('defaults virtual properties with no setter to a noop', function() {
-         var m = new (bookshelf.Model.extend({
+        var m = new (bookshelf.Model.extend({
           virtuals: {
             fullName: function() {
               return this.get('firstName') + ' ' + this.get('lastName');
@@ -266,7 +266,7 @@ module.exports = function(bookshelf) {
         var m = new (bookshelf.Model.extend({
           virtuals: {
             fullName: function() {
-                return this.get('firstName') + ' ' + this.get('lastName');
+              return this.get('firstName') + ' ' + this.get('lastName');
             },
             fullNameWithGetSet: {
               get: function() {
@@ -290,7 +290,7 @@ module.exports = function(bookshelf) {
           outputVirtuals: true,
           virtuals: {
             fullName: function() {
-                return this.get('firstName') + ' ' + this.get('lastName');
+              return this.get('firstName') + ' ' + this.get('lastName');
             },
             fullNameWithGetSet: {
               get: function() {
@@ -309,12 +309,12 @@ module.exports = function(bookshelf) {
         deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName', 'fullNameWithGetSet']);
       });
 
-      it('doesn\'t include virtuals if `outputVirtuals` is set to false', function() {
+      it("doesn't include virtuals if `outputVirtuals` is set to false", function() {
         var m = new (bookshelf.Model.extend({
           outputVirtuals: false,
           virtuals: {
             fullName: function() {
-                return this.get('firstName') + ' ' + this.get('lastName');
+              return this.get('firstName') + ' ' + this.get('lastName');
             }
           }
         }))({firstName: 'Joe', lastName: 'Shmoe'});
@@ -337,12 +337,12 @@ module.exports = function(bookshelf) {
         deepEqual(_.keys(json), ['firstName', 'lastName', 'fullName']);
       });
 
-      it('doesn\'t include virtuals if `outputVirtuals` is true but `virtuals: false` is set in the options', function() {
+      it("doesn't include virtuals if `outputVirtuals` is true but `virtuals: false` is set in the options", function() {
         var m = new (bookshelf.Model.extend({
           outputVirtuals: true,
           virtuals: {
             fullName: function() {
-                return this.get('firstName') + ' ' + this.get('lastName');
+              return this.get('firstName') + ' ' + this.get('lastName');
             }
           }
         }))({firstName: 'Joe', lastName: 'Shmoe'});
@@ -351,7 +351,7 @@ module.exports = function(bookshelf) {
         deepEqual(_.keys(json), ['firstName', 'lastName']);
       });
 
-      it('doesn\'t include virtuals if `omitNew` is true even if `outputVirtuals` is true', function() {
+      it("doesn't include virtuals if `omitNew` is true even if `outputVirtuals` is true", function() {
         var m = new (bookshelf.Model.extend({
           outputVirtuals: true,
           virtuals: {
@@ -387,14 +387,16 @@ module.exports = function(bookshelf) {
             }
           }
         }))({firstName: 'Joe', lastName: 'Shmoe'});
-        var json = m.toJSON({virtualParams: {fullName: ['Danger', 'Mouse', 'Explosion']}});
+        var json = m.toJSON({
+          virtualParams: {fullName: ['Danger', 'Mouse', 'Explosion']}
+        });
 
         equal(json.fullName, 'Joe Danger Mouse Explosion');
       });
-    })
+    });
 
     it('works fine with `underscore` methods - #170', function() {
-       var m = new (bookshelf.Model.extend({
+      var m = new (bookshelf.Model.extend({
         outputVirtuals: true,
         virtuals: {
           fullName: function() {
@@ -406,9 +408,16 @@ module.exports = function(bookshelf) {
       deepEqual(m.keys(), ['firstName', 'lastName', 'fullName']);
       deepEqual(m.values(), ['Joe', 'Shmoe', 'Joe Shmoe']);
       deepEqual(m.toPairs(), [['firstName', 'Joe'], ['lastName', 'Shmoe'], ['fullName', 'Joe Shmoe']]);
-      deepEqual(m.invert(), {'Joe': 'firstName', 'Shmoe': 'lastName','Joe Shmoe': 'fullName'});
-      deepEqual(m.pick('fullName'), {'fullName': 'Joe Shmoe'});
-      deepEqual(m.omit('firstName'), {'lastName': 'Shmoe', 'fullName': 'Joe Shmoe'});
+      deepEqual(m.invert(), {
+        Joe: 'firstName',
+        Shmoe: 'lastName',
+        'Joe Shmoe': 'fullName'
+      });
+      deepEqual(m.pick('fullName'), {fullName: 'Joe Shmoe'});
+      deepEqual(m.omit('firstName'), {
+        lastName: 'Shmoe',
+        fullName: 'Joe Shmoe'
+      });
     });
 
     describe('behaves correctly during a `patch` save - #542', function() {
@@ -427,7 +436,7 @@ module.exports = function(bookshelf) {
                 var names = fullName.split(' ');
                 return this.set({
                   first_name: names[0],
-                  last_name:  names[1]
+                  last_name: names[1]
                 });
               },
               get: function() {
@@ -437,13 +446,16 @@ module.exports = function(bookshelf) {
           }
         });
 
-        return new Model({site_id: 5}).save()
+        return new Model({site_id: 5})
+          .save()
           .then(function(model) {
-            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
-          }).tap(generalExpect)
+            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true});
+          })
+          .tap(generalExpect)
           .then(function(result) {
             return result.refresh();
-          }).tap(generalExpect)
+          })
+          .tap(generalExpect)
           .tap(function(result) {
             return result.destroy();
           });
@@ -467,13 +479,16 @@ module.exports = function(bookshelf) {
           }
         });
 
-        return new Model({site_id: 5}).save()
+        return new Model({site_id: 5})
+          .save()
           .then(function(model) {
-            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true})
-          }).tap(generalExpect)
+            return model.save({site_id: 2, full_name: 'Oderus Urungus'}, {patch: true});
+          })
+          .tap(generalExpect)
           .then(function(result) {
             return result.refresh();
-          }).tap(generalExpect)
+          })
+          .tap(generalExpect)
           .tap(function(result) {
             return result.destroy();
           });
@@ -497,7 +512,7 @@ module.exports = function(bookshelf) {
         .save({will_cause_error: 'value'}, {patch: true})
         .catch(function(error) {
           expect(error.message).to.equal('Deliberately failing');
-        })
+        });
     });
   });
 };

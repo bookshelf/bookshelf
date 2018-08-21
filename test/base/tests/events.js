@@ -31,7 +31,7 @@ module.exports = function() {
           expect(name).to.equal('event');
           expect(arg1).to.equal(1);
           expect(arg2).to.equal(2);
-        })
+        });
         events.trigger('event', 1, 2);
       });
     });

@@ -20,5 +20,4 @@ module.exports = function(Bookshelf) {
       Command: Command
     }
   };
-
 };
