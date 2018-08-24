@@ -32,8 +32,8 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('books')
+  return knex.schema.dropTable('authors_books')
     .dropTable('authors')
-    .dropTable('authors_books');
+    .dropTable('books');
 };
 ```
