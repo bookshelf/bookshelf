@@ -26,8 +26,8 @@ exports.up = function(knex, Promise) {
     table.increments('id').primary();
     table.string('name');
   }).createTable('authors_books', function(table) {
-    table.integer('author_id').references('authors.id');
-    table.integer('book_id').references('books.id');
+    table.integer('author_id').unsigned().references('authors.id');
+    table.integer('book_id').unsigned().references('books.id');
   });
 };
 
