@@ -9,11 +9,13 @@ methods:
 Book = bookshelf.Model.extend({
   tableName: 'books',
   parse: function(response) {
-    response.tags = JSON.parse(response.tags || '[]');
+    if(response.tags)
+      response.tags = JSON.parse(response.tags);
     return response;
   },
   format: function(attributes) {
-    attributes.tags = JSON.stringify(attributes.tags || []);
+    if(attributes.tags)
+      attributes.tags = JSON.stringify(attributes.tags);
     return attributes;
   }
 });
