@@ -2,7 +2,7 @@ var Promise = global.testPromise;
 var equal = require('assert').equal;
 var notStrictEqual = require('assert').notStrictEqual;
 var _ = require('lodash');
-var path     = require('path');
+var path = require('path');
 var basePath = process.cwd();
 
 module.exports = function() {
@@ -57,7 +57,7 @@ module.exports = function() {
         expect(model.get('updated_at')).to.be.an.instanceOf(Date);
       });
 
-      it('will not set timestamps on a model if hasTimestamps isn\'t set', function () {
+      it("will not set timestamps on a model if hasTimestamps isn't set", function() {
         var model = new Model();
         model.timestamp();
 

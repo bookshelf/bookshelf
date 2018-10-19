@@ -1,9 +1,7 @@
-var _       = require('lodash');
+var _ = require('lodash');
 var Promise = global.testPromise;
 
-
 module.exports = function(bookshelf) {
-
   var isJsonSupported;
 
   function checkResponse(actual, expected) {
@@ -13,19 +11,21 @@ module.exports = function(bookshelf) {
         if (_.isObject(value)) {
           return JSON.stringify(value);
         }
-        return value
+        return value;
       });
     }
     expect(actual).to.eql(expected);
   }
 
   before(function() {
-    return require('./helpers/json/supported')(bookshelf).then(function(supported) {
-      isJsonSupported = supported;
-      return require('./helpers/json/migration')(bookshelf)
-    }).then(function() {
-       return require('./helpers/json/inserts')(bookshelf);
-    });
+    return require('./helpers/json/supported')(bookshelf)
+      .then(function(supported) {
+        isJsonSupported = supported;
+        return require('./helpers/json/migration')(bookshelf);
+      })
+      .then(function() {
+        return require('./helpers/json/inserts')(bookshelf);
+      });
   });
 
   describe('JSON support', function() {
@@ -34,9 +34,9 @@ module.exports = function(bookshelf) {
     var Tank = Models.Tank;
     var Command = Models.Command;
 
-
     it('can `fetch` a model with a JSON column', function() {
-      return Command.forge({id: 0}).fetch()
+      return Command.forge({id: 0})
+        .fetch()
         .then(function(command) {
           checkResponse(command.attributes, {
             id: 0,
@@ -53,7 +53,12 @@ module.exports = function(bookshelf) {
     });
 
     it('Trying to fetch a model automatically excludes JSON column', function() {
-      return Command.forge({unit_id: 1, type: 'attack', info: {test: 'blah'}}).fetch()
+      return Command.forge({
+        unit_id: 1,
+        type: 'attack',
+        info: {test: 'blah'}
+      })
+        .fetch()
         .then(function(command) {
           checkResponse(command.attributes, {
             id: 1,

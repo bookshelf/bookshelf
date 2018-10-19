@@ -1,18 +1,24 @@
 var _ = require('lodash');
 
 module.exports = function(Bookshelf) {
-  var Knex     = require('knex');
-  var config   = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
-  var Promise  = global.testPromise;
+  var Knex = require('knex');
+  var config = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
+  var Promise = global.testPromise;
 
   var pg = require('knex')({client: 'postgres', connection: config.postgres});
-  var sqlite3 = require('knex')({client: 'sqlite3', connection: config.sqlite3, useNullAsDefault: true});
+  var sqlite3 = require('knex')({
+    client: 'sqlite3',
+    connection: config.sqlite3,
+    useNullAsDefault: true
+  });
   var mysql = require('knex')({
     client: 'mysql',
     connection: config.mysql,
     pool: {
       afterCreate: function(connection, callback) {
-        var asyncQuery = Promise.promisify(connection.query, {context: connection});
+        var asyncQuery = Promise.promisify(connection.query, {
+          context: connection
+        });
         return asyncQuery('SET SESSION sql_mode=?', ['TRADITIONAL,NO_AUTO_VALUE_ON_ZERO']).then(function() {
           callback(null, connection);
         });
@@ -38,7 +44,8 @@ module.exports = function(Bookshelf) {
     var site = new Models.Site();
 
     return require('./integration/helpers/migration')(SQLite3).then(function() {
-      return site.save()
+      return site
+        .save()
         .then(function() {
           expect(false).to.equal(true);
         })
@@ -58,7 +65,7 @@ module.exports = function(Bookshelf) {
       before(function() {
         this.timeout(60000);
         return require('./integration/helpers/migration')(bookshelf).then(function() {
-           return require('./integration/helpers/inserts')(bookshelf);
+          return require('./integration/helpers/inserts')(bookshelf);
         });
       });
 
