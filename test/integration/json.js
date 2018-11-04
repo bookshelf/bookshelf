@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var Promise = global.testPromise;
 
 module.exports = function(bookshelf) {
   var isJsonSupported;
@@ -30,8 +29,6 @@ module.exports = function(bookshelf) {
 
   describe('JSON support', function() {
     var Models = require('./helpers/json/objects')(bookshelf).Models;
-
-    var Tank = Models.Tank;
     var Command = Models.Command;
 
     it('can `fetch` a model with a JSON column', function() {
@@ -52,12 +49,13 @@ module.exports = function(bookshelf) {
         });
     });
 
-    it('can update attributes without affecting _previousAttributes', function() {
-      return Command.forge({id: 0}).fetch()
+    it('returns the correct previous attributes when updating nested objects', function() {
+      return Command.forge({id: 0})
+        .fetch()
         .then(function(command) {
           const newTarget = {
             x: 7,
-            y: 13,
+            y: 13
           };
           const updatedInfo = command.get('info');
           updatedInfo.target = newTarget;
