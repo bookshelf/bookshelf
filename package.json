@@ -4,7 +4,6 @@
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
-    "precommit": "lint-staged",
     "format": "prettier --write \"{lib,scripts,test}/**/*.js\"",
     "lint": "eslint bookshelf.js lib/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
@@ -32,6 +31,11 @@
     "inflection": "^1.5.1",
     "lodash": "^4.17.10"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{js,json}": [
       "prettier --write",
@@ -43,7 +47,7 @@
     "chai": "4.0.2",
     "eslint": "^4.17.0",
     "eslint-config-prettier": "^3.0.1",
-    "husky": "^0.14.3",
+    "husky": "^1.1.3",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.14.0",
