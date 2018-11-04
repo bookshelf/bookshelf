@@ -26,11 +26,14 @@
   "opts": {
     "tutorials": "./tutorials",
     "changelog": "./CHANGELOG.md",
-    "destination": "./",
+    "destination": "./docs",
     "template": "./node_modules/bookshelf-jsdoc-theme",
     "recurse": true,
     "private": false,
     "encoding": "utf-8",
+    "title": "Bookshelf.js",
+    "mainPageTitle": "Home",
+    "tutorialsTitle": "Guides",
     "whitelist": [
       "Bookshelf",
       "Model",

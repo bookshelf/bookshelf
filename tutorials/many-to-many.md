@@ -37,3 +37,4 @@ exports.down = function(knex, Promise) {
     .dropTable('books');
 };
 ```
+See {@tutorial associations}.

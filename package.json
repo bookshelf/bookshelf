@@ -43,7 +43,7 @@
     ]
   },
   "devDependencies": {
-    "bookshelf-jsdoc-theme": "^0.2.0",
+    "bookshelf-jsdoc-theme": "^1.0.0",
     "chai": "4.0.2",
     "eslint": "^4.17.0",
     "eslint-config-prettier": "^3.0.1",

@@ -5,6 +5,4 @@ node_modules
 npm-debug.log
 tmp
 coverage/
-index.html
-docs/
 .jsdoc-temp/
