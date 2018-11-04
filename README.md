@@ -1,4 +1,4 @@
-# [bookshelf.js](http://bookshelfjs.org)
+# bookshelf.js
 
 [![NPM Version](https://img.shields.io/npm/v/bookshelf.svg?style=flat)](https://www.npmjs.com/package/bookshelf)
 [![Build Status](https://api.travis-ci.org/bookshelf/bookshelf.svg?branch=master)](https://travis-ci.org/bookshelf/bookshelf)
