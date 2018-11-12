@@ -112,11 +112,11 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 * [Virtuals](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
 * [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility): Specify a whitelist/blacklist of model attributes when serialized toJSON.
 * [Pagination](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Pagination): Adds `fetchPage` methods to use for pagination in place of `fetch` and `fetchAll`.
-* [Case Converter](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Case-Converter): Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.
 * [Processor](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Processor): Allows defining custom processor functions that handle transformation of values whenever they are `.set()` on a model.
 
 ## Community plugins
 
+* [bookshelf-camelcase](https://github.com/jpstone/bookshelf-camelcase): Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.
 * [bookshelf-cascade-delete](https://github.com/seegno/bookshelf-cascade-delete) - Cascade delete related models on destroy.
 * [bookshelf-json-columns](https://github.com/seegno/bookshelf-json-columns) - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).
 * [bookshelf-mask](https://github.com/seegno/bookshelf-mask) - Similar to [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility) but supporting multiple scopes, masking models and collections using the [json-mask](https://github.com/nemtsov/json-mask) API.
