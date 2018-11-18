@@ -30,12 +30,12 @@ and the listeners will run sequentially.
 
 The available {@link Model model} save related events are:
 
-- {@link Model#saving saving}
-- {@link Model#creating creating}
-- {@link Model#updating updating}
-- {@link Model#created created}
-- {@link Model#updated updated}
-- {@link Model#saved saved}
+- {@link Model#event:saving saving}
+- {@link Model#event:creating creating}
+- {@link Model#event:updating updating}
+- {@link Model#event:created created}
+- {@link Model#event:updated updated}
+- {@link Model#event:saved saved}
 
 They are fired in this order and it's possible to prevent the request from advancing further by throwing an error or
 returning a rejected Promise from any one of these event listeners, e.g.:
@@ -80,18 +80,18 @@ const User = bookshelf.Model.extend({
 
 The available {@link Model model} data retrieval related events are:
 
-- {@link Model#fetching fetching}
+- {@link Model#event:fetching fetching}
 - {@link Model#fetching:collection fetching:collection}
-- {@link Model#counting counting}
-- {@link Model#fetched fetched}
+- {@link Model#event:counting counting}
+- {@link Model#event:fetched fetched}
 - {@link Model#fetched:collection fetched:collection}
 
 ### Available destroy related events
 
 The available {@link Model model} destruction related events are:
 
-- {@link Model#destroying destroying}
-- {@link Model#destroyed destroyed}
+- {@link Model#event:destroying destroying}
+- {@link Model#event:destroyed destroyed}
 
 Note that you can get the model's previous attributes after it's destroyed by calling the
 {@link Model#previousAttributes previousAttributes} method:
