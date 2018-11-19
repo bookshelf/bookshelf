@@ -1391,7 +1391,7 @@ module.exports = function(Bookshelf) {
       });
     });
 
-    describe.only('Issue #xx - Binary ID relations', function() {
+    describe('Issue #xx - Binary ID relations', function() {
       it('should group relations properly with binary ID columns', function() {
         const critic1Id = new Buffer('93', 'hex');
         const critic2Id = new Buffer('90', 'hex');
@@ -1414,7 +1414,6 @@ module.exports = function(Bookshelf) {
           })
           .then(function(critics) {
             critics = critics.serialize();
-            console.log(critics);
             expect(critics).to.have.lengthOf(2);
             expect(critics[0].comments).to.have.lengthOf(2);
             expect(critics[1].comments).to.have.lengthOf(1);

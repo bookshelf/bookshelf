@@ -99,6 +99,17 @@ module.exports = function() {
         equal(collection.at(1).get('name'), 'Item 2');
       });
 
+      it('should delete old models and add new ones with similar binary IDs', function() {
+        collection = new Collection([{some_id: new Buffer('90', 'hex'), name: 'Test'}, {name: 'No Id'}]);
+        collection.set([
+          {some_id: new Buffer('90', 'hex'), name: 'Item 1'},
+          {some_id: new Buffer('93', 'hex'), name: 'Item 2'}
+        ]);
+        equal(collection.length, 2);
+        equal(collection.at(0).get('name'), 'Item 1');
+        equal(collection.at(1).get('name'), 'Item 2');
+      });
+
       it('should merge duplicate models by default', function() {
         collection.set({some_id: 1, name: 'Not Test'});
         expect(collection.at(0).get('name')).to.equal('Not Test');
