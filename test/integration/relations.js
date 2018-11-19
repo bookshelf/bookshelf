@@ -29,6 +29,8 @@ module.exports = function(Bookshelf) {
     var Site = Models.Site;
     var Admin = Models.Admin;
     var Author = Models.Author;
+    var Critic = Models.Critic;
+    var CriticComment = Models.CriticComment;
     var Blog = Models.Blog;
     var Post = Models.Post;
     var Comment = Models.Comment;
@@ -1386,6 +1388,37 @@ module.exports = function(Bookshelf) {
 
       it('works with eager belongsToMany `through` relation (locale -> customers)', function() {
         return new Locale({isoCode: 'en'}).fetch({withRelated: 'customersThrough'}).then(checkTest(this));
+      });
+    });
+
+    describe.only('Issue #xx - Binary ID relations', function() {
+      it('should group relations properly with binary ID columns', function() {
+        const critic1Id = new Buffer('93', 'hex');
+        const critic2Id = new Buffer('90', 'hex');
+        const critic1 = new Critic({id: critic1Id, name: '1'});
+        const critic2 = new Critic({id: critic2Id, name: '2'});
+        const comment1 = new CriticComment({critic_id: critic1Id, comment: 'c1-1'});
+        const comment2 = new CriticComment({critic_id: critic1Id, comment: 'c1-2'});
+        const comment3 = new CriticComment({critic_id: critic2Id, comment: 'c2-1'});
+        return Promise.all([
+          critic1.save(null, {method: 'insert'}),
+          critic2.save(null, {method: 'insert'}),
+          comment1.save(),
+          comment2.save(),
+          comment3.save()
+        ])
+          .then(function() {
+            return Critic.where('name', 'IN', ['1', '2'])
+              .orderBy('name', 'ASC')
+              .fetchAll({debug: true, withRelated: 'comments'});
+          })
+          .then(function(critics) {
+            critics = critics.serialize();
+            console.log(critics);
+            expect(critics).to.have.lengthOf(2);
+            expect(critics[0].comments).to.have.lengthOf(2);
+            expect(critics[1].comments).to.have.lengthOf(1);
+          });
       });
     });
   });

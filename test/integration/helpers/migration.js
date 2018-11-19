@@ -7,6 +7,8 @@ var drops = [
   'admins_sites',
   'authors',
   'authors_posts',
+  'critics',
+  'critics_comments',
   'blogs',
   'posts',
   'tags',
@@ -99,6 +101,15 @@ module.exports = function(Bookshelf) {
             table.string('first_name');
             table.string('last_name');
           })
+          .createTable('critics', function(table) {
+            table.binary('id', 16).primary();
+            table.string('name');
+          })
+          .createTable('critics_comments', function(table) {
+            table.increments();
+            table.binary('critic_id', 16).notNullable();
+            table.string('comment');
+          })
           .createTable('posts', function(table) {
             table.increments('id');
             table.integer('owner_id').notNullable();
@@ -147,9 +158,9 @@ module.exports = function(Bookshelf) {
             table.string('imageable_type');
           })
           /* The following table is for testing non-standard morphTo column name
-     * specification. The breaking of naming convention is intentional.
-     * Changing it back to snake_case will break the tests!
-     */
+           * specification. The breaking of naming convention is intentional.
+           * Changing it back to snake_case will break the tests!
+           */
           .createTable('thumbnails', function(table) {
             table.increments('id');
             table.string('url');
