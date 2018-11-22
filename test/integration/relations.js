@@ -1391,7 +1391,7 @@ module.exports = function(Bookshelf) {
       });
     });
 
-    describe('Issue #xx - Binary ID relations', function() {
+    describe('Binary ID relations', function() {
       it('should group relations properly with binary ID columns', function() {
         const critic1Id = new Buffer('93', 'hex');
         const critic2Id = new Buffer('90', 'hex');
@@ -1410,7 +1410,7 @@ module.exports = function(Bookshelf) {
           .then(function() {
             return Critic.where('name', 'IN', ['1', '2'])
               .orderBy('name', 'ASC')
-              .fetchAll({debug: true, withRelated: 'comments'});
+              .fetchAll({withRelated: 'comments'});
           })
           .then(function(critics) {
             critics = critics.serialize();
