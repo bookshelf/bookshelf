@@ -3,7 +3,7 @@
 static_assets=./.jsdoc-temp
 
 # Clean existing docs
-rm -rf ./docs index.html
+rm -rf ./docs
 
 # Create a temporary folder for static assets.
 rm -rf $static_assets

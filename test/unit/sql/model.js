@@ -2,7 +2,7 @@ var Promise = global.testPromise;
 var equal = require('assert').equal;
 var notStrictEqual = require('assert').notStrictEqual;
 var _ = require('lodash');
-var path     = require('path');
+var path = require('path');
 var basePath = process.cwd();
 
 module.exports = function() {
@@ -57,7 +57,7 @@ module.exports = function() {
         expect(model.get('updated_at')).to.be.an.instanceOf(Date);
       });
 
-      it('will not set timestamps on a model if hasTimestamps isn\'t set', function () {
+      it("will not set timestamps on a model if hasTimestamps isn't set", function() {
         var model = new Model();
         model.timestamp();
 
@@ -72,12 +72,12 @@ module.exports = function() {
         expect(model.hasChanged('test')).to.be.true;
       });
 
-      it('returns false if the attribute isn\'t set on a new model instance', function() {
+      it("returns false if the attribute isn't set on a new model instance", function() {
         var model = new Model({test: 'something'});
         expect(model.hasChanged('id')).to.be.false;
       });
 
-      it('returns false if the attribute isn\'t updated after a sync operation', function() {
+      it("returns false if the attribute isn't updated after a sync operation", function() {
         var model = new Model({test: 'something'});
         model._reset();
         expect(model.hasChanged('test')).to.be.false;

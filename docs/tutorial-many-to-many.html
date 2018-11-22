@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="canonical" href="http://bookshelfjs.org" />
+    <title>Bookshelf.js | Many-to-many</title>
+    <!--
+    ._.                                                      ._.
+    | |    ______             _        _          _  __      | |
+    | |    | ___ \           | |      | |        | |/ _|     | |
+    | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+    | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+    | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+    | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+    |                                                          |
+    \________\  /__________________________________\  /________/
+              \/                                    \/
+    -->
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Import fonts from Open Font Library -->
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+    <nav class="main-navbar">
+      <a href="index.html"><img class="nav-logo" src="images/bookshelf-icon-inverted.svg" />Bookshelf.js
+</a>
+      <label for="show-menu" class="show-menu">
+        <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+      </label>
+      <input type="checkbox" id="show-menu" role="button" checked>
+      <ul id="menu">
+        
+          <li>
+            <a href="tutorials.html" class="active"><i class="fa fa-file-text" aria-hidden="true"></i>Guides
+</a>
+          </li>
+        
+        
+          <li>
+            <a href="api.html"><i class="fa fa-book" aria-hidden="true"></i>API Reference
+</a>
+          </li>
+        
+        <li>
+          <a href="https://github.com/bookshelf/bookshelf"><span class="fa fa-github"></span></a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="page-content">
+      
+        <nav class="sidebar">
+          
+            <h2>Guides</h2>
+            <ul class="tutorials"><li><a href="tutorial-associations.html">Associations</a><ul class="tutorials"><li><a href="tutorial-one-to-one.html">One-to-one</a><ul class="tutorials"></ul></li><li><a href="tutorial-one-to-many.html">One-to-many</a><ul class="tutorials"></ul></li><li><a href="tutorial-many-to-many.html">Many-to-many</a><ul class="tutorials"></ul></li><li><a href="tutorial-polymorphic.html">Polymorphic</a><ul class="tutorials"></ul></li></ul></li><li><a href="tutorial-models.html">Models</a><ul class="tutorials"><li><a href="tutorial-parse-and-format.html">Parse and Format</a><ul class="tutorials"></ul></li></ul></li></ul>
+          
+        </nav>
+      
+
+      <div class="main-container tutorial">
+        <div class="main-column">
+          
+
+          <article class="tutorial">
+  <h2>Many-to-many</h2>
+  <section class="content"><p>Many-to-many associations can be created with <a href="api.html#Model-instance-belongsToMany"><code>belongsToMany</code></a>, and <a href="api.html#Model-instance-through"><code>through</code></a> relation types.</p>
+<pre class="prettyprint source lang-js"><code>var Book = bookshelf.Model.extend({
+  tableName: 'books',
+  authors: function() {
+    return this.belongsToMany(Author);
+  }
+});
+
+var Author = bookshelf.Model.extend({
+  tableName: 'authors',
+  books: function() {
+    return this.belongsToMany(Book);
+  }
+});</code></pre><p>A Knex migration for the above relationship could be created with:</p>
+<pre class="prettyprint source lang-js"><code>exports.up = function(knex, Promise) {
+  return knex.schema.createTable('books', function(table) {
+    table.increments('id').primary();
+    table.string('name');
+  }).createTable('authors', function(table) {
+    table.increments('id').primary();
+    table.string('name');
+  }).createTable('authors_books', function(table) {
+    table.integer('author_id').references('authors.id');
+    table.integer('book_id').references('books.id');
+  });
+};
+
+exports.down = function(knex, Promise) {
+  return knex.schema.dropTable('books')
+    .dropTable('authors')
+    .dropTable('authors_books');
+};</code></pre><p>See <a href="tutorial-associations.html">Associations</a>.</p></section>
+  
+</article>
+
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        Documentation generated by
+        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+        
+          on
+          November 4, 2018
+        
+      </div>
+    </footer>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+    <script src="scripts/main.js"></script>
+  </body>
+</html>

@@ -3,14 +3,14 @@ var path = require('path');
 module.exports = function(Bookshelf) {
   var options, spy;
 
-	beforeEach(function() {
+  beforeEach(function() {
     options = {};
     spy = sinon.spy();
   });
 
   describe('Plugin', function() {
     var Models = require('./helpers/objects')(Bookshelf).Models;
-    var Site   = Models.Site;
+    var Site = Models.Site;
 
     it('can be the name of an included plugin', function() {
       Bookshelf.plugin('registry');
@@ -42,7 +42,7 @@ module.exports = function(Bookshelf) {
         bookshelf.Collection = bookshelf.Collection.extend({
           test: 'test'
         });
-      }
+      };
 
       Bookshelf.plugin(testPlugin);
       expect(Bookshelf.Model.collection().test).to.equal('test');

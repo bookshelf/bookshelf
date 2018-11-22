@@ -1,6 +1,6 @@
-var Promise   = global.testPromise;
-var assert    = require('assert');
-var equal     = assert.equal
+var Promise = global.testPromise;
+var assert = require('assert');
+var equal = assert.equal;
 
 module.exports = function(bookshelf) {
   describe('Collection', function() {
@@ -20,13 +20,13 @@ module.exports = function(bookshelf) {
     };
 
     var Models = require('./helpers/objects')(bookshelf).Models;
-    var Site     = Models.Site;
-    var Author   = Models.Author;
-    var Blog     = Models.Blog;
-    var Post     = Models.Post;
+    var Site = Models.Site;
+    var Author = Models.Author;
+    var Blog = Models.Blog;
+    var Post = Models.Post;
 
     describe('extend', function() {
-      it ('should have own EmptyError', function() {
+      it('should have own EmptyError', function() {
         var Sites = bookshelf.Collection.extend({model: Site});
         var OtherSites = bookshelf.Collection.extend({model: Site});
         var err = new Sites.EmptyError();
@@ -39,7 +39,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('fetch', function() {
-      it ('fetches the models in a collection', function() {
+      it('fetches the models in a collection', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
           .fetch()
@@ -48,7 +48,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('count', function() {
-      it ('counts the number of models in a collection', function() {
+      it('counts the number of models in a collection', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
           .count()
@@ -57,19 +57,23 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('optionally counts by column (excluding null values)', function() {
-        var authors = bookshelf.Collection.extend({tableName: 'authors'}).forge();
+      it('optionally counts by column (excluding null values)', function() {
+        var authors = bookshelf.Collection.extend({
+          tableName: 'authors'
+        }).forge();
 
-        return authors.count()
+        return authors
+          .count()
           .then(function(count) {
             checkCount(count, 5);
             return authors.count('last_name');
-          }).then(function(count) {
+          })
+          .then(function(count) {
             checkCount(count, 4);
           });
       });
 
-      it ('counts a filtered query', function() {
+      it('counts a filtered query', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
           .query('where', 'blog_id', 1)
@@ -79,7 +83,7 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('counts a `hasMany` relation', function() {
+      it('counts a `hasMany` relation', function() {
         return new Blog({id: 1})
           .posts()
           .count()
@@ -88,7 +92,7 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('counts a `hasMany` `through` relation', function() {
+      it('counts a `hasMany` `through` relation', function() {
         return new Blog({id: 1})
           .comments()
           .count()
@@ -99,8 +103,8 @@ module.exports = function(bookshelf) {
     });
 
     describe('fetchOne', function() {
-      it ('fetches a single model from the collection', function() {
-        return new Site({id:1})
+      it('fetches a single model from the collection', function() {
+        return new Site({id: 1})
           .authors()
           .fetchOne()
           .then(function(model) {
@@ -108,43 +112,40 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it ('maintains a clone of the query builder from the current collection', function() {
-        return new Site({id:1})
+      it('maintains a clone of the query builder from the current collection', function() {
+        return new Site({id: 1})
           .authors()
           .query({where: {id: 40}})
           .fetchOne()
           .then(function(model) {
             equal(model, null);
           });
-
       });
 
-      it ('follows the typical model options, like require: true', function() {
-        return new Site({id:1})
+      it('follows the typical model options, like require: true', function() {
+        return new Site({id: 1})
           .authors()
           .query({where: {id: 40}})
           .fetchOne({require: true})
           .throw(new Error())
           .catch(function(err) {
-            assert(err instanceof Author.NotFoundError, 'Error is a Site.NotFoundError')
+            assert(err instanceof Author.NotFoundError, 'Error is a Site.NotFoundError');
           });
-
       });
 
-      it ('resolves to null if no model exists', function() {
-        return new Site({id:1})
+      it('resolves to null if no model exists', function() {
+        return new Site({id: 1})
           .authors()
           .query({where: {id: 40}})
           .fetchOne()
           .then(function(model) {
             equal(model, null);
           });
-      })
-
+      });
     });
 
-    describe('orderBy', function () {
-      it('orders the results by column', function () {
+    describe('orderBy', function() {
+      it('orders the results by column', function() {
         var asc = new Site({id: 1})
           .authors()
           .orderBy('first_name', 'ASC')
@@ -154,66 +155,70 @@ module.exports = function(bookshelf) {
           .orderBy('first_name', 'DESC')
           .fetch();
 
-        return Promise.join(asc, desc).then(function (result) {
+        return Promise.join(asc, desc).then(function(result) {
           var r0 = result[0].toJSON().reverse();
           var r1 = result[1].toJSON();
           expect(r0).to.eql(r1);
-        })
-      })
-    })
+        });
+      });
+    });
 
     describe('sync', function() {
-      it('creates a new instance of Sync', function(){
+      it('creates a new instance of Sync', function() {
         var model = new bookshelf.Model();
         assert(model.sync(model) instanceof require('../../lib/sync'));
       });
     });
 
     describe('create', function() {
-      it('creates and saves a new model instance, saving it to the collection', function () {
-        return Site.collection().create({name: 'google.com'}).then(function(model) {
-          expect(model.get('name')).to.equal('google.com');
-          return model.destroy();
-        });
+      it('creates and saves a new model instance, saving it to the collection', function() {
+        return Site.collection()
+          .create({name: 'google.com'})
+          .then(function(model) {
+            expect(model.get('name')).to.equal('google.com');
+            return model.destroy();
+          });
       });
 
       it('should populate a `hasMany` or `morphMany` with the proper keys', function() {
-        return new Site({id: 10})
-          .authors()
-          .create({first_name: 'test', last_name: 'tester'})
-          .then(function(author) {
-            expect(author.get('first_name')).to.equal('test');
-            expect(author.get('last_name')).to.equal('tester');
-            expect(author.get('site_id')).to.equal(10);
-            return author.destroy();
-          })
-          .then(function() {
-            return new Site({id: 10})
-              .photos()
-              .create({
-                url: 'http://image.dev',
-                caption: 'this is a test image'
-              })
-              .then(function(photo) {
-                expect(photo.get('imageable_id')).to.equal(10);
-                expect(photo.get('imageable_type')).to.equal('sites');
-                expect(photo.get('url')).to.equal('http://image.dev');
-              });
-          })
-          // The following is for testing custom columnNames.
-          .then(function() {
-            return new Site({id: 10})
-              .thumbnails()
-              .create({
-                url: 'http://image.dev',
-                caption: 'this is a test image'
-              })
-              .then(function(photo) {
-                expect(photo.get('ImageableId')).to.equal(10);
-                expect(photo.get('ImageableType')).to.equal('sites');
-                expect(photo.get('url')).to.equal('http://image.dev');
-              });
-          });
+        return (
+          new Site({id: 10})
+            .authors()
+            .create({first_name: 'test', last_name: 'tester'})
+            .then(function(author) {
+              expect(author.get('first_name')).to.equal('test');
+              expect(author.get('last_name')).to.equal('tester');
+              expect(author.get('site_id')).to.equal(10);
+              return author.destroy();
+            })
+            .then(function() {
+              return new Site({id: 10})
+                .photos()
+                .create({
+                  url: 'http://image.dev',
+                  caption: 'this is a test image'
+                })
+                .then(function(photo) {
+                  expect(photo.get('imageable_id')).to.equal(10);
+                  expect(photo.get('imageable_type')).to.equal('sites');
+                  expect(photo.get('url')).to.equal('http://image.dev');
+                });
+            })
+            // The following is for testing custom columnNames.
+            .then(function() {
+              return new Site({id: 10})
+                .thumbnails()
+                .create({
+                  url: 'http://image.dev',
+                  caption: 'this is a test image'
+                })
+                .then(function(photo) {
+                  expect(photo.get('ImageableId')).to.equal(10);
+                  expect(photo.get('ImageableType')).to.equal('sites');
+                  expect(photo.get('url')).to.equal('http://image.dev');
+                });
+            })
+        );
       });
 
       it('should not set incorrect foreign key in a `hasMany` `through` relation - #768', function() {
@@ -221,7 +226,7 @@ module.exports = function(bookshelf) {
         return new Blog({id: 768})
           .comments()
           .create({post_id: 5, comment: 'test comment'})
-          .tap(function (comment) {
+          .tap(function(comment) {
             return comment.destroy();
           });
       });
@@ -237,7 +242,7 @@ module.exports = function(bookshelf) {
 
       it('should maintain the correct constraints when creating a model from a relation', function() {
         var authors = new Site({id: 1}).authors();
-        var query   = authors.query();
+        var query = authors.query();
         query.then = function(onFufilled, onRejected) {
           // TODO: Make this doable again...
           // expect(this.values[0]).to.eql([['first_name', 'Test'], ['last_name', 'User'], ['site_id', 1]]);
@@ -247,16 +252,22 @@ module.exports = function(bookshelf) {
       });
 
       it('should populate the nested relations with the proper keys', function() {
-        return new Author({id: 1}).fetch({withRelated: 'site.photos'}).then(function(author) {
-          return author.related('site').related('photos').create({
-            imageable_id: author.related('site').id,
-            url: 'http://image.dev',
-            caption: 'this is a test image'
+        return new Author({id: 1})
+          .fetch({withRelated: 'site.photos'})
+          .then(function(author) {
+            return author
+              .related('site')
+              .related('photos')
+              .create({
+                imageable_id: author.related('site').id,
+                url: 'http://image.dev',
+                caption: 'this is a test image'
+              });
+          })
+          .then(function(photo) {
+            expect(photo.get('url')).to.equal('http://image.dev');
+            return photo.destroy();
           });
-        }).then(function(photo) {
-          expect(photo.get('url')).to.equal('http://image.dev');
-          return photo.destroy();
-        });
       });
 
       it('can require items in the response', function() {
@@ -273,9 +284,10 @@ module.exports = function(bookshelf) {
       });
 
       it('correctly parses added relation keys', function() {
-        return Site.forge({id: 1}).related('authorsParsed')
+        return Site.forge({id: 1})
+          .related('authorsParsed')
           .create({first_name_parsed: 'John', last_name_parsed: 'Smith'})
-          .then(function (author) {
+          .then(function(author) {
             expect(author.get('first_name_parsed')).to.equal('John');
             expect(author.get('last_name_parsed')).to.equal('Smith');
             expect(author.get('site_id_parsed')).to.equal(1);
