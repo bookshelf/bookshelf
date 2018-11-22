@@ -19,6 +19,9 @@
   "models": {
     "title": "Models",
     "children": {
+      "events": {
+        "title": "Events"
+      },
       "parse-and-format": {
         "title": "Parse and Format"
       }
