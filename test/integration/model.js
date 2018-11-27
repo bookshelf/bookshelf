@@ -1583,6 +1583,17 @@ module.exports = function(bookshelf) {
         });
       });
 
+      it("returns the current model's attributes if no attributes were changed after save", function() {
+        return new Models.Site({id: 1})
+          .fetch()
+          .then(function(site) {
+            return site.save({name: site.get('name')});
+          })
+          .then(function(site) {
+            expect(site.previousAttributes()).to.eql(site.attributes);
+          });
+      });
+
       it("returns the model's original attributes if the model has changed", function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
           var originalAttributes = _.clone(site.attributes);
@@ -1608,6 +1619,38 @@ module.exports = function(bookshelf) {
           .finally(function() {
             return new Models.Site({id: 1}).save({name: originalAttributes.name});
           });
+      });
+
+      it("returns the model's original attributes after save on the 'updated' event", function(done) {
+        var originalAttributes;
+        var siteModel = new Models.Site({id: 1});
+
+        siteModel.on('updated', function(site) {
+          expect(site.previousAttributes()).to.eql(originalAttributes);
+          expect(site.previousAttributes()).to.not.eql(site.attributes);
+
+          new Models.Site({id: 1}).save({name: originalAttributes.name}).finally(() => done());
+        });
+
+        siteModel.fetch().then(function(site) {
+          originalAttributes = _.clone(site.attributes);
+          return siteModel.save({name: 'Blah'});
+        });
+      });
+
+      it("returns the current model's attributes after save without changes on the 'updated' event", function(done) {
+        var originalAttributes;
+        var siteModel = new Models.Site({id: 1});
+
+        siteModel.on('updated', function(site) {
+          expect(site.previousAttributes()).to.eql(site.attributes);
+          new Models.Site({id: 1}).save({name: originalAttributes.name}).finally(() => done());
+        });
+
+        siteModel.fetch().then(function(site) {
+          originalAttributes = _.clone(site.attributes);
+          return siteModel.save({name: site.get('name')});
+        });
       });
 
       it("returns the model's original attributes after destroy", function() {
