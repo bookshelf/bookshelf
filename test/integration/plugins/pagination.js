@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var _ = require('lodash');
 
 module.exports = function(bookshelf) {
   describe('Pagination Plugin', function() {
@@ -177,6 +178,82 @@ module.exports = function(bookshelf) {
           .then(function(blogs) {
             expect(blogs.pagination.rowCount).to.equal(blogs.length);
             expect(blogs.length).to.be.below(total);
+          });
+      });
+    });
+
+    describe('with fetch Options', function() {
+      var Site = Models.Site;
+
+      afterEach(function() {
+        delete Site.prototype.initialize;
+      });
+
+      it('ignore standard options for count query', function() {
+        const allOptions = [];
+
+        Site.prototype.initialize = function() {
+          this.on('fetching:collection', function(collection, columns, options) {
+            allOptions.push(_.omit(options, 'query'));
+          });
+        };
+
+        var site = new Site();
+
+        return site
+          .fetchPage({
+            require: true,
+            withRelated: ['blogs'],
+            columns: 'name'
+          })
+          .then(function() {
+            expect(allOptions.length).equals(2);
+            expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+            const countOptions = allOptions.find(function(option) {
+              return !_.has(option, ['require', 'withRelated', 'columns']);
+            });
+            const fetchOptions = allOptions.find(function(option) {
+              return _.has(option, ['require', 'withRelated', 'columns']);
+            });
+
+            expect(countOptions).not.to.be.null;
+            expect(fetchOptions).not.to.be.null;
+          });
+      });
+
+      it('keep custom options for count query', function() {
+        const allOptions = [];
+
+        Site.prototype.initialize = function() {
+          this.on('fetching:collection', function(collection, columns, options) {
+            allOptions.push(_.omit(options, 'query'));
+          });
+        };
+
+        var site = new Site();
+
+        return site
+          .fetchPage({
+            withRelated: ['blogs'],
+            customOption: true
+          })
+          .then(function() {
+            expect(allOptions.length).equals(2);
+            expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+            const countOptions = allOptions.find(function(option) {
+              return !_.has(option, ['withRelated']);
+            });
+            const fetchOptions = allOptions.find(function(option) {
+              return _.has(option, ['withRelated']);
+            });
+
+            expect(countOptions).not.to.be.null;
+            expect(fetchOptions).not.to.be.null;
+            expect(countOptions.customOption).to.equal(true);
+            expect(fetchOptions.customOption).to.equal(true);
+            expect(countOptions.customOption).to.equal(fetchOptions.customOption);
           });
       });
     });
