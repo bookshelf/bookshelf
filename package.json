@@ -1,9 +1,10 @@
 {
   "name": "bookshelf",
-  "version": "0.13.3",
+  "version": "0.14.1",
   "description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
   "main": "bookshelf.js",
   "scripts": {
+    "format": "prettier --write \"{lib,scripts,test}/**/*.js\"",
     "lint": "eslint bookshelf.js lib/",
     "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
     "test": "npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
@@ -25,21 +26,36 @@
   ],
   "dependencies": {
     "bluebird": "^3.4.3",
+    "colorette": "^1.0.7",
     "create-error": "~0.3.1",
     "inflection": "^1.5.1",
-    "lodash": "^4.17.10",
-    "turbocolor": "2.3.0"
+    "lodash": "^4.17.10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "devDependencies": {
-    "bookshelf-jsdoc-theme": "^0.2.0",
+    "bookshelf-jsdoc-theme": "^1.0.0",
     "chai": "4.0.2",
     "eslint": "^4.17.0",
+    "eslint-config-prettier": "^3.0.1",
+    "husky": "^1.1.3",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "knex": "^0.14.0",
+    "lint-staged": "^8.0.0",
     "mocha": "^5.0.0",
     "mysql": "^2.15.0",
     "pg": "^7.4.1",
+    "prettier": "^1.14.2",
     "semver": "^5.0.3",
     "sinon": "^6.0.0",
     "sinon-chai": "^3.2.0",
@@ -54,9 +70,18 @@
     "url": "https://github.com/tgriesser"
   },
   "contributors": [
-    {"name": "Edward Greve", "url": "https://github.com/anyong"},
-    {"name": "Rhys van der Waerden", "url": "https://github.com/rhys-vdw"},
-    {"name": "Ricardo Graça", "url": "https://github.com/ricardograca"}
+    {
+      "name": "Edward Greve",
+      "url": "https://github.com/anyong"
+    },
+    {
+      "name": "Rhys van der Waerden",
+      "url": "https://github.com/rhys-vdw"
+    },
+    {
+      "name": "Ricardo Graça",
+      "url": "https://github.com/ricardograca"
+    }
   ],
   "license": "MIT",
   "readmeFilename": "README.md",

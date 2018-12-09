@@ -11,17 +11,15 @@ echo "(Re)Creating bookshelf-source remote"
 git remote remove bookshelf-source || true
 git remote add bookshelf-source git@github.com:bookshelf/bookshelf.git
 
-echo "Committing new release version w/ any outstanding changes"
-git commit -am "Release $version"
+echo "Regenerating documentation"
+npm run jsdoc
+
+echo "Committing new release version ($version) w/ any outstanding changes"
+git add -A && git commit -m "Release $version"
 
 echo "Tagging version w/ number"
 git tag $version
 
-echo "Pushing commit to source master"
+echo "Pushing commit and tags to source master"
 git push bookshelf-source master
-
-echo "Pushing new version tag to source master"
 git push bookshelf-source master --tags
-
-echo "Running gh-pages publish"
-./scripts/gh-pages.sh

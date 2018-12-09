@@ -2,14 +2,14 @@ var Promise = global.testPromise;
 var equal = require('assert').equal;
 var notStrictEqual = require('assert').notStrictEqual;
 var _ = require('lodash');
-var path     = require('path');
+var path = require('path');
 var basePath = process.cwd();
 
 module.exports = function() {
   var Model = require(path.resolve(basePath + '/lib/model'));
 
   describe('Model', function() {
-    describe('#save', function() {
+    describe('#save()', function() {
       it('should clone the passed in `options` object', function() {
         var model = new Model();
         var options = {
@@ -32,7 +32,7 @@ module.exports = function() {
       });
     });
 
-    describe('#timestamp', function() {
+    describe('#timestamp()', function() {
       it('will set the updated_at and the created_at attributes to a new date for new models', function() {
         var newModel = new Model({}, {hasTimestamps: true});
         newModel.timestamp();
@@ -57,12 +57,39 @@ module.exports = function() {
         expect(model.get('updated_at')).to.be.an.instanceOf(Date);
       });
 
-      it('will not set timestamps on a model if hasTimestamps isn\'t set', function () {
+      it("will not set timestamps on a model if hasTimestamps isn't set", function() {
         var model = new Model();
         model.timestamp();
 
         expect(model.get('created_at')).to.not.exist;
         expect(model.get('updated_at')).to.not.exist;
+      });
+    });
+
+    describe('#hasChanged()', function() {
+      it('returns true if an attribute was set on a new model instance', function() {
+        var model = new Model({test: 'something'});
+        expect(model.hasChanged('test')).to.be.true;
+      });
+
+      it("returns false if the attribute isn't set on a new model instance", function() {
+        var model = new Model({test: 'something'});
+        expect(model.hasChanged('id')).to.be.false;
+      });
+
+      it("returns false if the attribute isn't updated after a sync operation", function() {
+        var model = new Model({test: 'something'});
+        model._reset();
+        expect(model.hasChanged('test')).to.be.false;
+      });
+
+      it('returns true if an existing attribute is updated', function() {
+        var model = new Model({test: 'something'});
+
+        model._reset();
+        model.set('test', 'something else');
+
+        expect(model.hasChanged('test')).to.be.true;
       });
     });
   });

@@ -1,11 +1,12 @@
+coverage/
 docs/
+scripts/
 tutorials/
 test/
-index.html
+.github/
 .eslintrc
 .istanbul.yml
 .travis.yml
 .npmignore
 CNAME
 docker-compose.yml
-scripts

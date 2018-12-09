@@ -1,10 +1,8 @@
 var expect = require('chai').expect;
-var sinon  = require('sinon');
+var sinon = require('sinon');
 
 module.exports = function(Bookshelf) {
-
   describe('Model Registry', function() {
-
     before(function() {
       this._relation = sinon.spy(Bookshelf.Model.prototype, '_relation');
       this.morphTo = sinon.spy(Bookshelf.Model.prototype, 'morphTo');
@@ -15,7 +13,7 @@ module.exports = function(Bookshelf) {
       this.morphTo.restore();
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       this._relation.resetHistory();
       this.morphTo.resetHistory();
     });
@@ -25,7 +23,6 @@ module.exports = function(Bookshelf) {
     });
 
     describe('Registering Models', function() {
-
       beforeEach(function() {
         Bookshelf._models = {};
         this.Model = Bookshelf.Model.extend({
@@ -49,7 +46,6 @@ module.exports = function(Bookshelf) {
       it('throws when there is a name conflict', function() {
         expect(Bookshelf.model.bind(Bookshelf, 'Model', Bookshelf.Model)).to.throw();
       });
-
     });
 
     describe('Registering Models with plain object', function() {
@@ -57,11 +53,15 @@ module.exports = function(Bookshelf) {
 
       beforeEach(function() {
         Bookshelf._models = {};
-        this.Model = Bookshelf.model('Model', {
-          tableName: 'records'
-        }, {
-          noop: noop
-        });
+        this.Model = Bookshelf.model(
+          'Model',
+          {
+            tableName: 'records'
+          },
+          {
+            noop: noop
+          }
+        );
       });
 
       it('assigns the model the name', function() {
@@ -79,12 +79,9 @@ module.exports = function(Bookshelf) {
       it('throws when there is a name conflict', function() {
         expect(Bookshelf.model.bind(Bookshelf, 'Model', Bookshelf.Model)).to.throw();
       });
-
     });
 
-
     describe('Registering Collections', function() {
-
       beforeEach(function() {
         Bookshelf._collections = {};
         this.Collection = Bookshelf.Collection.extend({
@@ -104,18 +101,22 @@ module.exports = function(Bookshelf) {
       it('throws when there is a name conflict', function() {
         expect(Bookshelf.collection.bind(Bookshelf, 'Collection', Bookshelf.Collection)).to.throw();
       });
-
     });
 
     describe('Custom Relations', function() {
-
       beforeEach(function() {
-        var related = this.relatedModel = Bookshelf.model('Related', Bookshelf.Model.extend({
-          tableName: 'related'
-        }));
-        this.relatedCollection = Bookshelf.collection('CRelated', Bookshelf.Collection.extend({
-          property: {}
-        }));
+        var related = (this.relatedModel = Bookshelf.model(
+          'Related',
+          Bookshelf.Model.extend({
+            tableName: 'related'
+          })
+        ));
+        this.relatedCollection = Bookshelf.collection(
+          'CRelated',
+          Bookshelf.Collection.extend({
+            property: {}
+          })
+        );
         var Model = Bookshelf.Model.extend({
           _hasOne: function() {
             return this.hasOne('Related');
@@ -136,7 +137,7 @@ module.exports = function(Bookshelf) {
         this.model = new Model();
       });
 
-      afterEach(function () {
+      afterEach(function() {
         delete Bookshelf._models;
         delete Bookshelf._collections;
       });
@@ -172,12 +173,10 @@ module.exports = function(Bookshelf) {
           try {
             this.model._morphTo();
           } catch (e) {
-            expect(this.morphTo).to.have.been.calledWith(
-              'morphable',
-              ['rel_type', 'rel_id'],
+            expect(this.morphTo).to.have.been.calledWith('morphable', ['rel_type', 'rel_id'], this.relatedModel, [
               this.relatedModel,
-              [this.relatedModel, 'relValue']
-            );
+              'relValue'
+            ]);
           }
         });
       });
@@ -188,7 +187,7 @@ module.exports = function(Bookshelf) {
         var one = Bookshelf.Model.extend({});
         var two = Bookshelf.Model.extend({});
         Bookshelf.resolve = function(name) {
-          return (name === 'one' ? one : name === 'two' ? two : void 0);
+          return name === 'one' ? one : name === 'two' ? two : void 0;
         };
 
         expect(Bookshelf.model('one')).to.equal(one);

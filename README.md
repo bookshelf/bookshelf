@@ -1,7 +1,7 @@
-# [bookshelf.js](http://bookshelfjs.org)
+# bookshelf.js
 
 [![NPM Version](https://img.shields.io/npm/v/bookshelf.svg?style=flat)](https://www.npmjs.com/package/bookshelf)
-[![Build Status](https://travis-ci.org/bookshelf/bookshelf.svg?branch=master)](https://travis-ci.org/bookshelf/bookshelf)
+[![Build Status](https://api.travis-ci.org/bookshelf/bookshelf.svg?branch=master)](https://travis-ci.org/bookshelf/bookshelf)
 [![Dependency Status](https://david-dm.org/bookshelf/bookshelf/status.svg)](https://david-dm.org/bookshelf/bookshelf)
 [![devDependency Status](https://david-dm.org/bookshelf/bookshelf/dev-status.svg)](https://david-dm.org/bookshelf/bookshelf?type=dev)
 
@@ -10,10 +10,6 @@ Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org
 It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
-
-## Notice
-
-This project is currently undergoing some changes. You may want to [read the discussion about the future of bookshelf.js](https://github.com/bookshelf/bookshelf/issues/1600) on GitHub.
 
 ## Introduction
 
@@ -79,7 +75,10 @@ var Post = bookshelf.Model.extend({
 Here is an example to get you started:
 
 ```js
-var knex = require('knex')({client: 'mysql', connection: process.env.MYSQL_DATABASE_CONNECTION });
+var knex = require('knex')({
+  client: 'mysql',
+  connection: process.env.MYSQL_DATABASE_CONNECTION
+});
 var bookshelf = require('bookshelf')(knex);
 
 var User = bookshelf.Model.extend({

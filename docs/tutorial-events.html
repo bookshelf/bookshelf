@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="canonical" href="http://bookshelfjs.org" />
+    <title>Bookshelf.js | Events</title>
+    <!--
+    ._.                                                      ._.
+    | |    ______             _        _          _  __      | |
+    | |    | ___ \           | |      | |        | |/ _|     | |
+    | |    | |_/ / ___   ___ | | _____| |__   ___| | |_      | |
+    | |    | ___ \/ _ \ / _ \| |/ / __| '_ \ / _ \ |  _|     | |
+    | |    | |_/ / (_) | (_) |   <\__ \ | | |  __/ | |       | |
+    | |____\____/_\___/_\___/|_|\_\___/_|_|_|\___|_|_|_______| |
+    |                                                          |
+    \________\  /__________________________________\  /________/
+              \/                                    \/
+    -->
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Import fonts from Open Font Library -->
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/carlito" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/average-mono" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+    <link type="text/css" rel="stylesheet" href="styles/main.css">
+  </head>
+  <body class="minami">
+    <nav class="main-navbar">
+      <a href="index.html"><img class="nav-logo" src="images/bookshelf-icon-inverted.svg" />Bookshelf.js
+</a>
+      <label for="show-menu" class="show-menu">
+        <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+      </label>
+      <input type="checkbox" id="show-menu" role="button" checked>
+      <ul id="menu">
+        
+          <li>
+            <a href="tutorials.html" class="active"><i class="fa fa-file-text" aria-hidden="true"></i>Guides
+</a>
+          </li>
+        
+        
+          <li>
+            <a href="api.html"><i class="fa fa-book" aria-hidden="true"></i>API Reference
+</a>
+          </li>
+        
+        <li>
+          <a href="https://github.com/bookshelf/bookshelf"><span class="fa fa-github"></span></a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="page-content">
+      
+        <nav class="sidebar">
+          
+            <h2>Guides</h2>
+            <ul class="tutorials"><li><a href="tutorial-associations.html">Associations</a><ul class="tutorials"><li><a href="tutorial-one-to-one.html">One-to-one</a><ul class="tutorials"></ul></li><li><a href="tutorial-one-to-many.html">One-to-many</a><ul class="tutorials"></ul></li><li><a href="tutorial-many-to-many.html">Many-to-many</a><ul class="tutorials"></ul></li><li><a href="tutorial-polymorphic.html">Polymorphic</a><ul class="tutorials"></ul></li></ul></li><li><a href="tutorial-models.html">Models</a><ul class="tutorials"><li><a href="tutorial-events.html">Events</a><ul class="tutorials"></ul></li><li><a href="tutorial-parse-and-format.html">Parse and Format</a><ul class="tutorials"></ul></li></ul></li></ul>
+          
+        </nav>
+      
+
+      <div class="main-container tutorial">
+        <div class="main-column">
+          
+
+          <article class="tutorial">
+  <h2>Events</h2>
+  <section class="content"><p>Events allow you to tap into the life cycle of a query request and perform actions before and after the query is
+executed. This can be used for adding validation before saving a model, hashing a password or calling some external
+process after a model is saved.</p>
+<p>The way this is done is by attaching event handlers to a model that will listen for these events. If the event
+handlers return Promises, the handlers will wait for the Promise to be resolved or rejected before progressing. If
+the promise is rejected, the process will be interrupted.</p>
+<h3>Listening to events</h3><p>In order to attach an event listener to a model you can do it in the <a href="api.html#Model-instance-initialize"><code>Model's initialize</code></a>
+method like so:</p>
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+  tableName: 'users',
+
+  initialize() {
+    this.on('updated', (model) => {
+      // This is fired after a model is updated
+    })
+  }
+})</code></pre><p>You can attach multiple event listeners for the same event by calling the <a href="api.html#Model-instance-on"><code>on</code></a> method multiple times
+and the listeners will run sequentially.</p>
+<h3>Available save events</h3><p>The available <a href="api.html#Model"><code>model</code></a> save related events are:</p>
+<ul>
+<li><a href="api.html#Model-event-saving"><code>saving</code></a></li>
+<li><a href="api.html#Model-event-creating"><code>creating</code></a></li>
+<li><a href="api.html#Model-event-updating"><code>updating</code></a></li>
+<li><a href="api.html#Model-event-created"><code>created</code></a></li>
+<li><a href="api.html#Model-event-updated"><code>updated</code></a></li>
+<li><a href="api.html#Model-event-saved"><code>saved</code></a></li>
+</ul>
+<p>They are fired in this order and it's possible to prevent the request from advancing further by throwing an error or
+returning a rejected Promise from any one of these event listeners, e.g.:</p>
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+  tableName: 'users',
+
+  initialize() {
+    this.on('saving', (model) => {
+      if (model.get('status') !== 'active') {
+        // Throwing an error will prevent the model from being saved
+        throw new Error('Cannot save inactive user')
+      }
+    })
+
+    this.on('saved', (model) => {
+      // This won't be reached if the previous event threw an error
+    })
+  }
+})</code></pre><p>This feature can be used to perform validation before saving a model. For example, checking if an email address
+already exists and preventing the model from being saved if it does:</p>
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+  tableName: 'users',
+
+  initialize() {
+    this.on('saving', (model) => {
+      return User.forge({email: model.get('email')}).fetch().then((user) => {
+        if (user) throw new Error('That email address already exists')
+      })
+    })
+  }
+})</code></pre><h3>Available fetch related events</h3><p>The available <a href="api.html#Model"><code>model</code></a> data retrieval related events are:</p>
+<ul>
+<li><a href="api.html#Model-event-fetching"><code>fetching</code></a></li>
+<li><a href="api.html#Model-instance-fetching:collection"><code>fetching:collection</code></a></li>
+<li><a href="api.html#Model-event-counting"><code>counting</code></a></li>
+<li><a href="api.html#Model-event-fetched"><code>fetched</code></a></li>
+<li><a href="api.html#Model-instance-fetched:collection"><code>fetched:collection</code></a></li>
+</ul>
+<h3>Available destroy related events</h3><p>The available <a href="api.html#Model"><code>model</code></a> destruction related events are:</p>
+<ul>
+<li><a href="api.html#Model-event-destroying"><code>destroying</code></a></li>
+<li><a href="api.html#Model-event-destroyed"><code>destroyed</code></a></li>
+</ul>
+<p>Note that you can get the model's previous attributes after it's destroyed by calling the
+<a href="api.html#Model-instance-previousAttributes"><code>previousAttributes</code></a> method:</p>
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+  tableName: 'users',
+
+  initialize() {
+    this.on('destroyed', (model) => {
+      const previousAttributes = JSON.stringify(model.previousAttributes())
+      log(`Destroyed model with attributes: ${previousAttributes}`)
+    })
+  }
+})</code></pre></section>
+  
+</article>
+
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        Documentation generated by
+        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+        
+          on
+          December 9, 2018
+        
+      </div>
+    </footer>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+    <script src="scripts/main.js"></script>
+  </body>
+</html>

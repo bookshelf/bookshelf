@@ -1,16 +1,18 @@
 #!/bin/bash -e
-
-static_assets=./.jsdoc-temp
+static_assets=.jsdoc-temp
 
 # Clean existing docs
-rm -rf ./docs index.html
+rm -rf ./docs
 
 # Create a temporary folder for static assets.
 rm -rf $static_assets
 mkdir $static_assets
 
-# Then create the docs.
+# Create the docs.
 $(npm bin)/jsdoc --configure ./scripts/jsdoc.config.json
 
-# Now remove temporary folder to clean up.
+# Copy file required for custom GitHub pages domain name
+cp CNAME docs/
+
+# Remove temporary folder to clean up.
 rm -rf $static_assets
