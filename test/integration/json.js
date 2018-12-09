@@ -53,14 +53,15 @@ module.exports = function(bookshelf) {
       return Command.forge({id: 0})
         .fetch()
         .then(function(command) {
-          const newTarget = {
-            x: 7,
-            y: 13
-          };
-          const updatedInfo = command.get('info');
+          const newTarget = {x: 7, y: 13};
+          const originalInfo = command.get('info');
+          const updatedInfo = _.cloneDeep(originalInfo);
           updatedInfo.target = newTarget;
+
           command.set('info', updatedInfo);
+
           expect(command.get('info')).to.not.deep.eql(command.previous('info'));
+          expect(command.previous('info')).to.deep.equal(originalInfo);
         });
     });
 
