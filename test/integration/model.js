@@ -1587,7 +1587,7 @@ module.exports = function(bookshelf) {
         return bookshelf.Collection.extend({
           model: Models.Site
         })
-          .forge({id: 1})
+          .forge()
           .fetch()
           .then(function(sites) {
             expect(sites.at(0).previousAttributes()).to.eql(sites.at(0).attributes);
@@ -1618,7 +1618,7 @@ module.exports = function(bookshelf) {
         return bookshelf.Collection.extend({
           model: Models.Site
         })
-          .forge({id: 1})
+          .forge()
           .fetch()
           .then(function(sites) {
             var site = sites.at(0);
@@ -1685,7 +1685,7 @@ module.exports = function(bookshelf) {
           initialize: function() {
             this.on('updated', function(site) {
               expect(site.previousAttributes()).to.eql(site.attributes);
-              new Models.Site({id: 1}).save({name: originalAttributes.name}).finally(() => done());
+              new Models.Site({id: originalAttributes.id}).save({name: originalAttributes.name}).finally(() => done());
             });
           }
         });
@@ -1693,7 +1693,7 @@ module.exports = function(bookshelf) {
           model: SiteModel
         });
 
-        Sites.forge({id: 1})
+        Sites.forge()
           .fetch()
           .then(function(sites) {
             var site = sites.at(0);
