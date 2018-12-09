@@ -15,7 +15,7 @@ echo "Regenerating documentation"
 npm run jsdoc
 
 echo "Committing new release version ($version) w/ any outstanding changes"
-git commit -am "Release $version"
+git add -A && git commit -m "Release $version"
 
 echo "Tagging version w/ number"
 git tag $version
