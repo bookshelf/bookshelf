@@ -1583,7 +1583,18 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it("returns the current model's attributes if no attributes were changed after save", function() {
+      it("returns the model's current attributes if no attributes were changed after fetching collection", function() {
+        return bookshelf.Collection.extend({
+          model: Models.Site
+        })
+          .forge({id: 1})
+          .fetch()
+          .then(function(sites) {
+            expect(sites.at(0).previousAttributes()).to.eql(sites.at(0).attributes);
+          });
+      });
+
+      it("returns the model's current attributes if no attributes were changed after save", function() {
         return new Models.Site({id: 1})
           .fetch()
           .then(function(site) {
@@ -1601,6 +1612,21 @@ module.exports = function(bookshelf) {
           expect(site.previousAttributes()).to.eql(originalAttributes);
           expect(site.previousAttributes()).to.not.eql(site.attributes);
         });
+      });
+
+      it("returns a model's original attributes if a model in a collection has changed", function() {
+        return bookshelf.Collection.extend({
+          model: Models.Site
+        })
+          .forge({id: 1})
+          .fetch()
+          .then(function(sites) {
+            var site = sites.at(0);
+            var originalAttributes = _.clone(site.attributes);
+            site.set('name', 'Blah');
+            expect(site.previousAttributes()).to.eql(originalAttributes);
+            expect(site.previousAttributes()).to.not.eql(site.attributes);
+          });
       });
 
       it("returns the model's original attributes after save", function() {
@@ -1651,6 +1677,29 @@ module.exports = function(bookshelf) {
           originalAttributes = _.clone(site.attributes);
           return siteModel.save({name: site.get('name')});
         });
+      });
+
+      it("returns the model's current attributes after save without changes on the 'updated' event with a collection", function(done) {
+        var originalAttributes;
+        var SiteModel = Models.Site.extend({
+          initialize: function() {
+            this.on('updated', function(site) {
+              expect(site.previousAttributes()).to.eql(site.attributes);
+              new Models.Site({id: 1}).save({name: originalAttributes.name}).finally(() => done());
+            });
+          }
+        });
+        var Sites = bookshelf.Collection.extend({
+          model: SiteModel
+        });
+
+        Sites.forge({id: 1})
+          .fetch()
+          .then(function(sites) {
+            var site = sites.at(0);
+            originalAttributes = _.clone(site.attributes);
+            return site.save({name: site.get('name')});
+          });
       });
 
       it("returns the model's original attributes after destroy", function() {
