@@ -235,7 +235,63 @@ document on GitHub.</p>
 
 
   <section id="changelog" class="changelog">
-    <h2>Change Log</h2><p><strong>0.13.3</strong> <small><em>Mar 26, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3">Diff</a></p>
+    <h2>Change Log</h2><p><strong>0.14.1</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1">Diff</a></p>
+<h4>Warning</h4><ul>
+<li>Incorrectly published the previous version from the wrong branch. That version doesn't contain all
+the work that is was supposed to. You shold use this version instead.</li>
+</ul>
+<h4>Breaking changes</h4><ul>
+<li>The <code>previous()</code> and <code>previousAttributes()</code> methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes">migration guide</a> in case you are affected by this change. <a href="https://github.com/bookshelf/bookshelf/pull/1848">#1848</a></li>
+</ul>
+<h4>Bug fixes</h4><ul>
+<li>Fix <code>withRelated</code> fetch option not always grouping properly when using binary primary keys: <a href="https://github.com/bookshelf/bookshelf/pull/1918">#1918</a></li>
+</ul>
+<p><strong>0.14.0</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.3...0.14.0">Diff</a></p>
+<h4>Breaking changes</h4><ul>
+<li>Fix incorrect results in collection when models have duplicate ids. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#passing-merge-false-remove-false-to-collectionset-and-default-behavior-with-duplicates">migration guide</a> in case you are affected by this. <a href="https://github.com/bookshelf/bookshelf/pull/1846">#1846</a></li>
+<li>Empty <code>hasOne</code> relation will now return <code>null</code> instead of <code>{}</code> when serialized: <a href="https://github.com/bookshelf/bookshelf/pull/1839">#1839</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#return-value-for-empty-hasone-relation">migration guide</a> in the rare event this causes you problems.</li>
+<li>Add more helpful error messages on bad or insufficient <code>morphTo</code> data: <a href="https://github.com/bookshelf/bookshelf/pull/1824">#1824</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#new-error-messages-on-bad-or-insufficient-morphto-data">migration guide</a> in case you are affected by this.</li>
+<li>Changed the existing functionality so that saving a model that hasn't changed will not update its <code>updated_at</code> attribute: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a>. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#saving-a-model-that-hasnt-changed-wont-update-updated_at">migration guide</a> in case you are affected by this.</li>
+</ul>
+<h4>Enhancements</h4><ul>
+<li>Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: <a href="https://github.com/bookshelf/bookshelf/pull/1914">#1914</a></li>
+<li>Make collections iterable using <code>for ... of</code> loops: <a href="https://github.com/bookshelf/bookshelf/pull/1830">#1830</a></li>
+<li>Add row-level locking options: <a href="https://github.com/bookshelf/bookshelf/pull/1810">#1810</a></li>
+</ul>
+<h4>Bug fixes</h4><ul>
+<li>Return clones of nested objects in <code>previousAttributes()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1876">#1876</a></li>
+<li>Fix incorrect <code>rowCount</code> value when using <code>groupBy</code> with <code>fetchPage()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1852">#1852</a></li>
+<li>Fix eager loading of relations when using <code>parse</code>/<code>format</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1838">#1838</a></li>
+<li>Fix inability to install bookshelf from git commit: <a href="https://github.com/bookshelf/bookshelf/pull/1835">#1835</a></li>
+<li>Fix <code>timestamp()</code> setting a key named <code>&quot;null&quot;</code> in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1820">#1820</a></li>
+<li>Fix performance of including relationships: <a href="https://github.com/bookshelf/bookshelf/pull/1800">#1800</a></li>
+</ul>
+<h4>Test Suite</h4><ul>
+<li>Add test to check for adding <code>withRelated</code> inside events: <a href="https://github.com/bookshelf/bookshelf/pull/1853">#1853</a></li>
+<li>Add Node.js 10 to the Travis config: <a href="https://github.com/bookshelf/bookshelf/pull/1829">#1829</a></li>
+<li>Fix incorrect output ordering in tests in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1825">#1825</a></li>
+</ul>
+<h4>Documentation</h4><ul>
+<li>Add a basic Events guide and fix some issues with the events doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1917">#1917</a></li>
+<li>Change the JSDoc theme to add a Guides section (this was already released): <a href="https://github.com/bookshelf/bookshelf/pull/1909">#1909</a></li>
+<li>Fix <code>hasOne</code>'s doc: <a href="https://github.com/bookshelf/bookshelf/pull/1890">#1890</a></li>
+<li>Fix many-to-many tutorial code: <a href="https://github.com/bookshelf/bookshelf/pull/1888">#1888</a></li>
+<li>Add code syntax highlighting for tutorials: <a href="https://github.com/bookshelf/bookshelf/pull/1850">#1850</a></li>
+<li>Fix a few issues with the collection documentation: <a href="https://github.com/bookshelf/bookshelf/pull/1836">#1836</a></li>
+<li>Fix <code>Model.load()</code> relations param: <a href="https://github.com/bookshelf/bookshelf/pull/1834">#1834</a></li>
+<li>Fix incorrect docs for collection:fetching event: <a href="https://github.com/bookshelf/bookshelf/pull/1831">#1831</a></li>
+<li>Add note on needing the Pagination plugin to use <code>fetchPage()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1803">#1803</a></li>
+<li>Fix incorrect data types and undocumented Model property: <a href="https://github.com/bookshelf/bookshelf/pull/1797">#1797</a></li>
+</ul>
+<h4>Dependencies</h4><ul>
+<li>Replace turbocolor with colorette: <a href="https://github.com/bookshelf/bookshelf/pull/1904">#1904</a></li>
+<li>Use prettier to format all <code>js</code> and <code>json</code> files: <a href="https://github.com/bookshelf/bookshelf/pull/1883">#1883</a></li>
+<li>Replace chalk with turbocolor: <a href="https://github.com/bookshelf/bookshelf/pull/1878">#1878</a></li>
+<li>Update some insecure dependencies: <a href="https://github.com/bookshelf/bookshelf/pull/1841">#1841</a></li>
+<li>Replace Babel with Node 4 compatible JavaScript: <a href="https://github.com/bookshelf/bookshelf/pull/1835">#1835</a></li>
+<li>Update sinon to the latest version: <a href="https://github.com/bookshelf/bookshelf/pull/1833">#1833</a></li>
+</ul>
+<p><strong>0.13.3</strong> <small><em>Mar 26, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3">Diff</a></p>
 <h4>Potentially breaking changes</h4><ul>
 <li>Saving a model that hasn't changed will not update its <code>updated_at</code> attribute. This was included in a patch release because the chances of any applications depending on this behavior are very small: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
 </ul>
@@ -781,7 +837,7 @@ document on GitHub.</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          November 4, 2018
+          December 9, 2018
         
       </div>
     </footer>

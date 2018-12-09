@@ -1,4 +1,6 @@
+coverage/
 docs/
+scripts/
 tutorials/
 test/
 .github/
@@ -8,4 +10,3 @@ test/
 .npmignore
 CNAME
 docker-compose.yml
-scripts

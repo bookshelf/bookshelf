@@ -100,7 +100,7 @@ const DEFAULT_PAGE = 1;
  *
  * ORM.plugin('bookshelf-pagination-plugin');
  */
-module.exports = function paginationPlugin (bookshelf) {
+module.exports = function paginationPlugin(bookshelf) {
   const Model = bookshelf.Model;
   /**
    * In order to use this function, you must have the {@link
@@ -173,7 +173,7 @@ module.exports = function paginationPlugin (bookshelf) {
    * @returns {Promise&lt;Model|null>}
    */
   function fetchPage(options) {
-    if (!options) options = {}
+    if (!options) options = {};
 
     const isModel = this instanceof Model;
     const page = options.page;
@@ -181,9 +181,9 @@ module.exports = function paginationPlugin (bookshelf) {
     const limit = options.limit;
     const offset = options.offset;
     const fetchOptions = _.omit(options, ['page', 'pageSize', 'limit', 'offset']);
-    const transacting = fetchOptions.transacting;
+    const countOptions = _.omit(fetchOptions, ['require', 'columns', 'withRelated', 'lock']);
     const fetchMethodName = isModel ? 'fetchAll' : 'fetch';
-    const targetModel = isModel ? this.constructor : (this.target || this.model);
+    const targetModel = isModel ? this.constructor : this.target || this.model;
     const tableName = targetModel.prototype.tableName;
     const idAttribute = targetModel.prototype.idAttribute || 'id';
     const targetIdColumn = [`${tableName}.${idAttribute}`];
@@ -216,13 +216,15 @@ module.exports = function paginationPlugin (bookshelf) {
     const paginate = () => {
       const pager = this.clone();
 
-      return pager.query(qb => {
-        Object.assign(qb, this.query().clone());
-        qb.limit.apply(qb, [_limit]);
-        qb.offset.apply(qb, [_offset]);
+      return pager
+        .query((qb) => {
+          Object.assign(qb, this.query().clone());
+          qb.limit.apply(qb, [_limit]);
+          qb.offset.apply(qb, [_offset]);
 
-        return null;
-      })[fetchMethodName](fetchOptions);
+          return null;
+        })
+        [fetchMethodName](fetchOptions);
     };
 
     const count = () => {
@@ -230,43 +232,46 @@ module.exports = function paginationPlugin (bookshelf) {
       const counter = this.clone();
       const groupColumns = [];
 
-      return counter.query(qb => {
-        Object.assign(qb, this.query().clone());
+      return counter
+        .query((qb) => {
+          Object.assign(qb, this.query().clone());
 
-        // Remove grouping and ordering. Ordering is unnecessary
-        // for a count, and grouping returns the entire result set
-        // What we want instead is to use `DISTINCT`
-        _.remove(qb._statements, statement => {
-          if (statement.grouping === 'group')
-            statement.value.forEach(value => groupColumns.push(`${tableName}.${value}`));
+          // Remove grouping and ordering. Ordering is unnecessary
+          // for a count, and grouping returns the entire result set
+          // What we want instead is to use `DISTINCT`
+          _.remove(qb._statements, (statement) => {
+            if (statement.grouping === 'group')
+              statement.value.forEach((value) => groupColumns.push(`${tableName}.${value}`));
 
-          return notNeededQueries.indexOf(statement.type) > -1 || statement.grouping === 'columns';
-        });
+            return notNeededQueries.indexOf(statement.type) > -1 || statement.grouping === 'columns';
+          });
 
-        if (!isModel &amp;&amp; counter.relatedData) {
-          // Remove joining columns that break COUNT operation.
-          // eg. pivotal coulmns for belongsToMany relation.
-          counter.relatedData.joinColumns = function() {};
-        }
-
-        qb.countDistinct.apply(qb, groupColumns.length > 0 ? groupColumns : targetIdColumn);
-      })[fetchMethodName]({transacting}).then(result => {
-        const metadata = usingPageSize ? {page: _page, pageSize: _limit} : {offset: _offset, limit: _limit};
-
-        if (result &amp;&amp; result.length == 1) {
-          // We shouldn't have to do this, instead it should be
-          // result.models[0].get('count')
-          // but SQLite uses a really strange key name.
-          const keys = Object.keys(result.models[0].attributes);
-
-          if (keys.length === 1) {
-            const key = Object.keys(result.models[0].attributes)[0];
-            metadata.rowCount = parseInt(result.models[0].attributes[key]);
+          if (!isModel &amp;&amp; counter.relatedData) {
+            // Remove joining columns that break COUNT operation.
+            // eg. pivotal coulmns for belongsToMany relation.
+            counter.relatedData.joinColumns = function() {};
           }
-        }
 
-        return metadata;
-      });
+          qb.countDistinct.apply(qb, groupColumns.length > 0 ? groupColumns : targetIdColumn);
+        })
+        [fetchMethodName](countOptions)
+        .then((result) => {
+          const metadata = usingPageSize ? {page: _page, pageSize: _limit} : {offset: _offset, limit: _limit};
+
+          if (result &amp;&amp; result.length == 1) {
+            // We shouldn't have to do this, instead it should be
+            // result.models[0].get('count')
+            // but SQLite uses a really strange key name.
+            const keys = Object.keys(result.models[0].attributes);
+
+            if (keys.length === 1) {
+              const key = Object.keys(result.models[0].attributes)[0];
+              metadata.rowCount = parseInt(result.models[0].attributes[key]);
+            }
+          }
+
+          return metadata;
+        });
     };
 
     return Promise.join(paginate(), count(), (rows, metadata) => {
@@ -284,7 +289,7 @@ module.exports = function paginationPlugin (bookshelf) {
   };
 
   bookshelf.Collection.prototype.fetchPage = fetchPage;
-}
+};
 </code></pre>
         </article>
     </section>
@@ -303,7 +308,7 @@ module.exports = function paginationPlugin (bookshelf) {
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          November 4, 2018
+          December 9, 2018
         
       </div>
     </footer>
