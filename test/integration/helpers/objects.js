@@ -121,6 +121,21 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  // Critic uses binary ID
+  var Critic = Bookshelf.Model.extend({
+    tableName: 'critics',
+    comments: function() {
+      return this.hasMany(CriticComment);
+    }
+  });
+
+  var CriticComment = Bookshelf.Model.extend({
+    tableName: 'critics_comments',
+    critic: function() {
+      return this.belongsTo(Critic);
+    }
+  });
+
   // A blog for a site.
   var Blog = Bookshelf.Model.extend({
     tableName: 'blogs',
@@ -414,6 +429,8 @@ module.exports = function(Bookshelf) {
       TestAuthor: TestAuthor,
       Author: Author,
       AuthorParsed: AuthorParsed,
+      Critic: Critic,
+      CriticComment: CriticComment,
       Backup: Backup,
       BackupType: BackupType,
       Blog: Blog,
