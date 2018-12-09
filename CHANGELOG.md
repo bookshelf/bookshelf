@@ -1,5 +1,59 @@
 ## Change Log
 
+**0.14.0** <small>_Dec 09, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.3...0.14.0)
+
+#### Breaking changes
+
+- The `previous()` and `previousAttributes()` methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes) in case you are affected by this change. [#1848](https://github.com/bookshelf/bookshelf/pull/1848)
+- Fix incorrect results in collection when models have duplicate ids. Checkout the [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#passing-merge-false-remove-false-to-collectionset-and-default-behavior-with-duplicates) in case you are affected by this. [#1846](https://github.com/bookshelf/bookshelf/pull/1846)
+- Empty `hasOne` relation will now return `null` instead of `{}` when serialized: [#1839](https://github.com/bookshelf/bookshelf/pull/1839). There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#return-value-for-empty-hasone-relation) in the rare event this causes you problems.
+- Add more helpful error messages on bad or insufficient `morphTo` data: [#1824](https://github.com/bookshelf/bookshelf/pull/1824). There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#new-error-messages-on-bad-or-insufficient-morphto-data) in case you are affected by this.
+- Changed the existing functionality so that saving a model that hasn't changed will not update its `updated_at` attribute: [#1798](https://github.com/bookshelf/bookshelf/pull/1798). Checkout the [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#saving-a-model-that-hasnt-changed-wont-update-updated_at) in case you are affected by this.
+
+#### Enhancements
+
+- Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: [#1914](https://github.com/bookshelf/bookshelf/pull/1914)
+- Make collections iterable using `for ... of` loops: [#1830](https://github.com/bookshelf/bookshelf/pull/1830)
+- Add row-level locking options: [#1810](https://github.com/bookshelf/bookshelf/pull/1810)
+
+#### Bug fixes
+
+- Fix `withRelated` fetch option not always grouping properly when using binary primary keys: [#1918](https://github.com/bookshelf/bookshelf/pull/1918)
+- Return clones of nested objects in `previousAttributes()`: [#1876](https://github.com/bookshelf/bookshelf/pull/1876)
+- Fix incorrect `rowCount` value when using `groupBy` with `fetchPage()`: [#1852](https://github.com/bookshelf/bookshelf/pull/1852)
+- Fix eager loading of relations when using `parse`/`format`: [#1838](https://github.com/bookshelf/bookshelf/pull/1838)
+- Fix inability to install bookshelf from git commit: [#1835](https://github.com/bookshelf/bookshelf/pull/1835)
+- Fix `timestamp()` setting a key named `"null"` in some cases: [#1820](https://github.com/bookshelf/bookshelf/pull/1820)
+- Fix performance of including relationships: [#1800](https://github.com/bookshelf/bookshelf/pull/1800)
+
+#### Test Suite
+
+- Add test to check for adding `withRelated` inside events: [#1853](https://github.com/bookshelf/bookshelf/pull/1853)
+- Add Node.js 10 to the Travis config: [#1829](https://github.com/bookshelf/bookshelf/pull/1829)
+- Fix incorrect output ordering in tests in some cases: [#1825](https://github.com/bookshelf/bookshelf/pull/1825)
+
+#### Documentation
+
+- Add a basic Events guide and fix some issues with the events doclets: [#1917](https://github.com/bookshelf/bookshelf/pull/1917)
+- Change the JSDoc theme to add a Guides section (this was already released): [#1909](https://github.com/bookshelf/bookshelf/pull/1909)
+- Fix `hasOne`'s doc: [#1890](https://github.com/bookshelf/bookshelf/pull/1890)
+- Fix many-to-many tutorial code: [#1888](https://github.com/bookshelf/bookshelf/pull/1888)
+- Add code syntax highlighting for tutorials: [#1850](https://github.com/bookshelf/bookshelf/pull/1850)
+- Fix a few issues with the collection documentation: [#1836](https://github.com/bookshelf/bookshelf/pull/1836)
+- Fix `Model.load()` relations param: [#1834](https://github.com/bookshelf/bookshelf/pull/1834)
+- Fix incorrect docs for collection:fetching event: [#1831](https://github.com/bookshelf/bookshelf/pull/1831)
+- Add note on needing the Pagination plugin to use `fetchPage()`: [#1803](https://github.com/bookshelf/bookshelf/pull/1803)
+- Fix incorrect data types and undocumented Model property: [#1797](https://github.com/bookshelf/bookshelf/pull/1797)
+
+#### Dependencies
+
+- Replace turbocolor with colorette: [#1904](https://github.com/bookshelf/bookshelf/pull/1904)
+- Use prettier to format all `js` and `json` files: [#1883](https://github.com/bookshelf/bookshelf/pull/1883)
+- Replace chalk with turbocolor: [#1878](https://github.com/bookshelf/bookshelf/pull/1878)
+- Update some insecure dependencies: [#1841](https://github.com/bookshelf/bookshelf/pull/1841)
+- Replace Babel with Node 4 compatible JavaScript: [#1835](https://github.com/bookshelf/bookshelf/pull/1835)
+- Update sinon to the latest version: [#1833](https://github.com/bookshelf/bookshelf/pull/1833)
+
 **0.13.3** <small>_Mar 26, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3)
 
 #### Potentially breaking changes

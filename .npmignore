@@ -1,6 +1,8 @@
+coverage/
 docs/
-tutorials/
+scripts/
 test/
+tutorials/
 .github/
 .eslintrc
 .istanbul.yml
@@ -8,4 +10,3 @@ test/
 .npmignore
 CNAME
 docker-compose.yml
-scripts
