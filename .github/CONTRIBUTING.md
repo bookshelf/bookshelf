@@ -231,6 +231,7 @@ just make sure to follow the process explained below in the correct order.
 
 1. You should draft a new release on GitHub. This isn't strictly necessary, but is highly recommended. At this time you
 shouldn't publish it yet, but just save it as a draft instead.
+2. Make sure you're in the `master` branch with all the latest changes: `git pull`.
 2. Update the `CHANGELOG.md` file and update the version number of `package.json`. For the changelog just follow the
 format of the previous update. In general you should link to PRs instead of issues when mentioning changes. If the PRs'
 descriptions are well written they should already include any associated issues. At this point there is no need to
