@@ -1577,7 +1577,7 @@ module.exports = function(bookshelf) {
     });
 
     describe('#previousAttributes()', function() {
-      it("returns the current model's attributes if no attributes were changed after fetch", function() {
+      it("returns the model's current attributes if no attributes were changed after fetch", function() {
         return new Models.Site({id: 1}).fetch().then(function(site) {
           expect(site.previousAttributes()).to.eql(site.attributes);
         });
@@ -1664,7 +1664,7 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it("returns the current model's attributes after save without changes on the 'updated' event", function(done) {
+      it("returns the model's current attributes after save without changes on the 'updated' event", function(done) {
         var originalAttributes;
         var siteModel = new Models.Site({id: 1});
 
@@ -1722,7 +1722,7 @@ module.exports = function(bookshelf) {
         expect(site.previousAttributes()).to.eql({});
       });
 
-      it("returns the current model's attributes when the model is eager loaded without changes", function() {
+      it("returns the model's current attributes when the model is eager loaded without changes", function() {
         return new Models.Author({id: 1}).fetch({withRelated: ['site']}).then(function(author) {
           var site = author.related('site');
           expect(site.previousAttributes()).to.eql(site.attributes);
