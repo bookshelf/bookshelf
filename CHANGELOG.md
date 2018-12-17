@@ -2,23 +2,23 @@
 
 **0.14.1** <small>_Dec 09, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1)
 
-#### Warning
+#### Enhancements
 
-- Incorrectly published the previous version from the wrong branch. That version doesn't contain all
-the work that is was supposed to. You shold use this version instead.
-
-#### Breaking changes
-
-- The `previous()` and `previousAttributes()` methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes) in case you are affected by this change. [#1848](https://github.com/bookshelf/bookshelf/pull/1848)
+- Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: [#1914](https://github.com/bookshelf/bookshelf/pull/1914)
 
 #### Bug fixes
 
 - Fix `withRelated` fetch option not always grouping properly when using binary primary keys: [#1918](https://github.com/bookshelf/bookshelf/pull/1918)
 
+#### Documentation
+
+- Add a basic Events guide and fix some issues with the events doclets: [#1917](https://github.com/bookshelf/bookshelf/pull/1917)
+
 **0.14.0** <small>_Dec 09, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.13.3...0.14.0)
 
 #### Breaking changes
 
+- The `previous()` and `previousAttributes()` methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes) in case you are affected by this change. [#1848](https://github.com/bookshelf/bookshelf/pull/1848)
 - Fix incorrect results in collection when models have duplicate ids. Checkout the [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#passing-merge-false-remove-false-to-collectionset-and-default-behavior-with-duplicates) in case you are affected by this. [#1846](https://github.com/bookshelf/bookshelf/pull/1846)
 - Empty `hasOne` relation will now return `null` instead of `{}` when serialized: [#1839](https://github.com/bookshelf/bookshelf/pull/1839). There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#return-value-for-empty-hasone-relation) in the rare event this causes you problems.
 - Add more helpful error messages on bad or insufficient `morphTo` data: [#1824](https://github.com/bookshelf/bookshelf/pull/1824). There's a [migration guide](https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#new-error-messages-on-bad-or-insufficient-morphto-data) in case you are affected by this.
@@ -26,7 +26,6 @@ the work that is was supposed to. You shold use this version instead.
 
 #### Enhancements
 
-- Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: [#1914](https://github.com/bookshelf/bookshelf/pull/1914)
 - Make collections iterable using `for ... of` loops: [#1830](https://github.com/bookshelf/bookshelf/pull/1830)
 - Add row-level locking options: [#1810](https://github.com/bookshelf/bookshelf/pull/1810)
 
@@ -47,7 +46,6 @@ the work that is was supposed to. You shold use this version instead.
 
 #### Documentation
 
-- Add a basic Events guide and fix some issues with the events doclets: [#1917](https://github.com/bookshelf/bookshelf/pull/1917)
 - Change the JSDoc theme to add a Guides section (this was already released): [#1909](https://github.com/bookshelf/bookshelf/pull/1909)
 - Fix `hasOne`'s doc: [#1890](https://github.com/bookshelf/bookshelf/pull/1890)
 - Fix many-to-many tutorial code: [#1888](https://github.com/bookshelf/bookshelf/pull/1888)
