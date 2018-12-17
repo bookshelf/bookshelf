@@ -180,6 +180,25 @@ module.exports = function(bookshelf) {
             expect(blogs.length).to.be.below(total);
           });
       });
+
+      it('counts grouped rows when using table name qualifier', function() {
+        var total;
+
+        return Models.Blog.count()
+          .then(function(count) {
+            total = parseInt(count, 10);
+
+            return Models.Blog.query(function(qb) {
+              qb.max('id');
+              qb.groupBy('blogs.site_id');
+              qb.whereNotNull('site_id');
+            }).fetchPage();
+          })
+          .then(function(blogs) {
+            expect(blogs.pagination.rowCount).to.equal(blogs.length);
+            expect(blogs.length).to.be.below(total);
+          });
+      });
     });
 
     describe('with fetch Options', function() {
