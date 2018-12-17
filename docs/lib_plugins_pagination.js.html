@@ -240,8 +240,7 @@ module.exports = function paginationPlugin(bookshelf) {
           // for a count, and grouping returns the entire result set
           // What we want instead is to use `DISTINCT`
           _.remove(qb._statements, (statement) => {
-            if (statement.grouping === 'group')
-              statement.value.forEach((value) => groupColumns.push(`${tableName}.${value}`));
+            if (statement.grouping === 'group') statement.value.forEach((value) => groupColumns.push(value));
 
             return notNeededQueries.indexOf(statement.type) > -1 || statement.grouping === 'columns';
           });
@@ -308,7 +307,7 @@ module.exports = function paginationPlugin(bookshelf) {
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 9, 2018
+          December 17, 2018
         
       </div>
     </footer>

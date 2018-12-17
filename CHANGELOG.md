@@ -1,5 +1,16 @@
 ## Change Log
 
+**0.14.2** <small>_Dec 17, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2)
+
+#### Bug fixes
+
+- Fix crash when using `groupBy` with table qualifier in pagination plugin: [#1928](https://github.com/bookshelf/bookshelf/pull/1928)
+- Fix `undefined` transaction object with Knex 0.15+: [#1926](https://github.com/bookshelf/bookshelf/pull/1926)
+
+#### Refactoring
+
+- Refactor logic behind `.timestamp()`'s decision for when to update the `updated_at` column: [#1892](https://github.com/bookshelf/bookshelf/pull/1892)
+
 **0.14.1** <small>_Dec 09, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1)
 
 #### Enhancements

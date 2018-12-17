@@ -717,9 +717,8 @@ ModelBase.prototype.timestamp = function(options) {
   const createdAtKey = timestampKeys[0];
   const updatedAtKey = timestampKeys[1];
   const isNewModel = method === 'insert';
-  const setUpdatedAt = updatedAtKey &amp;&amp; this.hasChanged(updatedAtKey);
 
-  if (updatedAtKey &amp;&amp; ((isNewModel &amp;&amp; !setUpdatedAt) || (this.hasChanged() &amp;&amp; !setUpdatedAt))) {
+  if (updatedAtKey &amp;&amp; (isNewModel || this.hasChanged()) &amp;&amp; !this.hasChanged(updatedAtKey) ) {
     attributes[updatedAtKey] = now;
   }
 
@@ -976,7 +975,7 @@ module.exports = ModelBase;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 9, 2018
+          December 17, 2018
         
       </div>
     </footer>

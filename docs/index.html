@@ -235,26 +235,33 @@ document on GitHub.</p>
 
 
   <section id="changelog" class="changelog">
-    <h2>Change Log</h2><p><strong>0.14.1</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1">Diff</a></p>
-<h4>Warning</h4><ul>
-<li>Incorrectly published the previous version from the wrong branch. That version doesn't contain all
-the work that is was supposed to. You shold use this version instead.</li>
+    <h2>Change Log</h2><p><strong>0.14.2</strong> <small><em>Dec 17, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2">Diff</a></p>
+<h4>Bug fixes</h4><ul>
+<li>Fix crash when using <code>groupBy</code> with table qualifier in pagination plugin: <a href="https://github.com/bookshelf/bookshelf/pull/1928">#1928</a></li>
+<li>Fix <code>undefined</code> transaction object with Knex 0.15+: <a href="https://github.com/bookshelf/bookshelf/pull/1926">#1926</a></li>
 </ul>
-<h4>Breaking changes</h4><ul>
-<li>The <code>previous()</code> and <code>previousAttributes()</code> methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes">migration guide</a> in case you are affected by this change. <a href="https://github.com/bookshelf/bookshelf/pull/1848">#1848</a></li>
+<h4>Refactoring</h4><ul>
+<li>Refactor logic behind <code>.timestamp()</code>'s decision for when to update the <code>updated_at</code> column: <a href="https://github.com/bookshelf/bookshelf/pull/1892">#1892</a></li>
+</ul>
+<p><strong>0.14.1</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1">Diff</a></p>
+<h4>Enhancements</h4><ul>
+<li>Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: <a href="https://github.com/bookshelf/bookshelf/pull/1914">#1914</a></li>
 </ul>
 <h4>Bug fixes</h4><ul>
 <li>Fix <code>withRelated</code> fetch option not always grouping properly when using binary primary keys: <a href="https://github.com/bookshelf/bookshelf/pull/1918">#1918</a></li>
 </ul>
+<h4>Documentation</h4><ul>
+<li>Add a basic Events guide and fix some issues with the events doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1917">#1917</a></li>
+</ul>
 <p><strong>0.14.0</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.3...0.14.0">Diff</a></p>
 <h4>Breaking changes</h4><ul>
+<li>The <code>previous()</code> and <code>previousAttributes()</code> methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes">migration guide</a> in case you are affected by this change. <a href="https://github.com/bookshelf/bookshelf/pull/1848">#1848</a></li>
 <li>Fix incorrect results in collection when models have duplicate ids. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#passing-merge-false-remove-false-to-collectionset-and-default-behavior-with-duplicates">migration guide</a> in case you are affected by this. <a href="https://github.com/bookshelf/bookshelf/pull/1846">#1846</a></li>
 <li>Empty <code>hasOne</code> relation will now return <code>null</code> instead of <code>{}</code> when serialized: <a href="https://github.com/bookshelf/bookshelf/pull/1839">#1839</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#return-value-for-empty-hasone-relation">migration guide</a> in the rare event this causes you problems.</li>
 <li>Add more helpful error messages on bad or insufficient <code>morphTo</code> data: <a href="https://github.com/bookshelf/bookshelf/pull/1824">#1824</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#new-error-messages-on-bad-or-insufficient-morphto-data">migration guide</a> in case you are affected by this.</li>
 <li>Changed the existing functionality so that saving a model that hasn't changed will not update its <code>updated_at</code> attribute: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a>. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#saving-a-model-that-hasnt-changed-wont-update-updated_at">migration guide</a> in case you are affected by this.</li>
 </ul>
 <h4>Enhancements</h4><ul>
-<li>Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: <a href="https://github.com/bookshelf/bookshelf/pull/1914">#1914</a></li>
 <li>Make collections iterable using <code>for ... of</code> loops: <a href="https://github.com/bookshelf/bookshelf/pull/1830">#1830</a></li>
 <li>Add row-level locking options: <a href="https://github.com/bookshelf/bookshelf/pull/1810">#1810</a></li>
 </ul>
@@ -272,7 +279,6 @@ the work that is was supposed to. You shold use this version instead.</li>
 <li>Fix incorrect output ordering in tests in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1825">#1825</a></li>
 </ul>
 <h4>Documentation</h4><ul>
-<li>Add a basic Events guide and fix some issues with the events doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1917">#1917</a></li>
 <li>Change the JSDoc theme to add a Guides section (this was already released): <a href="https://github.com/bookshelf/bookshelf/pull/1909">#1909</a></li>
 <li>Fix <code>hasOne</code>'s doc: <a href="https://github.com/bookshelf/bookshelf/pull/1890">#1890</a></li>
 <li>Fix many-to-many tutorial code: <a href="https://github.com/bookshelf/bookshelf/pull/1888">#1888</a></li>
@@ -837,7 +843,7 @@ the work that is was supposed to. You shold use this version instead.</li>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 9, 2018
+          December 17, 2018
         
       </div>
     </footer>
