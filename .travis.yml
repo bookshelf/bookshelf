@@ -12,7 +12,6 @@ services:
   - mysql
 
 node_js:
-  - '4'
   - '6'
   - '8'
   - '10'
