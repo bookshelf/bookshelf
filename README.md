@@ -24,7 +24,7 @@ It's a lean Object Relational Mapper, allowing you to drop down to the raw knex 
 You'll need to install a copy of [knex.js](http://knexjs.org/), and either mysql, pg, or sqlite3 from npm.
 
 ```js
-$ npm install knex@0.13 --save
+$ npm install knex --save
 $ npm install bookshelf --save
 
 # Then add one of the following:
