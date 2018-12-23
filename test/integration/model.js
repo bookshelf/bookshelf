@@ -737,6 +737,23 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('saves all attributes that are currently set on the model plus the ones passed as argument', function() {
+        const blog = new Models.Blog({name: 'A Cool Blog'});
+
+        return blog
+          .save({site_id: 1})
+          .then((savedBlog) => {
+            expect(savedBlog.attributes).to.include({name: 'A Cool Blog', site_id: 1});
+            return blog.fetch();
+          })
+          .then((fetchedBlog) => {
+            expect(fetchedBlog.attributes).to.include({name: 'A Cool Blog', site_id: 1});
+          })
+          .finally(() => {
+            return blog.destroy();
+          });
+      });
+
       it('ensure events are triggered sequentially when the handlers do async stuff', function() {
         var m = new Site({name: 'new'});
 
