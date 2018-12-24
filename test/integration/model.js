@@ -39,6 +39,19 @@ module.exports = function(bookshelf) {
     };
 
     describe('Events', function() {
+      describe('creating', function() {
+        it('contains all the attributes set on the model as the second argument', function(done) {
+          var site = new Models.Admin({username: 'bob'});
+
+          site.on('creating', function(model, attributes) {
+            expect(attributes).to.include({username: 'bob', password: 'supersecret'});
+            done();
+          });
+
+          site.save({password: 'supersecret'});
+        });
+      });
+
       describe('fetching:collection', function() {
         it('passes the collection as first argument to the listener', function() {
           var site = new Models.Site();
