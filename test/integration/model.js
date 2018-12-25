@@ -40,15 +40,44 @@ module.exports = function(bookshelf) {
 
     describe('Events', function() {
       describe('creating', function() {
-        it('contains all the attributes set on the model as the second argument', function(done) {
-          var site = new Models.Admin({username: 'bob'});
+        it('contains all the attributes set on the model as the second argument', function() {
+          var admin = new Models.Admin({username: 'bob'});
 
-          site.on('creating', function(model, attributes) {
+          admin.on('creating', function(model, attributes) {
             expect(attributes).to.include({username: 'bob', password: 'supersecret'});
-            done();
           });
 
-          site.save({password: 'supersecret'});
+          return admin.save({password: 'supersecret'});
+        });
+      });
+
+      describe('updating', function() {
+        it('contains all the attributes set on the model as the second argument', function() {
+          var admin = new Models.Admin({username: 'bob'});
+
+          admin.on('updating', function(model, attributes) {
+            expect(attributes).to.include({username: 'bob', password: 'supersecret'});
+          });
+
+          return admin.save().then(() => {
+            admin.set({username: 'bob'});
+            return admin.save({password: 'supersecret'});
+          });
+        });
+
+        it('contains only the attributes passed to save() as the second argument if using the patch: true option', function() {
+          var admin = new Models.Admin();
+
+          admin.on('updating', function(model, attributes) {
+            expect(attributes)
+              .to.include({password: 'supersecret'})
+              .but.not.include({username: 'bob'});
+          });
+
+          return admin.save().then(() => {
+            admin.set({username: 'bob'});
+            return admin.save({password: 'supersecret'}, {patch: true});
+          });
         });
       });
 
