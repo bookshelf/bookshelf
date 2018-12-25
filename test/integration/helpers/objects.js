@@ -139,9 +139,6 @@ module.exports = function(Bookshelf) {
   // A blog for a site.
   var Blog = Bookshelf.Model.extend({
     tableName: 'blogs',
-    defaults: {
-      title: ''
-    },
     site: function() {
       return this.belongsTo(Site);
     },

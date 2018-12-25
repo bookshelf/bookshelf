@@ -39,6 +39,48 @@ module.exports = function(bookshelf) {
     };
 
     describe('Events', function() {
+      describe('creating', function() {
+        it('contains all the attributes set on the model as the second argument', function() {
+          var admin = new Models.Admin({username: 'bob'});
+
+          admin.on('creating', function(model, attributes) {
+            expect(attributes).to.include({username: 'bob', password: 'supersecret'});
+          });
+
+          return admin.save({password: 'supersecret'});
+        });
+      });
+
+      describe('updating', function() {
+        it('contains all the attributes set on the model as the second argument', function() {
+          var admin = new Models.Admin({username: 'bob'});
+
+          admin.on('updating', function(model, attributes) {
+            expect(attributes).to.include({username: 'bob', password: 'supersecret'});
+          });
+
+          return admin.save().then(() => {
+            admin.set({username: 'bob'});
+            return admin.save({password: 'supersecret'});
+          });
+        });
+
+        it('contains only the attributes passed to save() as the second argument if using the patch: true option', function() {
+          var admin = new Models.Admin();
+
+          admin.on('updating', function(model, attributes) {
+            expect(attributes)
+              .to.include({password: 'supersecret'})
+              .but.not.include({username: 'bob'});
+          });
+
+          return admin.save().then(() => {
+            admin.set({username: 'bob'});
+            return admin.save({password: 'supersecret'}, {patch: true});
+          });
+        });
+      });
+
       describe('fetching:collection', function() {
         it('passes the collection as first argument to the listener', function() {
           var site = new Models.Site();
@@ -734,6 +776,23 @@ module.exports = function(bookshelf) {
             equal(c.last().id, 4);
             equal(c.last().get('name'), 'Fourth Site');
             equal(c.length, 4);
+          });
+      });
+
+      it('saves all attributes that are currently set on the model plus the ones passed as argument', function() {
+        const blog = new Models.Blog({name: 'A Cool Blog'});
+
+        return blog
+          .save({site_id: 1})
+          .then((savedBlog) => {
+            expect(savedBlog.attributes).to.include({name: 'A Cool Blog', site_id: 1});
+            return blog.fetch();
+          })
+          .then((fetchedBlog) => {
+            expect(fetchedBlog.attributes).to.include({name: 'A Cool Blog', site_id: 1});
+          })
+          .finally(() => {
+            return blog.destroy();
           });
       });
 
