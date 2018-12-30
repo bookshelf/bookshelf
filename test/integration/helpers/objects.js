@@ -267,6 +267,17 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  var CustomerThing = Bookshelf.Model.extend({
+    tableName: 'CustomerThing',
+    idAttribute: ['Customer_id', 'thing'],
+    defaults: {
+      thing: ''
+    },
+    customer: function() {
+      return this.hasOne(Customer);
+    }
+  });
+
   var Hostname = Bookshelf.Model.extend({
     tableName: 'hostnames',
     idAttribute: 'hostname',
@@ -444,6 +455,7 @@ module.exports = function(Bookshelf) {
       Thumbnail: Thumbnail,
       Info: Info,
       Customer: Customer,
+      CustomerThing: CustomerThing,
       Settings: Settings,
       Instance: Instance,
       Hostname: Hostname,

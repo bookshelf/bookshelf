@@ -20,6 +20,7 @@ var drops = [
   'users_roles',
   'info',
   'Customer',
+  'CustomerThing',
   'Settings',
   'hostnames',
   'instances',
@@ -171,6 +172,11 @@ module.exports = function(Bookshelf) {
           .createTable('Customer', function(table) {
             table.increments('id');
             table.string('name');
+          })
+          .createTable('CustomerThing', function(table) {
+            table.integer('Customer_id').notNullable();
+            table.string('thing');
+            table.primary(['Customer_id', 'thing']);
           })
           .createTable('Settings', function(table) {
             table.increments('id');

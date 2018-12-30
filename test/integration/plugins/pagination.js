@@ -27,6 +27,26 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('fetches a single page of results with defaults', function() {
+        return Models.CustomerThing.forge()
+          .fetchPage()
+          .then(function(results) {
+            ['models', 'pagination'].forEach(function(prop) {
+              expect(results).to.have.property(prop);
+            });
+            ['rowCount', 'pageCount', 'page', 'pageSize'].forEach(function(prop) {
+              expect(results.pagination).to.have.property(prop);
+            });
+
+            var md = results.pagination;
+
+            expect(md.rowCount).to.equal(4);
+            expect(md.pageCount).to.equal(1);
+            expect(md.page).to.equal(1);
+            expect(md.pageSize).to.equal(10);
+          });
+      });
+
       it('returns the limit and offset instead of page and pageSize', function() {
         return Models.Customer.forge()
           .fetchPage({limit: 2, offset: 2})
