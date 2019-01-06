@@ -2,11 +2,11 @@
 
 * Before sending a pull request for a feature or bug fix, be sure to have
 [tests](https://github.com/bookshelf/bookshelf/tree/master/test).
-* Use the same coding style as the rest of the
-[codebase](https://github.com/bookshelf/bookshelf/blob/master/src/bookshelf.js).
-* Use the [issue](https://github.com/bookshelf/bookshelf/blob/master/ISSUE-TEMPLATE.js) or
-[pull request](https://github.com/bookshelf/bookshelf/blob/master/PR-TEMPLATE.js) templates when creating your entry,
-this will help clarify the scope of your proposal or the subject of your issue.
+* Use the same coding style as the rest of the codebase. There is a pre-commit hook that formats
+code automatically for you using [prettier](https://prettier.io/), so this should be taken care of
+already.
+* Fill in the issue or pull request templates when creating your entry. This will help clarify the
+scope of your proposal or the subject of your issue.
 * All pull requests should be made to the `master` branch.
 
 ## Development Environment Setup
