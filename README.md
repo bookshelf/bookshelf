@@ -5,9 +5,9 @@
 [![Dependency Status](https://david-dm.org/bookshelf/bookshelf/status.svg)](https://david-dm.org/bookshelf/bookshelf)
 [![devDependency Status](https://david-dm.org/bookshelf/bookshelf/dev-status.svg)](https://david-dm.org/bookshelf/bookshelf?type=dev)
 
-Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
+Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
-It is designed to work well with PostgreSQL, MySQL, and SQLite3.
+It is designed to work with PostgreSQL, MySQL, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
@@ -15,13 +15,13 @@ It is designed to work well with PostgreSQL, MySQL, and SQLite3.
 
 Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the [Data Mapper Pattern](http://en.wikipedia.org/wiki/Data_mapper_pattern).
 
-With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, provides flexible and efficient relation/nested-relation loading, and first class transaction support.
+With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.
 
-It's a lean Object Relational Mapper, allowing you to drop down to the raw knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.
+It's a lean object-relational mapper, allowing you to drop down to the raw Knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.
 
 ## Installation
 
-You'll need to install a copy of [knex.js](http://knexjs.org/), and either mysql, pg, or sqlite3 from npm.
+You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
 
 ```js
 $ npm install knex --save
@@ -34,7 +34,7 @@ $ npm install mariasql
 $ npm install sqlite3
 ```
 
-The Bookshelf library is initialized by passing an initialized [Knex](http://knexjs.org/) client instance. The [knex documentation](http://knexjs.org/) provides a number of examples for different databases.
+The Bookshelf library is initialized by passing an initialized [Knex](http://knexjs.org/) client instance. The [Knex documentation](http://knexjs.org/) provides a number of examples for different databases.
 
 ```js
 var knex = require('knex')({
