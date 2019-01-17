@@ -21,7 +21,7 @@ It's a lean object-relational mapper, allowing you to drop down to the raw Knex 
 
 ## Installation
 
-You'll need to install a copy of [Knex](http://knexjs.org/), and either MySQL, Postgres, or SQLite3 from npm.
+You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
 
 ```js
 $ npm install knex --save
