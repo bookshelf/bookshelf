@@ -201,6 +201,25 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('with distinct', function() {
+      it('counts distinct occurences of a column instead of total rows', function() {
+        var total;
+
+        return Models.Post.count()
+          .then(function(count) {
+            total = parseInt(count, 10);
+
+            return Models.Post.query(function(qb) {
+              qb.distinct('owner_id');
+            }).fetchPage();
+          })
+          .then(function(distinctPostOwners) {
+            expect(distinctPostOwners.pagination.rowCount).to.equal(distinctPostOwners.length);
+            expect(distinctPostOwners.length).to.be.below(total);
+          });
+      });
+    });
+
     describe('with fetch Options', function() {
       var Site = Models.Site;
 
