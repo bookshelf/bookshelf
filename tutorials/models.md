@@ -7,7 +7,7 @@ To create your models you {@link Model.extend extend} them from {@link Model boo
 relations that are needed. The first argument to `extend()` should be an object with the instance methods and properties
 you want to set on your model, and the second argument is only used if you want to add static methods and properties.
 
-The next example sets up a new model that could be used to manage customer sessions on a website.
+The following example sets up a new model that could be used to manage customer sessions on a website.
 
 ```js
 const Promise = require('bluebird')
