@@ -136,6 +136,16 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js) or in the GitHub [issue tracker](https://github.com/bookshelf/bookshelf/issues).
 
+## Contributing
+
+If you want to contribute to Bookshelf you'll usually want to report an issue or submit a
+pull-request. For this purpose the [online repository](https://github.com/bookshelf/bookshelf/) is
+available on GitHub.
+
+For further help setting up your local development environment or learning how you can contribute to
+Bookshelf you should read the [Contributing document](https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md)
+available on GitHub.
+
 ## F.A.Q.
 
 ### Can I use standard node.js style callbacks?

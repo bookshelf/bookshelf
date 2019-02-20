@@ -27,6 +27,18 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('returns an empty collection if there are no results', function() {
+        return bookshelf
+          .knex('critics_comments')
+          .del()
+          .then(function() {
+            return Models.CriticComment.forge().fetchPage();
+          })
+          .then(function(results) {
+            expect(results.length).to.equal(0);
+          });
+      });
+
       it('returns the limit and offset instead of page and pageSize', function() {
         return Models.Customer.forge()
           .fetchPage({limit: 2, offset: 2})
