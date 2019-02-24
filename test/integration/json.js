@@ -1,7 +1,8 @@
 var _ = require('lodash');
+const checkJsonSupport = require('./helpers/json/supported');
 
 module.exports = function(bookshelf) {
-  var isJsonSupported;
+  let isJsonSupported;
 
   function checkResponse(actual, expected) {
     // Knex will store strings if client does not support JSON.
@@ -17,14 +18,13 @@ module.exports = function(bookshelf) {
   }
 
   before(function() {
-    return require('./helpers/json/supported')(bookshelf)
-      .then(function(supported) {
-        isJsonSupported = supported;
-        return require('./helpers/json/migration')(bookshelf);
-      })
-      .then(function() {
-        return require('./helpers/json/inserts')(bookshelf);
-      });
+    if (!checkJsonSupport(bookshelf)) return;
+
+    isJsonSupported = true;
+
+    return require('./helpers/json/migration')(bookshelf).then(function() {
+      return require('./helpers/json/inserts')(bookshelf);
+    });
   });
 
   describe('JSON support', function() {
