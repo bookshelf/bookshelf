@@ -1,4 +1,4 @@
-var Promise = require('../lib/base/promise');
+var Promise = require('bluebird');
 
 Promise.longStackTraces();
 Promise.onPossiblyUnhandledRejection(function(err) {
