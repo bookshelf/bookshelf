@@ -16,6 +16,4 @@ services:
     ports:
     - "5432:5432"
     environment:
-      POSTGRES_PASSWORD:
-      POSTGRES_USER: root
       POSTGRES_DB: bookshelf_test
