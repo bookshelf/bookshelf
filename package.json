@@ -85,6 +85,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   }
 }
