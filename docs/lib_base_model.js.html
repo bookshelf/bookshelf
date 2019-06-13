@@ -111,13 +111,13 @@ function ModelBase(attributes, options) {
 }
 
 /**
+ * Registers an event listener.
+ *
  * @method ModelBase#on
  * @example
- *
- * customer.on('fetching', function(model, columns) {
+ * customer.on('fetching', function(model) {
  *   // Do something before the data is fetched from the database
- * });
- *
+ * })
  * @see Events#on
  */
 
@@ -595,29 +595,24 @@ ModelBase.prototype.clear = function(options) {
 ModelBase.prototype.format = _.identity;
 
 /**
- * @method
- * @description
- *
- * The `related` method returns a specified relation loaded on the relations
- * hash on the model, or calls the associated relation method and adds it to
- * the relations hash if one exists and has not yet been loaded.
+ * This method returns a specified relation loaded on the relations hash on the model, or calls the associated relation
+ * method and adds it to the relations hash if one exists and has not yet been loaded.
  *
  * @example
- *
  * new Photo({id: 1}).fetch({
  *   withRelated: ['account']
  * }).then(function(photo) {
- *   if (photo) {
- *     var account = photo.related('account');
- *     if (account.id) {
- *        return account.related('trips').fetch();
- *     }
- *   }
- * });
+ *   var account = photo.related('account') // Get the eagerly loaded account
  *
- * @param name {string} The name of the relation to retrieve.
- * @returns {Model|Collection|undefined} The specified relation as defined by a
- *   method on the model, or undefined if it does not exist.
+ *   if (account.id) {
+ *     // Fetch a relation that has not been eager loaded yet
+ *     return account.related('trips').fetch()
+ *   }
+ * })
+ *
+ * @param {string} name The name of the relation to retrieve.
+ * @returns {Model|Collection|undefined}
+ *   The specified relation as defined by a method on the model, or `undefined` if it does not exist.
  */
 ModelBase.prototype.related = function(name) {
   return this.relations[name] || (this[name] ? (this.relations[name] = this[name]()) : void 0);
@@ -718,7 +713,7 @@ ModelBase.prototype.timestamp = function(options) {
   const updatedAtKey = timestampKeys[1];
   const isNewModel = method === 'insert';
 
-  if (updatedAtKey &amp;&amp; (isNewModel || this.hasChanged()) &amp;&amp; !this.hasChanged(updatedAtKey) ) {
+  if (updatedAtKey &amp;&amp; (isNewModel || this.hasChanged()) &amp;&amp; !this.hasChanged(updatedAtKey)) {
     attributes[updatedAtKey] = now;
   }
 
@@ -886,73 +881,50 @@ _.each(modelMethods, function(method) {
 });
 
 /**
- * @method Model.extend
- * @description
+ * This static method allows you to create your own Model classes by extending {@link Model bookshelf.Model}.
  *
- * To create a Model class of your own, you extend {@link Model bookshelf.Model}.
+ * It correctly sets up the prototype chain, which means that subclasses created this way can be further extended and
+ * subclassed as far as you need.
  *
- * `extend` correctly sets up the prototype chain, so subclasses created with
- * `extend` can be further extended and subclassed as far as you like.
+ * @example
+ * const Promise = require('bluebird')
+ * const compare = require('some-crypt-library')
  *
- *     var checkit  = require('checkit');
- *     var Promise  = require('bluebird');
- *     var bcrypt   = Promise.promisifyAll(require('bcrypt'));
+ * const Customer = bookshelf.Model.extend({
+ *   initialize() {
+ *     this.constructor.__super__.initialize.apply(this, arguments)
  *
- *     var Customer = bookshelf.Model.extend({
- *       initialize: function() {
- *         this.constructor.__super__.initialize.apply(this, arguments);
- *         this.on('saving', this.validateSave);
- *       },
+ *     // Setting up a listener for the 'saving' event
+ *     this.on('saving', this.validateSave)
+ *   },
  *
- *       validateSave: function() {
- *         return checkit(rules).run(this.attributes);
- *       },
+ *   validateSave() {
+ *     return doValidation(this.attributes)
+ *   },
  *
- *       account: function() {
- *         return this.belongsTo(Account);
- *       },
- *     }, {
- *       login: Promise.method(function(email, password) {
- *         if (!email || !password) throw new Error('Email and password are both required');
- *         return new this({email: email.toLowerCase().trim()}).fetch({require: true}).tap(function(customer) {
- *           return bcrypt.compareAsync(password, customer.get('password'))
- *             .then(function(res) {
- *               if (!res) throw new Error('Invalid password');
- *             });
- *         });
+ *   account() {
+ *     // Defining a relation with the Account model
+ *     return this.belongsTo(Account)
+ *   }
+ * }, {
+ *   login: Promise.method(function(email, password) {
+ *     if (!email || !password)
+ *       throw new Error('Email and password are both required')
+ *
+ *     return new this({email: email.toLowerCase()})
+ *       .fetch({require: true})
+ *       .tap(function(customer) {
+ *         if (!compare(password, customer.get('password'))
+ *           throw new Error('Invalid password')
  *       })
- *     });
+ *   })
+ * })
  *
- *     Customer.login(email, password)
- *       .then(function(customer) {
- *         res.json(customer.omit('password'));
- *       }).catch(Customer.NotFoundError, function() {
- *         res.json(400, {error: email + ' not found'});
- *       }).catch(function(err) {
- *         console.error(err);
- *       });
- *
- * _Brief aside on `super`: JavaScript does not provide a simple way to call
- * `super` — the function of the same name defined higher on the prototype
- * chain. If you override a core function like {@link Model#set set}, or {@link
- * Model#save save}, and you want to invoke the parent object's implementation,
- * you'll have to explicitly call it, along these lines:_
- *
- *     var Customer = bookshelf.Model.extend({
- *       set: function() {
- *         // ...
- *         bookshelf.Model.prototype.set.apply(this, arguments);
- *         // ...
- *       }
- *     });
- *
- * @param {Object=} prototypeProperties
- *   Instance methods and properties to be attached to instances of the new
- *   class.
- * @param {Object=} classProperties
- *   Class (ie. static) functions and properties to be attached to the
- *   constructor of the new class.
- * @returns {Function} Constructor for new `Model` subclass.
+ * @method Model.extend
+ * @param {Object} [prototypeProperties] Instance methods and properties to be attached to instances of the new class.
+ * @param {Object} [classProperties]
+ *   Class (i.e. static) functions and properties to be attached to the constructor of the new class.
+ * @returns {Function} Constructor for new Model subclass.
  */
 ModelBase.extend = require('../extend');
 
@@ -975,7 +947,7 @@ module.exports = ModelBase;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 17, 2018
+          June 13, 2019
         
       </div>
     </footer>

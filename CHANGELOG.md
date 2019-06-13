@@ -1,5 +1,37 @@
 ## Change Log
 
+**0.15.0** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.2...0.15.0)
+
+#### Breaking changes
+
+- This version requires Node.js 6+
+- Remove code that has been deprecated for a long time: [#1956](https://github.com/bookshelf/bookshelf/pull/1956)
+
+#### Bug fixes
+
+- `once` removes all events after it has been triggered: [#1972](https://github.com/bookshelf/bookshelf/pull/1972)
+- Pagination details are wrong when selecting distinct values of a column: [#1950](https://github.com/bookshelf/bookshelf/pull/1950)
+- Fix missing attributes in some events: [#1934](https://github.com/bookshelf/bookshelf/pull/1934)
+
+#### Test Suite
+
+- Fix Docker-compose.yml default postgres user: [#1972](https://github.com/bookshelf/bookshelf/pull/1972)
+- Fix JSON tests on PostgreSQL 10+: [#1955](https://github.com/bookshelf/bookshelf/pull/1955)
+
+#### Documentation
+
+- Update and fix a lot of doclets: [#1951](https://github.com/bookshelf/bookshelf/pull/1951)
+- Update README.md: [#1940](https://github.com/bookshelf/bookshelf/pull/1940)
+
+#### Dependencies
+
+- Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)
+- Bump supported knex version to 0.17: [#1982](https://github.com/bookshelf/bookshelf/pull/1982)
+- Update mocha to version 6.1.1: [#1968](https://github.com/bookshelf/bookshelf/pull/1968)
+- Update eslint-config-prettier to 4.1.0: [#1957](https://github.com/bookshelf/bookshelf/pull/1957)
+- Update sinon to version 7.2.4: [#1947](https://github.com/bookshelf/bookshelf/pull/1947)
+- Update eslint to version 5.1.0: [#1930](https://github.com/bookshelf/bookshelf/pull/1930)
+
 **0.14.2** <small>_Dec 17, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2)
 
 #### Bug fixes

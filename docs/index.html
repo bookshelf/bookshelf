@@ -67,6 +67,7 @@
 <li><a href="#plugins">Plugins</a></li>
 <li><a href="#community-plugins">Community plugins</a></li>
 <li><a href="#support">Support</a></li>
+<li><a href="#contributing">Contributing</a></li>
 <li><a href="#faq">F.A.Q.</a></li><li><a href="#changelog">Change log</a></li></ul>
           
         </nav>
@@ -100,21 +101,21 @@
 <a href="https://travis-ci.org/bookshelf/bookshelf"><img src="https://api.travis-ci.org/bookshelf/bookshelf.svg?branch=master" alt="Build Status"></a>
 <a href="https://david-dm.org/bookshelf/bookshelf"><img src="https://david-dm.org/bookshelf/bookshelf/status.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/bookshelf/bookshelf?type=dev"><img src="https://david-dm.org/bookshelf/bookshelf/dev-status.svg" alt="devDependency Status"></a></p>
-<p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. Featuring both promise based and traditional callback interfaces, providing transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
-<p>It is designed to work well with PostgreSQL, MySQL, and SQLite3.</p>
+<p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
+<p>It is designed to work with PostgreSQL, MySQL, and SQLite3.</p>
 <p><a href="http://bookshelfjs.org">Website and documentation</a>. The project is <a href="http://github.com/bookshelf/bookshelf/">hosted on GitHub</a>, and has a comprehensive <a href="https://travis-ci.org/bookshelf/bookshelf">test suite</a>.</p>
 <h2 id="introduction">Introduction</h2><p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
-<p>With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, provides flexible and efficient relation/nested-relation loading, and first class transaction support.</p>
-<p>It's a lean Object Relational Mapper, allowing you to drop down to the raw knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.</p>
-<h2 id="installation">Installation</h2><p>You'll need to install a copy of <a href="http://knexjs.org/">knex.js</a>, and either mysql, pg, or sqlite3 from npm.</p>
-<pre class="prettyprint source lang-js"><code>$ npm install knex@0.13 --save
+<p>With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.</p>
+<p>It's a lean object-relational mapper, allowing you to drop down to the raw Knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.</p>
+<h2 id="installation">Installation</h2><p>You'll need to install a copy of <a href="http://knexjs.org/">Knex</a>, and either <code>mysql</code>, <code>pg</code>, or <code>sqlite3</code> from npm.</p>
+<pre class="prettyprint source lang-js"><code>$ npm install knex --save
 $ npm install bookshelf --save
 
 # Then add one of the following:
 $ npm install pg
 $ npm install mysql
 $ npm install mariasql
-$ npm install sqlite3</code></pre><p>The Bookshelf library is initialized by passing an initialized <a href="http://knexjs.org/">Knex</a> client instance. The <a href="http://knexjs.org/">knex documentation</a> provides a number of examples for different databases.</p>
+$ npm install sqlite3</code></pre><p>The Bookshelf library is initialized by passing an initialized <a href="http://knexjs.org/">Knex</a> client instance. The <a href="http://knexjs.org/">Knex documentation</a> provides a number of examples for different databases.</p>
 <pre class="prettyprint source lang-js"><code>var knex = require('knex')({
   client: 'mysql',
   connection: {
@@ -194,6 +195,12 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 <li><a href="https://github.com/ericclemmons/bookshelf-manager">bookshelf-manager</a> - Model &amp; Collection manager to make it easy to create &amp; save deep, nested JSON structures from API requests.</li>
 </ul>
 <h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a> or in the GitHub <a href="https://github.com/bookshelf/bookshelf/issues">issue tracker</a>.</p>
+<h2 id="contributing">Contributing</h2><p>If you want to contribute to Bookshelf you'll usually want to report an issue or submit a
+pull-request. For this purpose the <a href="https://github.com/bookshelf/bookshelf/">online repository</a> is
+available on GitHub.</p>
+<p>For further help setting up your local development environment or learning how you can contribute to
+Bookshelf you should read the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md">Contributing document</a>
+available on GitHub.</p>
 <h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes - you can call <code>.asCallback(function(err, resp) {</code> on any &quot;sync&quot; method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
 <h3 id="my-relations-dont-seem-to-be-loading-whats-up">My relations don't seem to be loading, what's up?</h3><p>Make sure you check that the type is correct for the initial parameters passed to the initial model being fetched. For example <code>new Model({id: '1'}).load([relations...])</code> will not return the same as <code>Model({id: 1}).load([relations...])</code> - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.</p>
 <p>This is only an issue if you're eager loading data with load without first fetching the original model. <code>Model({id: '1'}).fetch({withRelated: [relations...]})</code> should work just fine.</p>
@@ -235,7 +242,33 @@ document on GitHub.</p>
 
 
   <section id="changelog" class="changelog">
-    <h2>Change Log</h2><p><strong>0.14.2</strong> <small><em>Dec 17, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2">Diff</a></p>
+    <h2>Change Log</h2><p><strong>0.15.0</strong> <small><em>Jun 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.2...0.15.0">Diff</a></p>
+<h4>Breaking changes</h4><ul>
+<li>This version requires Node.js 6+</li>
+<li>Remove code that has been deprecated for a long time: <a href="https://github.com/bookshelf/bookshelf/pull/1956">#1956</a></li>
+</ul>
+<h4>Bug fixes</h4><ul>
+<li><code>once</code> removes all events after it has been triggered: <a href="https://github.com/bookshelf/bookshelf/pull/1972">#1972</a></li>
+<li>Pagination details are wrong when selecting distinct values of a column: <a href="https://github.com/bookshelf/bookshelf/pull/1950">#1950</a></li>
+<li>Fix missing attributes in some events: <a href="https://github.com/bookshelf/bookshelf/pull/1934">#1934</a></li>
+</ul>
+<h4>Test Suite</h4><ul>
+<li>Fix Docker-compose.yml default postgres user: <a href="https://github.com/bookshelf/bookshelf/pull/1972">#1972</a></li>
+<li>Fix JSON tests on PostgreSQL 10+: <a href="https://github.com/bookshelf/bookshelf/pull/1955">#1955</a></li>
+</ul>
+<h4>Documentation</h4><ul>
+<li>Update and fix a lot of doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1951">#1951</a></li>
+<li>Update README.md: <a href="https://github.com/bookshelf/bookshelf/pull/1940">#1940</a></li>
+</ul>
+<h4>Dependencies</h4><ul>
+<li>Update husky to version 2.4.1: <a href="https://github.com/bookshelf/bookshelf/pull/1984">#1984</a></li>
+<li>Bump supported knex version to 0.17: <a href="https://github.com/bookshelf/bookshelf/pull/1982">#1982</a></li>
+<li>Update mocha to version 6.1.1: <a href="https://github.com/bookshelf/bookshelf/pull/1968">#1968</a></li>
+<li>Update eslint-config-prettier to 4.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1957">#1957</a></li>
+<li>Update sinon to version 7.2.4: <a href="https://github.com/bookshelf/bookshelf/pull/1947">#1947</a></li>
+<li>Update eslint to version 5.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1930">#1930</a></li>
+</ul>
+<p><strong>0.14.2</strong> <small><em>Dec 17, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2">Diff</a></p>
 <h4>Bug fixes</h4><ul>
 <li>Fix crash when using <code>groupBy</code> with table qualifier in pagination plugin: <a href="https://github.com/bookshelf/bookshelf/pull/1928">#1928</a></li>
 <li>Fix <code>undefined</code> transaction object with Knex 0.15+: <a href="https://github.com/bookshelf/bookshelf/pull/1926">#1926</a></li>
@@ -843,7 +876,7 @@ document on GitHub.</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 17, 2018
+          June 13, 2019
         
       </div>
     </footer>

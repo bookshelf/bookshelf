@@ -9,10 +9,10 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       return (f = r[b])
         ? f
         : '0' <= b && b <= '7'
-          ? parseInt(a.substring(1), 8)
-          : b === 'u' || b === 'x'
-            ? parseInt(a.substring(2), 16)
-            : a.charCodeAt(1);
+        ? parseInt(a.substring(1), 8)
+        : b === 'u' || b === 'x'
+        ? parseInt(a.substring(2), 16)
+        : a.charCodeAt(1);
     }
     function e(a) {
       if (a < 32) return (a < 16 ? '\\x0' : '\\x') + a.toString(16);
@@ -213,13 +213,13 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
           '\'"'
         ])
       : a.multiLineStrings
-        ? m.push([
-            'str',
-            /^(?:'(?:[^'\\]|\\[\S\s])*(?:'|$)|"(?:[^"\\]|\\[\S\s])*(?:"|$)|`(?:[^\\`]|\\[\S\s])*(?:`|$))/,
-            q,
-            '\'"`'
-          ])
-        : m.push(['str', /^(?:'(?:[^\n\r'\\]|\\.)*(?:'|$)|"(?:[^\n\r"\\]|\\.)*(?:"|$))/, q, '"\'']);
+      ? m.push([
+          'str',
+          /^(?:'(?:[^'\\]|\\[\S\s])*(?:'|$)|"(?:[^"\\]|\\[\S\s])*(?:"|$)|`(?:[^\\`]|\\[\S\s])*(?:`|$))/,
+          q,
+          '\'"`'
+        ])
+      : m.push(['str', /^(?:'(?:[^\n\r'\\]|\\.)*(?:'|$)|"(?:[^\n\r"\\]|\\.)*(?:"|$))/, q, '"\'']);
     a.verbatimStrings && e.push(['str', /^@"(?:[^"]|"")*(?:"|$)/, q]);
     var h = a.hashComments;
     h &&

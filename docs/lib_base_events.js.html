@@ -77,7 +77,7 @@
 
 'use strict';
 
-const Promise = require('./promise');
+const Promise = require('bluebird');
 const events = require('events');
 const _ = require('lodash');
 const EventEmitter = events.EventEmitter;
@@ -91,21 +91,17 @@ const eventNames = (text) => text.split(/\s+/);
  */
 class Events extends EventEmitter {
   /**
-   * @method Events#on
-   * @description
-   * Register an event listener. The callback will be invoked whenever the event
-   * is fired. The event string may also be a space-delimited list of several
-   * event names.
+   * Registers an event listener. The callback will be invoked whenever the event is fired. The event string may also be
+   * a space-delimited list of several event names.
    *
-   * @param {string} nameOrNames
-   *   The name of the event or space separated list of events to register a
-   *   callback for.
-   * @param {function} callback
-   *   That callback to invoke whenever the event is fired.
+   * @method Events#on
+   * @param {string} nameOrNames The name or space separated names of events to register a callback for.
+   * @param {function} callback That callback to invoke whenever the event is fired.
+   * @return {mixed} The object where this is called on is returned to allow chaining this method call.
    */
-  on(nameOrNames, handler) {
+  on(nameOrNames, callback) {
     eventNames(nameOrNames).forEach((name) => {
-      super.on(name, handler);
+      super.on(name, callback);
     });
     return this;
   }
@@ -119,13 +115,19 @@ class Events extends EventEmitter {
    * @param {string} nameOrNames
    *   The name of the event or space separated list of events to stop listening
    *   to.
+   * @param {function} callback That callback to remove.
    */
-  off(nameOrNames) {
+  off(nameOrNames, callback) {
     if (nameOrNames == null) {
       return this.removeAllListeners();
     }
 
-    eventNames(nameOrNames).forEach((name) => this.removeAllListeners(name));
+    eventNames(nameOrNames).forEach((name) => {
+      if (callback === undefined) {
+        return this.removeAllListeners(name);
+      }
+      return this.removeListener(name, callback);
+    });
     return this;
   }
 
@@ -150,8 +152,6 @@ class Events extends EventEmitter {
   }
 
   /**
-   * @method Events#triggerThen
-   * @description
    * A promise version of {@link Events#trigger}, returning a promise which
    * resolves with all return values from triggered event handlers. If any of the
    * event handlers throw an `Error` or return a rejected promise, the promise
@@ -160,13 +160,12 @@ class Events extends EventEmitter {
    * {@link Model@event:destroying "destroying"} events, and can be helpful when needing
    * async event handlers (e.g. for validations).
    *
+   * @method Events#triggerThen
    * @param {string} name
-   *   The event name, or a whitespace-separated list of event names, to be
-   *   triggered.
-   * @param {...mixed} [args]
-   *   Arguments to be passed to any registered event handlers.
-   * @returns Promise&lt;mixed[]>
-   *   A promise resolving the the resolved return values of any triggered handlers.
+   *   The event name or a whitespace-separated list of event names to be triggered.
+   * @param {...mixed} [args] Arguments to be passed to any registered event handlers.
+   * @returns {Promise}
+   *   A promise resolving to the return values of any triggered handlers.
    */
   triggerThen(nameOrNames) {
     const names = eventNames(nameOrNames);
@@ -220,7 +219,7 @@ module.exports = Events;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          December 17, 2018
+          June 13, 2019
         
       </div>
     </footer>
