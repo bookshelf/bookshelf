@@ -1,5 +1,10 @@
 ## Change Log
 
+**0.15.1** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1)
+
+- Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)
+- Bump supported knex version to 0.17: [#1982](https://github.com/bookshelf/bookshelf/pull/1982)
+
 **0.15.0** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.2...0.15.0)
 
 #### Breaking changes
@@ -25,8 +30,6 @@
 
 #### Dependencies
 
-- Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)
-- Bump supported knex version to 0.17: [#1982](https://github.com/bookshelf/bookshelf/pull/1982)
 - Update mocha to version 6.1.1: [#1968](https://github.com/bookshelf/bookshelf/pull/1968)
 - Update eslint-config-prettier to 4.1.0: [#1957](https://github.com/bookshelf/bookshelf/pull/1957)
 - Update sinon to version 7.2.4: [#1947](https://github.com/bookshelf/bookshelf/pull/1947)
