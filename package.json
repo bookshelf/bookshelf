@@ -45,7 +45,7 @@
     "bookshelf-jsdoc-theme": "^1.0.0",
     "chai": "4.0.2",
     "eslint": "^5.10.0",
-    "eslint-config-prettier": "^5.0.0",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.0.0",
     "husky": "^2.4.1",
     "istanbul": "^0.4.5",
