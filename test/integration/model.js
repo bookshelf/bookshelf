@@ -727,6 +727,267 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('#fetchPage()', function() {
+      it('fetches a single page of results with defaults', function() {
+        return Models.Customer.forge()
+          .fetchPage()
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+
+            ['rowCount', 'pageCount', 'page', 'pageSize'].forEach(function(prop) {
+              expect(results.pagination).to.have.property(prop);
+            });
+
+            expect(results.pagination.rowCount).to.equal(4);
+            expect(results.pagination.pageCount).to.equal(1);
+            expect(results.pagination.page).to.equal(1);
+            expect(results.pagination.pageSize).to.equal(10);
+          });
+      });
+
+      it('returns an empty collection if there are no results', function() {
+        return bookshelf
+          .knex('critics_comments')
+          .del()
+          .then(function() {
+            return Models.CriticComment.forge().fetchPage();
+          })
+          .then(function(results) {
+            expect(results.length).to.equal(0);
+          });
+      });
+
+      it('returns the limit and offset instead of page and pageSize', function() {
+        return Models.Customer.forge()
+          .fetchPage({limit: 2, offset: 2})
+          .then(function(results) {
+            ['rowCount', 'pageCount', 'limit', 'offset'].forEach(function(prop) {
+              expect(results.pagination).to.have.property(prop);
+            });
+          });
+      });
+
+      it('fetches a page of results with specified page size', function() {
+        return Models.Customer.forge()
+          .fetchPage({pageSize: 2})
+          .then(function(results) {
+            expect(results.pagination.rowCount).to.equal(4);
+            expect(results.pagination.pageCount).to.equal(2);
+            expect(results.pagination.page).to.equal(1);
+          });
+      });
+
+      it('fetches a page with specified offset', function() {
+        return Models.Customer.forge()
+          .orderBy('id', 'ASC')
+          .fetchPage({limit: 2, offset: 2})
+          .then(function(results) {
+            expect(parseInt(results.models[0].get('id'))).to.equal(3);
+            expect(parseInt(results.models[1].get('id'))).to.equal(4);
+          });
+      });
+
+      it('fetches a page by page number', function() {
+        return Models.Customer.forge()
+          .orderBy('id', 'ASC')
+          .fetchPage({pageSize: 2, page: 2})
+          .then(function(results) {
+            expect(parseInt(results.models[0].get('id'))).to.equal(3);
+            expect(parseInt(results.models[1].get('id'))).to.equal(4);
+          });
+      });
+
+      it('fetches a page when other columns are specified on the original query', function() {
+        return Models.Customer.forge()
+          .query(function(qb) {
+            qb.column.apply(qb, ['name']);
+          })
+          .fetchPage()
+          .then(function(results) {
+            expect(results.pagination.rowCount).to.equal(4);
+          });
+      });
+
+      it('returns correct values for rowCount and pageCount when hasTimestamps is used', function() {
+        return Models.Admin.forge()
+          .fetchPage({page: 1, pageSize: 4})
+          .then(function(admins) {
+            expect(admins.pagination.rowCount).to.be.a('number');
+            expect(admins.pagination.pageCount).to.be.a('number');
+          });
+      });
+
+      describe('inside a transaction', function() {
+        it('returns consistent results for rowCount and number of models', function() {
+          return bookshelf.transaction(function(t) {
+            var options = {transacting: t};
+
+            return Models.Site.forge({name: 'A new site'})
+              .save(null, options)
+              .then(function() {
+                options.pageSize = 25;
+                options.page = 1;
+                return Models.Site.forge().fetchPage(options);
+              })
+              .then(function(sites) {
+                expect(sites.pagination.rowCount).to.eql(sites.models.length);
+              });
+          });
+        });
+      });
+
+      describe('with groupBy', function() {
+        it('counts grouped rows instead of total rows', function() {
+          var total;
+
+          return Models.Blog.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Blog.forge()
+                .query(function(qb) {
+                  qb.max('id');
+                  qb.groupBy('site_id');
+                  qb.whereNotNull('site_id');
+                })
+                .fetchPage();
+            })
+            .then(function(blogs) {
+              expect(blogs.pagination.rowCount).to.equal(blogs.length);
+              expect(blogs.length).to.be.below(total);
+            });
+        });
+
+        it('counts grouped rows when using table name qualifier', function() {
+          var total;
+
+          return Models.Blog.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Blog.forge()
+                .query(function(qb) {
+                  qb.max('id');
+                  qb.groupBy('blogs.site_id');
+                  qb.whereNotNull('site_id');
+                })
+                .fetchPage();
+            })
+            .then(function(blogs) {
+              expect(blogs.pagination.rowCount).to.equal(blogs.length);
+              expect(blogs.length).to.be.below(total);
+            });
+        });
+      });
+
+      describe('with distinct', function() {
+        it('counts distinct occurences of a column instead of total rows', function() {
+          var total;
+
+          return Models.Post.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Post.forge()
+                .query(function(qb) {
+                  qb.distinct('owner_id');
+                })
+                .fetchPage();
+            })
+            .then(function(distinctPostOwners) {
+              expect(distinctPostOwners.pagination.rowCount).to.equal(distinctPostOwners.length);
+              expect(distinctPostOwners.length).to.be.below(total);
+            });
+        });
+      });
+
+      describe('with fetch options', function() {
+        var Site = Models.Site;
+
+        afterEach(function() {
+          delete Site.prototype.initialize;
+        });
+
+        it('ignores standard options for count query', function() {
+          const allOptions = [];
+
+          Site.prototype.initialize = function() {
+            this.on('fetching:collection', function(collection, columns, options) {
+              allOptions.push(_.omit(options, 'query'));
+            });
+          };
+
+          var site = new Site();
+
+          return site
+            .fetchPage({
+              require: true,
+              withRelated: ['blogs'],
+              columns: 'name'
+            })
+            .then(function() {
+              expect(allOptions.length).equals(2);
+              expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+              const countOptions = allOptions.find(function(option) {
+                return !_.has(option, ['require', 'withRelated', 'columns']);
+              });
+              const fetchOptions = allOptions.find(function(option) {
+                return _.has(option, ['require', 'withRelated', 'columns']);
+              });
+
+              expect(countOptions).not.to.be.null;
+              expect(fetchOptions).not.to.be.null;
+            });
+        });
+
+        it('keeps custom options for count query', function() {
+          const allOptions = [];
+
+          Site.prototype.initialize = function() {
+            this.on('fetching:collection', function(collection, columns, options) {
+              allOptions.push(_.omit(options, 'query'));
+            });
+          };
+
+          var site = new Site();
+
+          return site
+            .fetchPage({
+              withRelated: ['blogs'],
+              customOption: true
+            })
+            .then(function() {
+              expect(allOptions.length).equals(2);
+              expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+              const countOptions = allOptions.find(function(option) {
+                return !_.has(option, ['withRelated']);
+              });
+              const fetchOptions = allOptions.find(function(option) {
+                return _.has(option, ['withRelated']);
+              });
+
+              expect(countOptions).not.to.be.null;
+              expect(countOptions.customOption).to.equal(true);
+              expect(countOptions.customOption).to.equal(fetchOptions.customOption);
+              expect(fetchOptions).not.to.be.null;
+              expect(fetchOptions.customOption).to.equal(true);
+            });
+        });
+      });
+    });
+
+    describe('.fetchPage()', function() {
+      it('fetches a page without having to call .forge() manually', function() {
+        return Models.Customer.fetchPage().then(function(results) {
+          expect(results).to.have.property('models');
+          expect(results).to.have.property('pagination');
+        });
+      });
+    });
+
     describe('orderBy', function() {
       it('returns results in the correct order', function() {
         var asc = Models.Customer.forge()
@@ -765,17 +1026,19 @@ module.exports = function(bookshelf) {
     describe('save', function() {
       var Site = Models.Site;
 
+      after(() => Site.forge({id: 6}).destroy());
+
       it('saves a new object', function() {
         return new Site({name: 'Fourth Site'})
           .save()
           .then(function(m) {
-            equal(Number(m.get('id')), 4);
+            equal(Number(m.get('id')), 5);
             return new bookshelf.Collection(null, {model: Site}).fetch();
           })
           .then(function(c) {
-            equal(c.last().id, 4);
+            equal(c.last().id, 5);
             equal(c.last().get('name'), 'Fourth Site');
-            equal(c.length, 4);
+            equal(c.length, 5);
           });
       });
 
@@ -820,27 +1083,27 @@ module.exports = function(bookshelf) {
       });
 
       it('updates an existing object', function() {
-        return new Site({id: 4, name: 'Fourth Site Updated'})
+        return new Site({id: 5, name: 'Fourth Site Updated'})
           .save()
           .then(function() {
             return new bookshelf.Collection(null, {model: Site}).fetch();
           })
           .then(function(c) {
-            equal(c.last().id, 4);
+            equal(c.last().id, 5);
             equal(c.last().get('name'), 'Fourth Site Updated');
-            equal(c.length, 4);
+            equal(c.length, 5);
           });
       });
 
       it('allows passing a method to save, to call insert or update explicitly', function() {
-        return new Site({id: 5, name: 'Fifth site, explicity created'})
+        return new Site({id: 6, name: 'Fifth site, explicity created'})
           .save(null, {method: 'insert'})
           .then(function() {
             return Site.fetchAll();
           })
           .then(function(c) {
-            equal(c.length, 5);
-            equal(c.last().id, 5);
+            equal(c.length, 6);
+            equal(c.last().id, 6);
             equal(c.last().get('name'), 'Fifth site, explicity created');
           });
       });
