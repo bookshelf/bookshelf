@@ -47,6 +47,42 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('#fetchPage()', function() {
+      it('fetches a page from a collection', function() {
+        return Models.Customer.collection()
+          .fetchPage()
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+
+      it('fetches a page from a relation collection', function() {
+        return Models.User.forge({uid: 1})
+          .roles()
+          .fetchPage()
+          .then(function(results) {
+            expect(results.length).to.equal(1);
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+
+      it('fetches a page from a relation collection with additional condition', function() {
+        return Models.User.forge({uid: 1})
+          .roles()
+          .query(function(query) {
+            query.where('roles.rid', '!=', 4);
+          })
+          .fetchPage()
+          .then(function(results) {
+            expect(results.length).to.equal(0);
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+    });
+
     describe('count', function() {
       it('counts the number of models in a collection', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
