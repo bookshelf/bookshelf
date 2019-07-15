@@ -11,6 +11,7 @@
   "rules": {
     "no-console": 2,
     "no-const-assign": 2,
+    "no-undef": ["error", {"typeof": true}],
     "no-unused-vars": [2, {"vars": "all", "args": "none"}],
     "prefer-const": 1
   }
