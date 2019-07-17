@@ -75,13 +75,12 @@ module.exports = function() {
       });
 
       beforeEach(() => {
-        testModel = new Model({id: 1, name: 'Test'});
+        testModel = new Model({id: 1, firstName: 'Joe', lastName: 'Shmoe', address: '123 Main St.'});
       });
 
       it('includes the idAttribute in the hash', function() {
         const DifferentModel = Model.extend({idAttribute: '_id'});
         const testModel = new DifferentModel({_id: 1, name: 'Joe'});
-
         deepEqual(testModel.toJSON(), {_id: 1, name: 'Joe'});
       });
 
@@ -91,70 +90,137 @@ module.exports = function() {
         };
         var json = testModel.toJSON();
 
-        deepEqual(Object.keys(json), ['id', 'name', 'someList']);
+        deepEqual(Object.keys(json), ['id', 'firstName', 'lastName', 'address', 'someList']);
         equal(json.someList.length, 2);
       });
 
-      it("doesn't include the relations loaded on the model if {shallow: true} is passed", function() {
-        testModel.relations = {
-          someList: new ModelCollection([{id: 1}, {id: 2}])
-        };
-        var shallow = testModel.toJSON({shallow: true});
+      describe('with "shallow" option', function() {
+        it("doesn't include the relations loaded on the model if {shallow: true} is passed", function() {
+          testModel.relations = {
+            someList: new ModelCollection([{id: 1}, {id: 2}])
+          };
+          var shallow = testModel.toJSON({shallow: true});
 
-        deepEqual(_.keys(shallow), ['id', 'name']);
+          deepEqual(_.keys(shallow), ['id', 'firstName', 'lastName', 'address']);
+        });
       });
 
-      it('does not omit new models from collections and relations when {omitNew: false} is passed', function() {
-        testModel.relations = {
-          someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
-          someRel: new Model({id: 3}),
-          otherRel: new Model({attr3: 'Test'})
-        };
-        var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
-        var json = coll.toJSON({omitNew: false});
+      describe('with "omitNew" option', function() {
+        it('does not omit new models from collections and relations when {omitNew: false} is passed', function() {
+          testModel.relations = {
+            someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
+            someRel: new Model({id: 3}),
+            otherRel: new Model({attr3: 'Test'})
+          };
+          var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
+          var json = coll.toJSON({omitNew: false});
 
-        equal(json.length, 3);
-        equal(json[0].someList.length, 2);
-        deepEqual(_.keys(json[0]), ['id', 'name', 'someList', 'someRel', 'otherRel']);
-        deepEqual(_.keys(json[1]), ['attr5']);
-        deepEqual(_.keys(json[2]), ['id', 'attr4']);
+          equal(json.length, 3);
+          equal(json[0].someList.length, 2);
+          deepEqual(_.keys(json[0]), ['id', 'firstName', 'lastName', 'address', 'someList', 'someRel', 'otherRel']);
+          deepEqual(_.keys(json[1]), ['attr5']);
+          deepEqual(_.keys(json[2]), ['id', 'attr4']);
+        });
+
+        it('does not omit new models from collections and relations when omitNew is not specified', function() {
+          testModel.relations = {
+            someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
+            someRel: new Model({id: 3}),
+            otherRel: new Model({attr3: 'Test'})
+          };
+          var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
+          var json = coll.toJSON();
+
+          equal(json.length, 3);
+          equal(json[0].someList.length, 2);
+          deepEqual(_.keys(json[0]), ['id', 'firstName', 'lastName', 'address', 'someList', 'someRel', 'otherRel']);
+          deepEqual(_.keys(json[1]), ['attr5']);
+          deepEqual(_.keys(json[2]), ['id', 'attr4']);
+        });
+
+        it('omits new models from collections and relations when {omitNew: true} is passed', function() {
+          testModel.relations = {
+            someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
+            someRel: new Model({id: 3}),
+            otherRel: new Model({attr3: 'Test'})
+          };
+          var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
+          var omitNew = coll.toJSON({omitNew: true});
+
+          equal(omitNew.length, 2);
+          deepEqual(_.keys(omitNew[0]), ['id', 'firstName', 'lastName', 'address', 'someList', 'someRel']);
+          deepEqual(_.keys(omitNew[1]), ['id', 'attr4']);
+          equal(omitNew[0].someList.length, 1);
+        });
+
+        it('returns null for a new model when {omitNew: true} is passed', function() {
+          var testModel = new Model({attr1: 'Test'});
+          var omitNew = testModel.toJSON({omitNew: true});
+          deepEqual(omitNew, null);
+        });
       });
 
-      it('does not omit new models from collections and relations when omitNew is not specified', function() {
-        testModel.relations = {
-          someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
-          someRel: new Model({id: 3}),
-          otherRel: new Model({attr3: 'Test'})
-        };
-        var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
-        var json = coll.toJSON();
+      describe('with "visible" option', function() {
+        it('only shows the fields specified in the model\'s "visible" property', function() {
+          testModel.visible = ['firstName'];
+          deepEqual(testModel.toJSON(), {firstName: 'Joe'});
+        });
 
-        equal(json.length, 3);
-        equal(json[0].someList.length, 2);
-        deepEqual(_.keys(json[0]), ['id', 'name', 'someList', 'someRel', 'otherRel']);
-        deepEqual(_.keys(json[1]), ['attr5']);
-        deepEqual(_.keys(json[2]), ['id', 'attr4']);
+        it('only shows the fields specified in the "options.visible" property', function() {
+          const json = testModel.toJSON({visible: ['firstName']});
+          deepEqual(json, {firstName: 'Joe'});
+        });
+
+        it('allows overriding the model\'s "visible" property with a "options.visible" argument', function() {
+          testModel.visible = ['lastName'];
+          const json = testModel.toJSON({visible: ['firstName']});
+          deepEqual(json, {firstName: 'Joe'});
+        });
       });
 
-      it('omits new models from collections and relations when {omitNew: true} is passed', function() {
-        testModel.relations = {
-          someList: new ModelCollection([{id: 2}, {attr2: 'Test'}]),
-          someRel: new Model({id: 3}),
-          otherRel: new Model({attr3: 'Test'})
-        };
-        var coll = new ModelCollection([testModel, new Model({attr5: 'Test'}), new Model({id: 4, attr4: 'Test'})]);
-        var omitNew = coll.toJSON({omitNew: true});
+      describe('with "hidden" option', function() {
+        it('hides the fields specified in the model\'s "hidden" property', function() {
+          testModel.hidden = ['firstName'];
+          deepEqual(testModel.toJSON(), {id: 1, lastName: 'Shmoe', address: '123 Main St.'});
+        });
 
-        equal(omitNew.length, 2);
-        deepEqual(_.keys(omitNew[0]), ['id', 'name', 'someList', 'someRel']);
-        deepEqual(_.keys(omitNew[1]), ['id', 'attr4']);
-        equal(omitNew[0].someList.length, 1);
+        it('hides the fields specified in the "options.hidden" property', function() {
+          const json = testModel.toJSON({hidden: ['firstName', 'id']});
+          deepEqual(json, {lastName: 'Shmoe', address: '123 Main St.'});
+        });
+
+        it('prioritizes "hidden" if there are conflicts when using both "hidden" and "visible"', function() {
+          testModel.visible = ['firstName', 'lastName'];
+          testModel.hidden = ['lastName'];
+          deepEqual(testModel.toJSON(), {firstName: 'Joe'});
+        });
+
+        it('prioritizes "options.hidden" if there are conflicts when using both "options.hidden" and "options.visible"', function() {
+          const json = testModel.toJSON({visible: ['firstName', 'lastName'], hidden: ['lastName']});
+          deepEqual(json, {firstName: 'Joe'});
+        });
+
+        it('allows overriding the model\'s "hidden" property with a "options.hidden" argument', function() {
+          testModel.hidden = ['lastName'];
+          const json = testModel.toJSON({hidden: ['firstName', 'id']});
+          deepEqual(json, {lastName: 'Shmoe', address: '123 Main St.'});
+        });
+
+        it('prioritizes "options.hidden" when overriding both the model\'s "hidden" and "visible" properties with "options.hidden" and "options.visible" arguments', function() {
+          testModel.visible = ['lastName', 'address'];
+          testModel.hidden = ['address'];
+          const json = testModel.toJSON({visible: ['firstName', 'lastName'], hidden: ['lastName']});
+
+          deepEqual(json, {firstName: 'Joe'});
+        });
       });
 
-      it('returns null for a new model when {omitNew: true} is passed', function() {
-        var testModel = new Model({attr1: 'Test'});
-        var omitNew = testModel.toJSON({omitNew: true});
-        deepEqual(omitNew, null);
+      it('ignores the model\'s "hidden" and "visible" properties with the "options.visibility" argument', function() {
+        testModel.visible = ['firstName', 'lastName'];
+        testModel.hidden = ['lastName'];
+        const json = testModel.toJSON({visibility: false});
+
+        deepEqual(json, {id: 1, firstName: 'Joe', lastName: 'Shmoe', address: '123 Main St.'});
       });
     });
 
