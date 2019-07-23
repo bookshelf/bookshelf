@@ -1,13 +1,8 @@
-var _ = require('lodash');
-var Promise = global.testPromise;
-
-var drops = ['units', 'commands'];
-
 module.exports = function(bookshelf) {
   var schema = bookshelf.knex.schema;
 
   return Promise.all(
-    _.map(drops, function(val) {
+    ['units', 'commands'].map(function(val) {
       return schema.dropTableIfExists(val);
     })
   ).then(function() {

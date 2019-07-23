@@ -1,10 +1,9 @@
 var _ = require('lodash');
+const Promise = require('bluebird');
 
 module.exports = function(Bookshelf) {
   var Knex = require('knex');
   var config = require(process.env.BOOKSHELF_TEST || './integration/helpers/config');
-  var Promise = global.testPromise;
-
   var pg = require('knex')({client: 'postgres', connection: config.postgres});
   var sqlite3 = require('knex')({
     client: 'sqlite3',
@@ -16,9 +15,7 @@ module.exports = function(Bookshelf) {
     connection: config.mysql,
     pool: {
       afterCreate: function(connection, callback) {
-        var asyncQuery = Promise.promisify(connection.query, {
-          context: connection
-        });
+        var asyncQuery = Promise.promisify(connection.query, {context: connection});
         return asyncQuery('SET SESSION sql_mode=?', ['TRADITIONAL,NO_AUTO_VALUE_ON_ZERO']).then(function() {
           callback(null, connection);
         });

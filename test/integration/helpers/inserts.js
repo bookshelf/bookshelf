@@ -1,5 +1,3 @@
-var Promise = global.testPromise;
-
 module.exports = function(bookshelf) {
   var knex = bookshelf.knex;
 

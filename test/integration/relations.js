@@ -1,4 +1,4 @@
-var Promise = global.testPromise;
+const Promise = require('bluebird');
 var equal = require('assert').equal;
 var helpers = require('./helpers');
 
@@ -744,7 +744,7 @@ module.exports = function(Bookshelf) {
               throw new Error('this should not happen');
             })
             .catch(function(err) {
-              assert(err instanceof Error);
+              equal(err instanceof Error, true);
             });
         });
       });
@@ -1299,7 +1299,7 @@ module.exports = function(Bookshelf) {
       ].forEach(function(v) {
         it('should trigger pivot model lifecycle event: ' + v, function() {
           return joinModelLifecycleRoutine(v).catch(function(err) {
-            assert(err instanceof Error);
+            equal(err instanceof Error, true);
             equal(err.message, '`' + v + '` triggered on JoinModel()');
           });
         });
