@@ -1,7 +1,6 @@
 var _ = require('lodash');
 var uuid = require('uuid');
 var Promise = require('bluebird');
-
 var assert = require('assert');
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
