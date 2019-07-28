@@ -6,35 +6,29 @@ This can be done with the model's {@link Model#parse parse} and {@link Model#for
 methods:
 
 ```js
-Book = bookshelf.Model.extend({
+const Book = bookshelf.model('Book', {
   tableName: 'books',
-  parse: function(response) {
-    if(response.tags)
-      response.tags = JSON.parse(response.tags);
-    return response;
+  parse(response) {
+    if (response.tags) response.tags = JSON.parse(response.tags)
+    return response
   },
-  format: function(attributes) {
-    if(attributes.tags)
-      attributes.tags = JSON.stringify(attributes.tags);
+  format(attributes) {
+    if (attributes.tags) attributes.tags = JSON.stringify(attributes.tags)
     return attributes;
   }
-});
+})
 ```
 
 A very common use case for this is converting camelCase attributes to snake_case column names and vice-versa:
 
 ```js
-Book = bookshelf.Model.extend({
+const Book = bookshelf.model('Book', {
   tableName: 'books',
-  parse: function(response) {
-    return _.mapKeys(response, function(value, key) {
-      return _.camelCase(key);
-    });
+  parse(response) {
+    return _.mapKeys(response, (value, key) => _.camelCase(key))
   },
-  format: function(attributes) {
-    return _.mapKeys(attributes, function(value, key) {
-      return _.snakeCase(key);
-    });
+  format(attributes) {
+    return _.mapKeys(attributes, (value, key) => _.snakeCase(key))
   }
-});
+})
 ```
