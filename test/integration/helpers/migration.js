@@ -1,5 +1,3 @@
-var Promise = global.testPromise;
-
 var drops = [
   'sites',
   'sitesmeta',

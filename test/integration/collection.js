@@ -1,4 +1,4 @@
-var Promise = global.testPromise;
+var Promise = require('bluebird');
 var assert = require('assert');
 var equal = assert.equal;
 

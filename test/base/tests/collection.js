@@ -1,4 +1,3 @@
-var Promise = global.testPromise;
 var assert = require('assert');
 var equal = assert.equal;
 var _ = require('lodash');

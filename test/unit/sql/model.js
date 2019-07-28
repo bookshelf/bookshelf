@@ -1,4 +1,3 @@
-var Promise = global.testPromise;
 var {deepEqual, equal, notStrictEqual} = require('assert');
 var _ = require('lodash');
 var path = require('path');
