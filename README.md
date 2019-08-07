@@ -13,7 +13,7 @@ It is designed to work with PostgreSQL, MySQL, and SQLite3.
 
 ## Introduction
 
-Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the [Data Mapper Pattern](http://en.wikipedia.org/wiki/Data_mapper_pattern).
+Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the [Data Mapper Pattern](http://en.wikipedia.org/wiki/Data_mapper_pattern).
 
 With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.
 
