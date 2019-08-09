@@ -78,7 +78,6 @@ module.exports = function(Bookshelf) {
       require('./integration/relations')(bookshelf);
       require('./integration/plugin')(bookshelf);
       require('./integration/plugins/virtuals')(bookshelf);
-      require('./integration/plugins/case-converter')(bookshelf);
     });
   });
 
