@@ -355,5 +355,30 @@ module.exports = function(bookshelf) {
         expect(cloned.query()._events).to.have.property('query');
       });
     });
+
+    describe('#where()', function() {
+      it('constrains the fetch call with the specified query conditions', function() {
+        const Sites = bookshelf.Collection.extend({model: Site});
+        return new Sites()
+          .where({name: 'bookshelfjs.org'})
+          .fetch()
+          .then((sites) => {
+            equal(sites.length, 1);
+            equal(sites.models[0].get('name'), 'bookshelfjs.org');
+          });
+      });
+
+      it('can constrain the fetch call with the "key, comparator, value" type conditions', function() {
+        const Sites = bookshelf.Collection.extend({model: Site});
+        return new Sites()
+          .where('name', '<>', 'bookshelfjs.org')
+          .fetch()
+          .then((sites) => {
+            equal(sites.length, 2);
+            equal(sites.models[0].get('name'), 'knexjs.org');
+            equal(sites.models[1].get('name'), 'backbonejs.org');
+          });
+      });
+    });
   });
 };
