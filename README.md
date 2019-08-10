@@ -106,26 +106,26 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 });
 ```
 
-## Plugins
+## Official Plugins
 
-* [Virtuals](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Virtuals): Define virtual properties on your model to compute new values.
-* [Case Converter](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Case-Converter): Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.
-* [Processor](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Processor): Allows defining custom processor functions that handle transformation of values whenever they are `.set()` on a model.
+* [Virtuals](https://github.com/bookshelf/virtuals-plugin): Define virtual properties on your model to compute new values.
+* [Case Converter](https://github.com/bookshelf/case-converter-plugin): Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.
+* [Processor](https://github.com/bookshelf/processor-plugin): Allows defining custom processor functions that handle transformation of values whenever they are `.set()` on a model.
 
 ## Community plugins
 
 * [bookshelf-cascade-delete](https://github.com/seegno/bookshelf-cascade-delete) - Cascade delete related models on destroy.
 * [bookshelf-json-columns](https://github.com/seegno/bookshelf-json-columns) - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).
-* [bookshelf-mask](https://github.com/seegno/bookshelf-mask) - Similar to [Visibility](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility) but supporting multiple scopes, masking models and collections using the [json-mask](https://github.com/nemtsov/json-mask) API.
+* [bookshelf-mask](https://github.com/seegno/bookshelf-mask) - Similar to the functionality of the {@link Model#visible} attribute but supporting multiple scopes, masking models and collections using the [json-mask](https://github.com/nemtsov/json-mask) API.
 * [bookshelf-schema](https://github.com/bogus34/bookshelf-schema) - A plugin for handling fields, relations, scopes and more.
 * [bookshelf-signals](https://github.com/bogus34/bookshelf-signals) - A plugin that translates Bookshelf events to a central hub.
 * [bookshelf-paranoia](https://github.com/estate/bookshelf-paranoia) - Protect your database from data loss by soft deleting your rows.
 * [bookshelf-uuid](https://github.com/estate/bookshelf-uuid) - Automatically generates UUIDs for your models.
 * [bookshelf-modelbase](https://github.com/bsiddiqui/bookshelf-modelbase) - An alternative to extend `Model`, adding timestamps, attribute validation and some native CRUD methods.
 * [bookshelf-advanced-serialization](https://github.com/sequiturs/bookshelf-advanced-serialization) - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.
-* [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility) plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.
+* [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by the functionality of the {@link Model#visible} attribute, allowing to specify different modes with corresponding visible/hidden fields of model.
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
-* [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by [Visibility](https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility), but operates on the database level.
+* [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by the functionality of the {@link Model#visible} attribute, but operates on the database level.
 * [bookshelf-ez-fetch](https://github.com/DJAndries/bookshelf-ez-fetch) - Convenient fetching methods which allow for compact filtering, relation selection and error handling.
 * [bookshelf-manager](https://github.com/ericclemmons/bookshelf-manager) - Model & Collection manager to make it easy to create & save deep, nested JSON structures from API requests.
 
