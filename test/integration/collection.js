@@ -212,6 +212,36 @@ module.exports = function(bookshelf) {
             deepEqual(result.toJSON(), expectedCollection);
           });
       });
+
+      it('orders the results in ascending order when chained with fetchPage()', function() {
+        return Site.collection()
+          .orderBy('name')
+          .fetchPage()
+          .then((sites) => {
+            const expectedCollection = [
+              {id: 3, name: 'backbonejs.org'},
+              {id: 2, name: 'bookshelfjs.org'},
+              {id: 1, name: 'knexjs.org'}
+            ];
+
+            deepEqual(sites.toJSON(), expectedCollection);
+          });
+      });
+
+      it('orders the results in descending order when chained with fetchPage()', function() {
+        return Site.collection()
+          .orderBy('name', 'DESC')
+          .fetchPage()
+          .then((sites) => {
+            const expectedCollection = [
+              {id: 1, name: 'knexjs.org'},
+              {id: 2, name: 'bookshelfjs.org'},
+              {id: 3, name: 'backbonejs.org'}
+            ];
+
+            deepEqual(sites.toJSON(), expectedCollection);
+          });
+      });
     });
 
     describe('#create()', function() {
