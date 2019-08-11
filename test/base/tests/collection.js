@@ -47,6 +47,35 @@ module.exports = function() {
       equal(collection.at(1).id, undefined);
     });
 
+    it('should use the `reset` method, to reset the collection', function() {
+      collection.reset([]);
+      equal(collection.length, 0);
+    });
+
+    it('should use _prepareModel to prep model instances', function() {
+      var model = new ModelBase({id: 1});
+      expect(model).to.equal(collection._prepareModel(model));
+      var newModel = collection._prepareModel({some_id: 1});
+      assert.ok(newModel instanceof collection.model);
+    });
+
+    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
+      var spyIterator = sinon.spy(function(model) {
+        return model.id;
+      });
+
+      return collection.mapThen(spyIterator).then(function(resp) {
+        spyIterator.should.have.been.calledTwice;
+        expect(_.compact(resp)).to.eql([1]);
+      });
+    });
+
+    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
+      return collection.invokeThen('invokedMethod').then(function(resp) {
+        expect(_.compact(resp)).to.eql([1]);
+      });
+    });
+
     describe('#add()', function() {
       it('adds new models to the collection', function() {
         var originalLength = collection.length;
@@ -156,35 +185,6 @@ module.exports = function() {
         collection.set(models, {add: true, remove: false, merge: false});
 
         equal(collection.get(count - 1).get('name'), 'Large-' + (count - 1));
-      });
-    });
-
-    it('should use the `reset` method, to reset the collection', function() {
-      collection.reset([]);
-      equal(collection.length, 0);
-    });
-
-    it('should use _prepareModel to prep model instances', function() {
-      var model = new ModelBase({id: 1});
-      expect(model).to.equal(collection._prepareModel(model));
-      var newModel = collection._prepareModel({some_id: 1});
-      assert.ok(newModel instanceof collection.model);
-    });
-
-    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
-      var spyIterator = sinon.spy(function(model) {
-        return model.id;
-      });
-
-      return collection.mapThen(spyIterator).then(function(resp) {
-        spyIterator.should.have.been.calledTwice;
-        expect(_.compact(resp)).to.eql([1]);
-      });
-    });
-
-    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
-      return collection.invokeThen('invokedMethod').then(function(resp) {
-        expect(_.compact(resp)).to.eql([1]);
       });
     });
   });

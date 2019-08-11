@@ -1785,7 +1785,7 @@ module.exports = function(bookshelf) {
     describe('sync', function() {
       it('creates a new instance of Sync', function() {
         var model = new bookshelf.Model();
-        equal(model.sync(model) instanceof require('../../lib/sync'), true);
+        equal(model.sync() instanceof require('../../lib/sync'), true);
       });
     });
 

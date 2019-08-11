@@ -1,6 +1,4 @@
-var Promise = require('bluebird');
-var assert = require('assert');
-var equal = assert.equal;
+const {equal, deepEqual} = require('assert');
 
 module.exports = function(bookshelf) {
   describe('Collection', function() {
@@ -11,11 +9,11 @@ module.exports = function(bookshelf) {
     };
     var formatNumber = require('./helpers').formatNumber(dialect);
     var checkCount = function(actual, expected) {
-      expect(actual).to.equal(formatNumber(expected));
+      equal(actual, formatNumber(expected));
     };
     var checkTest = function(ctx) {
       return function(resp) {
-        expect(json(resp)).to.eql(output[ctx.test.title][dialect].result);
+        deepEqual(json(resp), output[ctx.test.title][dialect].result);
       };
     };
 
@@ -25,7 +23,7 @@ module.exports = function(bookshelf) {
     var Blog = Models.Blog;
     var Post = Models.Post;
 
-    describe('extend', function() {
+    describe('.extend()', function() {
       it('should have own EmptyError', function() {
         var Sites = bookshelf.Collection.extend({model: Site});
         var OtherSites = bookshelf.Collection.extend({model: Site});
@@ -38,52 +36,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('fetch', function() {
-      it('fetches the models in a collection', function() {
-        return bookshelf.Collection.extend({tableName: 'posts'})
-          .forge()
-          .fetch()
-          .tap(checkTest(this));
-      });
-    });
-
-    describe('#fetchPage()', function() {
-      it('fetches a page from a collection', function() {
-        return Models.Customer.collection()
-          .fetchPage()
-          .then(function(results) {
-            expect(results).to.have.property('models');
-            expect(results).to.have.property('pagination');
-          });
-      });
-
-      it('fetches a page from a relation collection', function() {
-        return Models.User.forge({uid: 1})
-          .roles()
-          .fetchPage()
-          .then(function(results) {
-            expect(results.length).to.equal(1);
-            expect(results).to.have.property('models');
-            expect(results).to.have.property('pagination');
-          });
-      });
-
-      it('fetches a page from a relation collection with additional condition', function() {
-        return Models.User.forge({uid: 1})
-          .roles()
-          .query(function(query) {
-            query.where('roles.rid', '!=', 4);
-          })
-          .fetchPage()
-          .then(function(results) {
-            expect(results.length).to.equal(0);
-            expect(results).to.have.property('models');
-            expect(results).to.have.property('pagination');
-          });
-      });
-    });
-
-    describe('count', function() {
+    describe('#count()', function() {
       it('counts the number of models in a collection', function() {
         return bookshelf.Collection.extend({tableName: 'posts'})
           .forge()
@@ -138,7 +91,52 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('fetchOne', function() {
+    describe('#fetch()', function() {
+      it('fetches the models in a collection', function() {
+        return bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .fetch()
+          .tap(checkTest(this));
+      });
+    });
+
+    describe('#fetchPage()', function() {
+      it('fetches a page from a collection', function() {
+        return Models.Customer.collection()
+          .fetchPage()
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+
+      it('fetches a page from a relation collection', function() {
+        return Models.User.forge({uid: 1})
+          .roles()
+          .fetchPage()
+          .then(function(results) {
+            expect(results.length).to.equal(1);
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+
+      it('fetches a page from a relation collection with additional condition', function() {
+        return Models.User.forge({uid: 1})
+          .roles()
+          .query(function(query) {
+            query.where('roles.rid', '!=', 4);
+          })
+          .fetchPage()
+          .then(function(results) {
+            expect(results.length).to.equal(0);
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+          });
+      });
+    });
+
+    describe('#fetchOne()', function() {
       it('fetches a single model from the collection', function() {
         return new Site({id: 1})
           .authors()
@@ -165,7 +163,11 @@ module.exports = function(bookshelf) {
           .fetchOne({require: true})
           .throw(new Error())
           .catch(function(err) {
-            assert(err instanceof Author.NotFoundError, 'Error is a Site.NotFoundError');
+            equal(
+              err instanceof Author.NotFoundError,
+              true,
+              'Expected error to be an instance of Author.NotFoundError'
+            );
           });
       });
 
@@ -180,33 +182,39 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('orderBy', function() {
-      it('orders the results by column', function() {
-        var asc = new Site({id: 1})
+    describe('#orderBy()', function() {
+      it('orders the results by column in ascending order', function() {
+        return new Site({id: 1})
           .authors()
           .orderBy('first_name', 'ASC')
-          .fetch();
-        var desc = new Site({id: 1})
+          .fetch()
+          .then(function(result) {
+            const expectedCollection = [
+              {id: 2, site_id: 1, first_name: 'Bazooka', last_name: 'Joe'},
+              {id: 1, site_id: 1, first_name: 'Tim', last_name: 'Griesser'}
+            ];
+
+            deepEqual(result.toJSON(), expectedCollection);
+          });
+      });
+
+      it('orders the results by column in descending order', function() {
+        return new Site({id: 1})
           .authors()
           .orderBy('first_name', 'DESC')
-          .fetch();
+          .fetch()
+          .then(function(result) {
+            const expectedCollection = [
+              {id: 1, site_id: 1, first_name: 'Tim', last_name: 'Griesser'},
+              {id: 2, site_id: 1, first_name: 'Bazooka', last_name: 'Joe'}
+            ];
 
-        return Promise.join(asc, desc).then(function(result) {
-          var r0 = result[0].toJSON().reverse();
-          var r1 = result[1].toJSON();
-          expect(r0).to.eql(r1);
-        });
+            deepEqual(result.toJSON(), expectedCollection);
+          });
       });
     });
 
-    describe('sync', function() {
-      it('creates a new instance of Sync', function() {
-        var model = new bookshelf.Model();
-        assert(model.sync(model) instanceof require('../../lib/sync'));
-      });
-    });
-
-    describe('create', function() {
+    describe('#create()', function() {
       it('creates and saves a new model instance, saving it to the collection', function() {
         return Site.collection()
           .create({name: 'google.com'})
@@ -332,7 +340,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('clone', function() {
+    describe('#clone()', function() {
       it('should contain a copy of internal QueryBuilder object - #945', function() {
         var original = Post.collection()
           .query('where', 'share_count', '>', 10)
@@ -345,6 +353,31 @@ module.exports = function(bookshelf) {
         // Check that a query listener is registered. We must assume that this
         // is the link to `Model.on('query').
         expect(cloned.query()._events).to.have.property('query');
+      });
+    });
+
+    describe('#where()', function() {
+      it('constrains the fetch call with the specified query conditions', function() {
+        const Sites = bookshelf.Collection.extend({model: Site});
+        return new Sites()
+          .where({name: 'bookshelfjs.org'})
+          .fetch()
+          .then((sites) => {
+            equal(sites.length, 1);
+            equal(sites.models[0].get('name'), 'bookshelfjs.org');
+          });
+      });
+
+      it('can constrain the fetch call with the "key, comparator, value" type conditions', function() {
+        const Sites = bookshelf.Collection.extend({model: Site});
+        return new Sites()
+          .where('name', '<>', 'bookshelfjs.org')
+          .fetch()
+          .then((sites) => {
+            equal(sites.length, 2);
+            equal(sites.models[0].get('name'), 'knexjs.org');
+            equal(sites.models[1].get('name'), 'backbonejs.org');
+          });
       });
     });
   });
