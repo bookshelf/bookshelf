@@ -23,11 +23,9 @@ after(function() {
 });
 
 describe('Unit Tests', function() {
-  var base = require('./base');
-  base.Collection();
-  base.Events();
-
   require('./unit/bookshelf')();
+  require('./unit/collection')();
+  require('./unit/events')();
   require('./unit/sync')();
   require('./unit/model')();
 });
