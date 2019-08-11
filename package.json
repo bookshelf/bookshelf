@@ -6,15 +6,15 @@
   "scripts": {
     "format": "prettier --write \"{lib,scripts,test}/**/*.js\"",
     "lint": "eslint bookshelf.js lib/",
-    "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b -R spec test/index.js",
-    "test": "npm run lint &&  mocha --check-leaks -t 10000 -b test/index.js",
+    "cover": "npm run lint && istanbul cover _mocha -- --check-leaks -t 10000 -b",
+    "test": "npm run lint &&  mocha --check-leaks -t 10000 -b",
     "jsdoc": "./scripts/jsdoc.sh",
     "postpublish": "./scripts/postpublish.sh"
   },
-  "homepage": "http://bookshelfjs.org",
+  "homepage": "https://bookshelfjs.org",
   "repository": {
     "type": "git",
-    "url": "git://github.com/bookshelf/bookshelf.git"
+    "url": "https://github.com/bookshelf/bookshelf.git"
   },
   "keywords": [
     "orm",

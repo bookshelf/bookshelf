@@ -23,13 +23,11 @@ after(function() {
 });
 
 describe('Unit Tests', function() {
-  var base = require('./base');
-  base.Collection();
-  base.Events();
-
   require('./unit/bookshelf')();
-  require('./unit/sql/sync')();
-  require('./unit/sql/model')();
+  require('./unit/collection')();
+  require('./unit/events')();
+  require('./unit/sync')();
+  require('./unit/model')();
 });
 
 describe('Integration Tests', function() {
