@@ -28,8 +28,8 @@ describe('Unit Tests', function() {
   base.Events();
 
   require('./unit/bookshelf')();
-  require('./unit/sql/sync')();
-  require('./unit/sql/model')();
+  require('./unit/sync')();
+  require('./unit/model')();
 });
 
 describe('Integration Tests', function() {
