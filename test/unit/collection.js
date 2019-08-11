@@ -1,5 +1,4 @@
-var assert = require('assert');
-var equal = assert.equal;
+const {deepEqual, equal} = require('assert');
 var _ = require('lodash');
 
 module.exports = function() {
@@ -21,7 +20,7 @@ module.exports = function() {
     });
 
     beforeEach(function() {
-      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'No Id'}]);
+      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'Test2'}, {name: 'Test3'}]);
     });
 
     it('should have a tableName method that returns the tableName of the model', function() {
@@ -42,7 +41,7 @@ module.exports = function() {
     });
 
     it('should initialize the items passed to the constructor', function() {
-      equal(collection.length, 2);
+      equal(collection.length, 3);
       equal(collection.at(0).id, 1);
       equal(collection.at(1).id, undefined);
     });
@@ -56,7 +55,7 @@ module.exports = function() {
       var model = new ModelBase({id: 1});
       expect(model).to.equal(collection._prepareModel(model));
       var newModel = collection._prepareModel({some_id: 1});
-      assert.ok(newModel instanceof collection.model);
+      equal(newModel instanceof collection.model, true);
     });
 
     it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
@@ -65,8 +64,8 @@ module.exports = function() {
       });
 
       return collection.mapThen(spyIterator).then(function(resp) {
-        spyIterator.should.have.been.calledTwice;
-        expect(_.compact(resp)).to.eql([1]);
+        equal(spyIterator.callCount, 3);
+        deepEqual(_.compact(resp), [1]);
       });
     });
 
@@ -105,6 +104,34 @@ module.exports = function() {
         var originalLength = collection.length;
         var newLength = collection.add({some_id: 3, name: 'Alice'}, {add: false}).length;
         expect(newLength).to.be.above(originalLength);
+      });
+    });
+
+    describe('#first()', function() {
+      it('returns the first element in the collection', function() {
+        const first = collection.first();
+        equal(first instanceof ModelBase, true);
+        equal(first.get('name'), 'Test');
+      });
+
+      it('returns undefined if the collection is empty', function() {
+        collection = new Collection();
+        const first = collection.first();
+        equal(typeof first, 'undefined');
+      });
+    });
+
+    describe('#last()', function() {
+      it('returns the last element in the collection', function() {
+        const last = collection.last();
+        equal(last instanceof ModelBase, true);
+        equal(last.get('name'), 'Test3');
+      });
+
+      it('returns undefined if the collection is empty', function() {
+        collection = new Collection();
+        const last = collection.last();
+        equal(typeof last, 'undefined');
       });
     });
 
@@ -153,7 +180,7 @@ module.exports = function() {
 
       it('should not remove models with {remove: false} option set', function() {
         collection.set([{some_id: 2, name: 'Item2'}], {remove: false});
-        equal(collection.length, 3);
+        equal(collection.length, 4);
       });
 
       it('should not merge new attribute values with {merge: false} option set', function() {
