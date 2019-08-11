@@ -510,7 +510,7 @@ module.exports = function(Bookshelf) {
                   .related('admins')
                   .fetch()
                   .then(function(c) {
-                    c.each(function(m) {
+                    c.forEach(function(m) {
                       equal(m.hasChanged(), false);
                     });
                     equal(c.at(0).pivot.get('item'), 'test');
@@ -592,7 +592,7 @@ module.exports = function(Bookshelf) {
                   .related('admins')
                   .fetch()
                   .then(function(c) {
-                    c.each(function(m) {
+                    c.forEach(function(m) {
                       equal(m.hasChanged(), false);
                     });
                     equal(c.at(0).pivot.get('item'), 'test');
