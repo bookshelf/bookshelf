@@ -304,6 +304,92 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('#requireFetch', function() {
+      const FalseAuthor = Models.Author.extend({requireFetch: false});
+
+      describe('with #fetch()', function() {
+        it('resolves to null if no record exists and the {require: false} model option is set', function() {
+          return new FalseAuthor({id: 200}).fetch().then((model) => {
+            equal(model, null);
+          });
+        });
+
+        it('allows overriding the model level {require: false} option', function() {
+          return new FalseAuthor({id: 200})
+            .fetch({require: true})
+            .then((model) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error instanceof FalseAuthor.NotFoundError, true);
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('rejects with NotFoundError by default', function() {
+          return new Models.Author({id: 200})
+            .fetch()
+            .then((model) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error instanceof Models.Author.NotFoundError, true);
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('allows overriding the default Model level option', function() {
+          return new FalseAuthor({id: 200}).fetch({require: false}).then((model) => {
+            equal(model, null);
+          });
+        });
+      });
+
+      describe('with #fetchAll()', function() {
+        it('resolves to null if no record exists and the {require: false} model option is set', function() {
+          return new FalseAuthor()
+            .where({id: 200})
+            .fetchAll()
+            .then((models) => {
+              equal(models.length, 0);
+            });
+        });
+
+        it('allows overriding the model level {require: false} option', function() {
+          return new FalseAuthor()
+            .where({id: 200})
+            .fetchAll({require: true})
+            .then((models) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('rejects with NotFoundError by default', function() {
+          return new Models.Author()
+            .where({id: 200})
+            .fetchAll()
+            .then((models) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('allows overriding the default Model level option', function() {
+          return new FalseAuthor()
+            .where({id: 200})
+            .fetchAll({require: false})
+            .then((models) => {
+              equal(models.length, 0);
+            });
+        });
+      });
+    });
+
     describe('query', function() {
       var model;
 
