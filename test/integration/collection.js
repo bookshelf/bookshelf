@@ -115,7 +115,7 @@ module.exports = function(bookshelf) {
           .roles()
           .fetchPage()
           .then(function(results) {
-            expect(results.length).to.equal(1);
+            expect(results.length).to.equal(2);
             expect(results).to.have.property('models');
             expect(results).to.have.property('pagination');
           });
@@ -129,7 +129,7 @@ module.exports = function(bookshelf) {
           })
           .fetchPage()
           .then(function(results) {
-            expect(results.length).to.equal(0);
+            expect(results.length).to.equal(1);
             expect(results).to.have.property('models');
             expect(results).to.have.property('pagination');
           });
@@ -151,31 +151,37 @@ module.exports = function(bookshelf) {
           .authors()
           .query({where: {id: 40}})
           .fetchOne()
-          .then(function(model) {
-            equal(model, null);
+          .then((model) => {
+            assert.fail('Expected the promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error instanceof Author.NotFoundError, true);
           });
       });
 
-      it('follows the typical model options, like require: true', function() {
-        return new Site({id: 1})
-          .authors()
-          .query({where: {id: 40}})
-          .fetchOne({require: true})
-          .throw(new Error())
-          .catch(function(err) {
-            equal(
-              err instanceof Author.NotFoundError,
-              true,
-              'Expected error to be an instance of Author.NotFoundError'
-            );
-          });
-      });
-
-      it('resolves to null if no model exists', function() {
+      it('rejects with an error if no record exists', function() {
         return new Site({id: 1})
           .authors()
           .query({where: {id: 40}})
           .fetchOne()
+          .then((model) => {
+            assert.fail('Expected the promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(
+              error instanceof Author.NotFoundError,
+              true,
+              'Expected error to be an instance of Author.NotFoundError'
+            );
+            equal(error.message, 'EmptyResponse');
+          });
+      });
+
+      it('resolves to null with the {require: false} option if no model exists', function() {
+        return new Site({id: 1})
+          .authors()
+          .query({where: {id: 40}})
+          .fetchOne({require: false})
           .then(function(model) {
             equal(model, null);
           });

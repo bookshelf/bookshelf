@@ -280,9 +280,9 @@ module.exports = function(bookshelf) {
 
     knex('users').insert({uid: 1, username: 'root'}),
 
-    knex('roles').insert({rid: 4, name: 'admin'}),
+    knex('roles').insert([{rid: 4, name: 'admin'}, {rid: 5, name: 'accouting'}]),
 
-    knex('users_roles').insert({uid: 1, rid: 4}),
+    knex('users_roles').insert([{uid: 1, rid: 4}, {uid: 1, rid: 5}]),
 
     knex('Customer').insert([
       {id: 1, name: 'Customer1'},

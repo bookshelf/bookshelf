@@ -455,7 +455,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('fetch', function() {
+    describe('#fetch()', function() {
       var Site = Models.Site;
       var Author = Models.Author;
 
@@ -534,8 +534,20 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('resolves to null if no record exists', function() {
-        return new Author({id: 200}).fetch().then(function(model) {
+      it('rejects with an error if no record exists', function() {
+        return new Author({id: 200})
+          .fetch()
+          .then((model) => {
+            assert.fail('Expected the promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error instanceof Author.NotFoundError, true);
+            equal(error.message, 'EmptyResponse');
+          });
+      });
+
+      it('resolves to null if no record exists and the {require: false} option is passed', function() {
+        return new Author({id: 200}).fetch({require: false}).then((model) => {
           equal(model, null);
         });
       });
@@ -621,7 +633,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('fetchAll', function() {
+    describe('#fetchAll()', function() {
       var Site = Models.Site;
 
       it('triggers `fetching:collection` and `fetched:collection` events', function() {
@@ -660,6 +672,18 @@ module.exports = function(bookshelf) {
           expect(members.pluck('name')).to.include.members(['Alice', 'Shuri']);
         });
       });
+
+      it('rejects if there are no results', function() {
+        return new Models.Member()
+          .where('name', 'hal9000')
+          .fetchAll()
+          .then(() => {
+            assert.fail('Expected the Promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error.message, 'EmptyResponse');
+          });
+      });
     });
 
     describe('#fetchPage()', function() {
@@ -681,12 +705,25 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('returns an empty collection if there are no results', function() {
+      it('rejects if there are no results', function() {
+        return bookshelf
+          .knex('critics_comments')
+          .del()
+          .then(() => Models.CriticComment.forge().fetchPage())
+          .then(function(results) {
+            assert.fail('Expected the Promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error.message, 'EmptyResponse');
+          });
+      });
+
+      it('returns an empty collection with the {require: false} option if there are no results', function() {
         return bookshelf
           .knex('critics_comments')
           .del()
           .then(function() {
-            return Models.CriticComment.forge().fetchPage();
+            return Models.CriticComment.forge().fetchPage({require: false});
           })
           .then(function(results) {
             expect(results.length).to.equal(0);
