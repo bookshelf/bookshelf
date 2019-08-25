@@ -355,34 +355,10 @@ module.exports = function(bookshelf) {
             });
         });
 
-        it('allows overriding the model level {require: false} option', function() {
-          return new FalseAuthor()
-            .where({id: 200})
-            .fetchAll({require: true})
-            .then((models) => {
-              assert.fail('Expected the promise to be rejected but it resolved');
-            })
-            .catch((error) => {
-              equal(error.message, 'EmptyResponse');
-            });
-        });
-
-        it('rejects with NotFoundError by default', function() {
+        it('is not affected by the model level {require: true} option', function() {
           return new Models.Author()
             .where({id: 200})
             .fetchAll()
-            .then((models) => {
-              assert.fail('Expected the promise to be rejected but it resolved');
-            })
-            .catch((error) => {
-              equal(error.message, 'EmptyResponse');
-            });
-        });
-
-        it('allows overriding the default Model level option', function() {
-          return new FalseAuthor()
-            .where({id: 200})
-            .fetchAll({require: false})
             .then((models) => {
               equal(models.length, 0);
             });
@@ -759,15 +735,12 @@ module.exports = function(bookshelf) {
         });
       });
 
-      it('rejects if there are no results', function() {
+      it('returns an empty collection if there are no results', function() {
         return new Models.Member()
           .where('name', 'hal9000')
           .fetchAll()
-          .then(() => {
-            assert.fail('Expected the Promise to be rejected but it resolved');
-          })
-          .catch((error) => {
-            equal(error.message, 'EmptyResponse');
+          .then((models) => {
+            equal(models.length, 0);
           });
       });
     });
@@ -791,16 +764,13 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('rejects if there are no results', function() {
+      it('returns an empty collection if there are no results', function() {
         return bookshelf
           .knex('critics_comments')
           .del()
           .then(() => Models.CriticComment.forge().fetchPage())
-          .then(function(results) {
-            assert.fail('Expected the Promise to be rejected but it resolved');
-          })
-          .catch((error) => {
-            equal(error.message, 'EmptyResponse');
+          .then((results) => {
+            equal(results.length, 0);
           });
       });
 
