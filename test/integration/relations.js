@@ -544,7 +544,7 @@ module.exports = function(Bookshelf) {
                   });
                 }),
                 admins2.on('detached', function(c) {
-                  return c.fetch().then(function(c) {
+                  return c.fetch({require: false}).then(function(c) {
                     equal(c.length, 0);
                   });
                 })
@@ -626,7 +626,7 @@ module.exports = function(Bookshelf) {
                   });
                 }),
                 admins2.on('detached', function(c) {
-                  return c.fetch().then(function(c) {
+                  return c.fetch({require: false}).then(function(c) {
                     equal(c.length, 0);
                   });
                 })

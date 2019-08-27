@@ -27,7 +27,7 @@ const Customer = bookshelf.model('Customer', {
   // Static class properties and methods
   login: Promise.method((email, password) => {
     return new this({email})
-      .fetch({require: true})
+      .fetch()
       .tap((customer) => {
         return bcrypt.compareAsync(password, customer.get('password'))
           .then((valid) => {
