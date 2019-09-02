@@ -693,6 +693,36 @@ module.exports = function(bookshelf) {
             return new Models.Author({id: newAuthorId}).destroy();
           });
       });
+
+      it("does not try to format the idAttribute if it's already formatted", function() {
+        return new Models.OrgModel({organization_id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: false
+            });
+          } else {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: 0
+            });
+          }
+        });
+      });
+
+      it("formats the idAttribute if it's not already formatted", function() {
+        return new Models.OrgModel({id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: false});
+          } else {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: 0});
+          }
+        });
+      });
     });
 
     describe('#fetchAll()', function() {
