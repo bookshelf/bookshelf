@@ -1167,6 +1167,7 @@ module.exports = function(bookshelf) {
           equal(_.filter(this._statements, {grouping: 'where'}).length, 1);
           return Promise.resolve(1);
         };
+        m.refresh = () => Promise.resolve({});
 
         return m.save(null, {method: 'update'}).then(function() {
           var m2 = new bookshelf.Model({id: 1}).query({
@@ -1177,6 +1178,7 @@ module.exports = function(bookshelf) {
             equal(_.filter(this._statements, {grouping: 'where'}).length, 2);
             return {};
           };
+          m2.refresh = () => Promise.resolve({});
 
           return m2.save(null, {method: 'update'});
         });
@@ -1185,6 +1187,7 @@ module.exports = function(bookshelf) {
       it('allows {patch: true} as an option for only updating passed data', function() {
         var user = new bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
         var query = user.query();
+        user.refresh = () => Promise.resolve({});
 
         query.then = function(onFulfilled, onRejected) {
           deepEqual(this._single.update, {bio: 'Short user bio'});
@@ -1244,6 +1247,24 @@ module.exports = function(bookshelf) {
         });
 
         return user.save();
+      });
+
+      it('refreshes the model after saving', function() {
+        return new Models.Member({id: 1}).save({name: 'Okoye'}).then((member) => {
+          deepEqual(member.attributes, {id: 1, name: 'Okoye', organization_id: 1});
+        });
+      });
+
+      it('does not trigger a "fetched" event after refreshing the model', function() {
+        const member = new Models.Member({id: 1});
+        let isFetchedTriggered = false;
+        member.on('fetched', () => {
+          isFetchedTriggered = true;
+        });
+
+        return member.save({name: 'Shuri'}).then(() => {
+          equal(isFetchedTriggered, false);
+        });
       });
 
       it('rejects if the saving event throws an error', function() {
