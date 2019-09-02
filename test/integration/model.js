@@ -1283,9 +1283,15 @@ module.exports = function(bookshelf) {
         return user.save();
       });
 
-      it('refreshes the model after saving', function() {
+      it('refreshes the model after updating', function() {
         return new Models.Member({id: 1}).save({name: 'Okoye'}).then((member) => {
           deepEqual(member.attributes, {id: 1, name: 'Okoye', organization_id: 1});
+        });
+      });
+
+      it('refreshes the model after inserting', function() {
+        return new Models.Tag({name: 'books'}).save().then((tag) => {
+          deepEqual(tag.attributes, {id: 5, name: 'books'});
         });
       });
 
@@ -1376,8 +1382,6 @@ module.exports = function(bookshelf) {
             equal(acmeOrg1.attributes.organization_id, undefined);
             equal(acmeOrg1.attributes.organization_name, undefined);
             expect(acmeOrg.attributes.name).to.equal('ACME, Inc');
-            // field name needs to be processed through model.parse
-            equal(acmeOrg.attributes.organization_id, undefined);
           });
       });
     });
@@ -1679,7 +1683,6 @@ module.exports = function(bookshelf) {
               originalDate = savedAdmin.get('updated_at');
 
               return Promise.delay(1000).then(function() {
-                console.log('saving');
                 return savedAdmin.save('username', 'pablo');
               });
             })
