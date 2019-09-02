@@ -1084,7 +1084,11 @@ module.exports = function(bookshelf) {
     describe('save', function() {
       var Site = Models.Site;
 
-      after(() => Site.forge({id: 6}).destroy());
+      after(() => {
+        return Site.forge({id: 6})
+          .destroy()
+          .catch(() => {});
+      });
 
       it('saves a new object', function() {
         return new Site({name: 'Fourth Site'})
