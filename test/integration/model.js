@@ -1302,7 +1302,7 @@ module.exports = function(bookshelf) {
         return site.save(null, testOptions).call('destroy');
       });
 
-      it('Will not break with prefixed id, #583', function() {
+      it('will not break with prefixed id, #583', function() {
         var acmeOrg = new Models.OrgModel({
           name: 'ACME, Inc',
           is_active: true
@@ -1320,7 +1320,6 @@ module.exports = function(bookshelf) {
             equal(acmeOrg1.attributes.name, 'ACME, Inc');
             equal(acmeOrg1.attributes.organization_id, undefined);
             equal(acmeOrg1.attributes.organization_name, undefined);
-
             expect(acmeOrg.attributes.name).to.equal('ACME, Inc');
             // field name needs to be processed through model.parse
             equal(acmeOrg.attributes.organization_id, undefined);
@@ -1596,6 +1595,7 @@ module.exports = function(bookshelf) {
         });
 
         it("does not update created_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1604,7 +1604,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('created_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save('username', 'pablo');
               });
             })
@@ -1614,6 +1614,7 @@ module.exports = function(bookshelf) {
         });
 
         it("will automatically set the updated_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1622,16 +1623,19 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
+                console.log('saving');
                 return savedAdmin.save('username', 'pablo');
               });
             })
             .then(function(updatedAdmin) {
-              expect(updatedAdmin.get('updated_at')).to.not.be.eql(originalDate);
+              const updatedDate = updatedAdmin.get('updated_at');
+              expect(updatedDate.getTime()).to.not.equal(originalDate.getTime());
             });
         });
 
         it("will not update the updated_at timestamp if the model hasn't changed", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1640,7 +1644,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save();
               });
             })
@@ -1652,8 +1656,8 @@ module.exports = function(bookshelf) {
         it('will set the updated_at timestamp to the user supplied value', function() {
           var admin = new Models.Admin();
           var oldUpdatedAt;
-          var newUpdatedAt = new Date();
-          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+          var newUpdatedAt = new Date('2019-09-01 12:13:14');
+          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 10);
 
           return admin
             .save()
