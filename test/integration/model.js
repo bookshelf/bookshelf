@@ -1081,7 +1081,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('save', function() {
+    describe('#save()', function() {
       var Site = Models.Site;
 
       after(() => {
