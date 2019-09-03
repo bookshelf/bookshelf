@@ -24,20 +24,20 @@ It's a lean object-relational mapper, allowing you to drop down to the raw Knex 
 You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
 
 ```js
-$ npm install knex --save
-$ npm install bookshelf --save
+$ npm install knex
+$ npm install bookshelf
 
 # Then add one of the following:
 $ npm install pg
 $ npm install mysql
-$ npm install mariasql
 $ npm install sqlite3
 ```
 
 The Bookshelf library is initialized by passing an initialized [Knex](http://knexjs.org/) client instance. The [Knex documentation](http://knexjs.org/) provides a number of examples for different databases.
 
 ```js
-var knex = require('knex')({
+// Setting up the database connection
+const knex = require('knex')({
   client: 'mysql',
   connection: {
     host     : '127.0.0.1',
@@ -46,28 +46,28 @@ var knex = require('knex')({
     database : 'myapp_test',
     charset  : 'utf8'
   }
-});
+})
+const bookshelf = require('bookshelf')(knex)
 
-var bookshelf = require('bookshelf')(knex);
-
-var User = bookshelf.Model.extend({
+// Defining models
+const User = bookshelf.model('User', {
   tableName: 'users'
-});
+})
 ```
 
 This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the `bookshelf` instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:
 
 ```js
-// In a file named something like bookshelf.js
-var knex = require('knex')(dbConfig);
-module.exports = require('bookshelf')(knex);
+// In a file named, e.g. bookshelf.js
+const knex = require('knex')(dbConfig)
+module.exports = require('bookshelf')(knex)
 
 // elsewhere, to use the bookshelf client:
-var bookshelf = require('./bookshelf');
+const bookshelf = require('./bookshelf')
 
-var Post = bookshelf.Model.extend({
+const Post = bookshelf.model('Post', {
   // ...
-});
+})
 ```
 
 ## Examples
@@ -75,35 +75,35 @@ var Post = bookshelf.Model.extend({
 Here is an example to get you started:
 
 ```js
-var knex = require('knex')({
+const knex = require('knex')({
   client: 'mysql',
   connection: process.env.MYSQL_DATABASE_CONNECTION
-});
-var bookshelf = require('bookshelf')(knex);
+})
+const bookshelf = require('bookshelf')(knex)
 
-var User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
-  posts: function() {
-    return this.hasMany(Posts);
+  posts() {
+    return this.hasMany(Posts)
   }
-});
+})
 
-var Posts = bookshelf.Model.extend({
-  tableName: 'messages',
-  tags: function() {
-    return this.belongsToMany(Tag);
+const Post = bookshelf.model('Post', {
+  tableName: 'posts',
+  tags() {
+    return this.belongsToMany(Tag)
   }
-});
+})
 
-var Tag = bookshelf.Model.extend({
+const Tag = bookshelf.model('Tag', {
   tableName: 'tags'
 })
 
-User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
-  console.log(user.related('posts').toJSON());
-}).catch(function(err) {
-  console.error(err);
-});
+new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
+  console.log(user.related('posts').toJSON())
+}).catch((error) => {
+  console.error(error)
+})
 ```
 
 ## Official Plugins
@@ -131,7 +131,7 @@ User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
 
 ## Support
 
-Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js) or in the GitHub [issue tracker](https://github.com/bookshelf/bookshelf/issues).
+Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js).
 
 ## Contributing
 
@@ -147,13 +147,13 @@ available on GitHub.
 
 ### Can I use standard node.js style callbacks?
 
-Yes - you can call `.asCallback(function(err, resp) {` on any "sync" method and use the standard `(err, result)` style callback interface if you prefer.
+Yes, you can call `.asCallback(function(err, resp) {` on any database operation method and use the standard `(err, result)` style callback interface if you prefer.
 
 ### My relations don't seem to be loading, what's up?
 
-Make sure you check that the type is correct for the initial parameters passed to the initial model being fetched. For example `new Model({id: '1'}).load([relations...])` will not return the same as `Model({id: 1}).load([relations...])` - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.
+Make sure to check that the type is correct for the initial parameters passed to the initial model being fetched. For example `new Model({id: '1'}).load([relations...])` will not return the same as `new Model({id: 1}).load([relations...])` - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.
 
-This is only an issue if you're eager loading data with load without first fetching the original model. `Model({id: '1'}).fetch({withRelated: [relations...]})` should work just fine.
+This is only an issue if you're eager loading data with load without first fetching the original model. `new Model({id: '1'}).fetch({withRelated: [relations...]})` should work just fine.
 
 ### My process won't exit after my script is finished, why?
 
@@ -163,11 +163,11 @@ The issue here is that Knex, the database abstraction layer used by Bookshelf, u
 
 If you pass `{debug: true}` as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
 
-Bookshelf uses its own copy of the "bluebird" promise library, you can read up here for more on debugging these promises... but in short, adding:
+Bookshelf uses its own copy of the `bluebird` Promise library, you can read up here for more on debugging these promises... but in short, adding:
 ```js
-process.stderr.on('data', function(data) {
-  console.log(data);
-});
+process.stderr.on('data', (data) => {
+  console.log(data)
+})
 ```
 At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
 
@@ -178,7 +178,7 @@ document on GitHub.
 
 ### Can I use Bookshelf outside of Node.js?
 
-While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom [Knex adapter](http://knexjs.org/#Adapters).
+While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom [Knex adapter](http://knexjs.org/#Adapters). No such adapter exists though.
 
 ### Which open-source projects are using Bookshelf?
 
