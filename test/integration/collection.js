@@ -320,17 +320,6 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('should maintain the correct constraints when creating a model from a relation', function() {
-        var authors = new Site({id: 1}).authors();
-        var query = authors.query();
-        query.then = function(onFufilled, onRejected) {
-          // TODO: Make this doable again...
-          // expect(this.values[0]).to.eql([['first_name', 'Test'], ['last_name', 'User'], ['site_id', 1]]);
-          return Promise.resolve(this.toString()).then(onFufilled, onRejected);
-        };
-        return authors.create({first_name: 'Test', last_name: 'User'});
-      });
-
       it('should populate the nested relations with the proper keys', function() {
         return new Author({id: 1})
           .fetch({withRelated: 'site.photos'})

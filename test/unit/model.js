@@ -25,6 +25,8 @@ module.exports = function() {
           };
         };
 
+        model.refresh = () => Promise.resolve({});
+
         return model.save(null, options).then(function() {
           equal(_.difference(Object.keys(options), ['query']).length, 0);
         });

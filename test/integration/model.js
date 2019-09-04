@@ -693,6 +693,36 @@ module.exports = function(bookshelf) {
             return new Models.Author({id: newAuthorId}).destroy();
           });
       });
+
+      it("does not try to format the idAttribute if it's already formatted", function() {
+        return new Models.OrgModel({organization_id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: false
+            });
+          } else {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: 0
+            });
+          }
+        });
+      });
+
+      it("formats the idAttribute if it's not already formatted", function() {
+        return new Models.OrgModel({id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: false});
+          } else {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: 0});
+          }
+        });
+      });
     });
 
     describe('#fetchAll()', function() {
@@ -1051,10 +1081,14 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('save', function() {
+    describe('#save()', function() {
       var Site = Models.Site;
 
-      after(() => Site.forge({id: 6}).destroy());
+      after(() => {
+        return Site.forge({id: 6})
+          .destroy()
+          .catch(() => {});
+      });
 
       it('saves a new object', function() {
         return new Site({name: 'Fourth Site'})
@@ -1167,6 +1201,7 @@ module.exports = function(bookshelf) {
           equal(_.filter(this._statements, {grouping: 'where'}).length, 1);
           return Promise.resolve(1);
         };
+        m.refresh = () => Promise.resolve({});
 
         return m.save(null, {method: 'update'}).then(function() {
           var m2 = new bookshelf.Model({id: 1}).query({
@@ -1177,6 +1212,7 @@ module.exports = function(bookshelf) {
             equal(_.filter(this._statements, {grouping: 'where'}).length, 2);
             return {};
           };
+          m2.refresh = () => Promise.resolve({});
 
           return m2.save(null, {method: 'update'});
         });
@@ -1185,6 +1221,7 @@ module.exports = function(bookshelf) {
       it('allows {patch: true} as an option for only updating passed data', function() {
         var user = new bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
         var query = user.query();
+        user.refresh = () => Promise.resolve({});
 
         query.then = function(onFulfilled, onRejected) {
           deepEqual(this._single.update, {bio: 'Short user bio'});
@@ -1246,6 +1283,30 @@ module.exports = function(bookshelf) {
         return user.save();
       });
 
+      it('refreshes the model after updating', function() {
+        return new Models.Member({id: 1}).save({name: 'Okoye'}).then((member) => {
+          deepEqual(member.attributes, {id: 1, name: 'Okoye', organization_id: 1});
+        });
+      });
+
+      it('refreshes the model after inserting', function() {
+        return new Models.Tag({name: 'books'}).save().then((tag) => {
+          deepEqual(tag.attributes, {id: 5, name: 'books'});
+        });
+      });
+
+      it('does not trigger a "fetched" event after refreshing the model', function() {
+        const member = new Models.Member({id: 1});
+        let isFetchedTriggered = false;
+        member.on('fetched', () => {
+          isFetchedTriggered = true;
+        });
+
+        return member.save({name: 'Shuri'}).then(() => {
+          equal(isFetchedTriggered, false);
+        });
+      });
+
       it('rejects if the saving event throws an error', function() {
         var Test = bookshelf.Model.extend({
           tableName: 'test',
@@ -1302,7 +1363,7 @@ module.exports = function(bookshelf) {
         return site.save(null, testOptions).call('destroy');
       });
 
-      it('Will not break with prefixed id, #583', function() {
+      it('will not break with prefixed id, #583', function() {
         var acmeOrg = new Models.OrgModel({
           name: 'ACME, Inc',
           is_active: true
@@ -1320,10 +1381,7 @@ module.exports = function(bookshelf) {
             equal(acmeOrg1.attributes.name, 'ACME, Inc');
             equal(acmeOrg1.attributes.organization_id, undefined);
             equal(acmeOrg1.attributes.organization_name, undefined);
-
             expect(acmeOrg.attributes.name).to.equal('ACME, Inc');
-            // field name needs to be processed through model.parse
-            equal(acmeOrg.attributes.organization_id, undefined);
           });
       });
     });
@@ -1596,6 +1654,7 @@ module.exports = function(bookshelf) {
         });
 
         it("does not update created_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1604,7 +1663,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('created_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save('username', 'pablo');
               });
             })
@@ -1614,6 +1673,7 @@ module.exports = function(bookshelf) {
         });
 
         it("will automatically set the updated_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1622,16 +1682,18 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save('username', 'pablo');
               });
             })
             .then(function(updatedAdmin) {
-              expect(updatedAdmin.get('updated_at')).to.not.be.eql(originalDate);
+              const updatedDate = updatedAdmin.get('updated_at');
+              expect(updatedDate.getTime()).to.not.equal(originalDate.getTime());
             });
         });
 
         it("will not update the updated_at timestamp if the model hasn't changed", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1640,7 +1702,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save();
               });
             })
@@ -1652,8 +1714,8 @@ module.exports = function(bookshelf) {
         it('will set the updated_at timestamp to the user supplied value', function() {
           var admin = new Models.Admin();
           var oldUpdatedAt;
-          var newUpdatedAt = new Date();
-          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+          var newUpdatedAt = new Date('2019-09-01 12:13:14');
+          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 10);
 
           return admin
             .save()
