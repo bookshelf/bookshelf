@@ -183,10 +183,6 @@ module.exports = function(Bookshelf) {
     parse: _parsed
   });
 
-  var Posts = Bookshelf.Collection.extend({
-    model: Post
-  });
-
   var Comment = Bookshelf.Model.extend({
     tableName: 'comments',
     defaults: {
@@ -246,10 +242,6 @@ module.exports = function(Bookshelf) {
   var PhotoParsed = Photo.extend({
     parse: _parsed,
     format: _format
-  });
-
-  var Photos = Bookshelf.Collection.extend({
-    model: Photo
   });
 
   var Settings = Bookshelf.Model.extend({tableName: 'Settings'});
