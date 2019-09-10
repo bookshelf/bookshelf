@@ -161,15 +161,34 @@ The issue here is that Knex, the database abstraction layer used by Bookshelf, u
 
 ### How do I debug?
 
-If you pass `{debug: true}` as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
+If you pass `debug: true` in the options object to your `knex` initialize call, you can see all of the query calls being made. You can also pass that same option to all methods that access the database, like `model.fetch()` or `model.destroy()`. Examples:
 
-Bookshelf uses its own copy of the `bluebird` Promise library, you can read up here for more on debugging these promises... but in short, adding:
+```js
+// Turning on debug mode for all queries
+const knex = require('knex')({
+  debug: true,
+  client: 'mysql',
+  connection: process.env.MYSQL_DATABASE_CONNECTION
+})
+const bookshelf = require('bookshelf')(knex)
+
+// Debugging a single query
+new User({id: 1}).fetch({debug: true, withRelated: ['posts.tags']}).then(user => {
+  // ...
+})
+```
+
+Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. You can use [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
+
+Bookshelf uses its own copy of the `bluebird` Promise library. You can read up [here](http://bluebirdjs.com/docs/api/promise.config.html) for more on debugging Promises.
+
+Adding the following block at the start of your application code will catch any errors not otherwise caught in the normal Promise chain handlers, which is very helpful in debugging:
+
 ```js
 process.stderr.on('data', (data) => {
   console.log(data)
 })
 ```
-At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.
 
 ### How do I run the test suite?
 
