@@ -51,6 +51,9 @@ module.exports = function() {
           },
           testThrough: function() {
             return this.hasMany('TestCollection').through('TestModel');
+          },
+          testNotResolved: function() {
+            return this.hasOne('NonexistentModel');
           }
         });
 
@@ -71,6 +74,12 @@ module.exports = function() {
         relationSpy.restore();
 
         sinon.assert.calledWith(relationSpy, 'hasOne', 'TestModel');
+      });
+
+      it('throws a ModelNotResolved error for nonexistent relations', function() {
+        assert.throws(() => modelWithRelations.testNotResolved(), {
+          message: 'The model NonexistentModel could not be resolved from the registry.'
+        });
       });
 
       it('can be used in through() relations', function() {
