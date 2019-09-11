@@ -49,11 +49,11 @@ module.exports = function() {
           testMorphTo: function() {
             return this.morphTo('morphable', ['relType', 'relId'], 'TestModel', ['TestModel', 'relValue']);
           },
-          testThrough: function() {
-            return this.hasMany('TestCollection').through('TestModel');
-          },
           testNotResolved: function() {
             return this.hasOne('NonexistentModel');
+          },
+          testThrough: function() {
+            return this.hasMany('TestCollection').through('TestModel');
           }
         });
 
