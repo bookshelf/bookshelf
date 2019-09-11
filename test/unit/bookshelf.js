@@ -49,6 +49,9 @@ module.exports = function() {
           testMorphTo: function() {
             return this.morphTo('morphable', ['relType', 'relId'], 'TestModel', ['TestModel', 'relValue']);
           },
+          testNotResolved: function() {
+            return this.hasOne('NonexistentModel');
+          },
           testThrough: function() {
             return this.hasMany('TestCollection').through('TestModel');
           }
@@ -71,6 +74,12 @@ module.exports = function() {
         relationSpy.restore();
 
         sinon.assert.calledWith(relationSpy, 'hasOne', 'TestModel');
+      });
+
+      it('throws a ModelNotResolved error for nonexistent relations', function() {
+        assert.throws(() => modelWithRelations.testNotResolved(), {
+          message: 'The model NonexistentModel could not be resolved from the registry.'
+        });
       });
 
       it('can be used in through() relations', function() {
