@@ -1,5 +1,49 @@
 ## Change Log
 
+**1.0.0** <small>_Sep 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0)
+
+#### Breaking changes
+
+- This version requires Node.js 8+ **if** using a Knex version greater than 0.18.4, otherwise Node.js 6 is still supported: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Make `require: true` the default for Model#fetch: [#2006](https://github.com/bookshelf/bookshelf/pull/2006)
+- Remove some Model and Collection lodash based methods: [#2005](https://github.com/bookshelf/bookshelf/pull/2005)
+- Change Collection#where so it behaves like Model#where: [#2001](https://github.com/bookshelf/bookshelf/pull/2001)
+- Move all plugins to their own repositories: [#2000](https://github.com/bookshelf/bookshelf/pull/2000)
+- Promote some useful plugins to core: [#1992](https://github.com/bookshelf/bookshelf/pull/1992), [#1993](https://github.com/bookshelf/bookshelf/pull/1993), [#1996](https://github.com/bookshelf/bookshelf/pull/1996)
+
+#### Enhancements
+
+- Refresh model attributes after a save operation: [#2012](https://github.com/bookshelf/bookshelf/pull/2012)
+
+#### Bug fixes
+
+- Fix missing columns after save: [#2012](https://github.com/bookshelf/bookshelf/pull/2012)
+- Fix Case Converter plugin overriding any previously defined parse methods: [#2000](https://github.com/bookshelf/bookshelf/pull/2000), [case-converter-plugin@1.0.0](https://github.com/bookshelf/case-converter-plugin/releases/tag/v1.0.0)
+- Fix registry saving models inadvertently across different bookshelf instances: [#1996](https://github.com/bookshelf/bookshelf/pull/1996)
+
+#### Documentation
+
+- Add example of how to use custom collections: [#2015](https://github.com/bookshelf/bookshelf/pull/2015)
+- Improve documentation related to debug mode: [#2014](https://github.com/bookshelf/bookshelf/pull/2014)
+- Add note that count methods return String with Postgres: [#2013](https://github.com/bookshelf/bookshelf/pull/2013)
+- Fix typo in Readme: [#1998](https://github.com/bookshelf/bookshelf/pull/1998)
+- Better Plugin Docs: [#1992](https://github.com/bookshelf/bookshelf/pull/1992), [#1993](https://github.com/bookshelf/bookshelf/pull/1993), [#1996](https://github.com/bookshelf/bookshelf/pull/1996), [#2000](https://github.com/bookshelf/bookshelf/pull/2000)
+
+#### Dependencies
+
+- Update lint-staged to version 9.1.0: [#1994](https://github.com/bookshelf/bookshelf/pull/1994)
+- Update bluebird to 3.5.5: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update lodash to 4.17.14: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update mocha to version 6.1.4: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update mysql to version 2.17.1: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update pg to version 7.11.0: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sinon to version 7.3.2: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sinon-chai to version 3.3.0: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sqlite3 to version 4.0.9: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update uuid to version 3.3.2: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update eslint-config-prettier to 6.0.0: [#1957](https://github.com/bookshelf/bookshelf/pull/1987)
+- Update eslint to version 6.0.0: [#1986](https://github.com/bookshelf/bookshelf/pull/1986)
+
 **0.15.1** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1)
 
 - Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)

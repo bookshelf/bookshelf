@@ -81,9 +81,6 @@ const inherits = require('util').inherits;
 const Events = require('./events');
 const constants = require('../constants');
 
-// List of attributes attached directly from the `options` passed to the constructor.
-const modelProps = ['tableName', 'hasTimestamps'];
-
 /**
  * @class
  * @classdesc
@@ -102,10 +99,16 @@ function ModelBase(attributes, options) {
   this._reset();
   this.relations = {};
   this.cid = _.uniqueId('c');
-  if (options) {
-    _.extend(this, _.pick(options, modelProps));
-    if (options.parse) attrs = this.parse(attrs, options) || {};
+
+  if (options.parse) attrs = this.parse(attrs, options) || {};
+  if (options.visible) this.visible = _.clone(options.visible);
+  if (options.hidden) this.hidden = _.clone(options.hidden);
+  if (typeof options.requireFetch === 'boolean') this.requireFetch = options.requireFetch;
+  if (options.tableName) this.tableName = options.tableName;
+  if (typeof options.hasTimestamps === 'boolean' || Array.isArray(options.hasTimestamps)) {
+    this.hasTimestamps = options.hasTimestamps;
   }
+
   this.set(attrs, options);
   this.initialize.apply(this, arguments);
 }
@@ -175,7 +178,7 @@ ModelBase.prototype.initialize = function() {};
  *
  * @example
  *
- * var Television = bookshelf.Model.extend({
+ * var Television = bookshelf.model('Television', {
  *   tableName: 'televisions'
  * });
  */
@@ -217,9 +220,9 @@ ModelBase.prototype.idAttribute = 'id';
  *
  * @example
  *
- * var MyModel = bookshelf.Model.extend({
+ * var MyModel = bookshelf.model('MyModel', {
  *   defaults: {property1: 'foo', property2: 'bar'},
- *   tableName: 'my_table'
+ *   tableName: 'my_models'
  * })
  *
  * MyModel.forge({property1: 'blah'}).save().then(function(model) {
@@ -227,6 +230,40 @@ ModelBase.prototype.idAttribute = 'id';
  * })
  */
 ModelBase.prototype.defaults = null;
+
+/**
+ * Allows defining the default behavior when there are no results when fetching a model from the
+ * database. This applies only when fetching a single model using {@link Model#fetch fetch} or
+ * {@link Collection#fetchOne}.
+ *
+ * You can override this model option when fetching by passing the `{require: false}` or
+ * `{require: true}` option to any of the fetch methods mentioned above.
+ *
+ * @type {boolean}
+ * @default true
+ * @since 1.0.0
+ * @example
+ *
+ * // Default behavior
+ * const MyModel = bookshelf.model('MyModel', {
+ *   tableName: 'my_models'
+ * })
+ *
+ * new MyModel({id: 1}).fetch().catch(error => {
+ *   // Will throw NotFoundError if there are no results
+ * })
+ *
+ * // Overriding the default behavior
+ * const MyModel = bookshelf.model('MyModel', {
+ *   requireFetch: false,
+ *   tableName: 'my_models'
+ * })
+ *
+ * new MyModel({id: 1}).fetch(model => {
+ *   // model will be null if there are no results
+ })
+ */
+ModelBase.prototype.requireFetch = true;
 
 /**
  * @member {Boolean|Array}
@@ -250,9 +287,9 @@ ModelBase.prototype.defaults = null;
  *
  * @example
  *
- * var MyModel = bookshelf.Model.extend({
+ * var MyModel = bookshelf.model('MyModel', {
  *   hasTimestamps: true,
- *   tableName: 'my_table'
+ *   tableName: 'my_models'
  * })
  *
  * var myModel = MyModel.forge({name: 'blah'}).save().then(function(savedModel) {
@@ -272,6 +309,79 @@ ModelBase.prototype.defaults = null;
  * })
  */
 ModelBase.prototype.hasTimestamps = false;
+
+/**
+ * @member {null|Array}
+ * @default null
+ * @description
+ *
+ * List of model attributes to exclude from the output when serializing it. This works as a
+ * blacklist, and all attributes not present in this list will be shown whan calling
+ * {@link Model#toJSON toJSON}.
+ *
+ * By default this is `null` which means that no attributes will be excluded from the output.
+ *
+ * You can override this list by passing the `{hidden: ['list']}` option directly to the
+ * {@link Model#toJSON toJSON} or {@link Model#serialize serialize} call.
+ *
+ * If both the `hidden` and the {@link Model#visible visible} model properties are set, the
+ * `hidden` list will take precedence.
+ *
+ * @example
+ * const MyModel = bookshelf.model('MyModel', {
+ *   tableName: 'my_models',
+ *   hidden: ['password']
+ * })
+ *
+ * const myModel = MyModel.forge({
+ *   name: 'blah',
+ *   password: 'secure'
+ * }).save().then(function(savedModel) {
+ *   console.log(savedModel.toJSON())
+ *   // {
+ *   //   name: 'blah',
+ *   //   created_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)',
+ *   //   updated_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)'
+ *   // }
+ * })
+ */
+ModelBase.prototype.hidden = null;
+
+/**
+ * @member {null|Array}
+ * @default null
+ * @description
+ *
+ * List of model attributes to include in the output when serializing it. This works as a
+ * whitelist, and all attributes not present in this list will be hidden whan calling
+ * {@link Model#toJSON toJSON}.
+ *
+ * By default this is `null` which means that all attributes will be included in the output.
+ *
+ * You can override this list by passing the `{visible: ['list']}` option directly to the
+ * {@link Model#toJSON toJSON} or {@link Model#serialize serialize} call.
+ *
+ * If both the {@link Model#hidden hidden} and the `visible` model properties are set, the
+ * `hidden` list will take precedence.
+ *
+ * @example
+ * const MyModel = bookshelf.model('MyModel', {
+ *   tableName: 'my_models',
+ *   visible: ['name', 'created_at']
+ * })
+ *
+ * const myModel = MyModel.forge({
+ *   name: 'blah',
+ *   password: 'secure'
+ * }).save().then(function(savedModel) {
+ *   console.log(savedModel.toJSON())
+ *   // {
+ *   //   name: 'blah',
+ *   //   created_at: 'Sun Mar 25 2018 15:07:11 GMT+0100 (WEST)',
+ *   // }
+ * })
+ */
+ModelBase.prototype.visible = null;
 
 /**
  * @method
@@ -321,7 +431,7 @@ ModelBase.prototype.get = function(attr) {
  *
  * @example
  *
- * var Customer = bookshelf.Model.extend({
+ * var Customer = bookshelf.model('Customer', {
  *   idAttribute: 'id',
  *   parse: function(attrs) {
  *     return _.mapKeys(attrs, function(value, key) {
@@ -412,16 +522,17 @@ ModelBase.prototype.isNew = function() {
 };
 
 /**
- * @method
- * @description
- *
  * Return a copy of the model's {@link Model#attributes attributes} for JSON
  * stringification. If the {@link Model model} has any relations defined, this
  * will also call {@link Model#toJSON toJSON} on each of the related
  * objects, and include them on the object unless `{shallow: true}` is
  * passed as an option.
  *
- * `serialize` is called internally by {@link Model#toJSON toJSON}. Override
+ * You can define a whitelist of model attributes to include on the ouput with
+ * the `{visible: ['list', 'of', 'attributes']}` option. The `{hidden: []}`
+ * option produces the opposite effect, hiding attributes from the output.
+ *
+ * This method is called internally by {@link Model#toJSON toJSON}. Override
  * this function if you want to customize its output.
  *
  * @example
@@ -435,30 +546,45 @@ ModelBase.prototype.isNew = function() {
  * console.log(JSON.stringify(artist));
  * // {firstName: "Wassily", lastName: "Kandinsky", birthday: "December 16, 1866"}
  *
- * @param {Object=} options
- * @param {Boolean}    [options.shallow=false]   Exclude relations.
- * @param {Boolean}    [options.omitPivot=false] Exclude pivot values.
+ * @param {Object} [options]
+ * @param {Boolean} [options.shallow=false] Whether to exclude relations from the output or not.
+ * @param {Boolean} [options.omitPivot=false]
+ *   Whether to exclude pivot values from the output or not.
+ * @param {Array} [options.hidden] List of model attributes to exclude from the output.
+ * @param {Array} [options.visible]
+     List of model attributes to include on the output. All other attributes will be hidden.
+ * @param {Boolean} [options.visibility=true]
+ *   Whether to use visibility options or not. If set to `false` the `hidden` and `visible` options
+ *   will be ignored.
  * @returns {Object} Serialized model as a plain object.
  */
 ModelBase.prototype.serialize = function(options) {
   if (!options) options = {};
+  if (options.visibility === null || options.visibility === undefined) options.visibility = true;
 
-  if (options.omitNew &amp;&amp; this.isNew()) {
-    return null;
-  }
+  if (options.omitNew &amp;&amp; this.isNew()) return null;
 
-  if (!options.shallow) {
+  let attributes = Object.assign({}, this.attributes);
+
+  if (options.shallow !== true) {
     let relations = _.mapValues(this.relations, (relation) => (relation.toJSON ? relation.toJSON(options) : relation));
-    // Omit null relations from the omitNew option
     relations = _.omitBy(relations, _.isNull);
 
     const pivot = this.pivot &amp;&amp; !options.omitPivot &amp;&amp; this.pivot.attributes;
     const pivotAttributes = _.mapKeys(pivot, (value, key) => `${constants.PIVOT_PREFIX}${key}`);
 
-    return Object.assign({}, this.attributes, relations, pivotAttributes);
+    attributes = Object.assign(attributes, relations, pivotAttributes);
   }
 
-  return Object.assign({}, this.attributes);
+  if (options.visibility) {
+    const visible = options.visible || this.visible;
+    const hidden = options.hidden || this.hidden;
+
+    if (visible) attributes = _.pick(attributes, visible);
+    if (hidden) attributes = _.omit(attributes, hidden);
+  }
+
+  return attributes;
 };
 
 /**
@@ -527,7 +653,7 @@ ModelBase.prototype.has = function(attr) {
  *
  * @example
  * // Example of a parser to convert snake_case to camelCase, using lodash
- * // This is just an example. You can use the built-in case-converter plugin
+ * // This is just an example. You can use the official case converter plugin
  * // to achieve the same functionality.
  * model.parse = function(attrs) {
  *   return _.mapKeys(attrs, function(value, key) {
@@ -847,22 +973,6 @@ ModelBase.prototype._reset = function() {
 };
 
 /**
- * @method ModelBase#keys
- * @see http://lodash.com/docs/#keys
- */
-/**
- * @method ModelBase#values
- * @see http://lodash.com/docs/#values
- */
-/**
- * @method ModelBase#toPairs
- * @see http://lodash.com/docs/#toPairs
- */
-/**
- * @method ModelBase#invert
- * @see http://lodash.com/docs/#invert
- */
-/**
  * @method ModelBase#pick
  * @see http://lodash.com/docs/#pick
  */
@@ -871,7 +981,7 @@ ModelBase.prototype._reset = function() {
  * @see http://lodash.com/docs/#omit
  */
 // "_" methods that we want to implement on the Model.
-const modelMethods = ['keys', 'values', 'toPairs', 'invert', 'pick', 'omit'];
+const modelMethods = ['pick', 'omit'];
 
 // Mix in each "_" method as a proxy to `Model#attributes`.
 _.each(modelMethods, function(method) {
@@ -890,7 +1000,7 @@ _.each(modelMethods, function(method) {
  * const Promise = require('bluebird')
  * const compare = require('some-crypt-library')
  *
- * const Customer = bookshelf.Model.extend({
+ * const Customer = bookshelf.model('Customer', {
  *   initialize() {
  *     this.constructor.__super__.initialize.apply(this, arguments)
  *
@@ -912,7 +1022,7 @@ _.each(modelMethods, function(method) {
  *       throw new Error('Email and password are both required')
  *
  *     return new this({email: email.toLowerCase()})
- *       .fetch({require: true})
+ *       .fetch()
  *       .tap(function(customer) {
  *         if (!compare(password, customer.get('password'))
  *           throw new Error('Invalid password')
@@ -947,7 +1057,7 @@ module.exports = ModelBase;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

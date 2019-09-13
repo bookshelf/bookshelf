@@ -78,32 +78,26 @@ Maybe you have a TEXT field that is actually a comma separated list of tags, or 
 parse.</p>
 <p>This can be done with the model's <a href="api.html#Model-instance-parse"><code>parse</code></a> and <a href="api.html#Model-instance-format"><code>format</code></a>
 methods:</p>
-<pre class="prettyprint source lang-js"><code>Book = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const Book = bookshelf.model('Book', {
   tableName: 'books',
-  parse: function(response) {
-    if(response.tags)
-      response.tags = JSON.parse(response.tags);
-    return response;
+  parse(response) {
+    if (response.tags) response.tags = JSON.parse(response.tags)
+    return response
   },
-  format: function(attributes) {
-    if(attributes.tags)
-      attributes.tags = JSON.stringify(attributes.tags);
+  format(attributes) {
+    if (attributes.tags) attributes.tags = JSON.stringify(attributes.tags)
     return attributes;
   }
-});</code></pre><p>A very common use case for this is converting camelCase attributes to snake_case column names and vice-versa:</p>
-<pre class="prettyprint source lang-js"><code>Book = bookshelf.Model.extend({
+})</code></pre><p>A very common use case for this is converting camelCase attributes to snake_case column names and vice-versa:</p>
+<pre class="prettyprint source lang-js"><code>const Book = bookshelf.model('Book', {
   tableName: 'books',
-  parse: function(response) {
-    return _.mapKeys(response, function(value, key) {
-      return _.camelCase(key);
-    });
+  parse(response) {
+    return _.mapKeys(response, (value, key) => _.camelCase(key))
   },
-  format: function(attributes) {
-    return _.mapKeys(attributes, function(value, key) {
-      return _.snakeCase(key);
-    });
+  format(attributes) {
+    return _.mapKeys(attributes, (value, key) => _.snakeCase(key))
   }
-});</code></pre></section>
+})</code></pre></section>
   
 </article>
 
@@ -117,7 +111,7 @@ methods:</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

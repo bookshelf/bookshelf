@@ -78,8 +78,12 @@
 
 const _ = require('lodash');
 const Promise = require('bluebird');
-const supportsReturning = (client) => _.includes(['postgresql', 'postgres', 'pg', 'oracle', 'mssql'], client);
 const validLocks = ['forShare', 'forUpdate'];
+
+function supportsReturning(client = {}) {
+  if (!client.config || !client.config.client) return false;
+  return ['postgresql', 'postgres', 'pg', 'oracle', 'mssql'].includes(client.config.client);
+}
 
 // Sync is the dispatcher for any database queries,
 // taking the "syncing" `model` or `collection` being queried, along with
@@ -121,15 +125,16 @@ _.extend(Sync.prototype, {
     // operator.
     //
     // NOTE: `_.omit` returns an empty object, even if attributes are null.
-    const whereAttributes = _.omitBy(attributes, _.isPlainObject);
+    const whereAttributes = _.omitBy(attributes, (attribute, name) => {
+      return _.isPlainObject(attribute) || name === model.idAttribute;
+    });
+    const formattedAttributes = model.format(whereAttributes);
 
-    if (!_.isEmpty(whereAttributes)) {
-      // Format and prefix attributes.
-      const formatted = this.prefixFields(model.format(whereAttributes));
-      query.where(formatted);
+    if (model.idAttribute in attributes) {
+      formattedAttributes[model.idAttribute] = attributes[model.idAttribute];
     }
 
-    // Limit to a single result.
+    if (!_.isEmpty(formattedAttributes)) query.where(this.prefixFields(formattedAttributes));
     query.limit(1);
 
     return this.select();
@@ -250,7 +255,7 @@ _.extend(Sync.prototype, {
          * async behaviour.
          *
          * @example
-         * const MyModel = bookshelf.Model.extend({
+         * const MyModel = bookshelf.model('MyModel', {
          *   initialize() {
          *     this.on('fetching', function(model, columns, options) {
          *       options.query.where('status', 'active')
@@ -278,7 +283,7 @@ _.extend(Sync.prototype, {
     const syncing = this.syncing;
     return this.query.insert(
       syncing.format(_.extend(Object.create(null), syncing.attributes)),
-      supportsReturning(this.query.client.config.client) ? syncing.idAttribute : null
+      supportsReturning(this.query.client) ? '*' : null
     );
   }),
 
@@ -294,6 +299,7 @@ _.extend(Sync.prototype, {
     if (syncing.id === updating[syncing.idAttribute]) {
       delete updating[syncing.idAttribute];
     }
+    if (supportsReturning(query.client)) query.returning('*');
     return query.update(updating);
   }),
 
@@ -328,7 +334,7 @@ module.exports = Sync;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

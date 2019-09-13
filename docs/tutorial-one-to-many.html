@@ -74,34 +74,34 @@
           <article class="tutorial">
   <h2>One-to-many</h2>
   <section class="content"><p>One-to-many associations can be created with <a href="api.html#Model-instance-belongsTo"><code>belongsTo</code></a>, <a href="api.html#Model-instance-hasMany"><code>hasMany</code></a>, <a href="api.html#Model-instance-morphMany"><code>morphMany</code></a> / <a href="api.html#Model-instance-morphTo"><code>morphTo</code></a>, and some of the <a href="api.html#Model-instance-through"><code>through</code></a> relation types.</p>
-<pre class="prettyprint source lang-js"><code>var Book = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const Book = bookshelf.model('Book', {
   tableName: 'books',
-  pages: function() {
-    return this.hasMany(Page);
+  pages() {
+    return this.hasMany('Page')
   }
-});
+})
 
-var Page = bookshelf.Model.extend({
+const Page = bookshelf.model('Page', {
   tableName: 'pages',
-  book: function() {
-    return this.belongsTo(Book);
+  book() {
+    return this.belongsTo('Book')
   }
-});</code></pre><p>A Knex migration for the above relationship could be created with:</p>
-<pre class="prettyprint source lang-js"><code>exports.up = function(knex, Promise) {
+})</code></pre><p>A Knex migration for the above relationship could be created with:</p>
+<pre class="prettyprint source lang-js"><code>exports.up = function(knex) {
   return knex.schema.createTable('books', function(table) {
-    table.increments('id').primary();
-    table.string('name');
+    table.increments('id').primary()
+    table.string('name')
   }).createTable('pages', function(table) {
-    table.increments('id').primary();
-    table.string('content');
+    table.increments('id').primary()
+    table.string('content')
     table.integer('book_id').references('books.id')
-  });
+  })
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('books')
-    .dropTable('pages');
-};</code></pre></section>
+    .dropTable('pages')
+}</code></pre></section>
   
 </article>
 
@@ -115,7 +115,7 @@ exports.down = function(knex, Promise) {
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

@@ -64,7 +64,7 @@
             <h2>Home</h2><ul><li><a href="#introduction">Introduction</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#examples">Examples</a></li>
-<li><a href="#plugins">Plugins</a></li>
+<li><a href="#official-plugins">Official Plugins</a></li>
 <li><a href="#community-plugins">Community plugins</a></li>
 <li><a href="#support">Support</a></li>
 <li><a href="#contributing">Contributing</a></li>
@@ -104,19 +104,19 @@
 <p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
 <p>It is designed to work with PostgreSQL, MySQL, and SQLite3.</p>
 <p><a href="http://bookshelfjs.org">Website and documentation</a>. The project is <a href="http://github.com/bookshelf/bookshelf/">hosted on GitHub</a>, and has a comprehensive <a href="https://travis-ci.org/bookshelf/bookshelf">test suite</a>.</p>
-<h2 id="introduction">Introduction</h2><p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
+<h2 id="introduction">Introduction</h2><p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
 <p>With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.</p>
 <p>It's a lean object-relational mapper, allowing you to drop down to the raw Knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.</p>
 <h2 id="installation">Installation</h2><p>You'll need to install a copy of <a href="http://knexjs.org/">Knex</a>, and either <code>mysql</code>, <code>pg</code>, or <code>sqlite3</code> from npm.</p>
-<pre class="prettyprint source lang-js"><code>$ npm install knex --save
-$ npm install bookshelf --save
+<pre class="prettyprint source lang-js"><code>$ npm install knex
+$ npm install bookshelf
 
 # Then add one of the following:
 $ npm install pg
 $ npm install mysql
-$ npm install mariasql
 $ npm install sqlite3</code></pre><p>The Bookshelf library is initialized by passing an initialized <a href="http://knexjs.org/">Knex</a> client instance. The <a href="http://knexjs.org/">Knex documentation</a> provides a number of examples for different databases.</p>
-<pre class="prettyprint source lang-js"><code>var knex = require('knex')({
+<pre class="prettyprint source lang-js"><code>// Setting up the database connection
+const knex = require('knex')({
   client: 'mysql',
   connection: {
     host     : '127.0.0.1',
@@ -125,94 +125,103 @@ $ npm install sqlite3</code></pre><p>The Bookshelf library is initialized by pas
     database : 'myapp_test',
     charset  : 'utf8'
   }
-});
+})
+const bookshelf = require('bookshelf')(knex)
 
-var bookshelf = require('bookshelf')(knex);
-
-var User = bookshelf.Model.extend({
+// Defining models
+const User = bookshelf.model('User', {
   tableName: 'users'
-});</code></pre><p>This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the <code>bookshelf</code> instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:</p>
-<pre class="prettyprint source lang-js"><code>// In a file named something like bookshelf.js
-var knex = require('knex')(dbConfig);
-module.exports = require('bookshelf')(knex);
+})</code></pre><p>This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the <code>bookshelf</code> instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:</p>
+<pre class="prettyprint source lang-js"><code>// In a file named, e.g. bookshelf.js
+const knex = require('knex')(dbConfig)
+module.exports = require('bookshelf')(knex)
 
 // elsewhere, to use the bookshelf client:
-var bookshelf = require('./bookshelf');
+const bookshelf = require('./bookshelf')
 
-var Post = bookshelf.Model.extend({
+const Post = bookshelf.model('Post', {
   // ...
-});</code></pre><h2 id="examples">Examples</h2><p>Here is an example to get you started:</p>
-<pre class="prettyprint source lang-js"><code>var knex = require('knex')({
+})</code></pre><h2 id="examples">Examples</h2><p>Here is an example to get you started:</p>
+<pre class="prettyprint source lang-js"><code>const knex = require('knex')({
   client: 'mysql',
   connection: process.env.MYSQL_DATABASE_CONNECTION
-});
-var bookshelf = require('bookshelf')(knex);
+})
+const bookshelf = require('bookshelf')(knex)
 
-var User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
-  posts: function() {
-    return this.hasMany(Posts);
+  posts() {
+    return this.hasMany(Posts)
   }
-});
+})
 
-var Posts = bookshelf.Model.extend({
-  tableName: 'messages',
-  tags: function() {
-    return this.belongsToMany(Tag);
+const Post = bookshelf.model('Post', {
+  tableName: 'posts',
+  tags() {
+    return this.belongsToMany(Tag)
   }
-});
+})
 
-var Tag = bookshelf.Model.extend({
+const Tag = bookshelf.model('Tag', {
   tableName: 'tags'
 })
 
-User.where('id', 1).fetch({withRelated: ['posts.tags']}).then(function(user) {
-  console.log(user.related('posts').toJSON());
-}).catch(function(err) {
-  console.error(err);
-});</code></pre><h2 id="plugins">Plugins</h2><ul>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Model-Registry">Registry</a>: Register models in a central location so that you can refer to them using a string in relations instead of having to require it every time. Helps deal with the challenges of circular module dependencies in Node.</li>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Virtuals">Virtuals</a>: Define virtual properties on your model to compute new values.</li>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility">Visibility</a>: Specify a whitelist/blacklist of model attributes when serialized toJSON.</li>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Pagination">Pagination</a>: Adds <code>fetchPage</code> methods to use for pagination in place of <code>fetch</code> and <code>fetchAll</code>.</li>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Case-Converter">Case Converter</a>: Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.</li>
-<li><a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Processor">Processor</a>: Allows defining custom processor functions that handle transformation of values whenever they are <code>.set()</code> on a model.</li>
+new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
+  console.log(user.related('posts').toJSON())
+}).catch((error) => {
+  console.error(error)
+})</code></pre><h2 id="official-plugins">Official Plugins</h2><ul>
+<li><a href="https://github.com/bookshelf/virtuals-plugin">Virtuals</a>: Define virtual properties on your model to compute new values.</li>
+<li><a href="https://github.com/bookshelf/case-converter-plugin">Case Converter</a>: Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.</li>
+<li><a href="https://github.com/bookshelf/processor-plugin">Processor</a>: Allows defining custom processor functions that handle transformation of values whenever they are <code>.set()</code> on a model.</li>
 </ul>
 <h2 id="community-plugins">Community plugins</h2><ul>
 <li><a href="https://github.com/seegno/bookshelf-cascade-delete">bookshelf-cascade-delete</a> - Cascade delete related models on destroy.</li>
 <li><a href="https://github.com/seegno/bookshelf-json-columns">bookshelf-json-columns</a> - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).</li>
-<li><a href="https://github.com/seegno/bookshelf-mask">bookshelf-mask</a> - Similar to <a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility">Visibility</a> but supporting multiple scopes, masking models and collections using the <a href="https://github.com/nemtsov/json-mask">json-mask</a> API.</li>
+<li><a href="https://github.com/seegno/bookshelf-mask">bookshelf-mask</a> - Similar to the functionality of the <a href="api.html#Model-instance-visible"><code>Model#visible</code></a> attribute but supporting multiple scopes, masking models and collections using the <a href="https://github.com/nemtsov/json-mask">json-mask</a> API.</li>
 <li><a href="https://github.com/bogus34/bookshelf-schema">bookshelf-schema</a> - A plugin for handling fields, relations, scopes and more.</li>
 <li><a href="https://github.com/bogus34/bookshelf-signals">bookshelf-signals</a> - A plugin that translates Bookshelf events to a central hub.</li>
 <li><a href="https://github.com/estate/bookshelf-paranoia">bookshelf-paranoia</a> - Protect your database from data loss by soft deleting your rows.</li>
 <li><a href="https://github.com/estate/bookshelf-uuid">bookshelf-uuid</a> - Automatically generates UUIDs for your models.</li>
 <li><a href="https://github.com/bsiddiqui/bookshelf-modelbase">bookshelf-modelbase</a> - An alternative to extend <code>Model</code>, adding timestamps, attribute validation and some native CRUD methods.</li>
 <li><a href="https://github.com/sequiturs/bookshelf-advanced-serialization">bookshelf-advanced-serialization</a> - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.</li>
-<li><a href="https://github.com/popodidi/bookshelf-plugin-mode">bookshelf-plugin-mode</a> - Plugin inspired by <a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a> plugin, providing functionality to specify different modes with corresponding visible/hidden fields of model.</li>
+<li><a href="https://github.com/popodidi/bookshelf-plugin-mode">bookshelf-plugin-mode</a> - Plugin inspired by the functionality of the <a href="api.html#Model-instance-visible"><code>Model#visible</code></a> attribute, allowing to specify different modes with corresponding visible/hidden fields of model.</li>
 <li><a href="https://github.com/venables/bookshelf-secure-password">bookshelf-secure-password</a> - A plugin for easily securing passwords using bcrypt.</li>
-<li><a href="https://github.com/DJAndries/bookshelf-default-select">bookshelf-default-select</a> - Enables default column selection for models. Inspired by <a href="https://github.com/tgriesser/bookshelf/wiki/Plugin:-Visibility">Visibility</a>, but operates on the database level.</li>
+<li><a href="https://github.com/DJAndries/bookshelf-default-select">bookshelf-default-select</a> - Enables default column selection for models. Inspired by the functionality of the <a href="api.html#Model-instance-visible"><code>Model#visible</code></a> attribute, but operates on the database level.</li>
 <li><a href="https://github.com/DJAndries/bookshelf-ez-fetch">bookshelf-ez-fetch</a> - Convenient fetching methods which allow for compact filtering, relation selection and error handling.</li>
 <li><a href="https://github.com/ericclemmons/bookshelf-manager">bookshelf-manager</a> - Model &amp; Collection manager to make it easy to create &amp; save deep, nested JSON structures from API requests.</li>
 </ul>
-<h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a> or in the GitHub <a href="https://github.com/bookshelf/bookshelf/issues">issue tracker</a>.</p>
+<h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a>.</p>
 <h2 id="contributing">Contributing</h2><p>If you want to contribute to Bookshelf you'll usually want to report an issue or submit a
 pull-request. For this purpose the <a href="https://github.com/bookshelf/bookshelf/">online repository</a> is
 available on GitHub.</p>
 <p>For further help setting up your local development environment or learning how you can contribute to
 Bookshelf you should read the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md">Contributing document</a>
 available on GitHub.</p>
-<h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes - you can call <code>.asCallback(function(err, resp) {</code> on any &quot;sync&quot; method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
-<h3 id="my-relations-dont-seem-to-be-loading-whats-up">My relations don't seem to be loading, what's up?</h3><p>Make sure you check that the type is correct for the initial parameters passed to the initial model being fetched. For example <code>new Model({id: '1'}).load([relations...])</code> will not return the same as <code>Model({id: 1}).load([relations...])</code> - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.</p>
-<p>This is only an issue if you're eager loading data with load without first fetching the original model. <code>Model({id: '1'}).fetch({withRelated: [relations...]})</code> should work just fine.</p>
+<h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes, you can call <code>.asCallback(function(err, resp) {</code> on any database operation method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
+<h3 id="my-relations-dont-seem-to-be-loading-whats-up">My relations don't seem to be loading, what's up?</h3><p>Make sure to check that the type is correct for the initial parameters passed to the initial model being fetched. For example <code>new Model({id: '1'}).load([relations...])</code> will not return the same as <code>new Model({id: 1}).load([relations...])</code> - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.</p>
+<p>This is only an issue if you're eager loading data with load without first fetching the original model. <code>new Model({id: '1'}).fetch({withRelated: [relations...]})</code> should work just fine.</p>
 <h3 id="my-process-wont-exit-after-my-script-is-finished-why">My process won't exit after my script is finished, why?</h3><p>The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call <code>.destroy(cb)</code> on the <code>knex</code> property of your <code>Bookshelf</code> instance or on the <code>Knex</code> instance passed during initialization. More information about connection pooling can be found over at the <a href="http://knexjs.org/#Installation-pooling">Knex docs</a>.</p>
-<h3 id="how-do-i-debug">How do I debug?</h3><p>If you pass <code>{debug: true}</code> as one of the options in your initialize settings, you can see all of the query calls being made. Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. I'd recommend <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug code with <code>debugger</code> statements like you would in the browser.</p>
-<p>Bookshelf uses its own copy of the &quot;bluebird&quot; promise library, you can read up here for more on debugging these promises... but in short, adding:</p>
-<pre class="prettyprint source lang-js"><code>process.stderr.on('data', function(data) {
-  console.log(data);
-});</code></pre><p>At the start of your application code will catch any errors not otherwise caught in the normal promise chain handlers, which is very helpful in debugging.</p>
-<h3 id="how-do-i-run-the-test-suite">How do I run the test suite?</h3><p>See the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md#running-the-tests">CONTRIBUTING</a>
+<h3 id="how-do-i-debug">How do I debug?</h3><p>If you pass <code>debug: true</code> in the options object to your <code>knex</code> initialize call, you can see all of the query calls being made. You can also pass that same option to all methods that access the database, like <code>model.fetch()</code> or <code>model.destroy()</code>. Examples:</p>
+<pre class="prettyprint source lang-js"><code>// Turning on debug mode for all queries
+const knex = require('knex')({
+  debug: true,
+  client: 'mysql',
+  connection: process.env.MYSQL_DATABASE_CONNECTION
+})
+const bookshelf = require('bookshelf')(knex)
+
+// Debugging a single query
+new User({id: 1}).fetch({debug: true, withRelated: ['posts.tags']}).then(user => {
+  // ...
+})</code></pre><p>Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. You can use <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug code with <code>debugger</code> statements like you would in the browser.</p>
+<p>Bookshelf uses its own copy of the <code>bluebird</code> Promise library. You can read up <a href="http://bluebirdjs.com/docs/api/promise.config.html">here</a> for more on debugging Promises.</p>
+<p>Adding the following block at the start of your application code will catch any errors not otherwise caught in the normal Promise chain handlers, which is very helpful in debugging:</p>
+<pre class="prettyprint source lang-js"><code>process.stderr.on('data', (data) => {
+  console.log(data)
+})</code></pre><h3 id="how-do-i-run-the-test-suite">How do I run the test suite?</h3><p>See the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md#running-the-tests">CONTRIBUTING</a>
 document on GitHub.</p>
-<h3 id="can-i-use-bookshelf-outside-of-nodejs">Can I use Bookshelf outside of Node.js?</h3><p>While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>.</p>
+<h3 id="can-i-use-bookshelf-outside-of-nodejs">Can I use Bookshelf outside of Node.js?</h3><p>While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>. No such adapter exists though.</p>
 <h3 id="which-opensource-projects-are-using-bookshelf">Which open-source projects are using Bookshelf?</h3><p>We found the following projects using Bookshelf, but there can be more:</p>
 <ul>
 <li><a href="https://ghost.org/">Ghost</a> (A blogging platform) uses bookshelf. [<a href="https://github.com/TryGhost/Ghost/tree/master/core/server/models">Link</a>]</li>
@@ -242,7 +251,45 @@ document on GitHub.</p>
 
 
   <section id="changelog" class="changelog">
-    <h2>Change Log</h2><p><strong>0.15.1</strong> <small><em>Jun 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1">Diff</a></p>
+    <h2>Change Log</h2><p><strong>1.0.0</strong> <small><em>Sep 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0">Diff</a></p>
+<h4>Breaking changes</h4><ul>
+<li>This version requires Node.js 8+ <strong>if</strong> using a Knex version greater than 0.18.4, otherwise Node.js 6 is still supported: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Make <code>require: true</code> the default for Model#fetch: <a href="https://github.com/bookshelf/bookshelf/pull/2006">#2006</a></li>
+<li>Remove some Model and Collection lodash based methods: <a href="https://github.com/bookshelf/bookshelf/pull/2005">#2005</a></li>
+<li>Change Collection#where so it behaves like Model#where: <a href="https://github.com/bookshelf/bookshelf/pull/2001">#2001</a></li>
+<li>Move all plugins to their own repositories: <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a></li>
+<li>Promote some useful plugins to core: <a href="https://github.com/bookshelf/bookshelf/pull/1992">#1992</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1993">#1993</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a></li>
+</ul>
+<h4>Enhancements</h4><ul>
+<li>Refresh model attributes after a save operation: <a href="https://github.com/bookshelf/bookshelf/pull/2012">#2012</a></li>
+</ul>
+<h4>Bug fixes</h4><ul>
+<li>Fix missing columns after save: <a href="https://github.com/bookshelf/bookshelf/pull/2012">#2012</a></li>
+<li>Fix Case Converter plugin overriding any previously defined parse methods: <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a>, <a href="https://github.com/bookshelf/case-converter-plugin/releases/tag/v1.0.0">case-converter-plugin@1.0.0</a></li>
+<li>Fix registry saving models inadvertently across different bookshelf instances: <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a></li>
+</ul>
+<h4>Documentation</h4><ul>
+<li>Add example of how to use custom collections: <a href="https://github.com/bookshelf/bookshelf/pull/2015">#2015</a></li>
+<li>Improve documentation related to debug mode: <a href="https://github.com/bookshelf/bookshelf/pull/2014">#2014</a></li>
+<li>Add note that count methods return String with Postgres: <a href="https://github.com/bookshelf/bookshelf/pull/2013">#2013</a></li>
+<li>Fix typo in Readme: <a href="https://github.com/bookshelf/bookshelf/pull/1998">#1998</a></li>
+<li>Better Plugin Docs: <a href="https://github.com/bookshelf/bookshelf/pull/1992">#1992</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1993">#1993</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a>, <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a></li>
+</ul>
+<h4>Dependencies</h4><ul>
+<li>Update lint-staged to version 9.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1994">#1994</a></li>
+<li>Update bluebird to 3.5.5: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update lodash to 4.17.14: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update mocha to version 6.1.4: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update mysql to version 2.17.1: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update pg to version 7.11.0: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update sinon to version 7.3.2: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update sinon-chai to version 3.3.0: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update sqlite3 to version 4.0.9: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update uuid to version 3.3.2: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
+<li>Update eslint-config-prettier to 6.0.0: <a href="https://github.com/bookshelf/bookshelf/pull/1987">#1957</a></li>
+<li>Update eslint to version 6.0.0: <a href="https://github.com/bookshelf/bookshelf/pull/1986">#1986</a></li>
+</ul>
+<p><strong>0.15.1</strong> <small><em>Jun 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1">Diff</a></p>
 <ul>
 <li>Update husky to version 2.4.1: <a href="https://github.com/bookshelf/bookshelf/pull/1984">#1984</a></li>
 <li>Bump supported knex version to 0.17: <a href="https://github.com/bookshelf/bookshelf/pull/1982">#1982</a></li>
@@ -879,7 +926,7 @@ document on GitHub.</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

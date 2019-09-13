@@ -829,7 +829,7 @@ const PivotHelpers = {
    * belongsToMany} relations, and allows for additional fields to be pulled
    * from the joining table.
    *
-   *     var Tag = bookshelf.Model.extend({
+   *     var Tag = bookshelf.model('Tag', {
    *       comments: function() {
    *         return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
    *       }
@@ -1008,9 +1008,7 @@ const PivotHelpers = {
 
     return joinModel
       .set(fks)
-      .fetch({
-        require: true
-      })
+      .fetch()
       .then(function(instance) {
         if (method === 'delete') {
           return instance.destroy(options);
@@ -1039,7 +1037,7 @@ module.exports = Relation;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

@@ -75,28 +75,28 @@
   <h2>Models</h2>
   <section class="content"><p>Models are the backbone of Bookshelf. They encapsulate most of the functionality that you'll need to work with your
 data.</p>
-<h2>Creating your own Models</h2><p>To create your models you <a href="api.html#Model-static-extend"><code>extend</code></a> them from <a href="api.html#Model"><code>bookshelf.Model</code></a> and add any methods and
-relations that are needed. The first argument to <code>extend()</code> should be an object with the instance methods and properties
-you want to set on your model, and the second argument is only used if you want to add static methods and properties.</p>
+<h2>Creating your own Models</h2><p>To create your models you should use the <a href="api.html#Bookshelf-instance-model"><code>bookshelf.model</code></a> method and add any methods and
+relations that are needed. The first argument to <code>model()</code> should be a string, defining the model's name. The second is
+an object with the instance methods and properties you want to set on your model, and the third argument is only used if
+you want to add static methods and properties.</p>
 <p>The following example sets up a new model that could be used to manage customer sessions on a website.</p>
 <pre class="prettyprint source lang-js"><code>const Promise = require('bluebird')
 const bcrypt = Promise.promisifyAll(require('bcrypt'))
-const Account = require('./account')
 
 // Defining our Customer model
-var Customer = bookshelf.Model.extend({
+const Customer = bookshelf.model('Customer', {
   // Instance properties and methods are defined here
   tableName: 'customers',
 
   account() {
     // This establishes a relation with the Account model
-    return this.belongsTo(Account)
+    return this.belongsTo('Account')
   }
 }, {
   // Static class properties and methods
   login: Promise.method((email, password) => {
     return new this({email})
-      .fetch({require: true})
+      .fetch()
       .tap((customer) => {
         return bcrypt.compareAsync(password, customer.get('password'))
           .then((valid) => {
@@ -105,22 +105,23 @@ var Customer = bookshelf.Model.extend({
       })
   })
 })</code></pre><p>This model could then be used in a controller to login the customer like this:</p>
-<pre class="prettyprint source lang-js"><code>Customer.login(email, password).then((customer) => {
+<pre class="prettyprint source lang-js"><code>const Customer = bookshelf.model('Customer')
+
+Customer.login(email, password).then((customer) => {
   res.json(customer)
 }).catch(Customer.NotFoundError, () => {
   res.json(400, {error: email + ' not found'})
 }).catch((error) => {
   console.error(error)
 })</code></pre><p>Note that this would return the entire <code>customer</code> object including the password. This is usually not desirable, so in
-actual production applications you should use the
-<a href="https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility">visibility plugin</a> to hide certain attributes when
-serializing the model.</p>
+actual production applications you should use the model's <a href="api.html#Model-instance-hidden"><code>Model#hidden</code></a> or <a href="api.html#Model-instance-visible"><code>Model#visible</code></a> properties to
+hide certain attributes when serializing the model.</p>
 <h3>Validation</h3><p>There is no built-in way to validate your models before saving them to the database. However you can use any third-party
 validation library and it should be relatively easy to integrate. Here's an example using
 <a href="https://github.com/tgriesser/checkit">checkit</a>:</p>
 <pre class="prettyprint source lang-js"><code>const checkit = require('checkit')
 
-const Customer = bookshelf.Model.extend({
+const Customer = bookshelf.model('Customer', {
   initialize() {
     this.constructor.__super__.initialize.apply(this, arguments)
     this.on('saving', this.validateSave)
@@ -157,7 +158,7 @@ this see the <a href="tutorial-events.html">Events</a> guide.</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>

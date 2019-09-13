@@ -81,7 +81,7 @@ handlers return Promises, the handlers will wait for the Promise to be resolved 
 the promise is rejected, the process will be interrupted.</p>
 <h3>Listening to events</h3><p>In order to attach an event listener to a model you can do it in the <a href="api.html#Model-instance-initialize"><code>Model's initialize</code></a>
 method like so:</p>
-<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -102,7 +102,7 @@ and the listeners will run sequentially.</p>
 </ul>
 <p>They are fired in this order and it's possible to prevent the request from advancing further by throwing an error or
 returning a rejected Promise from any one of these event listeners, e.g.:</p>
-<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -119,7 +119,7 @@ returning a rejected Promise from any one of these event listeners, e.g.:</p>
   }
 })</code></pre><p>This feature can be used to perform validation before saving a model. For example, checking if an email address
 already exists and preventing the model from being saved if it does:</p>
-<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -144,7 +144,7 @@ already exists and preventing the model from being saved if it does:</p>
 </ul>
 <p>Note that you can get the model's previous attributes after it's destroyed by calling the
 <a href="api.html#Model-instance-previousAttributes"><code>previousAttributes</code></a> method:</p>
-<pre class="prettyprint source lang-js"><code>const User = bookshelf.Model.extend({
+<pre class="prettyprint source lang-js"><code>const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -167,7 +167,7 @@ already exists and preventing the model from being saved if it does:</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
         
           on
-          June 13, 2019
+          September 13, 2019
         
       </div>
     </footer>
