@@ -224,6 +224,12 @@ module.exports = function() {
         deepEqual(json, {id: 1, firstName: 'Joe', lastName: 'Shmoe', address: '123 Main St.'});
       });
       describe('with JSON.stringify', function() {
+        it('serializes correctly', function() {
+          testModel.visible = ['firstName'];
+
+          deepEqual(JSON.stringify(testModel), '{"firstName":"Joe"}');
+        });
+
         it('serializes correctly when placed as object property', function() {
           testModel.visible = ['firstName'];
           var obj = {
