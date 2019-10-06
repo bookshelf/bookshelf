@@ -1,5 +1,34 @@
 ## Change Log
 
+**1.0.1** <small>_Oct 06, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.0...1.0.1)
+
+#### Bug fixes
+
+- Fix JSON.stringify causing TypeError in some cases: [#2029](https://github.com/bookshelf/bookshelf/pull/2029)
+
+#### Documentation
+
+- Add documentation for Model#id: [#2031](https://github.com/bookshelf/bookshelf/pull/2031)
+- Fix number of arguments in Model#save doclet: [#2030](https://github.com/bookshelf/bookshelf/pull/2030)
+
+#### Dependencies
+
+- Update js-yaml to version 3.13.1: [#2023](https://github.com/bookshelf/bookshelf/pull/2023)
+- Update handlebars to version 4.2.1: [#2022](https://github.com/bookshelf/bookshelf/pull/2022)
+- Update uuid to version 3.3.3: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update sqlite3 to version 4.1.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update sinon to 7.4.2: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update prettier to 1.18.2: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update mocha to version 6.2.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update lint-staged to version 9.2.5: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update jsdoc to version 3.6.3: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update husky to version 3.0.5: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-plugin-prettier to version 3.1.1: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-config-prettier to version 6.3.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint to version 6.4.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update chai to 4.2.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-utils from 1.3.1 to 1.4.2: [#2020](https://github.com/bookshelf/bookshelf/pull/2020)
+
 **1.0.0** <small>_Sep 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0)
 
 #### Breaking changes

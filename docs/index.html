@@ -97,24 +97,29 @@
 
 
   <section class="readme">
-    <h1 id="bookshelfjs">bookshelf.js</h1><p><a href="https://www.npmjs.com/package/bookshelf"><img src="https://img.shields.io/npm/v/bookshelf.svg?style=flat" alt="NPM Version"></a>
+    <h1 id="bookshelfjs">bookshelf.js</h1>
+<p><a href="https://www.npmjs.com/package/bookshelf"><img src="https://img.shields.io/npm/v/bookshelf.svg?style=flat" alt="NPM Version"></a>
 <a href="https://travis-ci.org/bookshelf/bookshelf"><img src="https://api.travis-ci.org/bookshelf/bookshelf.svg?branch=master" alt="Build Status"></a>
 <a href="https://david-dm.org/bookshelf/bookshelf"><img src="https://david-dm.org/bookshelf/bookshelf/status.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/bookshelf/bookshelf?type=dev"><img src="https://david-dm.org/bookshelf/bookshelf/dev-status.svg" alt="devDependency Status"></a></p>
 <p>Bookshelf is a JavaScript ORM for Node.js, built on the <a href="http://knexjs.org">Knex</a> SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.</p>
 <p>It is designed to work with PostgreSQL, MySQL, and SQLite3.</p>
 <p><a href="http://bookshelfjs.org">Website and documentation</a>. The project is <a href="http://github.com/bookshelf/bookshelf/">hosted on GitHub</a>, and has a comprehensive <a href="https://travis-ci.org/bookshelf/bookshelf">test suite</a>.</p>
-<h2 id="introduction">Introduction</h2><p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
+<h2 id="introduction">Introduction</h2>
+<p>Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the <a href="http://en.wikipedia.org/wiki/Data_mapper_pattern">Data Mapper Pattern</a>.</p>
 <p>With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.</p>
 <p>It's a lean object-relational mapper, allowing you to drop down to the raw Knex interface whenever you need a custom query that doesn't quite fit with the stock conventions.</p>
-<h2 id="installation">Installation</h2><p>You'll need to install a copy of <a href="http://knexjs.org/">Knex</a>, and either <code>mysql</code>, <code>pg</code>, or <code>sqlite3</code> from npm.</p>
+<h2 id="installation">Installation</h2>
+<p>You'll need to install a copy of <a href="http://knexjs.org/">Knex</a>, and either <code>mysql</code>, <code>pg</code>, or <code>sqlite3</code> from npm.</p>
 <pre class="prettyprint source lang-js"><code>$ npm install knex
 $ npm install bookshelf
 
 # Then add one of the following:
 $ npm install pg
 $ npm install mysql
-$ npm install sqlite3</code></pre><p>The Bookshelf library is initialized by passing an initialized <a href="http://knexjs.org/">Knex</a> client instance. The <a href="http://knexjs.org/">Knex documentation</a> provides a number of examples for different databases.</p>
+$ npm install sqlite3
+</code></pre>
+<p>The Bookshelf library is initialized by passing an initialized <a href="http://knexjs.org/">Knex</a> client instance. The <a href="http://knexjs.org/">Knex documentation</a> provides a number of examples for different databases.</p>
 <pre class="prettyprint source lang-js"><code>// Setting up the database connection
 const knex = require('knex')({
   client: 'mysql',
@@ -131,7 +136,9 @@ const bookshelf = require('bookshelf')(knex)
 // Defining models
 const User = bookshelf.model('User', {
   tableName: 'users'
-})</code></pre><p>This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the <code>bookshelf</code> instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:</p>
+})
+</code></pre>
+<p>This initialization should likely only ever happen once in your application. As it creates a connection pool for the current database, you should use the <code>bookshelf</code> instance returned throughout your library. You'll need to store this instance created by the initialize somewhere in the application so you can reference it. A common pattern to follow is to initialize the client in a module so you can easily reference it later:</p>
 <pre class="prettyprint source lang-js"><code>// In a file named, e.g. bookshelf.js
 const knex = require('knex')(dbConfig)
 module.exports = require('bookshelf')(knex)
@@ -141,7 +148,10 @@ const bookshelf = require('./bookshelf')
 
 const Post = bookshelf.model('Post', {
   // ...
-})</code></pre><h2 id="examples">Examples</h2><p>Here is an example to get you started:</p>
+})
+</code></pre>
+<h2 id="examples">Examples</h2>
+<p>Here is an example to get you started:</p>
 <pre class="prettyprint source lang-js"><code>const knex = require('knex')({
   client: 'mysql',
   connection: process.env.MYSQL_DATABASE_CONNECTION
@@ -170,12 +180,16 @@ new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
   console.log(user.related('posts').toJSON())
 }).catch((error) => {
   console.error(error)
-})</code></pre><h2 id="official-plugins">Official Plugins</h2><ul>
+})
+</code></pre>
+<h2 id="official-plugins">Official Plugins</h2>
+<ul>
 <li><a href="https://github.com/bookshelf/virtuals-plugin">Virtuals</a>: Define virtual properties on your model to compute new values.</li>
 <li><a href="https://github.com/bookshelf/case-converter-plugin">Case Converter</a>: Handles the conversion between the database's snake_cased and a model's camelCased properties automatically.</li>
 <li><a href="https://github.com/bookshelf/processor-plugin">Processor</a>: Allows defining custom processor functions that handle transformation of values whenever they are <code>.set()</code> on a model.</li>
 </ul>
-<h2 id="community-plugins">Community plugins</h2><ul>
+<h2 id="community-plugins">Community plugins</h2>
+<ul>
 <li><a href="https://github.com/seegno/bookshelf-cascade-delete">bookshelf-cascade-delete</a> - Cascade delete related models on destroy.</li>
 <li><a href="https://github.com/seegno/bookshelf-json-columns">bookshelf-json-columns</a> - Parse and stringify JSON columns on save and fetch instead of manually define hooks for each model (PostgreSQL and SQLite).</li>
 <li><a href="https://github.com/seegno/bookshelf-mask">bookshelf-mask</a> - Similar to the functionality of the <a href="api.html#Model-instance-visible"><code>Model#visible</code></a> attribute but supporting multiple scopes, masking models and collections using the <a href="https://github.com/nemtsov/json-mask">json-mask</a> API.</li>
@@ -191,18 +205,25 @@ new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
 <li><a href="https://github.com/DJAndries/bookshelf-ez-fetch">bookshelf-ez-fetch</a> - Convenient fetching methods which allow for compact filtering, relation selection and error handling.</li>
 <li><a href="https://github.com/ericclemmons/bookshelf-manager">bookshelf-manager</a> - Model &amp; Collection manager to make it easy to create &amp; save deep, nested JSON structures from API requests.</li>
 </ul>
-<h2 id="support">Support</h2><p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a>.</p>
-<h2 id="contributing">Contributing</h2><p>If you want to contribute to Bookshelf you'll usually want to report an issue or submit a
+<h2 id="support">Support</h2>
+<p>Have questions about the library? Come join us in the <a href="http://webchat.freenode.net/?channels=bookshelf">#bookshelf freenode IRC channel</a> for support on <a href="http://knexjs.org/">knex.js</a> and bookshelf.js, or post an issue on <a href="http://stackoverflow.com/questions/tagged/bookshelf.js">Stack Overflow</a>.</p>
+<h2 id="contributing">Contributing</h2>
+<p>If you want to contribute to Bookshelf you'll usually want to report an issue or submit a
 pull-request. For this purpose the <a href="https://github.com/bookshelf/bookshelf/">online repository</a> is
 available on GitHub.</p>
 <p>For further help setting up your local development environment or learning how you can contribute to
 Bookshelf you should read the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md">Contributing document</a>
 available on GitHub.</p>
-<h2 id="faq">F.A.Q.</h2><h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3><p>Yes, you can call <code>.asCallback(function(err, resp) {</code> on any database operation method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
-<h3 id="my-relations-dont-seem-to-be-loading-whats-up">My relations don't seem to be loading, what's up?</h3><p>Make sure to check that the type is correct for the initial parameters passed to the initial model being fetched. For example <code>new Model({id: '1'}).load([relations...])</code> will not return the same as <code>new Model({id: 1}).load([relations...])</code> - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.</p>
+<h2 id="faq">F.A.Q.</h2>
+<h3 id="can-i-use-standard-nodejs-style-callbacks">Can I use standard node.js style callbacks?</h3>
+<p>Yes, you can call <code>.asCallback(function(err, resp) {</code> on any database operation method and use the standard <code>(err, result)</code> style callback interface if you prefer.</p>
+<h3 id="my-relations-dont-seem-to-be-loading-whats-up">My relations don't seem to be loading, what's up?</h3>
+<p>Make sure to check that the type is correct for the initial parameters passed to the initial model being fetched. For example <code>new Model({id: '1'}).load([relations...])</code> will not return the same as <code>new Model({id: 1}).load([relations...])</code> - notice that the id is a string in one case and a number in the other. This can be a common mistake if retrieving the id from a url parameter.</p>
 <p>This is only an issue if you're eager loading data with load without first fetching the original model. <code>new Model({id: '1'}).fetch({withRelated: [relations...]})</code> should work just fine.</p>
-<h3 id="my-process-wont-exit-after-my-script-is-finished-why">My process won't exit after my script is finished, why?</h3><p>The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call <code>.destroy(cb)</code> on the <code>knex</code> property of your <code>Bookshelf</code> instance or on the <code>Knex</code> instance passed during initialization. More information about connection pooling can be found over at the <a href="http://knexjs.org/#Installation-pooling">Knex docs</a>.</p>
-<h3 id="how-do-i-debug">How do I debug?</h3><p>If you pass <code>debug: true</code> in the options object to your <code>knex</code> initialize call, you can see all of the query calls being made. You can also pass that same option to all methods that access the database, like <code>model.fetch()</code> or <code>model.destroy()</code>. Examples:</p>
+<h3 id="my-process-wont-exit-after-my-script-is-finished-why">My process won't exit after my script is finished, why?</h3>
+<p>The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call <code>.destroy(cb)</code> on the <code>knex</code> property of your <code>Bookshelf</code> instance or on the <code>Knex</code> instance passed during initialization. More information about connection pooling can be found over at the <a href="http://knexjs.org/#Installation-pooling">Knex docs</a>.</p>
+<h3 id="how-do-i-debug">How do I debug?</h3>
+<p>If you pass <code>debug: true</code> in the options object to your <code>knex</code> initialize call, you can see all of the query calls being made. You can also pass that same option to all methods that access the database, like <code>model.fetch()</code> or <code>model.destroy()</code>. Examples:</p>
 <pre class="prettyprint source lang-js"><code>// Turning on debug mode for all queries
 const knex = require('knex')({
   debug: true,
@@ -214,15 +235,22 @@ const bookshelf = require('bookshelf')(knex)
 // Debugging a single query
 new User({id: 1}).fetch({debug: true, withRelated: ['posts.tags']}).then(user => {
   // ...
-})</code></pre><p>Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. You can use <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug code with <code>debugger</code> statements like you would in the browser.</p>
+})
+</code></pre>
+<p>Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. You can use <a href="https://github.com/dannycoates/node-inspector">node-inspector</a>, which allows you to debug code with <code>debugger</code> statements like you would in the browser.</p>
 <p>Bookshelf uses its own copy of the <code>bluebird</code> Promise library. You can read up <a href="http://bluebirdjs.com/docs/api/promise.config.html">here</a> for more on debugging Promises.</p>
 <p>Adding the following block at the start of your application code will catch any errors not otherwise caught in the normal Promise chain handlers, which is very helpful in debugging:</p>
 <pre class="prettyprint source lang-js"><code>process.stderr.on('data', (data) => {
   console.log(data)
-})</code></pre><h3 id="how-do-i-run-the-test-suite">How do I run the test suite?</h3><p>See the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md#running-the-tests">CONTRIBUTING</a>
+})
+</code></pre>
+<h3 id="how-do-i-run-the-test-suite">How do I run the test suite?</h3>
+<p>See the <a href="https://github.com/bookshelf/bookshelf/blob/master/.github/CONTRIBUTING.md#running-the-tests">CONTRIBUTING</a>
 document on GitHub.</p>
-<h3 id="can-i-use-bookshelf-outside-of-nodejs">Can I use Bookshelf outside of Node.js?</h3><p>While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>. No such adapter exists though.</p>
-<h3 id="which-opensource-projects-are-using-bookshelf">Which open-source projects are using Bookshelf?</h3><p>We found the following projects using Bookshelf, but there can be more:</p>
+<h3 id="can-i-use-bookshelf-outside-of-nodejs">Can I use Bookshelf outside of Node.js?</h3>
+<p>While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom <a href="http://knexjs.org/#Adapters">Knex adapter</a>. No such adapter exists though.</p>
+<h3 id="which-opensource-projects-are-using-bookshelf">Which open-source projects are using Bookshelf?</h3>
+<p>We found the following projects using Bookshelf, but there can be more:</p>
 <ul>
 <li><a href="https://ghost.org/">Ghost</a> (A blogging platform) uses bookshelf. [<a href="https://github.com/TryGhost/Ghost/tree/master/core/server/models">Link</a>]</li>
 <li><a href="http://soapee.com/">Soapee</a> (Soap Making Community and Resources) uses bookshelf. [<a href="https://github.com/nazar/soapee-api/tree/master/src/models">Link</a>]</li>
@@ -251,8 +279,38 @@ document on GitHub.</p>
 
 
   <section id="changelog" class="changelog">
-    <h2>Change Log</h2><p><strong>1.0.0</strong> <small><em>Sep 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0">Diff</a></p>
-<h4>Breaking changes</h4><ul>
+    <h2>Change Log</h2>
+<p><strong>1.0.1</strong> <small><em>Oct 06, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/1.0.0...1.0.1">Diff</a></p>
+<h4>Bug fixes</h4>
+<ul>
+<li>Fix JSON.stringify causing TypeError in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/2029">#2029</a></li>
+</ul>
+<h4>Documentation</h4>
+<ul>
+<li>Add documentation for Model#id: <a href="https://github.com/bookshelf/bookshelf/pull/2031">#2031</a></li>
+<li>Fix number of arguments in Model#save doclet: <a href="https://github.com/bookshelf/bookshelf/pull/2030">#2030</a></li>
+</ul>
+<h4>Dependencies</h4>
+<ul>
+<li>Update js-yaml to version 3.13.1: <a href="https://github.com/bookshelf/bookshelf/pull/2023">#2023</a></li>
+<li>Update handlebars to version 4.2.1: <a href="https://github.com/bookshelf/bookshelf/pull/2022">#2022</a></li>
+<li>Update uuid to version 3.3.3: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update sqlite3 to version 4.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update sinon to 7.4.2: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update prettier to 1.18.2: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update mocha to version 6.2.0: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update lint-staged to version 9.2.5: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update jsdoc to version 3.6.3: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update husky to version 3.0.5: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update eslint-plugin-prettier to version 3.1.1: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update eslint-config-prettier to version 6.3.0: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update eslint to version 6.4.0: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update chai to 4.2.0: <a href="https://github.com/bookshelf/bookshelf/pull/2021">#2021</a></li>
+<li>Update eslint-utils from 1.3.1 to 1.4.2: <a href="https://github.com/bookshelf/bookshelf/pull/2020">#2020</a></li>
+</ul>
+<p><strong>1.0.0</strong> <small><em>Sep 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0">Diff</a></p>
+<h4>Breaking changes</h4>
+<ul>
 <li>This version requires Node.js 8+ <strong>if</strong> using a Knex version greater than 0.18.4, otherwise Node.js 6 is still supported: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
 <li>Make <code>require: true</code> the default for Model#fetch: <a href="https://github.com/bookshelf/bookshelf/pull/2006">#2006</a></li>
 <li>Remove some Model and Collection lodash based methods: <a href="https://github.com/bookshelf/bookshelf/pull/2005">#2005</a></li>
@@ -260,22 +318,26 @@ document on GitHub.</p>
 <li>Move all plugins to their own repositories: <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a></li>
 <li>Promote some useful plugins to core: <a href="https://github.com/bookshelf/bookshelf/pull/1992">#1992</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1993">#1993</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a></li>
 </ul>
-<h4>Enhancements</h4><ul>
+<h4>Enhancements</h4>
+<ul>
 <li>Refresh model attributes after a save operation: <a href="https://github.com/bookshelf/bookshelf/pull/2012">#2012</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix missing columns after save: <a href="https://github.com/bookshelf/bookshelf/pull/2012">#2012</a></li>
 <li>Fix Case Converter plugin overriding any previously defined parse methods: <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a>, <a href="https://github.com/bookshelf/case-converter-plugin/releases/tag/v1.0.0">case-converter-plugin@1.0.0</a></li>
 <li>Fix registry saving models inadvertently across different bookshelf instances: <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Add example of how to use custom collections: <a href="https://github.com/bookshelf/bookshelf/pull/2015">#2015</a></li>
 <li>Improve documentation related to debug mode: <a href="https://github.com/bookshelf/bookshelf/pull/2014">#2014</a></li>
 <li>Add note that count methods return String with Postgres: <a href="https://github.com/bookshelf/bookshelf/pull/2013">#2013</a></li>
 <li>Fix typo in Readme: <a href="https://github.com/bookshelf/bookshelf/pull/1998">#1998</a></li>
 <li>Better Plugin Docs: <a href="https://github.com/bookshelf/bookshelf/pull/1992">#1992</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1993">#1993</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1996">#1996</a>, <a href="https://github.com/bookshelf/bookshelf/pull/2000">#2000</a></li>
 </ul>
-<h4>Dependencies</h4><ul>
+<h4>Dependencies</h4>
+<ul>
 <li>Update lint-staged to version 9.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1994">#1994</a></li>
 <li>Update bluebird to 3.5.5: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
 <li>Update lodash to 4.17.14: <a href="https://github.com/bookshelf/bookshelf/pull/1991">#1991</a></li>
@@ -295,60 +357,73 @@ document on GitHub.</p>
 <li>Bump supported knex version to 0.17: <a href="https://github.com/bookshelf/bookshelf/pull/1982">#1982</a></li>
 </ul>
 <p><strong>0.15.0</strong> <small><em>Jun 13, 2019</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.2...0.15.0">Diff</a></p>
-<h4>Breaking changes</h4><ul>
+<h4>Breaking changes</h4>
+<ul>
 <li>This version requires Node.js 6+</li>
 <li>Remove code that has been deprecated for a long time: <a href="https://github.com/bookshelf/bookshelf/pull/1956">#1956</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li><code>once</code> removes all events after it has been triggered: <a href="https://github.com/bookshelf/bookshelf/pull/1972">#1972</a></li>
 <li>Pagination details are wrong when selecting distinct values of a column: <a href="https://github.com/bookshelf/bookshelf/pull/1950">#1950</a></li>
 <li>Fix missing attributes in some events: <a href="https://github.com/bookshelf/bookshelf/pull/1934">#1934</a></li>
 </ul>
-<h4>Test Suite</h4><ul>
+<h4>Test Suite</h4>
+<ul>
 <li>Fix Docker-compose.yml default postgres user: <a href="https://github.com/bookshelf/bookshelf/pull/1972">#1972</a></li>
 <li>Fix JSON tests on PostgreSQL 10+: <a href="https://github.com/bookshelf/bookshelf/pull/1955">#1955</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Update and fix a lot of doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1951">#1951</a></li>
 <li>Update README.md: <a href="https://github.com/bookshelf/bookshelf/pull/1940">#1940</a></li>
 </ul>
-<h4>Dependencies</h4><ul>
+<h4>Dependencies</h4>
+<ul>
 <li>Update mocha to version 6.1.1: <a href="https://github.com/bookshelf/bookshelf/pull/1968">#1968</a></li>
 <li>Update eslint-config-prettier to 4.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1957">#1957</a></li>
 <li>Update sinon to version 7.2.4: <a href="https://github.com/bookshelf/bookshelf/pull/1947">#1947</a></li>
 <li>Update eslint to version 5.1.0: <a href="https://github.com/bookshelf/bookshelf/pull/1930">#1930</a></li>
 </ul>
 <p><strong>0.14.2</strong> <small><em>Dec 17, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2">Diff</a></p>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix crash when using <code>groupBy</code> with table qualifier in pagination plugin: <a href="https://github.com/bookshelf/bookshelf/pull/1928">#1928</a></li>
 <li>Fix <code>undefined</code> transaction object with Knex 0.15+: <a href="https://github.com/bookshelf/bookshelf/pull/1926">#1926</a></li>
 </ul>
-<h4>Refactoring</h4><ul>
+<h4>Refactoring</h4>
+<ul>
 <li>Refactor logic behind <code>.timestamp()</code>'s decision for when to update the <code>updated_at</code> column: <a href="https://github.com/bookshelf/bookshelf/pull/1892">#1892</a></li>
 </ul>
 <p><strong>0.14.1</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.14.0...0.14.1">Diff</a></p>
-<h4>Enhancements</h4><ul>
+<h4>Enhancements</h4>
+<ul>
 <li>Allow passing custom options to the pagination plugin's internal count method. This is useful for better interoperability with other plugins: <a href="https://github.com/bookshelf/bookshelf/pull/1914">#1914</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix <code>withRelated</code> fetch option not always grouping properly when using binary primary keys: <a href="https://github.com/bookshelf/bookshelf/pull/1918">#1918</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Add a basic Events guide and fix some issues with the events doclets: <a href="https://github.com/bookshelf/bookshelf/pull/1917">#1917</a></li>
 </ul>
 <p><strong>0.14.0</strong> <small><em>Dec 09, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.3...0.14.0">Diff</a></p>
-<h4>Breaking changes</h4><ul>
+<h4>Breaking changes</h4>
+<ul>
 <li>The <code>previous()</code> and <code>previousAttributes()</code> methods were changed so that whenever a model is saved or destroyed the previous attributes are no longer reset to the current attributes. Since the old behavior wasn't very useful it's likely this won't cause issues for many people. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#previous-and-previousattributes">migration guide</a> in case you are affected by this change. <a href="https://github.com/bookshelf/bookshelf/pull/1848">#1848</a></li>
 <li>Fix incorrect results in collection when models have duplicate ids. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#passing-merge-false-remove-false-to-collectionset-and-default-behavior-with-duplicates">migration guide</a> in case you are affected by this. <a href="https://github.com/bookshelf/bookshelf/pull/1846">#1846</a></li>
 <li>Empty <code>hasOne</code> relation will now return <code>null</code> instead of <code>{}</code> when serialized: <a href="https://github.com/bookshelf/bookshelf/pull/1839">#1839</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#return-value-for-empty-hasone-relation">migration guide</a> in the rare event this causes you problems.</li>
 <li>Add more helpful error messages on bad or insufficient <code>morphTo</code> data: <a href="https://github.com/bookshelf/bookshelf/pull/1824">#1824</a>. There's a <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#new-error-messages-on-bad-or-insufficient-morphto-data">migration guide</a> in case you are affected by this.</li>
 <li>Changed the existing functionality so that saving a model that hasn't changed will not update its <code>updated_at</code> attribute: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a>. Checkout the <a href="https://github.com/bookshelf/bookshelf/wiki/Migrating-from-0.13.3-to-0.14.0#saving-a-model-that-hasnt-changed-wont-update-updated_at">migration guide</a> in case you are affected by this.</li>
 </ul>
-<h4>Enhancements</h4><ul>
+<h4>Enhancements</h4>
+<ul>
 <li>Make collections iterable using <code>for ... of</code> loops: <a href="https://github.com/bookshelf/bookshelf/pull/1830">#1830</a></li>
 <li>Add row-level locking options: <a href="https://github.com/bookshelf/bookshelf/pull/1810">#1810</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Return clones of nested objects in <code>previousAttributes()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1876">#1876</a></li>
 <li>Fix incorrect <code>rowCount</code> value when using <code>groupBy</code> with <code>fetchPage()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1852">#1852</a></li>
 <li>Fix eager loading of relations when using <code>parse</code>/<code>format</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1838">#1838</a></li>
@@ -356,12 +431,14 @@ document on GitHub.</p>
 <li>Fix <code>timestamp()</code> setting a key named <code>&quot;null&quot;</code> in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1820">#1820</a></li>
 <li>Fix performance of including relationships: <a href="https://github.com/bookshelf/bookshelf/pull/1800">#1800</a></li>
 </ul>
-<h4>Test Suite</h4><ul>
+<h4>Test Suite</h4>
+<ul>
 <li>Add test to check for adding <code>withRelated</code> inside events: <a href="https://github.com/bookshelf/bookshelf/pull/1853">#1853</a></li>
 <li>Add Node.js 10 to the Travis config: <a href="https://github.com/bookshelf/bookshelf/pull/1829">#1829</a></li>
 <li>Fix incorrect output ordering in tests in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1825">#1825</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Change the JSDoc theme to add a Guides section (this was already released): <a href="https://github.com/bookshelf/bookshelf/pull/1909">#1909</a></li>
 <li>Fix <code>hasOne</code>'s doc: <a href="https://github.com/bookshelf/bookshelf/pull/1890">#1890</a></li>
 <li>Fix many-to-many tutorial code: <a href="https://github.com/bookshelf/bookshelf/pull/1888">#1888</a></li>
@@ -372,7 +449,8 @@ document on GitHub.</p>
 <li>Add note on needing the Pagination plugin to use <code>fetchPage()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1803">#1803</a></li>
 <li>Fix incorrect data types and undocumented Model property: <a href="https://github.com/bookshelf/bookshelf/pull/1797">#1797</a></li>
 </ul>
-<h4>Dependencies</h4><ul>
+<h4>Dependencies</h4>
+<ul>
 <li>Replace turbocolor with colorette: <a href="https://github.com/bookshelf/bookshelf/pull/1904">#1904</a></li>
 <li>Use prettier to format all <code>js</code> and <code>json</code> files: <a href="https://github.com/bookshelf/bookshelf/pull/1883">#1883</a></li>
 <li>Replace chalk with turbocolor: <a href="https://github.com/bookshelf/bookshelf/pull/1878">#1878</a></li>
@@ -381,31 +459,38 @@ document on GitHub.</p>
 <li>Update sinon to the latest version: <a href="https://github.com/bookshelf/bookshelf/pull/1833">#1833</a></li>
 </ul>
 <p><strong>0.13.3</strong> <small><em>Mar 26, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.2...0.13.3">Diff</a></p>
-<h4>Potentially breaking changes</h4><ul>
+<h4>Potentially breaking changes</h4>
+<ul>
 <li>Saving a model that hasn't changed will not update its <code>updated_at</code> attribute. This was included in a patch release because the chances of any applications depending on this behavior are very small: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Clean up automatic timestamps feature: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Expand documentation of the automatic timestamps feature: <a href="https://github.com/bookshelf/bookshelf/pull/1798">#1798</a></li>
 </ul>
 <p><strong>0.13.2</strong> <small><em>Mar 23, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.13.0...0.13.2">Diff</a></p>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix timestamps set with Invalid Date in some cases: <a href="https://github.com/bookshelf/bookshelf/pull/1796">#1796</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Fix incorrect data types and undocumented Model#defaults property: <a href="https://github.com/bookshelf/bookshelf/pull/1797">#1797</a></li>
 </ul>
 <p><strong>0.13.0</strong> <small><em>Mar 18, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.12.1...0.13.0">Diff</a></p>
-<h4>Breaking changes</h4><ul>
+<h4>Breaking changes</h4>
+<ul>
 <li>Make <code>require: true</code> the default when deleting models: <a href="https://github.com/bookshelf/bookshelf/pull/1779">#1779</a></li>
 <li>Remove the second argument to the model's destroyed event handler: <a href="https://github.com/bookshelf/bookshelf/pull/1777">#1777</a></li>
 <li>Events are now triggered sequentially even when the handlers execute asynchronous code: <a href="https://github.com/bookshelf/bookshelf/pull/1768">#1768</a></li>
 <li>Drop support for Node versions older than 4: <a href="https://github.com/bookshelf/bookshelf/pull/1696">#1696</a></li>
 <li>Reorder <code>saving</code> and <code>creating</code> events to reflect the documentation: <a href="https://github.com/bookshelf/bookshelf/pull/1142">#1142</a></li>
 </ul>
-<h4>Enhancements</h4><ul>
+<h4>Enhancements</h4>
+<ul>
 <li>Only request <code>returning</code> attribute if client supports <code>returning</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1770">#1770</a></li>
 <li>Throw error if user doesn't pass a valid Knex instance on initialize: <a href="https://github.com/bookshelf/bookshelf/pull/1756">#1756</a></li>
 <li>Add parameterized virtual properties to virtuals plugin: <a href="https://github.com/bookshelf/bookshelf/pull/1755">#1755</a></li>
@@ -414,30 +499,35 @@ document on GitHub.</p>
 <li>Add <code>withSchema</code> option to all database operations: <a href="https://github.com/bookshelf/bookshelf/pull/1638">#1638</a></li>
 <li>Add a case converter plugin to core: <a href="https://github.com/bookshelf/bookshelf/pull/1093">#1093</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix inconsistent timestamp values between save and fetch: <a href="https://github.com/bookshelf/bookshelf/pull/1784">#1784</a></li>
 <li>Set <code>model.id</code> if attributes being <code>.set()</code> contain a parsed version of <code>idAttribute</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1760">#1760</a></li>
 <li>Fix pagination plugin's <code>fetchPage()</code> ignoring or hanging with transactions: <a href="https://github.com/bookshelf/bookshelf/pull/1625">#1625</a></li>
 <li>Fix <code>fetchPage()</code> from pagination plugin not working for relation collections: <a href="https://github.com/bookshelf/bookshelf/pull/1561">#1561</a></li>
 <li>Don't try to update <code>idAttribute</code> if it hasn't changed: <a href="https://github.com/bookshelf/bookshelf/pull/1260">#1260</a></li>
 </ul>
-<h4>Test suite</h4><ul>
+<h4>Test suite</h4>
+<ul>
 <li>Increase timeout of the large arrays test: <a href="https://github.com/bookshelf/bookshelf/pull/1778">#1778</a></li>
 <li>Add test to verify that <code>parentId</code> is not undefined when using <code>fetchAll</code> with relations: <a href="https://github.com/bookshelf/bookshelf/pull/1769">#1769</a></li>
 <li>Fixes and general improvements to the test suite: <a href="https://github.com/bookshelf/bookshelf/pull/1753">#1753</a></li>
 <li>Remove OracleDB tests: <a href="https://github.com/bookshelf/bookshelf/pull/1744">#1744</a></li>
 <li>Fix invalid test related to dirty attributes: <a href="https://github.com/bookshelf/bookshelf/pull/1312">#1312</a></li>
 </ul>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Improve docs about running tests: <a href="https://github.com/bookshelf/bookshelf/pull/1761">#1761</a></li>
 <li>Fix typo on parse-and-format tutorial: <a href="https://github.com/bookshelf/bookshelf/pull/1748">#1748</a></li>
 <li>Add Bookshelf Manager to list of community plugins: <a href="https://github.com/bookshelf/bookshelf/pull/1747">#1747</a></li>
 </ul>
-<h4>Dependencies</h4><ul>
+<h4>Dependencies</h4>
+<ul>
 <li>Update some dependencies: <a href="https://github.com/bookshelf/bookshelf/pull/1787">#1787</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1782">#1782</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1780">#1780</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1767">#1767</a> <a href="https://github.com/bookshelf/bookshelf/pull/1746">#1746</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1730">#1730</a></li>
 </ul>
 <p><strong>0.12.1</strong> <small><em>Jan 8, 2018</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.12.0...0.12.1">Diff</a></p>
-<h4>Documentation</h4><ul>
+<h4>Documentation</h4>
+<ul>
 <li>Fix incorrect value of second argument to model event handlers: <a href="https://github.com/bookshelf/bookshelf/pull/1723">#1723</a></li>
 <li>Fix incorrect return value from <code>.detach()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1720">#1720</a></li>
 <li>Fix incorrect return value from <code>model.has()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1712">#1712</a></li>
@@ -449,17 +539,20 @@ document on GitHub.</p>
 <li>Add information and examples about calling <code>super()</code> on model's <code>initialize()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1529">#1529</a></li>
 <li>Add npm version badge to readme: <a href="https://github.com/bookshelf/bookshelf/commit/f4dd79267ad8267a7073dd5c9f0661f6591ae96f">f4dd792</a></li>
 </ul>
-<h4>Bug fixes</h4><ul>
+<h4>Bug fixes</h4>
+<ul>
 <li>Fix inability to attach belongsToMany relation to models fetched with <code>fetchAll()</code>: <a href="https://github.com/bookshelf/bookshelf/pull/1716">#1716</a></li>
 <li>Fix foreign key = 0 not fetching related object: <a href="https://github.com/bookshelf/bookshelf/pull/1639">#1639</a></li>
 <li>Fix unparsed <code>previousAttributes</code> for related models: <a href="https://github.com/bookshelf/bookshelf/pull/1457">#1457</a></li>
 </ul>
-<h4>Dependencies</h4><ul>
+<h4>Dependencies</h4>
+<ul>
 <li>Update some dependencies: <a href="https://github.com/bookshelf/bookshelf/pull/1734">#1734</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1733">#1733</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1732">#1732</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1728">#1728</a>, <a href="https://github.com/bookshelf/bookshelf/pull/1726">#1726</a></li>
 </ul>
 <p><strong>0.12.0</strong> <small><em>Nov 27, 2017</em></small> - <a href="https://github.com/bookshelf/bookshelf/compare/0.11.1...0.12.0">Diff</a></p>
 <ul>
-<li>Skip visibility-plugin <code>hidden</code> and <code>visible</code> attributes <a href="https://github.com/bookshelf/bookshelf/pull/1699">#1699</a>.<ul>
+<li>Skip visibility-plugin <code>hidden</code> and <code>visible</code> attributes <a href="https://github.com/bookshelf/bookshelf/pull/1699">#1699</a>.
+<ul>
 <li>Used w/ <code>&lt;model&gt;.toJSON({ visibility: false })</code></li>
 </ul>
 </li>
@@ -471,7 +564,8 @@ document on GitHub.</p>
 </ul>
 <p><strong>0.11.1</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.11.0...0.11.1">Diff</a></p>
 <ul>
-<li>Fixed regression #1691: File missing on <code>postinstall</code><ul>
+<li>Fixed regression #1691: File missing on <code>postinstall</code>
+<ul>
 <li>npm <code>postinstall</code> script can be run as a part of npm <code>prepublish</code> script.</li>
 </ul>
 </li>
@@ -479,14 +573,16 @@ document on GitHub.</p>
 <p><strong>0.11.0</strong> <small><em>Nov 15, 2017</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.10.4...0.11.0">Diff</a></p>
 <ul>
 <li>Moved <code>.babelrc</code> -&gt; <code>src/.babelrc</code> <a href="https://github.com/bookshelf/bookshelf/pull/1470">#1470</a></li>
-<li>Timestamp on save now utilizes a date option for timestamp updates on insert and update. <a href="https://github.com/bookshelf/bookshelf/pull/1592">#1592</a><ul>
+<li>Timestamp on save now utilizes a date option for timestamp updates on insert and update. <a href="https://github.com/bookshelf/bookshelf/pull/1592">#1592</a>
+<ul>
 <li>Used in options on save like so: <code>m.save({item: 'test'}, { date: dateInThePast })</code></li>
 </ul>
 </li>
 <li>Added <code>morphValues</code> for <code>morphTo</code> relation. <a href="https://github.com/bookshelf/bookshelf/pull/1326">#1326</a></li>
 <li>Added ability to also set timestamps as model attributes in save.</li>
 <li>Removed non-production files from packaging / added them to .npmignore <a href="https://github.com/bookshelf/bookshelf/pull/1679">#1679</a></li>
-<li>Development Facing:<ul>
+<li>Development Facing:
+<ul>
 <li>Oracle tests only run when oracle is installed.</li>
 <li>Refactoring on the registry plugin.</li>
 <li>Updated a lot of documents related to repo organization.</li>
@@ -526,9 +622,12 @@ document on GitHub.</p>
 <li>knex instance used by bookshelf may be swapped out.</li>
 </ul>
 <p><strong>0.10.0</strong> — <small><em>Jun 29, 2016</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.9.5...0.10.0">Diff</a></p>
-<h4>Breaking Changes</h4><ul>
-<li>Removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4:<ul>
-<li>Collection Methods<ul>
+<h4>Breaking Changes</h4>
+<ul>
+<li>Removal/renaming of certain lodash functions from Model and Collection that were removed in lodash 4:
+<ul>
+<li>Collection Methods
+<ul>
 <li>removed <code>CollectionBase#collect</code> =&gt; use <code>CollectionBase#map</code> instead</li>
 <li>removed <code>CollectionBase#foldl</code> =&gt; use <code>CollectionBase#reduce</code> instead</li>
 <li>removed <code>CollectionBase#inject</code> =&gt; use <code>CollectionBase#reduce</code> instead</li>
@@ -545,14 +644,16 @@ document on GitHub.</p>
 <li>split <code>CollectionBase#min</code> into <code>CollectionBase#minBy</code> - see the <a href="https://lodash.com/docs/#min">lodash docs</a> for more explanation</li>
 </ul>
 </li>
-<li>Model Methods<ul>
+<li>Model Methods
+<ul>
 <li>renamed <code>ModelBase#pairs</code> =&gt; <code>ModelBase#toPairs</code></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<h4>Other changes</h4><ul>
+<h4>Other changes</h4>
+<ul>
 <li>Update to Lodash 4. #1287</li>
 <li>Registry plugin: Better support for custom relations. #1294</li>
 </ul>
@@ -620,7 +721,8 @@ document on GitHub.</p>
 <li>Allows for select/column calls in the query builder closure, #633.</li>
 <li>Added per-constructor error classes #694 (note: this will not work in CoffeeScript).</li>
 </ul>
-<h4>Breaking Changes</h4><ul>
+<h4>Breaking Changes</h4>
+<ul>
 <li>Removed the <code>__super__</code> internal property on the constructor, this shouldn't have been something you were relying on anyway.</li>
 </ul>
 <p><strong>0.7.9</strong> — <small><em>Oct 28, 2014</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.7.8...0.7.9">Diff</a></p>
@@ -786,12 +888,14 @@ document on GitHub.</p>
 <li>Fixed incorrect eager loading in <code>hasOne</code> relations (#63).</li>
 </ul>
 <p><strong>0.5.0</strong> — <small><em>September 20, 2013</em></small> — <a href="https://github.com/bookshelf/bookshelf/compare/0.3.1...0.5.0">Diff</a></p>
-<h4>Major Breaking Changes</h4><ul>
+<h4>Major Breaking Changes</h4>
+<ul>
 <li>Global state is no longer stored in the library, an instance is returned from <code>Bookshelf.initialize</code>, so you will need to call this once and then reference this <code>Bookshelf</code> client elsewhere in your application.</li>
 <li>Lowercasing of <code>bookshelf.initialize</code>, <code>bookshelf.knex</code>, <code>bookshelf.transaction</code>.</li>
 <li>During the lifecycle events, such as &quot;fetching&quot;, &quot;saving&quot;, or &quot;destroying&quot;, the model no-longer contains the active query builder instance at the time it is saved. If you need to modify the query builder chain inside of an event handler, you may now use <code>options.query</code> inside the event handlers.</li>
 </ul>
-<h4>Other changes</h4><ul>
+<h4>Other changes</h4>
+<ul>
 <li>Added <code>tableName</code> for all queries, so joins use the correct id (#61).</li>
 <li>The <code>attach</code> &amp; <code>detach</code> now remove models from the associated collection, as appropriate (#59).</li>
 <li>A <code>withPivot</code> no longer accepts an object to specify the keys for the returned pivot items, if you wish to specify how these pivot objects are defined on the object, a custom <a href="#Model-toJSON">toJSON</a> is your best bet.</li>
@@ -842,14 +946,23 @@ document on GitHub.</p>
 </ul>
 <p><strong>0.2.2</strong> — <small><em>July 2, 2013</em></small></p>
 <ul>
-<li>The Model's <code>related</code> method is now a no-op if the model doesn't have the related method.</li>
-<li>Any <code>withPivot</code> columns on many-to-many relations are now prefixed with <code>_pivot</code> rather than <code>pivot</code> unless named otherwise, for consistency.</li>
-<li>The <code>_reset</code> is not called until after all triggered events so that <code>hasChanged</code> can be used on the current model state in the &quot;created&quot;, &quot;updated&quot;, &quot;saved&quot;, and &quot;destroyed&quot; events.</li>
-<li>Eager queries may be specified as an object with a function, to constrain the eager queries:</li>
-</ul>
-<pre class="prettyprint source"><code>user.fetch({withRelated: ['accounts', {
+<li>
+<p>The Model's <code>related</code> method is now a no-op if the model doesn't have the related method.</p>
+</li>
+<li>
+<p>Any <code>withPivot</code> columns on many-to-many relations are now prefixed with <code>_pivot</code> rather than <code>pivot</code> unless named otherwise, for consistency.</p>
+</li>
+<li>
+<p>The <code>_reset</code> is not called until after all triggered events so that <code>hasChanged</code> can be used on the current model state in the &quot;created&quot;, &quot;updated&quot;, &quot;saved&quot;, and &quot;destroyed&quot; events.</p>
+</li>
+<li>
+<p>Eager queries may be specified as an object with a function, to constrain the eager queries:</p>
+<p>user.fetch({withRelated: ['accounts', {
 'accounts.settings': function(qb) { qb.where('status', 'enabled'); }
-}, 'other_data']}).then(...</code></pre><p><strong>0.2.1</strong> — <small><em>June 26, 2013</em></small></p>
+}, 'other_data']}).then(...</p>
+</li>
+</ul>
+<p><strong>0.2.1</strong> — <small><em>June 26, 2013</em></small></p>
 <ul>
 <li>Using <code>triggerThen</code> instead of <code>trigger</code> for &quot;created&quot;, &quot;updated&quot;, &quot;saved&quot;, &quot;destroyed&quot;, and &quot;fetched&quot; events - if any async operations are needed <em>after</em> the model is created but before resolving the original promise.</li>
 </ul>
@@ -923,10 +1036,10 @@ document on GitHub.</p>
     <footer>
       <div>
         Documentation generated by
-        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          September 13, 2019
+          October 6, 2019
         
       </div>
     </footer>
