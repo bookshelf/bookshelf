@@ -794,6 +794,15 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('fetches a single page of results without pagination', function() {
+        return Models.Customer.forge()
+          .fetchPage({disableCount: true})
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.not.have.property('pagination');
+          });
+      });
+
       it('returns an empty collection if there are no results', function() {
         return bookshelf
           .knex('critics_comments')
