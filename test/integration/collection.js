@@ -121,17 +121,6 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('fetches a page from a relation collection without pagination', function() {
-        return Models.User.forge({uid: 1})
-          .roles()
-          .fetchPage({disableCount: true})
-          .then(function(results) {
-            expect(results.length).to.equal(2);
-            expect(results).to.have.property('models');
-            expect(results).to.not.have.property('pagination');
-          });
-      });
-
       it('fetches a page from a relation collection with additional condition', function() {
         return Models.User.forge({uid: 1})
           .roles()
