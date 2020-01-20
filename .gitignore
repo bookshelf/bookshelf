@@ -6,3 +6,4 @@ npm-debug.log
 tmp
 coverage/
 .jsdoc-temp/
+.nyc_output
