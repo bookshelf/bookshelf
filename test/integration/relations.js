@@ -1398,8 +1398,8 @@ module.exports = function(Bookshelf) {
 
     describe('Binary ID relations', function() {
       it('should group relations properly with binary ID columns', function() {
-        const critic1Id = new Buffer('93', 'hex');
-        const critic2Id = new Buffer('90', 'hex');
+        const critic1Id = Buffer.from('93', 'hex');
+        const critic2Id = Buffer.from('90', 'hex');
         const critic1 = new Critic({id: critic1Id, name: '1'});
         const critic2 = new Critic({id: critic2Id, name: '2'});
         const comment1 = new CriticComment({critic_id: critic1Id, comment: 'c1-1'});

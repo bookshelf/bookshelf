@@ -148,17 +148,20 @@ module.exports = function() {
       });
 
       it('should delete old models and add new ones by default', function() {
-        collection.set([{some_id: 1, name: 'Item 1'}, {some_id: 2, name: 'Item 2'}]);
+        collection.set([
+          {some_id: 1, name: 'Item 1'},
+          {some_id: 2, name: 'Item 2'}
+        ]);
         equal(collection.length, 2);
         equal(collection.at(0).get('name'), 'Item 1');
         equal(collection.at(1).get('name'), 'Item 2');
       });
 
       it('should delete old models and add new ones with similar binary IDs', function() {
-        collection = new Collection([{some_id: new Buffer('90', 'hex'), name: 'Test'}, {name: 'No Id'}]);
+        collection = new Collection([{some_id: Buffer.from('90', 'hex'), name: 'Test'}, {name: 'No Id'}]);
         collection.set([
-          {some_id: new Buffer('90', 'hex'), name: 'Item 1'},
-          {some_id: new Buffer('93', 'hex'), name: 'Item 2'}
+          {some_id: Buffer.from('90', 'hex'), name: 'Item 1'},
+          {some_id: Buffer.from('93', 'hex'), name: 'Item 2'}
         ]);
         equal(collection.length, 2);
         equal(collection.at(0).get('name'), 'Item 1');
@@ -172,7 +175,10 @@ module.exports = function() {
       });
 
       it('should merge duplicate models in the new set', function() {
-        collection.set([{some_id: 1, name: 'Not Test'}, {some_id: 1, name: 'Not Test As Well'}]);
+        collection.set([
+          {some_id: 1, name: 'Not Test'},
+          {some_id: 1, name: 'Not Test As Well'}
+        ]);
         expect(collection.at(0).get('name')).to.equal('Not Test As Well');
         expect(collection.toJSON().length).to.equal(collection.length);
         expect(collection.length).to.equal(1);
