@@ -794,6 +794,23 @@ module.exports = function(bookshelf) {
           });
       });
 
+      it('fetches a single page of results without returning rowCount or pageCount', function() {
+        return Models.Customer.forge()
+          .fetchPage({disableCount: true})
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+
+            expect(results.pagination).to.have.property('page');
+            expect(results.pagination).to.have.property('pageSize');
+            expect(results.pagination).to.not.have.property('rowCount');
+            expect(results.pagination).to.not.have.property('pageCount');
+
+            expect(results.pagination.page).to.equal(1);
+            expect(results.pagination.pageSize).to.equal(10);
+          });
+      });
+
       it('returns an empty collection if there are no results', function() {
         return bookshelf
           .knex('critics_comments')
