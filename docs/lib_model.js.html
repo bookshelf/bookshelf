@@ -672,6 +672,8 @@ const BookshelfModel = ModelBase.extend(
      *   `offset` option.
      * @param {number} [options.offset]
      *   Index to begin fetching results from. The default and initial value is `0`. Used only with the `limit` option.
+     * @param {boolean} [options.disableCount=false]
+     *   Whether to disable the query for counting how many records are in the full result.
      * @param {boolean} [options.debug=false]
      *   Whether to enable debugging mode or not. When enabled will show information about the
      *   queries being run.
@@ -1654,7 +1656,7 @@ module.exports = BookshelfModel;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          October 6, 2019
+          January 31, 2020
         
       </div>
     </footer>

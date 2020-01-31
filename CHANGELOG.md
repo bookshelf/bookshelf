@@ -1,5 +1,20 @@
 ## Change Log
 
+**1.1.0** <small>_Jan 31, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.1...1.1.0)
+
+#### Features
+
+- Add option to disable the count information in `fetchPage`: [#2045](https://github.com/bookshelf/bookshelf/pull/2045)
+
+#### Tests
+
+- Small refactor to some tests: [#2050](https://github.com/bookshelf/bookshelf/pull/2050)
+
+#### Dependencies
+
+- Update some dependencies to their latest versions: [#2053](https://github.com/bookshelf/bookshelf/pull/2053)
+- Update Knex to version 0.20.8: [#2049](https://github.com/bookshelf/bookshelf/pull/2049)
+
 **1.0.1** <small>_Oct 06, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.0...1.0.1)
 
 #### Bug fixes

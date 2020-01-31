@@ -780,7 +780,10 @@ ModelBase.prototype.related = function(name) {
  */
 ModelBase.prototype.clone = function() {
   const model = new this.constructor(this.attributes);
-  Object.assign(model.relations, _.mapValues(this.relations, (r) => r.clone()));
+  Object.assign(
+    model.relations,
+    _.mapValues(this.relations, (r) => r.clone())
+  );
   model._previousAttributes = _.clone(this._previousAttributes);
   model.changed = _.clone(this.changed);
   return model;
@@ -1082,7 +1085,7 @@ module.exports = ModelBase;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          October 6, 2019
+          January 31, 2020
         
       </div>
     </footer>

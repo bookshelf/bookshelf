@@ -1959,7 +1959,7 @@ the number of records.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
-          <a href="lib_base_model.js.html#line944" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line947" class="source-link">source</a>
         </h4>
 
         
@@ -4021,7 +4021,7 @@ model.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-count">count</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">column</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<number|string></span>
-          <a href="lib_model.js.html#line770" class="source-link">source</a>
+          <a href="lib_model.js.html#line772" class="source-link">source</a>
         </h4>
 
         
@@ -4228,7 +4228,7 @@ the default string parser like this:</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="api.html#Model">Model</a>></span>
-          <a href="lib_model.js.html#line1237" class="source-link">source</a>
+          <a href="lib_model.js.html#line1239" class="source-link">source</a>
         </h4>
 
         
@@ -4594,7 +4594,7 @@ removal is completed.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-fetch">fetch</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="api.html#Model">Model</a>|null></span>
-          <a href="lib_model.js.html#line611" class="source-link">source</a>
+          <a href="lib_model.js.html#line613" class="source-link">source</a>
         </h4>
 
         
@@ -4928,7 +4928,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-fetchAll">fetchAll</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise</span>
-          <a href="lib_model.js.html#line809" class="source-link">source</a>
+          <a href="lib_model.js.html#line811" class="source-link">source</a>
         </h4>
 
         
@@ -5298,6 +5298,24 @@ is number <code>1</code>. Used only with the <code>pageSize</code> option.</p>
 
       <div class="description">
         <p>Index to begin fetching results from. The default and initial value is <code>0</code>. Used only with the <code>limit</code> option.</p>
+        
+      </div>
+
+    </li>
+  
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">disableCount</span><span class="default-value"><span class="default-equals">=</span><span class="default-value">false</span></span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >boolean</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Whether to disable the query for counting how many records are in the full result.</p>
         
       </div>
 
@@ -5830,7 +5848,7 @@ opposite operation of <code>format</code>.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Boolean</span>
-          <a href="lib_base_model.js.html#line832" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line835" class="source-link">source</a>
         </h4>
 
         
@@ -6462,7 +6480,7 @@ considered &quot;new&quot;.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-load">load</a></span><span class="parenthesis">(</span><span class="item-name">relations</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="api.html#Model">Model</a>></span>
-          <a href="lib_model.js.html#line879" class="source-link">source</a>
+          <a href="lib_model.js.html#line881" class="source-link">source</a>
         </h4>
 
         
@@ -7658,7 +7676,7 @@ for a combination of all events.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1416" class="source-link">source</a>
+          <a href="lib_model.js.html#line1418" class="source-link">source</a>
         </h4>
 
         
@@ -7955,7 +7973,7 @@ opposite operation of <code>parse</code>.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
-          <a href="lib_base_model.js.html#line867" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line870" class="source-link">source</a>
         </h4>
 
         
@@ -8107,7 +8125,7 @@ changed. If you want to check if an attribute has changed see the
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
-          <a href="lib_base_model.js.html#line907" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line910" class="source-link">source</a>
         </h4>
 
         
@@ -8239,7 +8257,7 @@ the model and it hasn't been fetched, saved or eager loaded.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a>|QueryBuilder</span>
-          <a href="lib_model.js.html#line1338" class="source-link">source</a>
+          <a href="lib_model.js.html#line1340" class="source-link">source</a>
         </h4>
 
         
@@ -8702,7 +8720,7 @@ method and adds it to the relations hash if one exists and has not yet been load
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a></span>
-          <a href="lib_model.js.html#line1325" class="source-link">source</a>
+          <a href="lib_model.js.html#line1327" class="source-link">source</a>
         </h4>
 
         
@@ -8807,7 +8825,7 @@ by <code>Sync</code></p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-save">save</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attrs</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="api.html#Model">Model</a>></span>
-          <a href="lib_model.js.html#line932" class="source-link">source</a>
+          <a href="lib_model.js.html#line934" class="source-link">source</a>
         </h4>
 
         
@@ -9885,7 +9903,7 @@ chapter. See the example above on how this can be expressed.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
-          <a href="lib_base_model.js.html#line782" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line785" class="source-link">source</a>
         </h4>
 
         
@@ -10554,7 +10572,7 @@ column in the database record, set the attribute value to <code>null</code> inst
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a></span>
-          <a href="lib_model.js.html#line1386" class="source-link">source</a>
+          <a href="lib_model.js.html#line1388" class="source-link">source</a>
         </h4>
 
         
@@ -10891,7 +10909,7 @@ returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1206" class="source-link">source</a>
+          <a href="lib_model.js.html#line1208" class="source-link">source</a>
         </h4>
 
         
@@ -11042,7 +11060,7 @@ returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1113" class="source-link">source</a>
+          <a href="lib_model.js.html#line1115" class="source-link">source</a>
         </h4>
 
         
@@ -11238,7 +11256,7 @@ async behaviour. Throwing an exception from the handler will cancel the save pro
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1308" class="source-link">source</a>
+          <a href="lib_model.js.html#line1310" class="source-link">source</a>
         </h4>
 
         
@@ -11390,7 +11408,7 @@ handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1282" class="source-link">source</a>
+          <a href="lib_model.js.html#line1284" class="source-link">source</a>
         </h4>
 
         
@@ -11543,7 +11561,7 @@ will reject the promise and cancel the deletion.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-fetched">"fetched"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">response</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line735" class="source-link">source</a>
+          <a href="lib_model.js.html#line737" class="source-link">source</a>
         </h4>
 
         
@@ -11925,7 +11943,7 @@ async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1193" class="source-link">source</a>
+          <a href="lib_model.js.html#line1195" class="source-link">source</a>
         </h4>
 
         
@@ -12076,7 +12094,7 @@ async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1093" class="source-link">source</a>
+          <a href="lib_model.js.html#line1095" class="source-link">source</a>
         </h4>
 
         
@@ -12274,7 +12292,7 @@ save process.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1219" class="source-link">source</a>
+          <a href="lib_model.js.html#line1221" class="source-link">source</a>
         </h4>
 
         
@@ -12425,7 +12443,7 @@ save process.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1130" class="source-link">source</a>
+          <a href="lib_model.js.html#line1132" class="source-link">source</a>
         </h4>
 
         
@@ -12622,7 +12640,7 @@ async behaviour. Throwing an exception from the handler will cancel the save pro
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-instance-fetched:collection">"fetched:collection"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">collection</span><span class="comma">, </span><span class="item-name">response</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line860" class="source-link">source</a>
+          <a href="lib_model.js.html#line862" class="source-link">source</a>
         </h4>
 
         
@@ -12793,7 +12811,7 @@ may be returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-instance-fetching:collection">"fetching:collection"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">collection</span><span class="comma">, </span><span class="item-name">columns</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line841" class="source-link">source</a>
+          <a href="lib_model.js.html#line843" class="source-link">source</a>
         </h4>
 
         
@@ -12991,7 +13009,7 @@ may be returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1544" class="source-link">source</a>
+          <a href="lib_model.js.html#line1546" class="source-link">source</a>
         </h4>
 
         
@@ -13128,7 +13146,7 @@ unless called with the <code>{require: false}</code> option.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1536" class="source-link">source</a>
+          <a href="lib_model.js.html#line1538" class="source-link">source</a>
         </h4>
 
         
@@ -13265,7 +13283,7 @@ unless called with the <code>{require: false}</code> option.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1527" class="source-link">source</a>
+          <a href="lib_model.js.html#line1529" class="source-link">source</a>
         </h4>
 
         
@@ -21287,7 +21305,7 @@ async event handlers (e.g. for validations).</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          October 6, 2019
+          January 31, 2020
         
       </div>
     </footer>
