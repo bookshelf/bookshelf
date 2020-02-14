@@ -49,6 +49,25 @@ module.exports = function() {
           });
         });
       });
+
+      describe('when the save method is insert', () => {
+        it('should not call model.parse with a non-object argument', () => {
+          const model = new Model();
+          model.id = '12345';
+          model.sync = () => {
+            return {
+              insert: () => {
+                return Promise.resolve(['12345']);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'insert'}).then(function() {
+            expect(parse).not.to.have.been.calledWith('12345');
+          });
+        });
+      });
     });
 
     describe('#timestamp()', function() {
