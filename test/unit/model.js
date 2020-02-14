@@ -31,6 +31,24 @@ module.exports = function() {
           equal(_.difference(Object.keys(options), ['query']).length, 0);
         });
       });
+
+      describe('when the save method is update', () => {
+        it('should not call model.parse with a non-object argument', () => {
+          const model = new Model();
+          model.sync = () => {
+            return {
+              update: () => {
+                return Promise.resolve(1);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'update'}).then(function() {
+            expect(parse).not.to.have.been.calledWith(undefined);
+          });
+        });
+      });
     });
 
     describe('#timestamp()', function() {
