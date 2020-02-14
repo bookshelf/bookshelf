@@ -48,6 +48,23 @@ module.exports = function() {
             expect(parse).not.to.have.been.calledWith(undefined);
           });
         });
+
+        it('should merge the updated attributes on the existing model', () => {
+          const model = new Model({oldProp: 'b'});
+          model.sync = () => {
+            return {
+              update: () => {
+                return Promise.resolve([{newProp: 'a'}]);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'update'}).then(function(updatedModel) {
+            expect(parse).to.have.been.calledWith({newProp: 'a'});
+            expect(updatedModel.toJSON()).to.eql({oldProp: 'b', newProp: 'a'});
+          });
+        });
       });
 
       describe('when the save method is insert', () => {
