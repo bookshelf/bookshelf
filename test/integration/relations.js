@@ -1503,6 +1503,8 @@ module.exports = function(Bookshelf) {
       });
 
       it('should correctly set query on fetching with morphTo', async function() {
+        // Execute a query that will trigger fetching events
+        // These have assertions
         return Notification.forge().fetchAll({withRelated: 'notifiable.author'});
       });
     });
