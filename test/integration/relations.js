@@ -1425,5 +1425,20 @@ module.exports = function(Bookshelf) {
           });
       });
     });
+
+    describe('PR #2059 - opts.query on fetching with morphTo', function() {
+      it('should correctly set query on fetching with morphTo', async function() {
+        const {Photo} = objs.generateEventModels({
+          fetching: function(table, model, columns, options) {
+            // Check that options.query actually queries this table
+            equal(options.query._single.table, table);
+          }
+        });
+
+        // Execute a query that will trigger fetching events
+        // These have assertions
+        return Photo.forge().fetchAll({withRelated: 'imageable'});
+      });
+    });
   });
 };
