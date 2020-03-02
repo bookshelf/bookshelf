@@ -1427,85 +1427,17 @@ module.exports = function(Bookshelf) {
     });
 
     describe('PR #2059 - opts.query on fetching with morphTo', function() {
-      const knex = Bookshelf.knex;
-
-      var Notification = Bookshelf.Model.extend({
-        tableName: 'notifications',
-        notifiable: function() {
-          return this.morphTo('notifiable', Comment, Application);
-        }
-      });
-
-      var Comment = Bookshelf.Model.extend({
-        tableName: 'comments',
-        author: function() {
-          return this.belongsTo(User);
-        },
-        initialize: function() {
-          this.constructor.__super__.initialize.apply(this, arguments);
-          this.on('fetching', function(model, columns, options) {
-            // Check that options.query actually queries this table
-            equal(options.query._single.table, 'comments');
-          });
-        }
-      });
-
-      var User = Bookshelf.Model.extend({
-        tableName: 'users'
-      });
-
-      var Application = Bookshelf.Model.extend({
-        tableName: 'applications',
-        initialize: function() {
-          this.constructor.__super__.initialize.apply(this, arguments);
-          this.on('fetching', function(model, columns, options) {
-            // Check that options.query actually queries this table
-            equal(options.query._single.table, 'applications');
-          });
-        }
-      });
-
-      before(async function() {
-        await knex.schema.dropTableIfExists('notifications');
-        await knex.schema.dropTableIfExists('comments');
-        await knex.schema.dropTableIfExists('applications');
-
-        await knex.schema.createTable('notifications', (t) => {
-          t.increments();
-          t.string('notifiable_type');
-          t.integer('notifiable_id');
-        });
-
-        await knex.schema.createTable('comments', (t) => {
-          t.increments();
-        });
-
-        await knex.schema.createTable('applications', (t) => {
-          t.increments();
-        });
-
-        await knex('notifications').insert([
-          {
-            notifiable_type: 'comments',
-            notifiable_id: 1
-          },
-          {
-            notifiable_type: 'applications',
-            notifiable_id: 1
-          }
-        ]);
-      });
-
-      after(async function() {
-        await knex.schema.dropTable('notifications');
-        await knex.schema.dropTable('comments');
-        await knex.schema.dropTable('applications');
-      });
-
       it('should correctly set query on fetching with morphTo', async function() {
+        const {Photo} = objs.generateEventModels({
+          fetching: function(table, model, columns, options) {
+            // Check that options.query actually queries this table
+            equal(options.query._single.table, table);
+          }
+        });
+
         // Execute a query that will trigger fetching events
         // These have assertions
-        return Notification.forge().fetchAll({withRelated: 'notifiable.author'});
+        return Photo.forge().fetchAll({withRelated: 'imageable'});
       });
     });
   });
