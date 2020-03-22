@@ -31,6 +31,60 @@ module.exports = function() {
           equal(_.difference(Object.keys(options), ['query']).length, 0);
         });
       });
+
+      describe('when the save method is update', () => {
+        it('should not call model.parse with a non-object argument', () => {
+          const model = new Model();
+          model.sync = () => {
+            return {
+              update: () => {
+                return Promise.resolve(1);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'update'}).then(function() {
+            expect(parse).not.to.have.been.calledWith(undefined);
+          });
+        });
+
+        it('should merge the updated attributes on the existing model', () => {
+          const model = new Model({oldProp: 'b'});
+          model.sync = () => {
+            return {
+              update: () => {
+                return Promise.resolve([{newProp: 'a'}]);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'update'}).then(function(updatedModel) {
+            expect(parse).to.have.been.calledWith({newProp: 'a'});
+            expect(updatedModel.toJSON()).to.eql({oldProp: 'b', newProp: 'a'});
+          });
+        });
+      });
+
+      describe('when the save method is insert', () => {
+        it('should not call model.parse with a non-object argument', () => {
+          const model = new Model();
+          model.id = '12345';
+          model.sync = () => {
+            return {
+              insert: () => {
+                return Promise.resolve(['12345']);
+              }
+            };
+          };
+          model.refresh = () => Promise.resolve({});
+          const parse = sinon.spy(model, 'parse');
+          return model.save(null, {method: 'insert'}).then(function() {
+            expect(parse).not.to.have.been.calledWith('12345');
+          });
+        });
+      });
     });
 
     describe('#timestamp()', function() {
