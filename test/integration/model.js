@@ -1777,6 +1777,37 @@ module.exports = function(bookshelf) {
               expect(updatedAdmin.get('created_at')).to.be.not.eql(oldCreatedAt);
             });
         });
+
+        it('saves correct attributes when modified inside event hook', function() {
+          var author = new Models.Author({
+            site_id: 1,
+            first_name: 'donny',
+            last_name: 'immutable'
+          });
+
+          return author
+            .save()
+            .then(() => {
+              var onSaving = function() {
+                // don't allow modification of 'last_name' field
+                this.attributes = this.pick(['id', 'site_id', 'first_name']);
+              };
+
+              author.on('saving', function() {
+                onSaving.apply(this, arguments);
+              });
+
+              return author.save({first_name: 'tony', last_name: 'ravioli'});
+            })
+            .then(() => {
+              return author.refresh();
+            })
+            .then(() => {
+              expect(author.get('first_name')).to.equal('tony');
+              expect(author.get('last_name')).to.equal('immutable');
+              return author.destroy();
+            });
+        });
       });
 
       describe('On insert', function() {
