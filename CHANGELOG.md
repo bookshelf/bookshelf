@@ -1,5 +1,11 @@
 ## Change Log
 
+**0.15.2** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...0.15.2)
+
+#### Bug fixes
+
+- Fix attributes that are changed during event hook not being persisted: [#2063](https://github.com/bookshelf/bookshelf/pull/2063)
+
 **0.15.1** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1)
 
 - Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)

@@ -366,10 +366,10 @@ databases.</p></div>
 
       <div class="description">
         <p>The plugin or plugins to add. If you provide a string it can
-   represent a built-in plugin, an npm package or a file somewhere on
-   your project. You can also pass a function as argument to add it as a
-   plugin. Finally, it's also possible to pass an array of strings or
-   functions to add them all at once.</p>
+represent a built-in plugin, an npm package or a file somewhere on
+your project. You can also pass a function as argument to add it as a
+plugin. Finally, it's also possible to pass an array of strings or
+functions to add them all at once.</p>
         
       </div>
 
@@ -388,7 +388,7 @@ databases.</p></div>
 
       <div class="description">
         <p>This can be anything you want and it will be passed directly to the
-   plugin as the second argument when loading it.</p>
+plugin as the second argument when loading it.</p>
         
       </div>
 
@@ -456,14 +456,18 @@ to load. In this case it will try to find a module. It will first check
 for a match within the <code>bookshelf/plugins</code> directory. If nothing is
 found it will pass the string to <code>require()</code>, so you can either require
 an npm dependency by name or one of your own modules by relative path:</p>
-<pre class="prettyprint source"><code>bookshelf.plugin('./bookshelf-plugins/my-favourite-plugin');
-bookshelf.plugin('plugin-from-npm');</code></pre><p>There are a few built-in plugins already, along with many independently
+<pre><code>bookshelf.plugin('./bookshelf-plugins/my-favourite-plugin');
+bookshelf.plugin('plugin-from-npm');
+</code></pre>
+<p>There are a few built-in plugins already, along with many independently
 developed ones. See <a href="#plugins">the list of available plugins</a>.</p>
 <p>You can also provide an array of strings or functions, which is the same
 as calling <code>bookshelf.plugin()</code> multiple times. In this case the same
 options object will be reused:</p>
-<pre class="prettyprint source"><code>  bookshelf.plugin(['registry', './my-plugins/special-parse-format']);</code></pre><p>Example plugin:</p>
-<pre class="prettyprint source"><code>// Converts all string values to lower case when setting attributes on a model
+<pre><code>  bookshelf.plugin(['registry', './my-plugins/special-parse-format']);
+</code></pre>
+<p>Example plugin:</p>
+<pre><code>// Converts all string values to lower case when setting attributes on a model
 module.exports = function(bookshelf) {
   bookshelf.Model = bookshelf.Model.extend({
     set: function(key, value, options) {
@@ -618,7 +622,7 @@ Bookshelf.transaction((t) => {
 
 <span class="param-desc">
   <p>A promise resolving to the value returned from
-  <a href="api.html#Bookshelf~transactionCallback"><code>transactionCallback</code></a>.</p>
+<a href="api.html#Bookshelf~transactionCallback"><code>transactionCallback</code></a>.</p>
 </span>
 
 
@@ -627,7 +631,7 @@ Bookshelf.transaction((t) => {
 
   
     <div class="item-description">
-        <p>An alias to <code><a href="http://knexjs.org/#Transactions">Knex#transaction</a></code>. The <code>transaction</code>
+        <p>An alias to <code><code>Knex#transaction</code></code>. The <code>transaction</code>
 object must be passed along in the options of any relevant Bookshelf calls, to ensure all
 queries are on the same connection. The entire transaction block is wrapped around a Promise
 that will commit the transaction if it resolves successfully, or roll it back if the Promise
@@ -773,8 +777,8 @@ wanted lock type in the <code>lock</code> option to <a href="api.html#Model-inst
 
 <span class="param-desc">
   <p>The Promise will resolve to the return value of the callback, or be rejected with an error
-  thrown inside it. If it resolves, the entire transaction is committed, otherwise it is
-  rolled back.</p>
+thrown inside it. If it resolves, the entire transaction is committed, otherwise it is
+rolled back.</p>
 </span>
 
 
@@ -1014,13 +1018,15 @@ computed properties, and access control.</p></div>
 the attributes, which will be <a href="api.html#Model-instance-set"><code>set</code></a> on the
 model. If you define an <code>initialize</code> function, it will be invoked
 when the model is created.</p>
-<pre class="prettyprint source"><code>new Book({
+<pre><code>new Book({
   title: &quot;One Thousand and One Nights&quot;,
   author: &quot;Scheherazade&quot;
-});</code></pre><p>In rare cases, if you're looking to get fancy, you may want to override
+});
+</code></pre>
+<p>In rare cases, if you're looking to get fancy, you may want to override
 <code>constructor</code>, which allows you to replace the
 actual constructor function for your model.</p>
-<pre class="prettyprint source"><code>let Book = bookshelf.Model.extend({
+<pre><code>let Book = bookshelf.Model.extend({
   tableName: 'documents',
   constructor: function() {
     bookshelf.Model.apply(this, arguments);
@@ -1168,7 +1174,7 @@ actual constructor function for your model.</p>
 Override this function to add custom initialization, such as event listeners.
 Because plugins may override this method in subclasses, make sure to call
 your super (extended) class.  e.g.</p>
-<pre class="prettyprint source"><code>initialize: function() {
+<pre><code>initialize: function() {
     this.constructor.__super__.initialize.apply(this, arguments);
     // Your initialization code ...
 }</code></pre>
@@ -1286,8 +1292,8 @@ your super (extended) class.  e.g.</p>
 
       <div class="description">
         <p>If specified this is used to sort the collection. It can be a string representing the
-  model attribute to sort by, or a custom function. Check the documentation for <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">  Array.prototype.sort</a> for more info on how to use a custom comparator function. If this
-  options is not specified the collection sort order depends on what the database returns.</p>
+model attribute to sort by, or a custom function. Check the documentation for <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">Array.prototype.sort</a> for more info on how to use a custom comparator function. If this
+options is not specified the collection sort order depends on what the database returns.</p>
         
       </div>
 
@@ -1364,7 +1370,7 @@ your super (extended) class.  e.g.</p>
 
 <span class="param-desc">
   <p>The newly created collection. It will be empty unless any models were passed as the first
-  argument.</p>
+argument.</p>
 </span>
 
 
@@ -1543,7 +1549,7 @@ records with a null value in that column will be excluded from the count.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-extend">extend</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">prototypeProperties</span><span class="optional-bracket">]</span><span class="comma">, </span><span class="optional-bracket">[</span><span class="item-name">classProperties</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  function</span>
-          <a href="lib_base_model.js.html#line809" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line812" class="source-link">source</a>
         </h4>
 
         
@@ -1943,7 +1949,7 @@ subclassed as far as you need.</p>
 
       <div class="description">
         <p>Convert attributes by <a href="api.html#Model-instance-parse"><code>parse</code></a> before being
-  <a href="api.html#Model-instance-set"><code>set</code></a> on the <code>model</code>.</p>
+<a href="api.html#Model-instance-set"><code>set</code></a> on the <code>model</code>.</p>
         
       </div>
 
@@ -2620,8 +2626,8 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then((book) => {
 
       <div class="description">
         <p>Foreign key in this model. By default, the <code>foreignKey</code> is assumed to be the singular form
-  of the <code>Target</code> model's tableName, followed by <code>_id</code>, or
-  <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code> if the <code>idAttribute</code> property is set.</p>
+of the <code>Target</code> model's tableName, followed by <code>_id</code>, or
+<code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code> if the <code>idAttribute</code> property is set.</p>
         
       </div>
 
@@ -2640,7 +2646,7 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then((book) => {
 
       <div class="description">
         <p>Column in the <code>Target</code> model's table which <code>foreignKey</code> references. This is only needed in
-  case it's other than <code>Target</code> model's <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+case it's other than <code>Target</code> model's <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -2710,7 +2716,7 @@ Book.where({id: 1}).fetch({withRelated: ['author']}).then((book) => {
 
 <span class="param-desc">
   <p>The return value will always be a model, even if the relation doesn't exist, but in that
-  case the relation will be <code>null</code> when <a href="api.html#Model-instance-serialize"><code>serializing</code></a> the model.</p>
+case the relation will be <code>null</code> when <a href="api.html#Model-instance-serialize"><code>serializing</code></a> the model.</p>
 </span>
 
 
@@ -2816,7 +2822,7 @@ const User = bookshelf.Model.extend({
 
       <div class="description">
         <p>Name of the joining table. Defaults to the two table names ordered alphabetically and
-  joined by an underscore.</p>
+joined by an underscore.</p>
         
       </div>
 
@@ -2835,7 +2841,7 @@ const User = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in this model. By default, the <code>foreignKey</code> is assumed to be the singular form
-  of this model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+of this model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -2854,8 +2860,8 @@ const User = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in the <code>Target</code> model. By default, this is assumed to be the singular form of
-  the <code>Target</code> model's tableName, followed by <code>_id</code> /
-  <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+the <code>Target</code> model's tableName, followed by <code>_id</code> /
+<code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -2874,7 +2880,7 @@ const User = bookshelf.Model.extend({
 
       <div class="description">
         <p>Column in this model's table which <code>foreignKey</code> references. This is only needed if it's not
-  the default <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+the default <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -2893,8 +2899,8 @@ const User = bookshelf.Model.extend({
 
       <div class="description">
         <p>Column in the <code>Target</code> model's table which <code>otherKey</code> references. This is only needed, if
-  it's not the expected default of the <code>Target</code> model's <code>id</code> /
-  <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+it's not the expected default of the <code>Target</code> model's <code>id</code> /
+<code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -2964,7 +2970,7 @@ const User = bookshelf.Model.extend({
 
 <span class="param-desc">
   <p>A new empty collection that is decorated with extra pivot helper methods. See the
-  description below for more info.</p>
+description below for more info.</p>
 </span>
 
 
@@ -2983,10 +2989,12 @@ example the columns in the joining table would be <code>user_id</code>, <code>ac
 which is used as an example of how dynamic relations can be formed using different contexts.</p>
 <p>To customize the keys or the <a href="api.html#Model-instance-tableName"><code>tableName</code></a> used for the join table, you
 may specify them in the arguments to the function call:</p>
-<pre class="prettyprint source"><code>this.belongsToMany(Account, 'users_accounts', 'userId', 'accountId')</code></pre><p>If you wish to create a belongsToMany association where the joining table has a primary key
+<pre><code>this.belongsToMany(Account, 'users_accounts', 'userId', 'accountId')
+</code></pre>
+<p>If you wish to create a belongsToMany association where the joining table has a primary key
 and extra attributes in the model, you may create a <code>belongsToMany</code>
 <a href="api.html#Relation-instance-through"><code>through</code></a> relation:</p>
-<pre class="prettyprint source"><code>const Doctor = bookshelf.Model.extend({
+<pre><code>const Doctor = bookshelf.Model.extend({
   patients() {
     return this.belongsToMany(Patient).through(Appointment)
   }
@@ -3005,7 +3013,9 @@ const Patient = bookshelf.Model.extend({
   doctors() {
     return this.belongsToMany(Doctor).through(Appointment)
   }
-})</code></pre><p>Collections returned by a <code>belongsToMany</code> relation are decorated with several pivot helper
+})
+</code></pre>
+<p>Collections returned by a <code>belongsToMany</code> relation are decorated with several pivot helper
 methods. If you need more information about these methods see
 <a href="api.html#Collection-instance-attach"><code>attach</code></a>, <a href="api.html#Collection-instance-detach"><code>detach</code></a>,
 <a href="api.html#Collection-instance-updatePivot"><code>updatePivot</code></a> and <a href="api.html#Collection-instance-withPivot"><code>withPivot</code></a>.</p>
@@ -3391,7 +3401,7 @@ previous calls to <a href="api.html#Model-instance-query"><code>Model#query</cod
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-destroy">destroy</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Promise<<a href="api.html#Model">Model</a>></span>
-          <a href="lib_model.js.html#line1111" class="source-link">source</a>
+          <a href="lib_model.js.html#line1113" class="source-link">source</a>
         </h4>
 
         
@@ -3473,7 +3483,7 @@ previous calls to <a href="api.html#Model-instance-query"><code>Model#query</cod
 
       <div class="description">
         <p>Throw a <a href="api.html#Model-static-NoRowsDeletedError"><code>Model.NoRowsDeletedError</code></a> if no records are affected by destroy. This is
-  the default behavior as of version 0.13.0.</p>
+the default behavior as of version 0.13.0.</p>
         
       </div>
 
@@ -3577,7 +3587,7 @@ previous calls to <a href="api.html#Model-instance-query"><code>Model#query</cod
 
 <span class="param-desc">
   <p>A promise resolving to the destroyed and thus
-                          empty model, i.e. all attributes are <code>undefined</code>.</p>
+empty model, i.e. all attributes are <code>undefined</code>.</p>
 </span>
 
 
@@ -3790,7 +3800,7 @@ removal is completed.</p>
       
 
       <div class="description">
-        <p>Reject the returned response with a <a href="api.html#Model-static-NotFoundError"><code>  NotFoundError</code></a> if results are empty.</p>
+        <p>Reject the returned response with a <a href="api.html#Model-static-NotFoundError"><code>NotFoundError</code></a> if results are empty.</p>
         
       </div>
 
@@ -3847,8 +3857,8 @@ removal is completed.</p>
 
       <div class="description">
         <p>Type of row-level lock to use. Valid options are <code>forShare</code> and
- <code>forUpdate</code>. This only works in conjunction with the <code>transacting</code>
- option, and requires a database that supports it.</p>
+<code>forUpdate</code>. This only works in conjunction with the <code>transacting</code>
+option, and requires a database that supports it.</p>
         
       </div>
 
@@ -3871,7 +3881,7 @@ removal is completed.</p>
 
       <div class="description">
         <p>Relations to be retrieved with <code>Model</code> instance. Either one or more
- relation names or objects mapping relation names to query callbacks.</p>
+relation names or objects mapping relation names to query callbacks.</p>
         
       </div>
 
@@ -3975,7 +3985,7 @@ removal is completed.</p>
 
 <span class="param-desc">
   <p>A promise resolving to the fetched <a href="api.html#Model"><code>model</code></a> or <code>null</code> if
- none exists.</p>
+none exists.</p>
 </span>
 
 
@@ -3992,13 +4002,15 @@ successfully retrieved.</p>
 <p>If you need to constrain the query
 performed by fetch, you can call <a href="api.html#Model-instance-query"><code>query</code></a> before calling
 <a href="api.html#Model-instance-fetch"><code>fetch</code></a>.</p>
-<pre class="prettyprint source"><code>// select * from `books` where `ISBN-13` = '9780440180296'
+<pre><code>// select * from `books` where `ISBN-13` = '9780440180296'
 new Book({'ISBN-13': '9780440180296'})
   .fetch()
   .then(function(model) {
     // outputs 'Slaughterhouse Five'
     console.log(model.get('title'));
-  });</code></pre><p><em>If you'd like to only fetch specific columns, you may specify a <code>columns</code>
+  });
+</code></pre>
+<p><em>If you'd like to only fetch specific columns, you may specify a <code>columns</code>
 property in the <code>options</code> for the <a href="api.html#Model-instance-fetch"><code>fetch</code></a> call, or use
 <a href="api.html#Model-instance-query"><code>query</code></a>, tapping into the <code>Knex</code> <code>column</code> method to specify which columns will be fetched.</em></p>
 <p>A single property, or an array of properties can be specified as a value for
@@ -4008,7 +4020,7 @@ will be loaded into a <code>relations</code> property on the
 model, may be retrieved with the <a href="api.html#Model-instance-related"><code>related</code></a> method, and
 will be serialized as properties on a <a href="api.html#Model-instance-toJSON"><code>toJSON</code></a> call
 unless <code>{shallow: true}</code> is passed.</p>
-<pre class="prettyprint source"><code>let Book = bookshelf.Model.extend({
+<pre><code>let Book = bookshelf.Model.extend({
   tableName: 'books',
   editions: function() {
     return this.hasMany(Edition);
@@ -4100,7 +4112,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
 
       <div class="description">
         <p>Rejects the returned Promise with a <a href="api.html#Collection-static-EmptyError"><code>Collection.EmptyError</code></a> if no records can be
-  fetched from the databse.</p>
+fetched from the databse.</p>
         
       </div>
 
@@ -4204,7 +4216,7 @@ new Book({'ISBN-13': '9780440180296'}).fetch({
 <div class="param-desc">
 
     <p>This error is used to reject the Promise in the event of an empty response from the
-  database if the <code>require: true</code> option is used.</p>
+database if the <code>require: true</code> option is used.</p>
 
 </div>
 
@@ -4326,7 +4338,7 @@ the options.</p>
 
       <div class="description">
         <p>Besides the basic options that can be passed to <a href="api.html#Model-instance-fetchAll"><code>Model#fetchAll</code></a>, there are some additional pagination
-  options that can be specified.</p>
+options that can be specified.</p>
         
           
 
@@ -4345,7 +4357,7 @@ the options.</p>
 
       <div class="description">
         <p>How many models to include in each page, defaulting to 10 if not specified. Used only together with the <code>page</code>
-  option.</p>
+option.</p>
         
       </div>
 
@@ -4364,7 +4376,7 @@ the options.</p>
 
       <div class="description">
         <p>Page number to retrieve. If greater than the available rows it will return an empty Collection. The first page is
-  number <code>1</code>. Used only with the <code>pageSize</code> option.</p>
+number <code>1</code>. Used only with the <code>pageSize</code> option.</p>
         
       </div>
 
@@ -4383,7 +4395,7 @@ the options.</p>
 
       <div class="description">
         <p>How many models to include in each page, defaulting to 10 if not specified. Used only together with the <code>offset</code>
-  option.</p>
+option.</p>
         
       </div>
 
@@ -4478,7 +4490,7 @@ the options.</p>
 
 <span class="param-desc">
   <p>Returns a Promise that will resolve to the paginated collection of models. Note that if there are no results the
-  return value will be an empty Collection.</p>
+return value will be an empty Collection.</p>
 </span>
 
 
@@ -4918,7 +4930,7 @@ opposite operation of <code>format</code>.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-hasChanged">hasChanged</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">attribute</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Boolean</span>
-          <a href="lib_base_model.js.html#line681" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line684" class="source-link">source</a>
         </h4>
 
         
@@ -5033,8 +5045,8 @@ opposite operation of <code>format</code>.</p>
 
 <span class="param-desc">
   <p><code>true</code> if any attribute has changed, <code>false</code> otherwise. Alternatively, if
-  the <code>attribute</code> argument was specified, checks if that particular
-  attribute has changed.</p>
+the <code>attribute</code> argument was specified, checks if that particular
+attribute has changed.</p>
 </span>
 
 
@@ -5137,7 +5149,7 @@ Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
 
       <div class="description">
         <p>ForeignKey in the <code>Target</code> model. By default, the foreign key is assumed to be the singular form of this
-  model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -5156,7 +5168,7 @@ Author.where({id: 1}).fetch({withRelated: ['books']}).then(function(author) {
 
       <div class="description">
         <p>Column in this model's table which <code>foreignKey</code> references, if other than this model's <code>id</code> /
-  <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+<code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -5331,7 +5343,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
 
       <div class="description">
         <p>Foreign key in the <code>Target</code> model. By default the foreign key is assumed to be the singular form of this
-  model's <a href="api.html#Model-instance-tableName"><code>tableName</code></a> followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+model's <a href="api.html#Model-instance-tableName"><code>tableName</code></a> followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -5350,7 +5362,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
 
       <div class="description">
         <p>Column in this model's table which <code>foreignKey</code> references, if other than this model's <code>id</code> /
-  <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+<code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -5420,7 +5432,7 @@ new Patient({id: 1}).record().fetch().then(function(model) {
 
 <span class="param-desc">
   <p>The return value will always be a model, even if the relation doesn't exist, but in that case the relation will
-  be <code>null</code> when <a href="api.html#Model-instance-serialize"><code>serializing</code></a> the model.</p>
+be <code>null</code> when <a href="api.html#Model-instance-serialize"><code>serializing</code></a> the model.</p>
 </span>
 
 
@@ -5668,7 +5680,7 @@ new Posts().fetch().then(function(collection) {
 
       <div class="description">
         <p>Type of row-level lock to use. Valid options are <code>forShare</code> and <code>forUpdate</code>. This only works in conjunction
-  with the <code>transacting</code> option, and requires a database that supports it.</p>
+with the <code>transacting</code> option, and requires a database that supports it.</p>
         
       </div>
 
@@ -5863,7 +5875,7 @@ presented above.</p>
 
       <div class="description">
         <p>The string value associated with this relationship. Stored in the <code>_type</code>
-  column of the polymorphic table. Defaults to <code>Target</code>#<a href="api.html#Model-instance-tableName"><code>  tablename</code></a>.</p>
+column of the polymorphic table. Defaults to <code>Target</code>#<a href="api.html#Model-instance-tableName"><code>tablename</code></a>.</p>
         
       </div>
 
@@ -5950,13 +5962,15 @@ database. So for the case below the table names would be <code>imageable_type</c
 and <code>imageable_id</code>. The <code>morphValue</code> may be optionally set to
 store/retrieve a different value in the <code>_type</code> column than the <code>Target</code>'s
 <a href="api.html#Model-instance-tableName"><code>tableName</code></a>.</p>
-<pre class="prettyprint source"><code>let Post = bookshelf.Model.extend({
+<pre><code>let Post = bookshelf.Model.extend({
   tableName: 'posts',
   photos: function() {
     return this.morphMany(Photo, 'imageable');
   }
-});</code></pre><p>And with custom columnNames:</p>
-<pre class="prettyprint source"><code>let Post = bookshelf.Model.extend({
+});
+</code></pre>
+<p>And with custom columnNames:</p>
+<pre><code>let Post = bookshelf.Model.extend({
   tableName: 'posts',
   photos: function() {
     return this.morphMany(Photo, 'imageable', [&quot;ImageableType&quot;, &quot;ImageableId&quot;]);
@@ -6049,7 +6063,7 @@ store/retrieve a different value in the <code>_type</code> column than the <code
 
       <div class="description">
         <p>Array containing two column names, the first is the <code>_type</code>, the second
-  is the <code>_id</code>.</p>
+is the <code>_id</code>.</p>
         
       </div>
 
@@ -6068,7 +6082,7 @@ store/retrieve a different value in the <code>_type</code> column than the <code
 
       <div class="description">
         <p>The string value associated with this relationship. Stored in the <code>_type</code>
-  column of the polymorphic table. Defaults to <code>Target#<a href="api.html#Model-instance-tableName"><code>tableName</code></a></code>.</p>
+column of the polymorphic table. Defaults to <code>Target#<a href="api.html#Model-instance-tableName"><code>tableName</code></a></code>.</p>
         
       </div>
 
@@ -6153,18 +6167,22 @@ which database table keys are used. The naming convention requires the
 below the table names would be <code>imageable_type</code> and <code>imageable_id</code>. The
 <code>morphValue</code> may be optionally set to store/retrieve a different value in
 the <code>_type</code> column than the <a href="api.html#Model-instance-tableName"><code>Model#tableName</code></a>.</p>
-<pre class="prettyprint source"><code>let Site = bookshelf.Model.extend({
+<pre><code>let Site = bookshelf.Model.extend({
   tableName: 'sites',
   photo: function() {
     return this.morphOne(Photo, 'imageable');
   }
-});</code></pre><p>And with custom <code>columnNames</code>:</p>
-<pre class="prettyprint source"><code>let Site = bookshelf.Model.extend({
+});
+</code></pre>
+<p>And with custom <code>columnNames</code>:</p>
+<pre><code>let Site = bookshelf.Model.extend({
   tableName: 'sites',
   photo: function() {
     return this.morphOne(Photo, 'imageable', [&quot;ImageableType&quot;, &quot;ImageableId&quot;]);
   }
-});</code></pre><p>Note that both <code>columnNames</code> and <code>morphValue</code> are optional arguments. How
+});
+</code></pre>
+<p>Note that both <code>columnNames</code> and <code>morphValue</code> are optional arguments. How
 your argument is treated when only one is specified, depends on the type.
 If your argument is an array, it will be assumed to contain custom
 <code>columnNames</code>. If it's not, it will be assumed to indicate a <code>morphValue</code>.</p>
@@ -6335,22 +6353,26 @@ If your argument is an array, it will be assumed to contain custom
         <p>This relation is used to specify the inverse of the <a href="api.html#Model-instance-morphOne"><code>morphOne</code></a> or
 <a href="api.html#Model-instance-morphMany"><code>morphMany</code></a> relations, where the <code>targets</code> must be passed to signify which
 <a href="api.html#Model"><code>models</code></a> are the potential opposite end of the <code>polymorphic relation</code>:</p>
-<pre class="prettyprint source"><code>const Photo = bookshelf.Model.extend({
+<pre><code>const Photo = bookshelf.Model.extend({
   tableName: 'photos',
   imageable() {
     return this.morphTo('imageable', Site, Post)
   }
-})</code></pre><p>And with custom column names:</p>
-<pre class="prettyprint source"><code>const Photo = bookshelf.Model.extend({
+})
+</code></pre>
+<p>And with custom column names:</p>
+<pre><code>const Photo = bookshelf.Model.extend({
   tableName: 'photos',
   imageable() {
     return this.morphTo('imageable', ['ImageableType', 'ImageableId'], Site, Post)
   }
-})</code></pre><p>And with custom morphValues, the inverse of the <code>morphValue</code> of <a href="api.html#Model-instance-morphOne"><code>morphOne</code></a> and
+})
+</code></pre>
+<p>And with custom morphValues, the inverse of the <code>morphValue</code> of <a href="api.html#Model-instance-morphOne"><code>morphOne</code></a> and
 <a href="api.html#Model-instance-morphMany"><code>morphMany</code></a>, where the <code>morphValues</code> may be optionally set to check against a different
 value in the <code>_type</code> column other than the <a href="api.html#Model-instance-tableName"><code>Model#tableName</code></a>, for example, a more descriptive name, or a
 name that betters adheres to whatever standard you are using for models:</p>
-<pre class="prettyprint source"><code>const Photo = bookshelf.Model.extend({
+<pre><code>const Photo = bookshelf.Model.extend({
   tableName: 'photos',
   imageable() {
     return this.morphTo('imageable', [Site, 'favicon'], [Post, 'cover_photo'])
@@ -6604,7 +6626,7 @@ ship.off(); // This will remove all event listeners</code></pre>
 
       <div class="description">
         <p>The name of the event or space separated list of events to register a
-  callback for.</p>
+callback for.</p>
         
       </div>
 
@@ -6703,7 +6725,7 @@ for a combination of all events.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-orderBy">orderBy</a></span><span class="parenthesis">(</span><span class="item-name">sort</span><span class="comma">, </span><span class="item-name">order</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1287" class="source-link">source</a>
+          <a href="lib_model.js.html#line1289" class="source-link">source</a>
         </h4>
 
         
@@ -7000,7 +7022,7 @@ opposite operation of <code>parse</code>.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-previous">previous</a></span><span class="parenthesis">(</span><span class="item-name">attribute</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  mixed</span>
-          <a href="lib_base_model.js.html#line716" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line719" class="source-link">source</a>
         </h4>
 
         
@@ -7152,7 +7174,7 @@ changed. If you want to check if an attribute has changed see the
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-previousAttributes">previousAttributes</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
-          <a href="lib_base_model.js.html#line756" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line759" class="source-link">source</a>
         </h4>
 
         
@@ -7249,7 +7271,7 @@ Author.forge({id: 1}).fetch().then(function(author) {
 
 <span class="param-desc">
   <p>The attributes as they were before the last change, or an empty object in
-  case the model data hasn't been fetched yet.</p>
+case the model data hasn't been fetched yet.</p>
 </span>
 
 
@@ -7284,7 +7306,7 @@ the model and it hasn't been fetched, saved or eager loaded.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-query">query</a></span><span class="parenthesis">(</span><span class="item-name">arguments</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a>|QueryBuilder</span>
-          <a href="lib_model.js.html#line1209" class="source-link">source</a>
+          <a href="lib_model.js.html#line1211" class="source-link">source</a>
         </h4>
 
         
@@ -7747,7 +7769,7 @@ method and adds it to the relations hash if one exists and has not yet been load
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-resetQuery">resetQuery</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a></span>
-          <a href="lib_model.js.html#line1196" class="source-link">source</a>
+          <a href="lib_model.js.html#line1198" class="source-link">source</a>
         </h4>
 
         
@@ -7834,8 +7856,8 @@ method and adds it to the relations hash if one exists and has not yet been load
   
     <div class="item-description">
         <p>Used to reset the internal state of the current query builder instance.
- This method is called internally each time a database action is completed
- by <code>Sync</code></p>
+This method is called internally each time a database action is completed
+by <code>Sync</code></p>
     </div>
   
 </div>
@@ -8015,7 +8037,7 @@ Model.forge({id: 5}).save('name', 'John Smith').then(function() {
 
       <div class="description">
         <p>Whether to assign or not <a href="api.html#Model-instance-defaults"><code>default</code></a> attribute values
-  on a model when performing an update or create operation.</p>
+on a model when performing an update or create operation.</p>
         
       </div>
 
@@ -8189,20 +8211,24 @@ option in the second argument to the <code>save</code> call. This will also use 
 same <a href="api.html#Model-instance-defaults"><code>defaults</code></a> as the <code>insert</code> operation.</p>
 <p>The type of operation to perform (either <code>insert</code> or <code>update</code>) can be
 overriden with the <code>method</code> option:</p>
-<pre class="prettyprint source"><code>// This forces an insert with the specified id instead of the expected
+<pre><code>// This forces an insert with the specified id instead of the expected
 // update
 new Post({name: 'New Article', id: 34})
   .save(null, {method: 'insert'})
   .then(function(model) {
     // ...
-  });</code></pre><p>If you only wish to update with the params passed to the save, you may pass
+  });
+</code></pre>
+<p>If you only wish to update with the params passed to the save, you may pass
 a <code>{patch: true}</code> option in the second argument to <code>save</code>:</p>
-<pre class="prettyprint source"><code>// UPDATE authors SET &quot;bio&quot; = 'Short user bio' WHERE &quot;id&quot; = 1
+<pre><code>// UPDATE authors SET &quot;bio&quot; = 'Short user bio' WHERE &quot;id&quot; = 1
 new Author({id: 1, first_name: 'User'})
   .save({bio: 'Short user bio'}, {patch: true})
   .then(function(model) {
     // ...
-  });</code></pre><p>Several events fire on the model when saving: a <a href="api.html#Model-event-creating"><code>&quot;creating&quot;</code></a>, or <a href="api.html#Model-event-updating"><code>"updating"</code></a> event if the model is
+  });
+</code></pre>
+<p>Several events fire on the model when saving: a <a href="api.html#Model-event-creating"><code>&quot;creating&quot;</code></a>, or <a href="api.html#Model-event-updating"><code>"updating"</code></a> event if the model is
 being inserted or updated, and a &quot;saving&quot; event in either case.</p>
 <p>To prevent saving the model (for example, with validation), throwing an error
 inside one of these event listeners will stop saving the model and reject the
@@ -8704,7 +8730,7 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in this model. By default, the foreign key is assumed to be the singular form of the <code>Target</code>
-  model's tableName, followed by <code>_id</code> or <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+model's tableName, followed by <code>_id</code> or <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -8723,7 +8749,7 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in the <code>Interim</code> model. By default, the other key is assumed to be the singular form of this
-  model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+model's tableName, followed by <code>_id</code> / <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -8742,7 +8768,7 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Column in the <code>Target</code> model which <code>throughForeignKey</code> references, if other than <code>Target</code> model's <code>id</code> /
-  <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+<code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -8863,7 +8889,7 @@ chapter. See the example above on how this can be expressed.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-timestamp">timestamp</a></span><span class="parenthesis">(</span><span class="optional-bracket">[</span><span class="item-name">options</span><span class="optional-bracket">]</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  Object</span>
-          <a href="lib_base_model.js.html#line631" class="source-link">source</a>
+          <a href="lib_base_model.js.html#line634" class="source-link">source</a>
         </h4>
 
         
@@ -8916,7 +8942,7 @@ chapter. See the example above on how this can be expressed.</p>
 
       <div class="description">
         <p>Either <code>'insert'</code> or <code>'update'</code> to specify what kind of save the attribute
-  update is for.</p>
+update is for.</p>
         
       </div>
 
@@ -8935,7 +8961,7 @@ chapter. See the example above on how this can be expressed.</p>
 
       <div class="description">
         <p>Either a Date object or ms since the epoch. Specify what date is used for
-  updateing the timestamps, i.e. if something other than <code>new Date()</code> should be used.</p>
+updateing the timestamps, i.e. if something other than <code>new Date()</code> should be used.</p>
         
       </div>
 
@@ -9532,7 +9558,7 @@ column in the database record, set the attribute value to <code>null</code> inst
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-instance-where">where</a></span><span class="parenthesis">(</span><span class="item-name">method</span><span class="parenthesis">)</span></span><span class="type-signature"> &rarr;  <a href="api.html#Model">Model</a></span>
-          <a href="lib_model.js.html#line1257" class="source-link">source</a>
+          <a href="lib_model.js.html#line1259" class="source-link">source</a>
         </h4>
 
         
@@ -9580,8 +9606,8 @@ model.where({favorite_color: 'red', shoe_size: 12}).fetch().then(function() { //
 
       <div class="description">
         <p>Either <code>key, [operator], value</code> syntax, or a hash of attributes to
-  match. Note that these must be formatted as they are in the database,
-  not how they are stored after <a href="api.html#Model-instance-parse"><code>Model#parse</code></a>.</p>
+match. Note that these must be formatted as they are in the database,
+not how they are stored after <a href="api.html#Model-instance-parse"><code>Model#parse</code></a>.</p>
         
       </div>
 
@@ -9889,7 +9915,7 @@ returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-created">"created"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">newId</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1080" class="source-link">source</a>
+          <a href="lib_model.js.html#line1082" class="source-link">source</a>
         </h4>
 
         
@@ -10058,7 +10084,7 @@ returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-creating">"creating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1004" class="source-link">source</a>
+          <a href="lib_model.js.html#line1006" class="source-link">source</a>
         </h4>
 
         
@@ -10147,7 +10173,7 @@ returned from the event handler for async behaviour.</p>
 
       <div class="description">
         <p>Query builder to be used for saving. This can be used to modify or add to the query
-  before it is executed.</p>
+before it is executed.</p>
         
       </div>
 
@@ -10254,7 +10280,7 @@ async behaviour. Throwing an exception from the handler will cancel the save pro
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-destroyed">"destroyed"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1179" class="source-link">source</a>
+          <a href="lib_model.js.html#line1181" class="source-link">source</a>
         </h4>
 
         
@@ -10406,7 +10432,7 @@ handler for async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-destroying">"destroying"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1153" class="source-link">source</a>
+          <a href="lib_model.js.html#line1155" class="source-link">source</a>
         </h4>
 
         
@@ -10706,7 +10732,7 @@ will reject the promise and cancel the deletion.</p>
 
 <span class="param-desc">
   <p>If the handler returns a promise, <code>fetch</code> will wait for it to
-  be resolved.</p>
+be resolved.</p>
 </span>
 
 
@@ -10835,7 +10861,7 @@ event handler for async behaviour.</p>
 
       <div class="description">
         <p>Query builder to be used for fetching. This can be used to modify or add to the query
-  before it is executed. See example above.</p>
+before it is executed. See example above.</p>
         
       </div>
 
@@ -10941,7 +10967,7 @@ async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-saved">"saved"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">response</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1064" class="source-link">source</a>
+          <a href="lib_model.js.html#line1066" class="source-link">source</a>
         </h4>
 
         
@@ -10996,8 +11022,8 @@ async behaviour.</p>
 
       <div class="description">
         <p>A list containing the id of the newly created model in case of an
-  <code>insert</code> or a number representing the affected rows in the case of
-  an <code>update</code> query.</p>
+<code>insert</code> or a number representing the affected rows in the case of
+an <code>update</code> query.</p>
         
       </div>
 
@@ -11114,7 +11140,7 @@ async behaviour.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-saving">"saving"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line984" class="source-link">source</a>
+          <a href="lib_model.js.html#line986" class="source-link">source</a>
         </h4>
 
         
@@ -11149,7 +11175,7 @@ async behaviour.</p>
 
       <div class="description">
         <p>The model firing the event. Its attributes are already changed but not commited to
-  the database yet.</p>
+the database yet.</p>
         
       </div>
 
@@ -11204,7 +11230,7 @@ async behaviour.</p>
 
       <div class="description">
         <p>Query builder to be used for saving. This can be used to modify or add to the query
-  before it is executed.</p>
+before it is executed.</p>
         
       </div>
 
@@ -11312,7 +11338,7 @@ save process.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-updated">"updated"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">affectedRows</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1093" class="source-link">source</a>
+          <a href="lib_model.js.html#line1095" class="source-link">source</a>
         </h4>
 
         
@@ -11481,7 +11507,7 @@ save process.</p>
                 ><span class="class-name"
                   >model</span
                 >.</span><span class="event-on">on</span><span class="parenthesis">(</span><a href="api.html#Model-event-updating">"updating"</a><span class="comma">, </span> <span class="parenthesis">(</span><span class="item-name">model</span><span class="comma">, </span><span class="item-name">attrs</span><span class="comma">, </span><span class="item-name">options</span><span class="parenthesis">)</span> <span class="fat-arrow">=&gt;</span>
-          <a href="lib_model.js.html#line1021" class="source-link">source</a>
+          <a href="lib_model.js.html#line1023" class="source-link">source</a>
         </h4>
 
         
@@ -11516,7 +11542,7 @@ save process.</p>
 
       <div class="description">
         <p>The model firing the event. Its attributes are already changed but not commited to
-  the database yet.</p>
+the database yet.</p>
         
       </div>
 
@@ -11571,7 +11597,7 @@ save process.</p>
 
       <div class="description">
         <p>Query builder to be used for saving. This can be used to modify or add to the query
-  before it is executed.</p>
+before it is executed.</p>
         
       </div>
 
@@ -11731,8 +11757,8 @@ async behaviour. Throwing an exception from the handler will cancel the save pro
 
       <div class="description">
         <p>The raw response from the underlying query builder. This will be an array with objects
- representing each row, similar to the output of a
- <a href="api.html#Model-instance-serialize"><code>serialized Model</code></a>.</p>
+representing each row, similar to the output of a
+<a href="api.html#Model-instance-serialize"><code>serialized Model</code></a>.</p>
         
       </div>
 
@@ -11884,7 +11910,7 @@ may be returned from the event handler for async behaviour.</p>
 
       <div class="description">
         <p>The collection that is going to be fetched. At this point it's still empty since the
- fetch hasn't happened yet.</p>
+fetch hasn't happened yet.</p>
         
       </div>
 
@@ -11903,8 +11929,8 @@ may be returned from the event handler for async behaviour.</p>
 
       <div class="description">
         <p>The columns to be retrieved by the query as provided by the underlying query builder.
- If the <code>columns</code> option is not specified the value of this will usually be an array
- with a single string <code>'tableName.*'</code>.</p>
+If the <code>columns</code> option is not specified the value of this will usually be an array
+with a single string <code>'tableName.*'</code>.</p>
         
       </div>
 
@@ -12047,7 +12073,7 @@ may be returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NoRowsDeletedError">NoRowsDeletedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1418" class="source-link">source</a>
+          <a href="lib_model.js.html#line1420" class="source-link">source</a>
         </h4>
 
         
@@ -12116,7 +12142,7 @@ may be returned from the event handler for async behaviour.</p>
   
     <div class="item-description">
         <p>Thrown when no record is deleted by <a href="api.html#Model-instance-destroy"><code>destroy</code></a>
-  if called with the <code>{require: true}</code> option.</p>
+if called with the <code>{require: true}</code> option.</p>
     </div>
   
 </div>
@@ -12184,7 +12210,7 @@ may be returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NoRowsUpdatedError">NoRowsUpdatedError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1409" class="source-link">source</a>
+          <a href="lib_model.js.html#line1411" class="source-link">source</a>
         </h4>
 
         
@@ -12253,7 +12279,7 @@ may be returned from the event handler for async behaviour.</p>
   
     <div class="item-description">
         <p>Thrown when no records are saved by <a href="api.html#Model-instance-save"><code>save</code></a>
-  unless called with the <code>{require: false}</code> option.</p>
+unless called with the <code>{require: false}</code> option.</p>
     </div>
   
 </div>
@@ -12321,7 +12347,7 @@ may be returned from the event handler for async behaviour.</p>
                 ><span class="class-name"
                   >Model</span
                 >.</span><span class="parameters"><span class="name"><a href="api.html#Model-static-NotFoundError">NotFoundError</a></span><span class="parenthesis">(</span><span class="parenthesis">)</span></span><span class="type-signature"></span>
-          <a href="lib_model.js.html#line1399" class="source-link">source</a>
+          <a href="lib_model.js.html#line1401" class="source-link">source</a>
         </h4>
 
         
@@ -12390,8 +12416,8 @@ may be returned from the event handler for async behaviour.</p>
   
     <div class="item-description">
         <p>Thrown when no records are found by <a href="api.html#Model-instance-fetch"><code>fetch</code></a> or
-  <a href="api.html#Model-instance-refresh"><code>Model#refresh</code></a> when called with the
-  <code>{require: true}</code> option.</p>
+<a href="api.html#Model-instance-refresh"><code>Model#refresh</code></a> when called with the
+<code>{require: true}</code> option.</p>
     </div>
   
 </div>
@@ -12443,7 +12469,7 @@ may be returned from the event handler for async behaviour.</p>
         <h2 id="section-Collection">Collection</h2>
         
             <div class="class-description"><p>Collections are ordered sets of models returned from the database, from a
-  <a href="api.html#Model-instance-fetchAll"><code>fetchAll</code></a> call.</p></div>
+<a href="api.html#Model-instance-fetchAll"><code>fetchAll</code></a> call.</p></div>
         
     
 
@@ -12608,10 +12634,10 @@ may be returned from the event handler for async behaviour.</p>
   
     <div class="item-description">
         <p>When creating a <a href="api.html#Collection"><code>Collection</code></a>, you may choose to pass in the initial array of
-  <a href="api.html#Model"><code>models</code></a>. The collection's <code>comparator</code> may be included
-  as an option. Passing <code>false</code> as the comparator option will prevent sorting. If you define an
-  <a href="api.html#Collection-instance-initialize"><code>initialize</code></a> function, it will be invoked when the collection is
-  created.</p>
+<a href="api.html#Model"><code>models</code></a>. The collection's <code>comparator</code> may be included
+as an option. Passing <code>false</code> as the comparator option will prevent sorting. If you define an
+<a href="api.html#Collection-instance-initialize"><code>initialize</code></a> function, it will be invoked when the collection is
+created.</p>
     </div>
   
 </div>
@@ -12707,7 +12733,7 @@ may be returned from the event handler for async behaviour.</p>
 Override this function to add custom initialization, such as event listeners.
 Because plugins may override this method in subclasses, make sure to call
 your super (extended) class. e.g.</p>
-<pre class="prettyprint source"><code>initialize: function() {
+<pre><code>initialize: function() {
   this.constructor.__super__.initialize.apply(this, arguments);
   // Your initialization code ...
 }</code></pre>
@@ -12778,7 +12804,7 @@ your super (extended) class. e.g.</p>
 
       <div class="description">
         <p>Instance methods and properties to be attached to instances of the new
-  class.</p>
+class.</p>
         
       </div>
 
@@ -12797,7 +12823,7 @@ your super (extended) class. e.g.</p>
 
       <div class="description">
         <p>Class (ie. static) functions and properties to be attached to the
-  constructor of the new class.</p>
+constructor of the new class.</p>
         
       </div>
 
@@ -12949,7 +12975,7 @@ Promise.all(accounts.invokeMap('save')).then(function() {
 
       <div class="description">
         <p>Set of models (or attribute hashes) with which to initialize the
-  collection.</p>
+collection.</p>
         
       </div>
 
@@ -13563,7 +13589,7 @@ attributes before persisting the <code>Model</code>.</p>
 <div class="param-desc">
 
     <p>Upon a sucessful query resulting in no records returned. Only fired if <code>require: true</code> is
-  passed as an option.</p>
+passed as an option.</p>
 
 </div>
 
@@ -13742,8 +13768,8 @@ new Site({id:1})
 
       <div class="description">
         <p>Type of row-level lock to use. Valid options are <code>forShare</code> and
- <code>forUpdate</code>. This only works in conjunction with the <code>transacting</code>
- option, and requires a database that supports it.</p>
+<code>forUpdate</code>. This only works in conjunction with the <code>transacting</code>
+option, and requires a database that supports it.</p>
         
       </div>
 
@@ -14048,8 +14074,8 @@ models there are in total in the database.</p>
 
       <div class="description">
         <p>Type of row-level lock to use. Valid options are <code>forShare</code> and <code>forUpdate</code>. This only
-  works in conjunction with the <code>transacting</code> option, and requires a database that supports
-  it.</p>
+works in conjunction with the <code>transacting</code> option, and requires a database that supports
+it.</p>
         
       </div>
 
@@ -14251,7 +14277,7 @@ ships.add([
 
       <div class="description">
         <p>If set to <code>true</code> it will merge the attributes of duplicate models with the
-  attributes of existing models in the collection.</p>
+attributes of existing models in the collection.</p>
         
       </div>
 
@@ -14270,7 +14296,7 @@ ships.add([
 
       <div class="description">
         <p>If set to a number equal to or greater than 0 it will splice the model
-  into the collection at the specified index number.</p>
+into the collection at the specified index number.</p>
         
       </div>
 
@@ -14627,7 +14653,7 @@ models in insertion order.</p>
         <p>Attaches one or more <code>ids</code> or models from a foreign table to the current
 table, on a many-to-many relation. Creates and saves a new
 model and attaches the model with the related model.</p>
-<pre class="prettyprint source"><code>var admin1 = new Admin({username: 'user1', password: 'test'});
+<pre><code>var admin1 = new Admin({username: 'user1', password: 'test'});
 var admin2 = new Admin({username: 'user2', password: 'test'});
 
 Promise.all([admin1.save(), admin2.save()])
@@ -14636,7 +14662,9 @@ Promise.all([admin1.save(), admin2.save()])
     new Site({id: 1}).admins().attach([admin1, admin2]),
     new Site({id: 2}).admins().attach(admin2)
   ]);
-})</code></pre><p>This method (along with <a href="api.html#Collection-instance-detach"><code>Collection#detach</code></a> and <a href="api.html#Collection-instance-updatePivot"><code>Collection#updatePivot</code></a>) are mixed in to a <a href="api.html#Collection"><code>Collection</code></a> when
+})
+</code></pre>
+<p>This method (along with <a href="api.html#Collection-instance-detach"><code>Collection#detach</code></a> and <a href="api.html#Collection-instance-updatePivot"><code>Collection#updatePivot</code></a>) are mixed in to a <a href="api.html#Collection"><code>Collection</code></a> when
 returned by a <a href="api.html#Model-instance-belongsToMany"><code>belongsToMany</code></a> relation.</p>
     </div>
   
@@ -15271,7 +15299,7 @@ by a <a href="api.html#Model-instance-belongsToMany"><code>belongsToMany</code><
 will delegate to the collection's <code>invoke</code> method, resolving the promise with
 an array of responses all async (and sync) behavior has settled. Useful for
 bulk saving or deleting models:</p>
-<pre class="prettyprint source"><code>collection.invokeThen('save', null, options).then(function() {
+<pre><code>collection.invokeThen('save', null, options).then(function() {
   // ... all models in the collection have been saved
 });
 
@@ -15526,7 +15554,7 @@ ships.on('fetched', function(collection) {
 
       <div class="description">
         <p>The name of the event or space separated list of events to register a
-  callback for.</p>
+callback for.</p>
         
       </div>
 
@@ -16716,7 +16744,7 @@ given iterator function.</p>
         <p>Remove a <a href="api.html#Model"><code>model</code></a>, or an array of models, from the collection. Note that this does not remove the affected
 models from the database. For that purpose you have to use the model's <a href="api.html#Model-instance-destroy"><code>destroy</code></a> method.</p>
 <p>If you wish to actually remove all the models in a collection from the database you can use this method:</p>
-<pre class="prettyprint source"><code>myCollection.invokeThen('destroy').then(() => {
+<pre><code>myCollection.invokeThen('destroy').then(() =&gt; {
   // models have been destroyed
 })</code></pre>
     </div>
@@ -17174,7 +17202,7 @@ attribute objects.</p>
 
       <div class="description">
         <p>If set to <code>true</code> it will add any new models to the collection, otherwise
-  any new models will be ignored.</p>
+any new models will be ignored.</p>
         
       </div>
 
@@ -17193,8 +17221,8 @@ attribute objects.</p>
 
       <div class="description">
         <p>If set to <code>true</code> it will merge the attributes of duplicate models with the
-  attributes of existing models in the collection, otherwise duplicate
-  models in the list will be ignored.</p>
+attributes of existing models in the collection, otherwise duplicate
+models in the list will be ignored.</p>
         
       </div>
 
@@ -17213,7 +17241,7 @@ attribute objects.</p>
 
       <div class="description">
         <p>If set to <code>true</code> any models in the collection that are not in the list
-  will be removed from the collection, otherwise they will be kept.</p>
+will be removed from the collection, otherwise they will be kept.</p>
         
       </div>
 
@@ -17579,9 +17607,9 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in this collection's model. This is the model that the <code>hasMany</code> or
-  <code>belongsToMany</code> relations return. By default, the <code>foreignKey</code> is assumed to be the
-  singular form of the <code>Target</code> model's tableName, followed by <code>_id</code> /
-  <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+<code>belongsToMany</code> relations return. By default, the <code>foreignKey</code> is assumed to be the
+singular form of the <code>Target</code> model's tableName, followed by <code>_id</code> /
+<code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -17600,8 +17628,8 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Foreign key in the <code>Interim</code> model. By default, the <code>otherKey</code> is assumed to be the
-  singular form of this model's tableName, followed by <code>_id</code> /
-  <code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
+singular form of this model's tableName, followed by <code>_id</code> /
+<code>_{{<a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a>}}</code>.</p>
         
       </div>
 
@@ -17620,7 +17648,7 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Column in this collection's model which <code>throughForeignKey</code> references, if other than the
-  default of the model's <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+default of the model's <code>id</code> / <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -17639,7 +17667,7 @@ const Book = bookshelf.Model.extend({
 
       <div class="description">
         <p>Column in the <code>Interim</code> model which <code>otherKey</code> references, if other than <code>id</code> /
-  <code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
+<code><a href="api.html#Model-instance-idAttribute"><code>idAttribute</code></a></code>.</p>
         
       </div>
 
@@ -18614,7 +18642,7 @@ by a <a href="api.html#Model-instance-belongsToMany"><code>belongsToMany</code><
     <div class="item-description">
         <p>The <code>withPivot</code> method is used exclusively on <a href="api.html#Model-instance-belongsToMany"><code>belongsToMany</code></a> relations, and allows for additional fields to be pulled
 from the joining table.</p>
-<pre class="prettyprint source"><code>var Tag = bookshelf.Model.extend({
+<pre><code>var Tag = bookshelf.Model.extend({
   comments: function() {
     return this.belongsToMany(Comment).withPivot(['created_at', 'order']);
   }
@@ -19262,8 +19290,8 @@ event handler for async behaviour.</p>
   
     <div class="item-description">
         <p>Thrown when no records are found by <a href="api.html#Collection-instance-fetch"><code>fetch</code></a>,
-  <a href="api.html#Model-instance-fetchAll"><code>Model#fetchAll</code></a>, or <a href="api.html#Model-static-fetchAll"><code>Model.fetchAll</code></a> when called with
-  the <code>{require: true}</code> option.</p>
+<a href="api.html#Model-instance-fetchAll"><code>Model#fetchAll</code></a>, or <a href="api.html#Model-static-fetchAll"><code>Model.fetchAll</code></a> when called with
+the <code>{require: true}</code> option.</p>
     </div>
   
 </div>
@@ -19476,7 +19504,7 @@ meant to be used directly, and is only displayed here for completeness.</p>
 
       <div class="description">
         <p>The name of the event or space separated list of events to stop listening
-  to.</p>
+to.</p>
         
       </div>
 
@@ -19755,7 +19783,7 @@ a space-delimited list of several event names.</p>
 
       <div class="description">
         <p>The name of the event or space separated list of events to register a
-  callback for.</p>
+callback for.</p>
         
       </div>
 
@@ -19889,7 +19917,7 @@ for a combination of all events.</p>
 
       <div class="description">
         <p>The name of the event to trigger. Also accepts a space separated list of
-  event names.</p>
+event names.</p>
         
       </div>
 
@@ -20151,10 +20179,10 @@ async event handlers (e.g. for validations).</p>
     <footer>
       <div>
         Documentation generated by
-        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          June 13, 2019
+          March 28, 2020
         
       </div>
     </footer>
