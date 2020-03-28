@@ -1,5 +1,23 @@
 ## Change Log
 
+**1.1.1** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.1.0...1.1.1)
+
+#### Bug fixes
+
+- Fix attributes that are changed during event hook not being persisted: [#2062](https://github.com/bookshelf/bookshelf/pull/2062)
+- Fix incorrect query object being sent to event handlers with `morphTo`: [#2059](https://github.com/bookshelf/bookshelf/pull/2059)
+- Fix non-object attributes being passed to `model.parse()` in some cases: [#2056](https://github.com/bookshelf/bookshelf/pull/2056)
+
+#### Documentation
+
+- Fix typo in doclet: [#2057](https://github.com/bookshelf/bookshelf/pull/2057)
+
+**0.15.2** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...0.15.2)
+
+#### Bug fixes
+
+- Fix attributes that are changed during event hook not being persisted: [#2063](https://github.com/bookshelf/bookshelf/pull/2063)
+
 **1.1.0** <small>_Jan 31, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.1...1.1.0)
 
 #### Features

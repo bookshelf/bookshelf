@@ -1159,7 +1159,9 @@ const BookshelfModel = ModelBase.extend(
             Helpers.saveConstraints(this, this.relatedData);
           }
 
-          const attributesToSave = method === 'update' &amp;&amp; options.patch ? attrs : this.attributes;
+          const getAttributesToSave = function(method, options, model) {
+            return method === 'update' &amp;&amp; options.patch ? attrs : model.attributes;
+          };
 
           // Gives access to the `query` object in the `options`, in case we need it
           // in any event handlers.
@@ -1224,12 +1226,12 @@ const BookshelfModel = ModelBase.extend(
           return this.triggerThen(
             method === 'insert' ? 'saving creating' : 'saving updating',
             this,
-            attributesToSave,
+            getAttributesToSave(method, options, this),
             options
           )
             .bind(this)
             .then(function() {
-              return sync[options.method](attributesToSave);
+              return sync[options.method](getAttributesToSave(method, options, this));
             })
             .then(function(resp) {
               // Only valid for databases that support RETURNING
@@ -1253,7 +1255,7 @@ const BookshelfModel = ModelBase.extend(
                 if (options.require !== false) {
                   throw new this.constructor.NoRowsUpdatedError('No Rows Updated');
                 }
-              } else {
+              } else if (isObjectResponse) {
                 Object.assign(this.attributes, this.parse(resp[0]));
               }
 
@@ -1656,7 +1658,7 @@ module.exports = BookshelfModel;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          January 31, 2020
+          March 28, 2020
         
       </div>
     </footer>
