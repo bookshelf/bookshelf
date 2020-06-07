@@ -1312,6 +1312,12 @@ module.exports = function(bookshelf) {
         });
       });
 
+      it('does not refresh the model if {autoRefresh: false} option is passed', function() {
+        return new Models.Member({id: 1}).save({name: 'Okoye'}, {autoRefresh: false}).then((member) => {
+          deepEqual(member.attributes, {id: 1, name: 'Okoye'});
+        });
+      });
+
       it('does not trigger a "fetched" event after refreshing the model', function() {
         const member = new Models.Member({id: 1});
         let isFetchedTriggered = false;
