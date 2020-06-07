@@ -881,7 +881,7 @@ module.exports = function(Bookshelf) {
                 "The target polymorphic model could not be determined because it's missing the " + 'type attribute';
               expect(error.message).to.equal(expectedMessage);
             })
-            .finally(function() {
+            .then(function() {
               return Photo.where('imageable_type', null).destroy({
                 require: false
               });
@@ -908,7 +908,7 @@ module.exports = function(Bookshelf) {
                 'The target polymorphic type "' + badType + '" is not one of the defined target types';
               expect(error.message).to.equal(expectedMessage);
             })
-            .finally(function() {
+            .then(function() {
               return Photo.where('imageable_type', badType).destroy({
                 require: false
               });
