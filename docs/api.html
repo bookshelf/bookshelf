@@ -9019,6 +9019,28 @@ queries being run.</p>
 
     </li>
   
+    <li>
+      <code class="param"><span class="optional-bracket">[</span><span class="item-name">autoRefresh</span><span class="default-value"><span class="default-equals">=</span><span class="default-value">true</span></span><span class="optional-bracket">]</span></code>
+
+      
+          <code class="param-type"><span class="param-type"
+            ><code class="param-type"
+  >boolean</code
+>
+</span></code>
+      
+
+      <div class="description">
+        <p>Weather to enable auto refresh such that after a model is saved it will be populated with all
+the attributes that are present in the database, so you don't need to manually call
+<a href="api.html#Model-instance-refresh"><code>refresh</code></a> to update it. This will use two queries unless
+the database supports the <code>RETURNING</code> statement, in which case the model will
+be saved and its data fetched with a single query.</p>
+        
+      </div>
+
+    </li>
+  
 </ul>
 
         
@@ -9167,11 +9189,6 @@ new Author({id: 1, first_name: 'User'})
     // ...
   })
 </code></pre>
-<p>After a model is saved it will be populated with all the attributes that are
-present in the database, so you don't need to manually call
-<a href="api.html#Model-instance-refresh"><code>refresh</code></a> to update it. This will use two queries unless
-the database supports the <code>RETURNING</code> statement, in which case the model will
-be saved and its data fetched with a single query.</p>
 <p>Several events fire on the model when starting the save process:</p>
 <ul>
 <li><a href="api.html#Model-event-creating"><code>"creating"</code></a> if the model is being inserted.</li>
@@ -21305,7 +21322,7 @@ async event handlers (e.g. for validations).</p>
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          March 28, 2020
+          June 7, 2020
         
       </div>
     </footer>

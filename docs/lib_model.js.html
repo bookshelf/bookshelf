@@ -1039,12 +1039,6 @@ const BookshelfModel = ModelBase.extend(
      *         // ...
      *       })
      *
-     * After a model is saved it will be populated with all the attributes that are
-     * present in the database, so you don't need to manually call
-     * {@link Model#refresh refresh} to update it. This will use two queries unless
-     * the database supports the `RETURNING` statement, in which case the model will
-     * be saved and its data fetched with a single query.
-     *
      * Several events fire on the model when starting the save process:
      * - {@link Model#event:creating "creating"} if the model is being inserted.
      * - {@link Model#event:updating "updating"} event if the model is being updated.
@@ -1104,6 +1098,12 @@ const BookshelfModel = ModelBase.extend(
      * @param {boolean} [options.debug=false]
      *   Whether to enable debugging mode or not. When enabled will show information about the
      *   queries being run.
+     * @param {boolean} [options.autoRefresh=true]
+     *   Weather to enable auto refresh such that after a model is saved it will be populated with all
+     *   the attributes that are present in the database, so you don't need to manually call
+     *   {@link Model#refresh refresh} to update it. This will use two queries unless
+     *   the database supports the `RETURNING` statement, in which case the model will
+     *   be saved and its data fetched with a single query.
      * @fires Model#saving
      * @fires Model#creating
      * @fires Model#updating
@@ -1261,7 +1261,7 @@ const BookshelfModel = ModelBase.extend(
 
               if (resp === 0 || resp.length === 0) return resp;
               if (isObjectResponse) return this;
-
+              if (options.autoRefresh === false) return this;
               return this.refresh({silent: true, transacting: options.transacting});
             })
             .then(function() {
@@ -1658,7 +1658,7 @@ module.exports = BookshelfModel;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          March 28, 2020
+          June 7, 2020
         
       </div>
     </footer>

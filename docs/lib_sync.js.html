@@ -283,7 +283,7 @@ _.extend(Sync.prototype, {
     const syncing = this.syncing;
     return this.query.insert(
       syncing.format(_.extend(Object.create(null), syncing.attributes)),
-      supportsReturning(this.query.client) ? '*' : null
+      supportsReturning(this.query.client) &amp;&amp; this.options.autoRefresh !== false ? '*' : null
     );
   }),
 
@@ -299,7 +299,7 @@ _.extend(Sync.prototype, {
     if (syncing.id === updating[syncing.idAttribute]) {
       delete updating[syncing.idAttribute];
     }
-    if (supportsReturning(query.client)) query.returning('*');
+    if (supportsReturning(query.client) &amp;&amp; this.options.autoRefresh !== false) query.returning('*');
     return query.update(updating);
   }),
 
@@ -334,7 +334,7 @@ module.exports = Sync;
         <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
         
           on
-          March 28, 2020
+          June 7, 2020
         
       </div>
     </footer>

@@ -1,5 +1,20 @@
 ## Change Log
 
+**1.2.0** <small>_Jun 07, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.1.1...1.2.0)
+
+#### Features
+
+- Add option to control auto refresh after save: [#2070](https://github.com/bookshelf/bookshelf/pull/2070)
+
+#### Tests
+
+- Adds some more integration tests to `Collection#fetch`: [#2079](https://github.com/bookshelf/bookshelf/pull/2079)
+
+#### Dependencies
+
+- Support Knex version 0.21.0 and up: [#2072](https://github.com/bookshelf/bookshelf/pull/2072)
+- Update some dependencies of dependencies to fix security warnings: [#2078](https://github.com/bookshelf/bookshelf/pull/2078)
+
 **1.1.1** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.1.0...1.1.1)
 
 #### Bug fixes
