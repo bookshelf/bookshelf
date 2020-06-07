@@ -1,4 +1,4 @@
-const {equal, deepEqual} = require('assert');
+const {equal, deepEqual, fail} = require('assert').strict;
 
 module.exports = function(bookshelf) {
   describe('Collection', function() {
@@ -98,6 +98,30 @@ module.exports = function(bookshelf) {
           .fetch()
           .tap(checkTest(this));
       });
+
+      it('returns an empty collection if no models can be fetched', function() {
+        return bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .where('owner_id', 99)
+          .fetch()
+          .then((collection) => {
+            equal(collection.length, 0);
+            equal(collection.models.length, 0);
+          });
+      });
+
+      it('throws an error if no models can be fetched with the require option', function() {
+        return bookshelf.Collection.extend({tableName: 'posts'})
+          .forge()
+          .where('owner_id', 99)
+          .fetch({require: true})
+          .then(() => {
+            fail('Expected the promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error.message, 'EmptyResponse');
+          });
+      });
     });
 
     describe('#fetchPage()', function() {
@@ -152,7 +176,7 @@ module.exports = function(bookshelf) {
           .query({where: {id: 40}})
           .fetchOne()
           .then((model) => {
-            assert.fail('Expected the promise to be rejected but it resolved');
+            fail('Expected the promise to be rejected but it resolved');
           })
           .catch((error) => {
             equal(error instanceof Author.NotFoundError, true);
@@ -165,7 +189,7 @@ module.exports = function(bookshelf) {
           .query({where: {id: 40}})
           .fetchOne()
           .then((model) => {
-            assert.fail('Expected the promise to be rejected but it resolved');
+            fail('Expected the promise to be rejected but it resolved');
           })
           .catch((error) => {
             equal(
