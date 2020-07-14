@@ -1,6 +1,4 @@
-var Promise = global.testPromise;
-var assert = require('assert');
-var equal = assert.equal;
+const {deepEqual, equal} = require('assert');
 var _ = require('lodash');
 
 module.exports = function() {
@@ -22,7 +20,7 @@ module.exports = function() {
     });
 
     beforeEach(function() {
-      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'No Id'}]);
+      collection = new Collection([{some_id: 1, name: 'Test'}, {name: 'Test2'}, {name: 'Test3'}]);
     });
 
     it('should have a tableName method that returns the tableName of the model', function() {
@@ -43,9 +41,38 @@ module.exports = function() {
     });
 
     it('should initialize the items passed to the constructor', function() {
-      equal(collection.length, 2);
+      equal(collection.length, 3);
       equal(collection.at(0).id, 1);
       equal(collection.at(1).id, undefined);
+    });
+
+    it('should use the `reset` method, to reset the collection', function() {
+      collection.reset([]);
+      equal(collection.length, 0);
+    });
+
+    it('should use _prepareModel to prep model instances', function() {
+      var model = new ModelBase({id: 1});
+      expect(model).to.equal(collection._prepareModel(model));
+      var newModel = collection._prepareModel({some_id: 1});
+      equal(newModel instanceof collection.model, true);
+    });
+
+    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
+      var spyIterator = sinon.spy(function(model) {
+        return model.id;
+      });
+
+      return collection.mapThen(spyIterator).then(function(resp) {
+        equal(spyIterator.callCount, 3);
+        deepEqual(_.compact(resp), [1]);
+      });
+    });
+
+    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
+      return collection.invokeThen('invokedMethod').then(function(resp) {
+        expect(_.compact(resp)).to.eql([1]);
+      });
     });
 
     describe('#add()', function() {
@@ -80,6 +107,34 @@ module.exports = function() {
       });
     });
 
+    describe('#first()', function() {
+      it('returns the first element in the collection', function() {
+        const first = collection.first();
+        equal(first instanceof ModelBase, true);
+        equal(first.get('name'), 'Test');
+      });
+
+      it('returns undefined if the collection is empty', function() {
+        collection = new Collection();
+        const first = collection.first();
+        equal(typeof first, 'undefined');
+      });
+    });
+
+    describe('#last()', function() {
+      it('returns the last element in the collection', function() {
+        const last = collection.last();
+        equal(last instanceof ModelBase, true);
+        equal(last.get('name'), 'Test3');
+      });
+
+      it('returns undefined if the collection is empty', function() {
+        collection = new Collection();
+        const last = collection.last();
+        equal(typeof last, 'undefined');
+      });
+    });
+
     describe('#set()', function() {
       it('should accept a single object as argument', function() {
         collection.set({some_id: 3, name: 'New Model'});
@@ -93,17 +148,20 @@ module.exports = function() {
       });
 
       it('should delete old models and add new ones by default', function() {
-        collection.set([{some_id: 1, name: 'Item 1'}, {some_id: 2, name: 'Item 2'}]);
+        collection.set([
+          {some_id: 1, name: 'Item 1'},
+          {some_id: 2, name: 'Item 2'}
+        ]);
         equal(collection.length, 2);
         equal(collection.at(0).get('name'), 'Item 1');
         equal(collection.at(1).get('name'), 'Item 2');
       });
 
       it('should delete old models and add new ones with similar binary IDs', function() {
-        collection = new Collection([{some_id: new Buffer('90', 'hex'), name: 'Test'}, {name: 'No Id'}]);
+        collection = new Collection([{some_id: Buffer.from('90', 'hex'), name: 'Test'}, {name: 'No Id'}]);
         collection.set([
-          {some_id: new Buffer('90', 'hex'), name: 'Item 1'},
-          {some_id: new Buffer('93', 'hex'), name: 'Item 2'}
+          {some_id: Buffer.from('90', 'hex'), name: 'Item 1'},
+          {some_id: Buffer.from('93', 'hex'), name: 'Item 2'}
         ]);
         equal(collection.length, 2);
         equal(collection.at(0).get('name'), 'Item 1');
@@ -117,7 +175,10 @@ module.exports = function() {
       });
 
       it('should merge duplicate models in the new set', function() {
-        collection.set([{some_id: 1, name: 'Not Test'}, {some_id: 1, name: 'Not Test As Well'}]);
+        collection.set([
+          {some_id: 1, name: 'Not Test'},
+          {some_id: 1, name: 'Not Test As Well'}
+        ]);
         expect(collection.at(0).get('name')).to.equal('Not Test As Well');
         expect(collection.toJSON().length).to.equal(collection.length);
         expect(collection.length).to.equal(1);
@@ -125,7 +186,7 @@ module.exports = function() {
 
       it('should not remove models with {remove: false} option set', function() {
         collection.set([{some_id: 2, name: 'Item2'}], {remove: false});
-        equal(collection.length, 3);
+        equal(collection.length, 4);
       });
 
       it('should not merge new attribute values with {merge: false} option set', function() {
@@ -157,35 +218,6 @@ module.exports = function() {
         collection.set(models, {add: true, remove: false, merge: false});
 
         equal(collection.get(count - 1).get('name'), 'Large-' + (count - 1));
-      });
-    });
-
-    it('should use the `reset` method, to reset the collection', function() {
-      collection.reset([]);
-      equal(collection.length, 0);
-    });
-
-    it('should use _prepareModel to prep model instances', function() {
-      var model = new ModelBase({id: 1});
-      expect(model).to.equal(collection._prepareModel(model));
-      var newModel = collection._prepareModel({some_id: 1});
-      assert.ok(newModel instanceof collection.model);
-    });
-
-    it('contains a mapThen method which calls map on the models and returns a when.all promise', function() {
-      var spyIterator = sinon.spy(function(model) {
-        return model.id;
-      });
-
-      return collection.mapThen(spyIterator).then(function(resp) {
-        spyIterator.should.have.been.calledTwice;
-        expect(_.compact(resp)).to.eql([1]);
-      });
-    });
-
-    it('contains an invokeThen method which does an invoke on the models and returns a when.all promise', function() {
-      return collection.invokeThen('invokedMethod').then(function(resp) {
-        expect(_.compact(resp)).to.eql([1]);
       });
     });
   });

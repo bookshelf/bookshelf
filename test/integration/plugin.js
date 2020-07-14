@@ -12,11 +12,6 @@ module.exports = function(Bookshelf) {
     var Models = require('./helpers/objects')(Bookshelf).Models;
     var Site = Models.Site;
 
-    it('can be the name of an included plugin', function() {
-      Bookshelf.plugin('registry');
-      expect(Bookshelf).to.itself.respondTo('model');
-    });
-
     it('can be the path to a plugin', function() {
       var plugin = require('./helpers/plugin');
       Bookshelf.plugin(path.resolve(__dirname, 'helpers/plugin'), options);

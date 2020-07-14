@@ -3,31 +3,31 @@ data.
 
 ## Creating your own Models
 
-To create your models you {@link Model.extend extend} them from {@link Model bookshelf.Model} and add any methods and
-relations that are needed. The first argument to `extend()` should be an object with the instance methods and properties
-you want to set on your model, and the second argument is only used if you want to add static methods and properties.
+To create your models you should use the {@link Bookshelf#model bookshelf.model} method and add any methods and
+relations that are needed. The first argument to `model()` should be a string, defining the model's name. The second is
+an object with the instance methods and properties you want to set on your model, and the third argument is only used if
+you want to add static methods and properties.
 
 The following example sets up a new model that could be used to manage customer sessions on a website.
 
 ```js
 const Promise = require('bluebird')
 const bcrypt = Promise.promisifyAll(require('bcrypt'))
-const Account = require('./account')
 
 // Defining our Customer model
-var Customer = bookshelf.Model.extend({
+const Customer = bookshelf.model('Customer', {
   // Instance properties and methods are defined here
   tableName: 'customers',
 
   account() {
     // This establishes a relation with the Account model
-    return this.belongsTo(Account)
+    return this.belongsTo('Account')
   }
 }, {
   // Static class properties and methods
   login: Promise.method((email, password) => {
     return new this({email})
-      .fetch({require: true})
+      .fetch()
       .tap((customer) => {
         return bcrypt.compareAsync(password, customer.get('password'))
           .then((valid) => {
@@ -41,6 +41,8 @@ var Customer = bookshelf.Model.extend({
 This model could then be used in a controller to login the customer like this:
 
 ```js
+const Customer = bookshelf.model('Customer')
+
 Customer.login(email, password).then((customer) => {
   res.json(customer)
 }).catch(Customer.NotFoundError, () => {
@@ -51,9 +53,8 @@ Customer.login(email, password).then((customer) => {
 ```
 
 Note that this would return the entire `customer` object including the password. This is usually not desirable, so in
-actual production applications you should use the
-[visibility plugin](https://github.com/bookshelf/bookshelf/wiki/Plugin:-Visibility) to hide certain attributes when
-serializing the model.
+actual production applications you should use the model's {@link Model#hidden} or {@link Model#visible} properties to
+hide certain attributes when serializing the model.
 
 ### Validation
 
@@ -64,7 +65,7 @@ validation library and it should be relatively easy to integrate. Here's an exam
 ```js
 const checkit = require('checkit')
 
-const Customer = bookshelf.Model.extend({
+const Customer = bookshelf.model('Customer', {
   initialize() {
     this.constructor.__super__.initialize.apply(this, arguments)
     this.on('saving', this.validateSave)

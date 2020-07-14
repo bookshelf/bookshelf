@@ -183,10 +183,6 @@ module.exports = function(Bookshelf) {
     parse: _parsed
   });
 
-  var Posts = Bookshelf.Collection.extend({
-    model: Post
-  });
-
   var Comment = Bookshelf.Model.extend({
     tableName: 'comments',
     defaults: {
@@ -246,10 +242,6 @@ module.exports = function(Bookshelf) {
   var PhotoParsed = Photo.extend({
     parse: _parsed,
     format: _format
-  });
-
-  var Photos = Bookshelf.Collection.extend({
-    model: Photo
   });
 
   var Settings = Bookshelf.Model.extend({tableName: 'Settings'});
@@ -417,7 +409,52 @@ module.exports = function(Bookshelf) {
     }
   });
 
+  function generateEventModels(eventHooks) {
+    var Photo = Bookshelf.Model.extend({
+      tableName: 'photos',
+      imageable: function() {
+        return this.morphTo('imageable', Site, [Author, 'profile_pic']);
+      }
+    });
+
+    var Site = Bookshelf.Model.extend({
+      tableName: 'sites',
+      photos: function() {
+        return this.morphMany(Photo, 'imageable');
+      },
+      initialize: function() {
+        this.constructor.__super__.initialize.apply(this, arguments);
+        this.on('fetching', function(model, columns, options) {
+          eventHooks.fetching('sites', model, columns, options);
+        });
+      }
+    });
+
+    var Author = Bookshelf.Model.extend({
+      tableName: 'authors',
+      site: function() {
+        return this.belongsTo(Site);
+      },
+      photo: function() {
+        return this.morphOne(Photo, 'imageable', 'profile_pic');
+      },
+      initialize: function() {
+        this.constructor.__super__.initialize.apply(this, arguments);
+        this.on('fetching', function(model, columns, options) {
+          eventHooks.fetching('authors', model, columns, options);
+        });
+      }
+    });
+
+    return {
+      Photo,
+      Site,
+      Author
+    };
+  }
+
   return {
+    generateEventModels,
     Models: {
       Site: Site,
       SiteParsed: SiteParsed,

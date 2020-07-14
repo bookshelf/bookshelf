@@ -1,8 +1,6 @@
 var _ = require('lodash');
 var uuid = require('uuid');
-
-var Promise = global.testPromise;
-
+var Promise = require('bluebird');
 var assert = require('assert');
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
@@ -306,6 +304,68 @@ module.exports = function(bookshelf) {
       });
     });
 
+    describe('#requireFetch', function() {
+      const FalseAuthor = Models.Author.extend({requireFetch: false});
+
+      describe('with #fetch()', function() {
+        it('resolves to null if no record exists and the {require: false} model option is set', function() {
+          return new FalseAuthor({id: 200}).fetch().then((model) => {
+            equal(model, null);
+          });
+        });
+
+        it('allows overriding the model level {require: false} option', function() {
+          return new FalseAuthor({id: 200})
+            .fetch({require: true})
+            .then((model) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error instanceof FalseAuthor.NotFoundError, true);
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('rejects with NotFoundError by default', function() {
+          return new Models.Author({id: 200})
+            .fetch()
+            .then((model) => {
+              assert.fail('Expected the promise to be rejected but it resolved');
+            })
+            .catch((error) => {
+              equal(error instanceof Models.Author.NotFoundError, true);
+              equal(error.message, 'EmptyResponse');
+            });
+        });
+
+        it('allows overriding the default Model level option', function() {
+          return new FalseAuthor({id: 200}).fetch({require: false}).then((model) => {
+            equal(model, null);
+          });
+        });
+      });
+
+      describe('with #fetchAll()', function() {
+        it('resolves to null if no record exists and the {require: false} model option is set', function() {
+          return new FalseAuthor()
+            .where({id: 200})
+            .fetchAll()
+            .then((models) => {
+              equal(models.length, 0);
+            });
+        });
+
+        it('is not affected by the model level {require: true} option', function() {
+          return new Models.Author()
+            .where({id: 200})
+            .fetchAll()
+            .then((models) => {
+              equal(models.length, 0);
+            });
+        });
+      });
+    });
+
     describe('query', function() {
       var model;
 
@@ -366,69 +426,6 @@ module.exports = function(bookshelf) {
 
       it('should set the tableName for the query builder', function() {
         equal(table.query()._single.table, 'customers');
-      });
-    });
-
-    describe('toJSON', function() {
-      it('includes the idAttribute in the hash', function() {
-        var m = new (bookshelf.Model.extend({
-          idAttribute: '_id'
-        }))({_id: 1, name: 'Joe'});
-        deepEqual(m.toJSON(), {_id: 1, name: 'Joe'});
-      });
-
-      it('includes the relations loaded on the model', function() {
-        var m = new bookshelf.Model({id: 1, name: 'Test'});
-        m.relations = {
-          someList: new bookshelf.Collection([{id: 1}, {id: 2}])
-        };
-        var json = m.toJSON();
-
-        deepEqual(_.keys(json), ['id', 'name', 'someList']);
-        equal(json.someList.length, 2);
-      });
-
-      it("doesn't include the relations loaded on the model if {shallow: true} is passed", function() {
-        var m = new bookshelf.Model({id: 1, name: 'Test'});
-        m.relations = {
-          someList: new bookshelf.Collection([{id: 1}, {id: 2}])
-        };
-        var shallow = m.toJSON({shallow: true});
-
-        deepEqual(_.keys(shallow), ['id', 'name']);
-      });
-
-      it('omits new models from collections and relations when {omitNew: true} is passed.', function() {
-        var model = new bookshelf.Model({id: 1, attr1: 'Test'});
-        model.relations = {
-          someList: new bookshelf.Collection([{id: 2}, {attr2: 'Test'}]),
-          someRel: new bookshelf.Model({id: 3}),
-          otherRel: new bookshelf.Model({attr3: 'Test'})
-        };
-        var coll = new bookshelf.Collection([
-          model,
-          new bookshelf.Model({attr5: 'Test'}),
-          new bookshelf.Model({id: 4, attr4: 'Test'})
-        ]);
-        var json = coll.toJSON();
-        equal(json.length, 3);
-        deepEqual(_.keys(json[0]), ['id', 'attr1', 'someList', 'someRel', 'otherRel']);
-        deepEqual(_.keys(json[1]), ['attr5']);
-        deepEqual(_.keys(json[2]), ['id', 'attr4']);
-        equal(json[0].someList.length, 2);
-        var omitNew = coll.toJSON({omitNew: true});
-        equal(omitNew.length, 2);
-        deepEqual(_.keys(omitNew[0]), ['id', 'attr1', 'someList', 'someRel']);
-        deepEqual(_.keys(omitNew[1]), ['id', 'attr4']);
-        equal(omitNew[0].someList.length, 1);
-      });
-
-      it('returns null for a new model when {omitNew: true} is passed.', function() {
-        var model = new bookshelf.Model({attr1: 'Test'});
-        var json = model.toJSON();
-        deepEqual(_.keys(json), ['attr1']);
-        var omitNew = model.toJSON({omitNew: true});
-        deepEqual(omitNew, null);
       });
     });
 
@@ -520,7 +517,7 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('fetch', function() {
+    describe('#fetch()', function() {
       var Site = Models.Site;
       var Author = Models.Author;
 
@@ -599,8 +596,20 @@ module.exports = function(bookshelf) {
           });
       });
 
-      it('resolves to null if no record exists', function() {
-        return new Author({id: 200}).fetch().then(function(model) {
+      it('rejects with an error if no record exists', function() {
+        return new Author({id: 200})
+          .fetch()
+          .then((model) => {
+            assert.fail('Expected the promise to be rejected but it resolved');
+          })
+          .catch((error) => {
+            equal(error instanceof Author.NotFoundError, true);
+            equal(error.message, 'EmptyResponse');
+          });
+      });
+
+      it('resolves to null if no record exists and the {require: false} option is passed', function() {
+        return new Author({id: 200}).fetch({require: false}).then((model) => {
           equal(model, null);
         });
       });
@@ -684,9 +693,39 @@ module.exports = function(bookshelf) {
             return new Models.Author({id: newAuthorId}).destroy();
           });
       });
+
+      it("does not try to format the idAttribute if it's already formatted", function() {
+        return new Models.OrgModel({organization_id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: false
+            });
+          } else {
+            expect(organization.attributes).to.deep.equal({
+              organization_id: 2,
+              id: 2,
+              name: 'Duplicates',
+              is_active: 0
+            });
+          }
+        });
+      });
+
+      it("formats the idAttribute if it's not already formatted", function() {
+        return new Models.OrgModel({id: 2}).fetch().then((organization) => {
+          if (dialect === 'postgresql') {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: false});
+          } else {
+            expect(organization.attributes).to.deep.equal({id: 2, name: 'Duplicates', is_active: 0});
+          }
+        });
+      });
     });
 
-    describe('fetchAll', function() {
+    describe('#fetchAll()', function() {
       var Site = Models.Site;
 
       it('triggers `fetching:collection` and `fetched:collection` events', function() {
@@ -723,6 +762,303 @@ module.exports = function(bookshelf) {
         return new Models.Member().fetchAll().then(function(members) {
           expect(members.length).to.equal(2);
           expect(members.pluck('name')).to.include.members(['Alice', 'Shuri']);
+        });
+      });
+
+      it('returns an empty collection if there are no results', function() {
+        return new Models.Member()
+          .where('name', 'hal9000')
+          .fetchAll()
+          .then((models) => {
+            equal(models.length, 0);
+          });
+      });
+    });
+
+    describe('#fetchPage()', function() {
+      it('fetches a single page of results with defaults', function() {
+        return Models.Customer.forge()
+          .fetchPage()
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+
+            ['rowCount', 'pageCount', 'page', 'pageSize'].forEach(function(prop) {
+              expect(results.pagination).to.have.property(prop);
+            });
+
+            expect(results.pagination.rowCount).to.equal(4);
+            expect(results.pagination.pageCount).to.equal(1);
+            expect(results.pagination.page).to.equal(1);
+            expect(results.pagination.pageSize).to.equal(10);
+          });
+      });
+
+      it('fetches a single page of results without returning rowCount or pageCount', function() {
+        return Models.Customer.forge()
+          .fetchPage({disableCount: true})
+          .then(function(results) {
+            expect(results).to.have.property('models');
+            expect(results).to.have.property('pagination');
+
+            expect(results.pagination).to.have.property('page');
+            expect(results.pagination).to.have.property('pageSize');
+            expect(results.pagination).to.not.have.property('rowCount');
+            expect(results.pagination).to.not.have.property('pageCount');
+
+            expect(results.pagination.page).to.equal(1);
+            expect(results.pagination.pageSize).to.equal(10);
+          });
+      });
+
+      it('returns an empty collection if there are no results', function() {
+        return bookshelf
+          .knex('critics_comments')
+          .del()
+          .then(() => Models.CriticComment.forge().fetchPage())
+          .then((results) => {
+            equal(results.length, 0);
+          });
+      });
+
+      it('returns an empty collection with the {require: false} option if there are no results', function() {
+        return bookshelf
+          .knex('critics_comments')
+          .del()
+          .then(function() {
+            return Models.CriticComment.forge().fetchPage({require: false});
+          })
+          .then(function(results) {
+            expect(results.length).to.equal(0);
+          });
+      });
+
+      it('returns the limit and offset instead of page and pageSize', function() {
+        return Models.Customer.forge()
+          .fetchPage({limit: 2, offset: 2})
+          .then(function(results) {
+            ['rowCount', 'pageCount', 'limit', 'offset'].forEach(function(prop) {
+              expect(results.pagination).to.have.property(prop);
+            });
+          });
+      });
+
+      it('fetches a page of results with specified page size', function() {
+        return Models.Customer.forge()
+          .fetchPage({pageSize: 2})
+          .then(function(results) {
+            expect(results.pagination.rowCount).to.equal(4);
+            expect(results.pagination.pageCount).to.equal(2);
+            expect(results.pagination.page).to.equal(1);
+          });
+      });
+
+      it('fetches a page with specified offset', function() {
+        return Models.Customer.forge()
+          .orderBy('id', 'ASC')
+          .fetchPage({limit: 2, offset: 2})
+          .then(function(results) {
+            expect(parseInt(results.models[0].get('id'))).to.equal(3);
+            expect(parseInt(results.models[1].get('id'))).to.equal(4);
+          });
+      });
+
+      it('fetches a page by page number', function() {
+        return Models.Customer.forge()
+          .orderBy('id', 'ASC')
+          .fetchPage({pageSize: 2, page: 2})
+          .then(function(results) {
+            expect(parseInt(results.models[0].get('id'))).to.equal(3);
+            expect(parseInt(results.models[1].get('id'))).to.equal(4);
+          });
+      });
+
+      it('fetches a page when other columns are specified on the original query', function() {
+        return Models.Customer.forge()
+          .query(function(qb) {
+            qb.column.apply(qb, ['name']);
+          })
+          .fetchPage()
+          .then(function(results) {
+            expect(results.pagination.rowCount).to.equal(4);
+          });
+      });
+
+      it('returns correct values for rowCount and pageCount when hasTimestamps is used', function() {
+        return Models.Admin.forge()
+          .fetchPage({page: 1, pageSize: 4})
+          .then(function(admins) {
+            expect(admins.pagination.rowCount).to.be.a('number');
+            expect(admins.pagination.pageCount).to.be.a('number');
+          });
+      });
+
+      describe('inside a transaction', function() {
+        it('returns consistent results for rowCount and number of models', function() {
+          return bookshelf.transaction(function(t) {
+            var options = {transacting: t};
+
+            return Models.Site.forge({name: 'A new site'})
+              .save(null, options)
+              .then(function() {
+                options.pageSize = 25;
+                options.page = 1;
+                return Models.Site.forge().fetchPage(options);
+              })
+              .then(function(sites) {
+                expect(sites.pagination.rowCount).to.eql(sites.models.length);
+              });
+          });
+        });
+      });
+
+      describe('with groupBy', function() {
+        it('counts grouped rows instead of total rows', function() {
+          var total;
+
+          return Models.Blog.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Blog.forge()
+                .query(function(qb) {
+                  qb.max('id');
+                  qb.groupBy('site_id');
+                  qb.whereNotNull('site_id');
+                })
+                .fetchPage();
+            })
+            .then(function(blogs) {
+              expect(blogs.pagination.rowCount).to.equal(blogs.length);
+              expect(blogs.length).to.be.below(total);
+            });
+        });
+
+        it('counts grouped rows when using table name qualifier', function() {
+          var total;
+
+          return Models.Blog.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Blog.forge()
+                .query(function(qb) {
+                  qb.max('id');
+                  qb.groupBy('blogs.site_id');
+                  qb.whereNotNull('site_id');
+                })
+                .fetchPage();
+            })
+            .then(function(blogs) {
+              expect(blogs.pagination.rowCount).to.equal(blogs.length);
+              expect(blogs.length).to.be.below(total);
+            });
+        });
+      });
+
+      describe('with distinct', function() {
+        it('counts distinct occurences of a column instead of total rows', function() {
+          var total;
+
+          return Models.Post.count()
+            .then(function(count) {
+              total = parseInt(count, 10);
+
+              return Models.Post.forge()
+                .query(function(qb) {
+                  qb.distinct('owner_id');
+                })
+                .fetchPage();
+            })
+            .then(function(distinctPostOwners) {
+              expect(distinctPostOwners.pagination.rowCount).to.equal(distinctPostOwners.length);
+              expect(distinctPostOwners.length).to.be.below(total);
+            });
+        });
+      });
+
+      describe('with fetch options', function() {
+        var Site = Models.Site;
+
+        afterEach(function() {
+          delete Site.prototype.initialize;
+        });
+
+        it('ignores standard options for count query', function() {
+          const allOptions = [];
+
+          Site.prototype.initialize = function() {
+            this.on('fetching:collection', function(collection, columns, options) {
+              allOptions.push(_.omit(options, 'query'));
+            });
+          };
+
+          var site = new Site();
+
+          return site
+            .fetchPage({
+              require: true,
+              withRelated: ['blogs'],
+              columns: 'name'
+            })
+            .then(function() {
+              expect(allOptions.length).equals(2);
+              expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+              const countOptions = allOptions.find(function(option) {
+                return !_.has(option, ['require', 'withRelated', 'columns']);
+              });
+              const fetchOptions = allOptions.find(function(option) {
+                return _.has(option, ['require', 'withRelated', 'columns']);
+              });
+
+              expect(countOptions).not.to.be.null;
+              expect(fetchOptions).not.to.be.null;
+            });
+        });
+
+        it('keeps custom options for count query', function() {
+          const allOptions = [];
+
+          Site.prototype.initialize = function() {
+            this.on('fetching:collection', function(collection, columns, options) {
+              allOptions.push(_.omit(options, 'query'));
+            });
+          };
+
+          var site = new Site();
+
+          return site
+            .fetchPage({
+              withRelated: ['blogs'],
+              customOption: true
+            })
+            .then(function() {
+              expect(allOptions.length).equals(2);
+              expect(allOptions[1]).not.deep.equals(allOptions[0]);
+
+              const countOptions = allOptions.find(function(option) {
+                return !_.has(option, ['withRelated']);
+              });
+              const fetchOptions = allOptions.find(function(option) {
+                return _.has(option, ['withRelated']);
+              });
+
+              expect(countOptions).not.to.be.null;
+              expect(countOptions.customOption).to.equal(true);
+              expect(countOptions.customOption).to.equal(fetchOptions.customOption);
+              expect(fetchOptions).not.to.be.null;
+              expect(fetchOptions.customOption).to.equal(true);
+            });
+        });
+      });
+    });
+
+    describe('.fetchPage()', function() {
+      it('fetches a page without having to call .forge() manually', function() {
+        return Models.Customer.fetchPage().then(function(results) {
+          expect(results).to.have.property('models');
+          expect(results).to.have.property('pagination');
         });
       });
     });
@@ -762,20 +1098,26 @@ module.exports = function(bookshelf) {
       });
     });
 
-    describe('save', function() {
+    describe('#save()', function() {
       var Site = Models.Site;
+
+      after(() => {
+        return Site.forge({id: 6})
+          .destroy()
+          .catch(() => {});
+      });
 
       it('saves a new object', function() {
         return new Site({name: 'Fourth Site'})
           .save()
           .then(function(m) {
-            equal(Number(m.get('id')), 4);
+            equal(Number(m.get('id')), 5);
             return new bookshelf.Collection(null, {model: Site}).fetch();
           })
           .then(function(c) {
-            equal(c.last().id, 4);
+            equal(c.last().id, 5);
             equal(c.last().get('name'), 'Fourth Site');
-            equal(c.length, 4);
+            equal(c.length, 5);
           });
       });
 
@@ -820,27 +1162,27 @@ module.exports = function(bookshelf) {
       });
 
       it('updates an existing object', function() {
-        return new Site({id: 4, name: 'Fourth Site Updated'})
+        return new Site({id: 5, name: 'Fourth Site Updated'})
           .save()
           .then(function() {
             return new bookshelf.Collection(null, {model: Site}).fetch();
           })
           .then(function(c) {
-            equal(c.last().id, 4);
+            equal(c.last().id, 5);
             equal(c.last().get('name'), 'Fourth Site Updated');
-            equal(c.length, 4);
+            equal(c.length, 5);
           });
       });
 
       it('allows passing a method to save, to call insert or update explicitly', function() {
-        return new Site({id: 5, name: 'Fifth site, explicity created'})
+        return new Site({id: 6, name: 'Fifth site, explicity created'})
           .save(null, {method: 'insert'})
           .then(function() {
             return Site.fetchAll();
           })
           .then(function(c) {
-            equal(c.length, 5);
-            equal(c.last().id, 5);
+            equal(c.length, 6);
+            equal(c.last().id, 6);
             equal(c.last().get('name'), 'Fifth site, explicity created');
           });
       });
@@ -876,6 +1218,7 @@ module.exports = function(bookshelf) {
           equal(_.filter(this._statements, {grouping: 'where'}).length, 1);
           return Promise.resolve(1);
         };
+        m.refresh = () => Promise.resolve({});
 
         return m.save(null, {method: 'update'}).then(function() {
           var m2 = new bookshelf.Model({id: 1}).query({
@@ -886,6 +1229,7 @@ module.exports = function(bookshelf) {
             equal(_.filter(this._statements, {grouping: 'where'}).length, 2);
             return {};
           };
+          m2.refresh = () => Promise.resolve({});
 
           return m2.save(null, {method: 'update'});
         });
@@ -894,6 +1238,7 @@ module.exports = function(bookshelf) {
       it('allows {patch: true} as an option for only updating passed data', function() {
         var user = new bookshelf.Model({id: 1, first_name: 'Testing'}, {tableName: 'users'});
         var query = user.query();
+        user.refresh = () => Promise.resolve({});
 
         query.then = function(onFulfilled, onRejected) {
           deepEqual(this._single.update, {bio: 'Short user bio'});
@@ -955,6 +1300,36 @@ module.exports = function(bookshelf) {
         return user.save();
       });
 
+      it('refreshes the model after updating', function() {
+        return new Models.Member({id: 1}).save({name: 'Okoye'}).then((member) => {
+          deepEqual(member.attributes, {id: 1, name: 'Okoye', organization_id: 1});
+        });
+      });
+
+      it('refreshes the model after inserting', function() {
+        return new Models.Tag({name: 'books'}).save().then((tag) => {
+          deepEqual(tag.attributes, {id: 5, name: 'books'});
+        });
+      });
+
+      it('does not refresh the model if {autoRefresh: false} option is passed', function() {
+        return new Models.Member({id: 1}).save({name: 'Okoye'}, {autoRefresh: false}).then((member) => {
+          deepEqual(member.attributes, {id: 1, name: 'Okoye'});
+        });
+      });
+
+      it('does not trigger a "fetched" event after refreshing the model', function() {
+        const member = new Models.Member({id: 1});
+        let isFetchedTriggered = false;
+        member.on('fetched', () => {
+          isFetchedTriggered = true;
+        });
+
+        return member.save({name: 'Shuri'}).then(() => {
+          equal(isFetchedTriggered, false);
+        });
+      });
+
       it('rejects if the saving event throws an error', function() {
         var Test = bookshelf.Model.extend({
           tableName: 'test',
@@ -1011,7 +1386,7 @@ module.exports = function(bookshelf) {
         return site.save(null, testOptions).call('destroy');
       });
 
-      it('Will not break with prefixed id, #583', function() {
+      it('will not break with prefixed id, #583', function() {
         var acmeOrg = new Models.OrgModel({
           name: 'ACME, Inc',
           is_active: true
@@ -1029,10 +1404,7 @@ module.exports = function(bookshelf) {
             equal(acmeOrg1.attributes.name, 'ACME, Inc');
             equal(acmeOrg1.attributes.organization_id, undefined);
             equal(acmeOrg1.attributes.organization_name, undefined);
-
             expect(acmeOrg.attributes.name).to.equal('ACME, Inc');
-            // field name needs to be processed through model.parse
-            equal(acmeOrg.attributes.organization_id, undefined);
           });
       });
     });
@@ -1305,6 +1677,7 @@ module.exports = function(bookshelf) {
         });
 
         it("does not update created_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1313,7 +1686,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('created_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save('username', 'pablo');
               });
             })
@@ -1323,6 +1696,7 @@ module.exports = function(bookshelf) {
         });
 
         it("will automatically set the updated_at timestamp if the user doesn't set it", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1331,16 +1705,18 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save('username', 'pablo');
               });
             })
             .then(function(updatedAdmin) {
-              expect(updatedAdmin.get('updated_at')).to.not.be.eql(originalDate);
+              const updatedDate = updatedAdmin.get('updated_at');
+              expect(updatedDate.getTime()).to.not.equal(originalDate.getTime());
             });
         });
 
         it("will not update the updated_at timestamp if the model hasn't changed", function() {
+          this.slow(2000);
           var admin = new Models.Admin();
           var originalDate;
 
@@ -1349,7 +1725,7 @@ module.exports = function(bookshelf) {
             .then(function(savedAdmin) {
               originalDate = savedAdmin.get('updated_at');
 
-              return Promise.delay(100).then(function() {
+              return Promise.delay(1000).then(function() {
                 return savedAdmin.save();
               });
             })
@@ -1361,8 +1737,8 @@ module.exports = function(bookshelf) {
         it('will set the updated_at timestamp to the user supplied value', function() {
           var admin = new Models.Admin();
           var oldUpdatedAt;
-          var newUpdatedAt = new Date();
-          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 1);
+          var newUpdatedAt = new Date('2019-09-01 12:13:14');
+          newUpdatedAt.setMinutes(newUpdatedAt.getMinutes() + 10);
 
           return admin
             .save()
@@ -1405,6 +1781,37 @@ module.exports = function(bookshelf) {
             .then(function(updatedAdmin) {
               expect(updatedAdmin.get('created_at')).to.be.eql(newCreatedAt);
               expect(updatedAdmin.get('created_at')).to.be.not.eql(oldCreatedAt);
+            });
+        });
+
+        it('saves correct attributes when modified inside event hook', function() {
+          var author = new Models.Author({
+            site_id: 1,
+            first_name: 'donny',
+            last_name: 'immutable'
+          });
+
+          return author
+            .save()
+            .then(() => {
+              var onSaving = function() {
+                // don't allow modification of 'last_name' field
+                this.attributes = this.pick(['id', 'site_id', 'first_name']);
+              };
+
+              author.on('saving', function() {
+                onSaving.apply(this, arguments);
+              });
+
+              return author.save({first_name: 'tony', last_name: 'ravioli'});
+            })
+            .then(() => {
+              return author.refresh();
+            })
+            .then(() => {
+              expect(author.get('first_name')).to.equal('tony');
+              expect(author.get('last_name')).to.equal('immutable');
+              return author.destroy();
             });
         });
       });
@@ -1587,7 +1994,7 @@ module.exports = function(bookshelf) {
     describe('sync', function() {
       it('creates a new instance of Sync', function() {
         var model = new bookshelf.Model();
-        equal(model.sync(model) instanceof require('../../lib/sync'), true);
+        equal(model.sync() instanceof require('../../lib/sync'), true);
       });
     });
 

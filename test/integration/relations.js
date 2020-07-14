@@ -1,4 +1,4 @@
-var Promise = global.testPromise;
+const Promise = require('bluebird');
 var equal = require('assert').equal;
 var helpers = require('./helpers');
 
@@ -510,7 +510,7 @@ module.exports = function(Bookshelf) {
                   .related('admins')
                   .fetch()
                   .then(function(c) {
-                    c.each(function(m) {
+                    c.forEach(function(m) {
                       equal(m.hasChanged(), false);
                     });
                     equal(c.at(0).pivot.get('item'), 'test');
@@ -544,7 +544,7 @@ module.exports = function(Bookshelf) {
                   });
                 }),
                 admins2.on('detached', function(c) {
-                  return c.fetch().then(function(c) {
+                  return c.fetch({require: false}).then(function(c) {
                     equal(c.length, 0);
                   });
                 })
@@ -592,7 +592,7 @@ module.exports = function(Bookshelf) {
                   .related('admins')
                   .fetch()
                   .then(function(c) {
-                    c.each(function(m) {
+                    c.forEach(function(m) {
                       equal(m.hasChanged(), false);
                     });
                     equal(c.at(0).pivot.get('item'), 'test');
@@ -626,7 +626,7 @@ module.exports = function(Bookshelf) {
                   });
                 }),
                 admins2.on('detached', function(c) {
-                  return c.fetch().then(function(c) {
+                  return c.fetch({require: false}).then(function(c) {
                     equal(c.length, 0);
                   });
                 })
@@ -744,7 +744,7 @@ module.exports = function(Bookshelf) {
               throw new Error('this should not happen');
             })
             .catch(function(err) {
-              assert(err instanceof Error);
+              equal(err instanceof Error, true);
             });
         });
       });
@@ -881,7 +881,7 @@ module.exports = function(Bookshelf) {
                 "The target polymorphic model could not be determined because it's missing the " + 'type attribute';
               expect(error.message).to.equal(expectedMessage);
             })
-            .finally(function() {
+            .then(function() {
               return Photo.where('imageable_type', null).destroy({
                 require: false
               });
@@ -908,7 +908,7 @@ module.exports = function(Bookshelf) {
                 'The target polymorphic type "' + badType + '" is not one of the defined target types';
               expect(error.message).to.equal(expectedMessage);
             })
-            .finally(function() {
+            .then(function() {
               return Photo.where('imageable_type', badType).destroy({
                 require: false
               });
@@ -1299,7 +1299,7 @@ module.exports = function(Bookshelf) {
       ].forEach(function(v) {
         it('should trigger pivot model lifecycle event: ' + v, function() {
           return joinModelLifecycleRoutine(v).catch(function(err) {
-            assert(err instanceof Error);
+            equal(err instanceof Error, true);
             equal(err.message, '`' + v + '` triggered on JoinModel()');
           });
         });
@@ -1398,8 +1398,8 @@ module.exports = function(Bookshelf) {
 
     describe('Binary ID relations', function() {
       it('should group relations properly with binary ID columns', function() {
-        const critic1Id = new Buffer('93', 'hex');
-        const critic2Id = new Buffer('90', 'hex');
+        const critic1Id = Buffer.from('93', 'hex');
+        const critic2Id = Buffer.from('90', 'hex');
         const critic1 = new Critic({id: critic1Id, name: '1'});
         const critic2 = new Critic({id: critic2Id, name: '2'});
         const comment1 = new CriticComment({critic_id: critic1Id, comment: 'c1-1'});
@@ -1423,6 +1423,21 @@ module.exports = function(Bookshelf) {
             expect(critics[0].comments).to.have.lengthOf(2);
             expect(critics[1].comments).to.have.lengthOf(1);
           });
+      });
+    });
+
+    describe('PR #2059 - opts.query on fetching with morphTo', function() {
+      it('should correctly set query on fetching with morphTo', async function() {
+        const {Photo} = objs.generateEventModels({
+          fetching: function(table, model, columns, options) {
+            // Check that options.query actually queries this table
+            equal(options.query._single.table, table);
+          }
+        });
+
+        // Execute a query that will trigger fetching events
+        // These have assertions
+        return Photo.forge().fetchAll({withRelated: 'imageable'});
       });
     });
   });

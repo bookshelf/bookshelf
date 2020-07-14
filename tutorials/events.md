@@ -12,7 +12,7 @@ In order to attach an event listener to a model you can do it in the {@link Mode
 method like so:
 
 ```js
-const User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -41,7 +41,7 @@ They are fired in this order and it's possible to prevent the request from advan
 returning a rejected Promise from any one of these event listeners, e.g.:
 
 ```js
-const User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -63,7 +63,7 @@ This feature can be used to perform validation before saving a model. For exampl
 already exists and preventing the model from being saved if it does:
 
 ```js
-const User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {
@@ -97,7 +97,7 @@ Note that you can get the model's previous attributes after it's destroyed by ca
 {@link Model#previousAttributes previousAttributes} method:
 
 ```js
-const User = bookshelf.Model.extend({
+const User = bookshelf.model('User', {
   tableName: 'users',
 
   initialize() {

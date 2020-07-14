@@ -1,5 +1,3 @@
-var Promise = global.testPromise;
-
 module.exports = function(bookshelf) {
   var knex = bookshelf.knex;
 
@@ -282,9 +280,15 @@ module.exports = function(bookshelf) {
 
     knex('users').insert({uid: 1, username: 'root'}),
 
-    knex('roles').insert({rid: 4, name: 'admin'}),
+    knex('roles').insert([
+      {rid: 4, name: 'admin'},
+      {rid: 5, name: 'accouting'}
+    ]),
 
-    knex('users_roles').insert({uid: 1, rid: 4}),
+    knex('users_roles').insert([
+      {uid: 1, rid: 4},
+      {uid: 1, rid: 5}
+    ]),
 
     knex('Customer').insert([
       {id: 1, name: 'Customer1'},
@@ -293,11 +297,21 @@ module.exports = function(bookshelf) {
       {id: 4, name: 'Customer4'}
     ]),
 
-    knex('Settings').insert([{id: 1, Customer_id: 1, data: 'Europe/Paris'}, {id: 2, Customer_id: 4, data: 'UTC'}]),
+    knex('Settings').insert([
+      {id: 1, Customer_id: 1, data: 'Europe/Paris'},
+      {id: 2, Customer_id: 4, data: 'UTC'}
+    ]),
 
-    knex('hostnames').insert([{hostname: 'google.com', instance_id: 3}, {hostname: 'apple.com', instance_id: 10}]),
+    knex('hostnames').insert([
+      {hostname: 'google.com', instance_id: 3},
+      {hostname: 'apple.com', instance_id: 10}
+    ]),
 
-    knex('instances').insert([{id: 3, name: 'search engine'}, {id: 4, name: 'not used'}, {id: 10, name: 'computers'}]),
+    knex('instances').insert([
+      {id: 3, name: 'search engine'},
+      {id: 4, name: 'not used'},
+      {id: 10, name: 'computers'}
+    ]),
 
     knex('parsed_users').insert({id: 10, name: 'test'}),
 

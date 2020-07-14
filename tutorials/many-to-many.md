@@ -1,40 +1,40 @@
 Many-to-many associations can be created with {@link Model#belongsToMany belongsToMany}, and {@link Model#through through} relation types.
 
 ```js
-var Book = bookshelf.Model.extend({
+const Book = bookshelf.model('Book', {
   tableName: 'books',
-  authors: function() {
-    return this.belongsToMany(Author);
+  authors() {
+    return this.belongsToMany('Author')
   }
-});
+})
 
-var Author = bookshelf.Model.extend({
+const Author = bookshelf.model('Author', {
   tableName: 'authors',
-  books: function() {
-    return this.belongsToMany(Book);
+  books() {
+    return this.belongsToMany('Book')
   }
-});
+})
 ```
 A Knex migration for the above relationship could be created with:
 
 ```js
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('books', function(table) {
-    table.increments('id').primary();
-    table.string('name');
+    table.increments('id').primary()
+    table.string('name')
   }).createTable('authors', function(table) {
-    table.increments('id').primary();
-    table.string('name');
+    table.increments('id').primary()
+    table.string('name')
   }).createTable('authors_books', function(table) {
-    table.integer('author_id').unsigned().references('authors.id');
-    table.integer('book_id').unsigned().references('books.id');
-  });
-};
+    table.integer('author_id').unsigned().references('authors.id')
+    table.integer('book_id').unsigned().references('books.id')
+  })
+}
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('authors_books')
     .dropTable('authors')
-    .dropTable('books');
-};
+    .dropTable('books')
+}
 ```
 See {@tutorial associations}.

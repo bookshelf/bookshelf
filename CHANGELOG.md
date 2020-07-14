@@ -1,5 +1,161 @@
 ## Change Log
 
+**1.2.0** <small>_Jun 07, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.1.1...1.2.0)
+
+#### Features
+
+- Add option to control auto refresh after save: [#2070](https://github.com/bookshelf/bookshelf/pull/2070)
+
+#### Tests
+
+- Adds some more integration tests to `Collection#fetch`: [#2079](https://github.com/bookshelf/bookshelf/pull/2079)
+
+#### Dependencies
+
+- Support Knex version 0.21.0 and up: [#2072](https://github.com/bookshelf/bookshelf/pull/2072)
+- Update some dependencies of dependencies to fix security warnings: [#2078](https://github.com/bookshelf/bookshelf/pull/2078)
+
+**1.1.1** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.1.0...1.1.1)
+
+#### Bug fixes
+
+- Fix attributes that are changed during event hook not being persisted: [#2062](https://github.com/bookshelf/bookshelf/pull/2062)
+- Fix incorrect query object being sent to event handlers with `morphTo`: [#2059](https://github.com/bookshelf/bookshelf/pull/2059)
+- Fix non-object attributes being passed to `model.parse()` in some cases: [#2056](https://github.com/bookshelf/bookshelf/pull/2056)
+
+#### Documentation
+
+- Fix typo in doclet: [#2057](https://github.com/bookshelf/bookshelf/pull/2057)
+
+**0.15.2** <small>_Mar 28, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...0.15.2)
+
+#### Bug fixes
+
+- Fix attributes that are changed during event hook not being persisted: [#2063](https://github.com/bookshelf/bookshelf/pull/2063)
+
+**1.1.0** <small>_Jan 31, 2020_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.1...1.1.0)
+
+#### Features
+
+- Add option to disable the count information in `fetchPage`: [#2045](https://github.com/bookshelf/bookshelf/pull/2045)
+
+#### Tests
+
+- Small refactor to some tests: [#2050](https://github.com/bookshelf/bookshelf/pull/2050)
+
+#### Dependencies
+
+- Update some dependencies to their latest versions: [#2053](https://github.com/bookshelf/bookshelf/pull/2053)
+- Update Knex to version 0.20.8: [#2049](https://github.com/bookshelf/bookshelf/pull/2049)
+
+**1.0.1** <small>_Oct 06, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/1.0.0...1.0.1)
+
+#### Bug fixes
+
+- Fix JSON.stringify causing TypeError in some cases: [#2029](https://github.com/bookshelf/bookshelf/pull/2029)
+
+#### Documentation
+
+- Add documentation for Model#id: [#2031](https://github.com/bookshelf/bookshelf/pull/2031)
+- Fix number of arguments in Model#save doclet: [#2030](https://github.com/bookshelf/bookshelf/pull/2030)
+
+#### Dependencies
+
+- Update js-yaml to version 3.13.1: [#2023](https://github.com/bookshelf/bookshelf/pull/2023)
+- Update handlebars to version 4.2.1: [#2022](https://github.com/bookshelf/bookshelf/pull/2022)
+- Update uuid to version 3.3.3: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update sqlite3 to version 4.1.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update sinon to 7.4.2: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update prettier to 1.18.2: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update mocha to version 6.2.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update lint-staged to version 9.2.5: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update jsdoc to version 3.6.3: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update husky to version 3.0.5: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-plugin-prettier to version 3.1.1: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-config-prettier to version 6.3.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint to version 6.4.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update chai to 4.2.0: [#2021](https://github.com/bookshelf/bookshelf/pull/2021)
+- Update eslint-utils from 1.3.1 to 1.4.2: [#2020](https://github.com/bookshelf/bookshelf/pull/2020)
+
+**1.0.0** <small>_Sep 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.1...1.0.0)
+
+#### Breaking changes
+
+- This version requires Node.js 8+ **if** using a Knex version greater than 0.18.4, otherwise Node.js 6 is still supported: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Make `require: true` the default for Model#fetch: [#2006](https://github.com/bookshelf/bookshelf/pull/2006)
+- Remove some Model and Collection lodash based methods: [#2005](https://github.com/bookshelf/bookshelf/pull/2005)
+- Change Collection#where so it behaves like Model#where: [#2001](https://github.com/bookshelf/bookshelf/pull/2001)
+- Move all plugins to their own repositories: [#2000](https://github.com/bookshelf/bookshelf/pull/2000)
+- Promote some useful plugins to core: [#1992](https://github.com/bookshelf/bookshelf/pull/1992), [#1993](https://github.com/bookshelf/bookshelf/pull/1993), [#1996](https://github.com/bookshelf/bookshelf/pull/1996)
+
+#### Enhancements
+
+- Refresh model attributes after a save operation: [#2012](https://github.com/bookshelf/bookshelf/pull/2012)
+
+#### Bug fixes
+
+- Fix missing columns after save: [#2012](https://github.com/bookshelf/bookshelf/pull/2012)
+- Fix Case Converter plugin overriding any previously defined parse methods: [#2000](https://github.com/bookshelf/bookshelf/pull/2000), [case-converter-plugin@1.0.0](https://github.com/bookshelf/case-converter-plugin/releases/tag/v1.0.0)
+- Fix registry saving models inadvertently across different bookshelf instances: [#1996](https://github.com/bookshelf/bookshelf/pull/1996)
+
+#### Documentation
+
+- Add example of how to use custom collections: [#2015](https://github.com/bookshelf/bookshelf/pull/2015)
+- Improve documentation related to debug mode: [#2014](https://github.com/bookshelf/bookshelf/pull/2014)
+- Add note that count methods return String with Postgres: [#2013](https://github.com/bookshelf/bookshelf/pull/2013)
+- Fix typo in Readme: [#1998](https://github.com/bookshelf/bookshelf/pull/1998)
+- Better Plugin Docs: [#1992](https://github.com/bookshelf/bookshelf/pull/1992), [#1993](https://github.com/bookshelf/bookshelf/pull/1993), [#1996](https://github.com/bookshelf/bookshelf/pull/1996), [#2000](https://github.com/bookshelf/bookshelf/pull/2000)
+
+#### Dependencies
+
+- Update lint-staged to version 9.1.0: [#1994](https://github.com/bookshelf/bookshelf/pull/1994)
+- Update bluebird to 3.5.5: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update lodash to 4.17.14: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update mocha to version 6.1.4: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update mysql to version 2.17.1: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update pg to version 7.11.0: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sinon to version 7.3.2: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sinon-chai to version 3.3.0: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update sqlite3 to version 4.0.9: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update uuid to version 3.3.2: [#1991](https://github.com/bookshelf/bookshelf/pull/1991)
+- Update eslint-config-prettier to 6.0.0: [#1957](https://github.com/bookshelf/bookshelf/pull/1987)
+- Update eslint to version 6.0.0: [#1986](https://github.com/bookshelf/bookshelf/pull/1986)
+
+**0.15.1** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.15.0...0.15.1)
+
+- Update husky to version 2.4.1: [#1984](https://github.com/bookshelf/bookshelf/pull/1984)
+- Bump supported knex version to 0.17: [#1982](https://github.com/bookshelf/bookshelf/pull/1982)
+
+**0.15.0** <small>_Jun 13, 2019_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.2...0.15.0)
+
+#### Breaking changes
+
+- This version requires Node.js 6+
+- Remove code that has been deprecated for a long time: [#1956](https://github.com/bookshelf/bookshelf/pull/1956)
+
+#### Bug fixes
+
+- `once` removes all events after it has been triggered: [#1972](https://github.com/bookshelf/bookshelf/pull/1972)
+- Pagination details are wrong when selecting distinct values of a column: [#1950](https://github.com/bookshelf/bookshelf/pull/1950)
+- Fix missing attributes in some events: [#1934](https://github.com/bookshelf/bookshelf/pull/1934)
+
+#### Test Suite
+
+- Fix Docker-compose.yml default postgres user: [#1972](https://github.com/bookshelf/bookshelf/pull/1972)
+- Fix JSON tests on PostgreSQL 10+: [#1955](https://github.com/bookshelf/bookshelf/pull/1955)
+
+#### Documentation
+
+- Update and fix a lot of doclets: [#1951](https://github.com/bookshelf/bookshelf/pull/1951)
+- Update README.md: [#1940](https://github.com/bookshelf/bookshelf/pull/1940)
+
+#### Dependencies
+
+- Update mocha to version 6.1.1: [#1968](https://github.com/bookshelf/bookshelf/pull/1968)
+- Update eslint-config-prettier to 4.1.0: [#1957](https://github.com/bookshelf/bookshelf/pull/1957)
+- Update sinon to version 7.2.4: [#1947](https://github.com/bookshelf/bookshelf/pull/1947)
+- Update eslint to version 5.1.0: [#1930](https://github.com/bookshelf/bookshelf/pull/1930)
+
 **0.14.2** <small>_Dec 17, 2018_</small> - [Diff](https://github.com/bookshelf/bookshelf/compare/0.14.1...0.14.2)
 
 #### Bug fixes

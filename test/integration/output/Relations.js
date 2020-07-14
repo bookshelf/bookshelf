@@ -1852,6 +1852,12 @@ module.exports = {
           name: 'admin',
           _pivot_uid: 1,
           _pivot_rid: 4
+        },
+        {
+          _pivot_rid: 5,
+          _pivot_uid: 1,
+          name: 'accouting',
+          rid: 5
         }
       ]
     },
@@ -1862,6 +1868,12 @@ module.exports = {
           name: 'admin',
           _pivot_uid: 1,
           _pivot_rid: 4
+        },
+        {
+          _pivot_rid: 5,
+          _pivot_uid: 1,
+          name: 'accouting',
+          rid: 5
         }
       ]
     },
@@ -1872,6 +1884,12 @@ module.exports = {
           name: 'admin',
           _pivot_uid: 1,
           _pivot_rid: 4
+        },
+        {
+          _pivot_rid: 5,
+          _pivot_uid: 1,
+          name: 'accouting',
+          rid: 5
         }
       ]
     }
@@ -1887,6 +1905,12 @@ module.exports = {
             name: 'admin',
             _pivot_uid: 1,
             _pivot_rid: 4
+          },
+          {
+            _pivot_rid: 5,
+            _pivot_uid: 1,
+            name: 'accouting',
+            rid: 5
           }
         ]
       }
@@ -1901,6 +1925,12 @@ module.exports = {
             name: 'admin',
             _pivot_uid: 1,
             _pivot_rid: 4
+          },
+          {
+            _pivot_rid: 5,
+            _pivot_uid: 1,
+            name: 'accouting',
+            rid: 5
           }
         ]
       }
@@ -1915,6 +1945,12 @@ module.exports = {
             name: 'admin',
             _pivot_uid: 1,
             _pivot_rid: 4
+          },
+          {
+            _pivot_rid: 5,
+            _pivot_uid: 1,
+            name: 'accouting',
+            rid: 5
           }
         ]
       }
