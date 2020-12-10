@@ -10,3 +10,6 @@ test/
 .npmignore
 CNAME
 docker-compose.yml
+.prettierrc
+.nycrc.yml
+.eslintrc.json
