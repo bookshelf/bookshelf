@@ -7,8 +7,7 @@ module.exports = {
 
   postgres: {
     database: 'bookshelf_test',
-    user: 'postgres',
-    password: 'example'
+    user: 'postgres'
   },
 
   sqlite3: {
