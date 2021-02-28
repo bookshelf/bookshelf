@@ -89,6 +89,14 @@ module.exports = function(bookshelf) {
             checkCount(count, 1);
           });
       });
+      it('counts a `belongsToMany` relation', function() {
+        return new Post({id: 1})
+          .tags()
+          .count()
+          .tap(function(count) {
+            checkCount(count, 3);
+          });
+      });
     });
 
     describe('#fetch()', function() {
