@@ -12,9 +12,9 @@ services:
   - mysql
 
 node_js:
-  - '10'
   - '12'
   - '14'
+  - '16'
 
 before_script:
   - psql -c 'create database bookshelf_test;' -U postgres
