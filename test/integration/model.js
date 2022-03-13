@@ -5,7 +5,7 @@ var assert = require('assert');
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var helpers = require('./helpers');
-var QueryBuilder = require('knex/lib/query/builder');
+var QueryBuilder = require('knex/lib/query/querybuilder');
 
 module.exports = function(bookshelf) {
   describe('Model', function() {
