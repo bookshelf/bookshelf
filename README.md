@@ -125,9 +125,13 @@ new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
 * [bookshelf-advanced-serialization](https://github.com/sequiturs/bookshelf-advanced-serialization) - A more powerful visibility plugin, supporting serializing models and collections according to access permissions, application context, and after ensuring relations have been loaded.
 * [bookshelf-plugin-mode](https://github.com/popodidi/bookshelf-plugin-mode) - Plugin inspired by the functionality of the {@link Model#visible} attribute, allowing to specify different modes with corresponding visible/hidden fields of model.
 * [bookshelf-secure-password](https://github.com/venables/bookshelf-secure-password) - A plugin for easily securing passwords using bcrypt.
+* [bookshelf-bcrypt](https://github.com/bsiddiqui/bookshelf-bcrypt) - Another plugin for automatic password hashing for your bookshelf models using bcrypt.
+* [bookshelf-bcrypt.js](https://github.com/7kasper/bookshelf-bcrypt.js) - Fork of bookshelf-bcrypt using bcryptjs, using less dependencies.
 * [bookshelf-default-select](https://github.com/DJAndries/bookshelf-default-select) - Enables default column selection for models. Inspired by the functionality of the {@link Model#visible} attribute, but operates on the database level.
 * [bookshelf-ez-fetch](https://github.com/DJAndries/bookshelf-ez-fetch) - Convenient fetching methods which allow for compact filtering, relation selection and error handling.
 * [bookshelf-manager](https://github.com/ericclemmons/bookshelf-manager) - Model & Collection manager to make it easy to create & save deep, nested JSON structures from API requests.
+* [bookshelf-spotparse](https://github.com/7kasper/bookshelf-spotparse) - A plugin that makes formatting, parsing and finding models easier.
+* [bookshelf-update](https://github.com/7kasper/bookshelf-update) - Simple Bookshelf plugin that allows simple patching of models and skips updating if no values have changed.
 
 ## Support
 
