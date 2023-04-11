@@ -48,21 +48,21 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
     "husky": "^3.0.5",
-    "jsdoc": "^3.6.3",
-    "knex": "~0.21.0",
+    "jsdoc": "^4.0.2",
+    "knex": "^2.4.2",
     "lint-staged": "^9.2.5",
-    "mocha": "^7.1.2",
+    "mocha": "^10.2.0",
     "mysql": "^2.18.1",
     "nyc": "^15.0.0",
     "pg": "^8.0.3",
     "prettier": "^1.18.2",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.3.0",
-    "sqlite3": "^4.1.1",
+    "sqlite3": "^5.1.6",
     "uuid": "^3.3.3"
   },
   "peerDependencies": {
-    "knex": ">=0.15.0 <0.22.0"
+    "knex": ">=1.0.0"
   },
   "author": {
     "name": "Tim Griesser",
@@ -85,6 +85,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=6"
+    "node": ">=12"
   }
 }
