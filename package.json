@@ -49,7 +49,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "husky": "^3.0.5",
     "jsdoc": "^3.6.3",
-    "knex": "~0.21.0",
+    "knex": "^2.5.1",
     "lint-staged": "^9.2.5",
     "mocha": "^7.1.2",
     "mysql": "^2.18.1",
@@ -62,7 +62,7 @@
     "uuid": "^3.3.3"
   },
   "peerDependencies": {
-    "knex": ">=0.15.0 <0.22.0"
+    "knex": "^2.5.1"
   },
   "author": {
     "name": "Tim Griesser",
