@@ -1,6 +1,6 @@
 # DEPRECATION NOTICE
 
-Bookshlef is no longer maintained. Recommended alternatives are:
+Bookshelf is no longer maintained. Recommended alternatives are:
  - [objection.js](https://vincit.github.io/objection.js/) - knex based ORM, similar design as bookshlef
  - [kysely](https://github.com/kysely-org/kysely) - lower level query builder
 
