@@ -7,7 +7,7 @@
 
 Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
-It is designed to work with PostgreSQL, MySQL, and SQLite3.
+It is designed to work with PostgreSQL, MySQL or MariaDB, and SQLite3.
 
 [Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
@@ -21,7 +21,7 @@ It's a lean object-relational mapper, allowing you to drop down to the raw Knex 
 
 ## Installation
 
-You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
+You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm. If using MariaDB, the Knex documentation recommends just using the `mysql` driver.
 
 ```js
 $ npm install knex
