@@ -3,8 +3,19 @@
 	"version": "1.2.0",
 	"description": "A lightweight ORM for PostgreSQL, MySQL, and SQLite3",
 	"packageManager": "npm@6.14.18+sha512.a774a3a927214ae35052a6c9060c1dbf42f73ba6ca91a49f42b43326cb2436934a2e0d20dfb739c535c55744aa4e55fd196be81b10442d524c456ab427ca1a2c",
-	"main": "bookshelf.js",
+	"type": "commonjs",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"exports": {
+		"require": {
+			"default": "./dist/index.cjs"
+		},
+		"import": {
+			"default": "./dist/index.mjs"
+		}
+	},
 	"scripts": {
+		"build": "pkgroll --clean-dist --target=es2022 --target=node14.21.3",
 		"format": "biome format .",
 		"format:write": "biome format --write .",
 		"lint": "biome lint .",
@@ -52,6 +63,7 @@
 		"mysql": "^2.18.1",
 		"nyc": "^15.0.0",
 		"pg": "^8.0.3",
+		"pkgroll": "^2.4.2",
 		"sinon": "^8.1.1",
 		"sinon-chai": "^3.3.0",
 		"sqlite3": "^5.0.0",
