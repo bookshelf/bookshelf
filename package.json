@@ -30,35 +30,23 @@
     "inflection": "3.0.2",
     "lodash": "^4.17.15"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json}": [
-      "prettier --write",
-      "git add"
-    ]
-  },
   "devDependencies": {
-    "bookshelf-jsdoc-theme": "^1.0.1",
+    "bookshelf-jsdoc-theme": "^0.1.1",
     "chai": "6.2.2",
     "eslint": "10.0.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.5",
-    "husky": "^9.1.7",
     "jsdoc": "4.0.5",
     "knex": "3.1.0",
     "lint-staged": "16.2.7",
-    "mocha": "11.7.5",
+    "mocha": "^11.3.0",
     "mysql": "^2.18.1",
     "nyc": "17.1.0",
     "pg": "^8.18.0",
     "prettier": "3.8.1",
     "sinon": "21.0.1",
     "sinon-chai": "4.0.1",
-    "sqlite3": "5.1.7",
+    "sqlite3": "^5.0.2",
     "uuid": "13.0.0"
   },
   "peerDependencies": {
