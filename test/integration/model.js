@@ -5,6 +5,7 @@ var assert = require('assert');
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var helpers = require('./helpers');
+var QueryBuilder = require('knex/lib/query/querybuilder');
 
 module.exports = function(bookshelf) {
   describe('Model', function() {
@@ -373,6 +374,7 @@ module.exports = function(bookshelf) {
       });
 
       it('returns the Knex builder when no arguments are passed', function() {
+        equal(model.query() instanceof QueryBuilder, true);
         const qb = model.query();
         // In knex 3.x, QueryBuilder is not directly constructable, so check for key methods
         equal(typeof qb.where === 'function' && typeof qb.select === 'function', true);
