@@ -7,7 +7,7 @@
     "format": "prettier --write \"{lib,scripts,test}/**/*.js\"",
     "lint": "eslint bookshelf.js lib/",
     "cover": "npm run lint && nyc mocha --check-leaks -t 10000 -b",
-    "test": "npm run lint && mocha --check-leaks -t 10000 -b",
+    "test": "npx mocha --check-leaks -t 10000 -b",
     "jsdoc": "./scripts/jsdoc.sh",
     "postpublish": "./scripts/postpublish.sh"
   },
@@ -27,42 +27,30 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "create-error": "~0.3.1",
-    "inflection": "^1.12.0",
+    "inflection": "3.0.2",
     "lodash": "^4.17.15"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json}": [
-      "prettier --write",
-      "git add"
-    ]
-  },
   "devDependencies": {
-    "bookshelf-jsdoc-theme": "^1.0.1",
-    "chai": "^4.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "husky": "^3.0.5",
-    "jsdoc": "^3.6.3",
-    "knex": "~0.21.0",
-    "lint-staged": "^9.2.5",
-    "mocha": "^7.1.2",
+    "bookshelf-jsdoc-theme": "^0.1.1",
+    "chai": "6.2.2",
+    "eslint": "10.0.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.5",
+    "jsdoc": "4.0.5",
+    "knex": "3.1.0",
+    "lint-staged": "16.2.7",
+    "mocha": "^11.3.0",
     "mysql": "^2.18.1",
-    "nyc": "^15.0.0",
-    "pg": "^8.0.3",
-    "prettier": "^1.18.2",
-    "sinon": "^8.1.1",
-    "sinon-chai": "^3.3.0",
-    "sqlite3": "^4.1.1",
-    "uuid": "^3.3.3"
+    "nyc": "17.1.0",
+    "pg": "^8.18.0",
+    "prettier": "3.8.1",
+    "sinon": "21.0.1",
+    "sinon-chai": "4.0.1",
+    "sqlite3": "^5.0.2",
+    "uuid": "13.0.0"
   },
   "peerDependencies": {
-    "knex": ">=0.15.0 <0.22.0"
+    "knex": "3.1.0"
   },
   "author": {
     "name": "Tim Griesser",
@@ -85,6 +73,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">=6"
+    "node": "25.6.0"
   }
 }

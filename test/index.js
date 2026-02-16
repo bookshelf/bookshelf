@@ -15,7 +15,7 @@ process.on('unhandledRejection', function(reason, promise) {
   console.error(reason);
 });
 
-chai.use(require('sinon-chai'));
+chai.use(require('sinon-chai').default);
 chai.should();
 
 after(function() {
