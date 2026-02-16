@@ -1,0 +1,482 @@
+{
+  "projectName": "Bookshelf.js",
+  "version": "1.0.0",
+  "description": "Dependency graph for Bookshelf ORM library",
+  "timestamp": "2026-02-16",
+  "modules": {
+    "bookshelf": {
+      "path": "lib/bookshelf.js",
+      "type": "entry-point",
+      "lines": 559,
+      "description": "Main entry point for the Bookshelf ORM",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external",
+          "purpose": "Utility functions"
+        },
+        {
+          "name": "./model",
+          "type": "internal",
+          "path": "lib/model.js",
+          "purpose": "Model class definition"
+        },
+        {
+          "name": "./collection",
+          "type": "internal",
+          "path": "lib/collection.js",
+          "purpose": "Collection class definition"
+        },
+        {
+          "name": "./relation",
+          "type": "internal",
+          "path": "lib/relation.js",
+          "purpose": "Relation class definition"
+        },
+        {
+          "name": "./base/events",
+          "type": "internal",
+          "path": "lib/base/events.js",
+          "purpose": "Events mixin"
+        },
+        {
+          "name": "./errors",
+          "type": "internal",
+          "path": "lib/errors.js",
+          "purpose": "Custom error definitions"
+        }
+      ]
+    },
+    "model": {
+      "path": "lib/model.js",
+      "type": "core-class",
+      "lines": 1569,
+      "complexity": "high",
+      "description": "Model class for representing database rows",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "create-error",
+          "type": "external"
+        },
+        {
+          "name": "./sync",
+          "type": "internal",
+          "path": "lib/sync.js"
+        },
+        {
+          "name": "./helpers",
+          "type": "internal",
+          "path": "lib/helpers.js"
+        },
+        {
+          "name": "./eager",
+          "type": "internal",
+          "path": "lib/eager.js"
+        },
+        {
+          "name": "./errors",
+          "type": "internal",
+          "path": "lib/errors.js"
+        },
+        {
+          "name": "./base/model",
+          "type": "internal",
+          "path": "lib/base/model.js"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        }
+      ]
+    },
+    "collection": {
+      "path": "lib/collection.js",
+      "type": "core-class",
+      "lines": 546,
+      "complexity": "medium",
+      "description": "Collection class for managing multiple models",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "./sync",
+          "type": "internal",
+          "path": "lib/sync.js"
+        },
+        {
+          "name": "./helpers",
+          "type": "internal",
+          "path": "lib/helpers.js"
+        },
+        {
+          "name": "./eager",
+          "type": "internal",
+          "path": "lib/eager.js"
+        },
+        {
+          "name": "./errors",
+          "type": "internal",
+          "path": "lib/errors.js"
+        },
+        {
+          "name": "./base/collection",
+          "type": "internal",
+          "path": "lib/base/collection.js"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        },
+        {
+          "name": "create-error",
+          "type": "external"
+        }
+      ]
+    },
+    "relation": {
+      "path": "lib/relation.js",
+      "type": "core-class",
+      "lines": 948,
+      "complexity": "high",
+      "description": "Relation class for managing model relationships",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "inflection",
+          "type": "external"
+        },
+        {
+          "name": "./helpers",
+          "type": "internal",
+          "path": "lib/helpers.js"
+        },
+        {
+          "name": "./base/model",
+          "type": "internal",
+          "path": "lib/base/model.js"
+        },
+        {
+          "name": "./base/relation",
+          "type": "internal",
+          "path": "lib/base/relation.js"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        },
+        {
+          "name": "./constants",
+          "type": "internal",
+          "path": "lib/constants.js"
+        }
+      ]
+    },
+    "sync": {
+      "path": "lib/sync.js",
+      "type": "utility",
+      "complexity": "medium",
+      "description": "Sync module for database synchronization",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        }
+      ]
+    },
+    "helpers": {
+      "path": "lib/helpers.js",
+      "type": "utility",
+      "complexity": "low",
+      "description": "Helper functions used across modules",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        }
+      ]
+    },
+    "eager": {
+      "path": "lib/eager.js",
+      "type": "utility",
+      "complexity": "medium",
+      "description": "Eager loading implementation",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        }
+      ]
+    },
+    "errors": {
+      "path": "lib/errors.js",
+      "type": "utility",
+      "complexity": "low",
+      "description": "Custom error definitions",
+      "dependencies": [
+        {
+          "name": "create-error",
+          "type": "external"
+        }
+      ]
+    },
+    "extend": {
+      "path": "lib/extend.js",
+      "type": "utility",
+      "complexity": "low",
+      "description": "Class extension utility",
+      "dependencies": []
+    },
+    "constants": {
+      "path": "lib/constants.js",
+      "type": "utility",
+      "complexity": "low",
+      "description": "Constants used across the library",
+      "dependencies": []
+    },
+    "base-model": {
+      "path": "lib/base/model.js",
+      "type": "base-class",
+      "lines": 803,
+      "complexity": "high",
+      "description": "Base Model class",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        },
+        {
+          "name": "./events",
+          "type": "internal",
+          "path": "lib/base/events.js"
+        },
+        {
+          "name": "./relation",
+          "type": "internal",
+          "path": "lib/base/relation.js"
+        }
+      ]
+    },
+    "base-collection": {
+      "path": "lib/base/collection.js",
+      "type": "base-class",
+      "lines": 803,
+      "complexity": "high",
+      "description": "Base Collection class",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        },
+        {
+          "name": "./events",
+          "type": "internal",
+          "path": "lib/base/events.js"
+        },
+        {
+          "name": "./model",
+          "type": "internal",
+          "path": "lib/base/model.js",
+          "note": "Circular reference"
+        }
+      ]
+    },
+    "base-relation": {
+      "path": "lib/base/relation.js",
+      "type": "base-class",
+      "complexity": "medium",
+      "description": "Base Relation class",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        },
+        {
+          "name": "bluebird",
+          "type": "external"
+        },
+        {
+          "name": "./events",
+          "type": "internal",
+          "path": "lib/base/events.js"
+        }
+      ]
+    },
+    "base-events": {
+      "path": "lib/base/events.js",
+      "type": "base-class",
+      "complexity": "low",
+      "description": "Events class providing pub-sub functionality",
+      "dependencies": [
+        {
+          "name": "lodash",
+          "type": "external"
+        }
+      ]
+    }
+  },
+  "externalDependencies": {
+    "lodash": {
+      "type": "npm-package",
+      "description": "JavaScript utility library",
+      "usedBy": [
+        "bookshelf",
+        "model",
+        "collection",
+        "relation",
+        "sync",
+        "helpers",
+        "eager",
+        "base-model",
+        "base-collection",
+        "base-relation",
+        "base-events"
+      ]
+    },
+    "bluebird": {
+      "type": "npm-package",
+      "description": "Promise library",
+      "usedBy": [
+        "model",
+        "collection",
+        "relation",
+        "sync",
+        "base-model",
+        "base-collection",
+        "base-relation"
+      ]
+    },
+    "knex": {
+      "type": "npm-package",
+      "description": "Query builder (passed as parameter to Bookshelf)",
+      "usedBy": [
+        "bookshelf"
+      ]
+    },
+    "inflection": {
+      "type": "npm-package",
+      "description": "String inflection utilities",
+      "usedBy": [
+        "relation"
+      ]
+    },
+    "create-error": {
+      "type": "npm-package",
+      "description": "Error class creation utility",
+      "usedBy": [
+        "model",
+        "collection",
+        "errors"
+      ]
+    }
+  },
+  "circularDependencies": [
+    {
+      "modules": [
+        "model",
+        "collection"
+      ],
+      "description": "Model references Collection for collection() method, Collection references Model for model property"
+    },
+    {
+      "modules": [
+        "model",
+        "relation"
+      ],
+      "description": "Model references Relation for relation methods, Relation references Model for type checking"
+    },
+    {
+      "modules": [
+        "base-model",
+        "base-collection"
+      ],
+      "description": "Potential circular reference through base classes"
+    }
+  ],
+  "dependencyLayers": {
+    "foundation": {
+      "description": "Foundation utilities and constants",
+      "modules": [
+        "constants",
+        "extend",
+        "helpers",
+        "errors"
+      ]
+    },
+    "base-classes": {
+      "description": "Base classes providing core functionality",
+      "modules": [
+        "base-events",
+        "base-model",
+        "base-collection",
+        "base-relation"
+      ]
+    },
+    "utilities": {
+      "description": "Utility modules for specific functionality",
+      "modules": [
+        "sync",
+        "eager"
+      ]
+    },
+    "core-classes": {
+      "description": "Core ORM classes",
+      "modules": [
+        "model",
+        "collection",
+        "relation"
+      ]
+    },
+    "entry-point": {
+      "description": "Main entry point",
+      "modules": [
+        "bookshelf"
+      ]
+    }
+  },
+  "statistics": {
+    "totalModules": 13,
+    "externalDependencies": 5,
+    "internalDependencies": 28,
+    "averageDependenciesPerModule": 2.15,
+    "mostDependedOnModule": "lodash (11 modules)",
+    "complexModules": [
+      {
+        "name": "model",
+        "lines": 1569
+      },
+      {
+        "name": "relation",
+        "lines": 948
+      },
+      {
+        "name": "base-model",
+        "lines": 803
+      },
+      {
+        "name": "base-collection",
+        "lines": 803
+      }
+    ]
+  }
+}
