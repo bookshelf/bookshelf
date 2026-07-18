@@ -5,15 +5,15 @@
 [![Dependency Status](https://david-dm.org/bookshelf/bookshelf/status.svg)](https://david-dm.org/bookshelf/bookshelf)
 [![devDependency Status](https://david-dm.org/bookshelf/bookshelf/dev-status.svg)](https://david-dm.org/bookshelf/bookshelf?type=dev)
 
-Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](http://knexjs.org) SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
+Bookshelf is a JavaScript ORM for Node.js, built on the [Knex](https://knexjs.org) SQL query builder. It features both Promise-based and traditional callback interfaces, transaction support, eager/nested-eager relation loading, polymorphic associations, and support for one-to-one, one-to-many, and many-to-many relations.
 
 It is designed to work with PostgreSQL, MySQL, and SQLite3.
 
-[Website and documentation](http://bookshelfjs.org). The project is [hosted on GitHub](http://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
+[Website and documentation](https://bookshelfjs.org). The project is [hosted on GitHub](https://github.com/bookshelf/bookshelf/), and has a comprehensive [test suite](https://travis-ci.org/bookshelf/bookshelf).
 
 ## Introduction
 
-Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the [Data Mapper Pattern](http://en.wikipedia.org/wiki/Data_mapper_pattern).
+Bookshelf aims to provide a simple library for common tasks when querying databases in JavaScript, and forming relations between these objects, taking a lot of ideas from the [Data Mapper Pattern](https://en.wikipedia.org/wiki/Data_mapper_pattern).
 
 With a concise, literate codebase, Bookshelf is simple to read, understand, and extend. It doesn't force you to use any specific validation scheme, and provides flexible, efficient relation/nested-relation loading and first-class transaction support.
 
@@ -21,7 +21,7 @@ It's a lean object-relational mapper, allowing you to drop down to the raw Knex 
 
 ## Installation
 
-You'll need to install a copy of [Knex](http://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
+You'll need to install a copy of [Knex](https://knexjs.org/), and either `mysql`, `pg`, or `sqlite3` from npm.
 
 ```js
 $ npm install knex
@@ -33,7 +33,7 @@ $ npm install mysql
 $ npm install sqlite3
 ```
 
-The Bookshelf library is initialized by passing an initialized [Knex](http://knexjs.org/) client instance. The [Knex documentation](http://knexjs.org/) provides a number of examples for different databases.
+The Bookshelf library is initialized by passing an initialized [Knex](https://knexjs.org/) client instance. The [Knex documentation](https://knexjs.org/) provides a number of examples for different databases.
 
 ```js
 // Setting up the database connection
@@ -135,7 +135,7 @@ new User({id: 1}).fetch({withRelated: ['posts.tags']}).then((user) => {
 
 ## Support
 
-Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](http://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](http://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](http://stackoverflow.com/questions/tagged/bookshelf.js).
+Have questions about the library? Come join us in the [#bookshelf freenode IRC channel](https://webchat.freenode.net/?channels=bookshelf) for support on [knex.js](https://knexjs.org/) and bookshelf.js, or post an issue on [Stack Overflow](https://stackoverflow.com/questions/tagged/bookshelf.js).
 
 ## Contributing
 
@@ -161,7 +161,7 @@ This is only an issue if you're eager loading data with load without first fetch
 
 ### My process won't exit after my script is finished, why?
 
-The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call `.destroy(cb)` on the `knex` property of your `Bookshelf` instance or on the `Knex` instance passed during initialization. More information about connection pooling can be found over at the [Knex docs](http://knexjs.org/#Installation-pooling).
+The issue here is that Knex, the database abstraction layer used by Bookshelf, uses connection pooling and thus keeps the database connection open. If you want your process to exit after your script has finished, you will have to call `.destroy(cb)` on the `knex` property of your `Bookshelf` instance or on the `Knex` instance passed during initialization. More information about connection pooling can be found over at the [Knex docs](https://knexjs.org/#Installation-pooling).
 
 ### How do I debug?
 
@@ -184,7 +184,7 @@ new User({id: 1}).fetch({debug: true, withRelated: ['posts.tags']}).then(user =>
 
 Sometimes you need to dive a bit further into the various calls and see what all is going on behind the scenes. You can use [node-inspector](https://github.com/dannycoates/node-inspector), which allows you to debug code with `debugger` statements like you would in the browser.
 
-Bookshelf uses its own copy of the `bluebird` Promise library. You can read up [here](http://bluebirdjs.com/docs/api/promise.config.html) for more on debugging Promises.
+Bookshelf uses its own copy of the `bluebird` Promise library. You can read up [here](https://bluebirdjs.com/docs/api/promise.config.html) for more on debugging Promises.
 
 Adding the following block at the start of your application code will catch any errors not otherwise caught in the normal Promise chain handlers, which is very helpful in debugging:
 
@@ -201,15 +201,15 @@ document on GitHub.
 
 ### Can I use Bookshelf outside of Node.js?
 
-While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom [Knex adapter](http://knexjs.org/#Adapters). No such adapter exists though.
+While it primarily targets Node.js, all dependencies are browser compatible, and it could be adapted to work with other javascript environments supporting a sqlite3 database, by providing a custom [Knex adapter](https://knexjs.org/#Adapters). No such adapter exists though.
 
 ### Which open-source projects are using Bookshelf?
 
 We found the following projects using Bookshelf, but there can be more:
 
 * [Ghost](https://ghost.org/) (A blogging platform) uses bookshelf. [[Link](https://github.com/TryGhost/Ghost/tree/master/core/server/models)]
-* [Soapee](http://soapee.com/) (Soap Making Community and Resources) uses bookshelf. [[Link](https://github.com/nazar/soapee-api/tree/master/src/models)]
-* [NodeZA](http://nodeza.co.za/) (Node.js social platform for developers in South Africa) uses bookshelf. [[Link](https://github.com/qawemlilo/nodeza/tree/master/models)]
+* [Soapee](https://soapee.com/) (Soap Making Community and Resources) uses bookshelf. [[Link](https://github.com/nazar/soapee-api/tree/master/src/models)]
+* [NodeZA](https://nodeza.co.za/) (Node.js social platform for developers in South Africa) uses bookshelf. [[Link](https://github.com/qawemlilo/nodeza/tree/master/models)]
 * [Sunday Cook](https://github.com/sunday-cooks/sunday-cook) (A social cooking event platform) uses bookshelf. [[Link](https://github.com/sunday-cooks/sunday-cook/tree/master/server/bookshelf)]
-* [FlyptoX](http://www.flyptox.com/) (Open-source Node.js cryptocurrency exchange) uses bookshelf. [[Link](https://github.com/FlipSideHR/FlyptoX/tree/master/server/models)]
+* [FlyptoX](https://www.flyptox.com/) (Open-source Node.js cryptocurrency exchange) uses bookshelf. [[Link](https://github.com/FlipSideHR/FlyptoX/tree/master/server/models)]
 * And of course, everything on [here](https://www.npmjs.com/browse/depended/bookshelf) use bookshelf too.
