@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5
+    image: mariadb:12
     restart: always
     ports:
     - "3306:3306"
@@ -17,3 +17,4 @@ services:
     - "5432:5432"
     environment:
       POSTGRES_DB: bookshelf_test
+      POSTGRES_HOST_AUTH_METHOD: trust
